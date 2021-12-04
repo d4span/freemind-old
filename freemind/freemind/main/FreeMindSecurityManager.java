@@ -82,7 +82,7 @@ public final class FreeMindSecurityManager extends SecurityManager {
 	public void checkAwtEventQueueAccess() {
 		if (mFinalSecurityManager == null)
 			return;
-		mFinalSecurityManager.checkAwtEventQueueAccess();
+		//mFinalSecurityManager.checkAwtEventQueueAccess();
 	}
 
 	public void checkConnect(String pHost, int pPort, Object pContext) {
@@ -136,7 +136,7 @@ public final class FreeMindSecurityManager extends SecurityManager {
 	public void checkMemberAccess(Class arg0, int arg1) {
 		if (mFinalSecurityManager == null)
 			return;
-		mFinalSecurityManager.checkMemberAccess(arg0, arg1);
+		//mFinalSecurityManager.checkMemberAccess(arg0, arg1);
 	}
 
 	public void checkMulticast(InetAddress pMaddr, byte pTtl) {
@@ -226,13 +226,14 @@ public final class FreeMindSecurityManager extends SecurityManager {
 	public void checkSystemClipboardAccess() {
 		if (mFinalSecurityManager == null)
 			return;
-		mFinalSecurityManager.checkSystemClipboardAccess();
+		//mFinalSecurityManager.checkSystemClipboardAccess();
 	}
 
 	public boolean checkTopLevelWindow(Object pWindow) {
 		if (mFinalSecurityManager == null)
 			return true;
-		return mFinalSecurityManager.checkTopLevelWindow(pWindow);
+		throw new UnsupportedOperationException();
+		//return mFinalSecurityManager.checkTopLevelWindow(pWindow);
 	}
 
 	public void checkWrite(FileDescriptor pFd) {

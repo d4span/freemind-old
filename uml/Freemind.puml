@@ -1,0 +1,94 @@
+@startuml
+
+[Main] <<freemind.main>>
+[Controllers] <<freemind.controller..>>
+[Modes] <<freemind.modes..>>
+[Views] <<freemind.view..>>
+[Common] <<freemind.common..>>
+[Preferences] <<freemind.preferences..>>
+[Extensions] <<freemind.extensions..>>
+[Swing] <<freemind.swing..>>
+
+[Freemind Tests] <<tests.freemind..>>
+[Freemind accessories] <<accessories..>>
+
+[Java Swing] <<javax.swing..>>
+[JSoup] <<org.jsoup..>>
+[JAXP] <<javax.xml..>>
+[JOrtho] <<com.inet.jortho..>>
+[SimplyHTML] <<com.lightdev.app.shtm..>>
+[JIBX] <<org.jibx..>>
+[Java Crypto] <<javax.crypto..>>
+[JGoodies] <<com.jgoodies..>>
+[Core SAX API] <<org.xml.sax..>>
+[Java Image I/O API] <<javax.imageio..>>
+
+[Swing] --> [Java Swing]
+
+[Common] --> [Main]
+[Common] --> [Modes]
+[Common] --> [Controllers]
+[Common] --> [Views]
+[Common] --> [Freemind Tests]
+[Common] --> [Java Swing]
+[Common] --> [JIBX]
+[Common] --> [JGoodies]
+
+[Controllers] --> [Views]
+[Controllers] --> [Common]
+[Controllers] --> [Main]
+[Controllers] --> [Modes]
+[Controllers] --> [Preferences]
+[Controllers] --> [Java Swing]
+
+[Extensions] --> [Main]
+[Extensions] --> [Views]
+[Extensions] --> [Controllers]
+[Extensions] --> [Modes]
+[Extensions] --> [Java Swing]
+
+[Views] --> [Controllers]
+[Views] --> [Extensions]
+[Views] --> [Freemind accessories]
+[Views] --> [Freemind Tests]
+[Views] --> [Java Swing]
+[Views] --> [Java Image I/O API]
+[Views] --> [Modes]
+[Views] --> [Main]
+[Views] --> [Preferences]
+[Views] --> [JOrtho]
+[Views] --> [SimplyHTML]
+
+[Preferences] --> [Common]
+[Preferences] --> [Main]
+[Preferences] --> [Modes]
+[Preferences] --> [JGoodies]
+[Preferences] --> [Controllers]
+[Preferences] --> [Java Swing]
+
+[Modes] --> [Preferences]
+[Modes] --> [Controllers]
+[Modes] --> [Views]
+[Modes] --> [Main]
+[Modes] --> [Extensions]
+[Modes] --> [Common]
+[Modes] --> [Java Swing]
+[Modes] --> [JAXP]
+[Modes] --> [JIBX]
+[Modes] --> [Java Image I/O API]
+[Modes] --> [JGoodies]
+
+[Main] --> [Preferences]
+[Main] --> [Common]
+[Main] --> [Views]
+[Main] --> [Controllers]
+[Main] --> [Modes]
+[Main] --> [Java Swing]
+[Main] --> [JSoup]
+[Main] --> [JAXP]
+[Main] --> [Java Crypto]
+[Main] --> [JOrtho]
+[Main] --> [Core SAX API]
+[Main] --> [Freemind Tests]
+
+@enduml

@@ -16,6 +16,12 @@ sourceSets {
             exclude("plugins/collaboration/jabber/**")
         }
     }
+
+    test {
+        resources {
+            setSrcDirs(listOf("uml"))
+        }
+    }
 }
 
 tasks {
@@ -47,4 +53,5 @@ dependencies {
         "freemind/plugins/script/groovy-all.jar"))
 
     testImplementation(kotlin("test"))
+    testImplementation("com.tngtech.archunit:archunit:0.22.0")
 }

@@ -1,5 +1,6 @@
 plugins {
     java
+    kotlin("jvm") version "1.6.0"
 }
 
 ant.importBuild("freemind/build.xml")
@@ -17,9 +18,13 @@ sourceSets {
     }
 }
 
-repositories {
-    mavenCentral()
+tasks {
+    test {
+        useJUnitPlatform()
+    }
 }
+
+repositories(RepositoryHandler::mavenCentral)
 
 dependencies {
     implementation("org.jibx:jibx-run:1.3.3")
@@ -40,4 +45,6 @@ dependencies {
         "freemind/plugins/latex/HotEqn.jar",
         "freemind/plugins/map/JMapViewer.jar",
         "freemind/plugins/script/groovy-all.jar"))
+
+    testImplementation(kotlin("test"))
 }

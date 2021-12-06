@@ -1,27 +1,36 @@
 @startuml
 
-[Main] <<freemind.main>>
-[Controllers] <<freemind.controller..>>
-[Modes] <<freemind.modes..>>
-[Views] <<freemind.view..>>
-[Common] <<freemind.common..>>
-[Preferences] <<freemind.preferences..>>
-[Extensions] <<freemind.extensions..>>
-[Swing] <<freemind.swing..>>
+package "Freemind" {
+    [Main] <<freemind.main>>
+    [Controllers] <<freemind.controller..>>
+    [Modes] <<freemind.modes..>>
+    [Views] <<freemind.view..>>
+    [Common] <<freemind.common..>>
+    [Preferences] <<freemind.preferences..>>
+    [Extensions] <<freemind.extensions..>>
+    [Swing] <<freemind.swing..>>
+}
 
-[Freemind Tests] <<tests.freemind..>>
-[Freemind accessories] <<accessories..>>
+package "Tests and Accessories" {
+    [Freemind Tests] <<tests.freemind..>>
+    [Freemind accessories] <<accessories..>>
+}
 
-[Java Swing] <<javax.swing..>>
-[JSoup] <<org.jsoup..>>
-[JAXP] <<javax.xml..>>
-[JOrtho] <<com.inet.jortho..>>
-[SimplyHTML] <<com.lightdev.app.shtm..>>
-[JIBX] <<org.jibx..>>
-[Java Crypto] <<javax.crypto..>>
-[JGoodies] <<com.jgoodies..>>
-[Core SAX API] <<org.xml.sax..>>
-[Java Image I/O API] <<javax.imageio..>>
+package "Java Libs" {
+    [Java Swing] <<javax.swing..>>
+    [JAXP] <<javax.xml..>>
+    [Java Crypto] <<javax.crypto..>>
+    [Java Image I/O API] <<javax.imageio..>>
+}
+
+package "Third-party libs" {
+    [JSoup] <<org.jsoup..>>
+    [JOrtho] <<com.inet.jortho..>>
+    [SimplyHTML] <<com.lightdev.app.shtm..>>
+    [JIBX] <<org.jibx..>>
+    [JGoodies] <<com.jgoodies..>>
+    [Core SAX API] <<org.xml.sax..>>
+}
 
 [Swing] --> [Java Swing]
 

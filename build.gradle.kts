@@ -3,10 +3,6 @@ plugins {
     kotlin("jvm") version "1.6.0"
 }
 
-ant.importBuild("freemind/build.xml")
-
-tasks.compileJava.configure { dependsOn("gen") }
-
 sourceSets {
     main {
         java {

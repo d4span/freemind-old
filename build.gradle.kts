@@ -5,9 +5,6 @@ plugins {
 sourceSets {
     main {
         java {
-            setSrcDirs(listOf("freemind"))
-
-            include("freemind/**", "accessories/**", "tests/freemind/**", "plugins/**", "de/foltin/**")
             exclude("plugins/collaboration/jabber/**")
         }
     }
@@ -48,9 +45,9 @@ dependencies {
 
     implementation(files("freemind/lib/jortho.jar",
         "freemind/lib/SimplyHTML/SimplyHTML.jar",
-        "freemind/plugins/latex/HotEqn.jar",
-        "freemind/plugins/map/JMapViewer.jar",
-        "freemind/plugins/script/groovy-all.jar"))
+        "freemind/lib/HotEqn.jar",
+        "freemind/lib/JMapViewer.jar",
+        "freemind/lib/groovy-all.jar"))
 
     testImplementation(kotlin("test"))
     testImplementation("com.tngtech.archunit:archunit:0.22.0")

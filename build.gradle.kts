@@ -1,5 +1,4 @@
 plugins {
-    java
     kotlin("jvm") version "1.6.0"
 }
 
@@ -21,6 +20,11 @@ sourceSets {
 }
 
 tasks {
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        kotlinOptions {
+            allWarningsAsErrors = true
+        }
+    }
     test {
         useJUnitPlatform()
     }

@@ -12,6 +12,7 @@ import kotlin.test.Test
 import kotlin.test.assertNotNull
 
 
+@Suppress("INACCESSIBLE_TYPE")
 class ArchitectureTest() {
 
     @Test
@@ -26,6 +27,7 @@ class ArchitectureTest() {
                 .ignoreDependencies(object : DescribedPredicate<Dependency>("Dependencies to standard libs") {
                     override fun apply(dependency: Dependency?): Boolean =
                         dependency?.targetClass?.packageName?.startsWith("java.") ?: false
+                                || dependency?.targetClass?.packageName == "kotlin"
                                 || dependency?.targetClass?.name?.startsWith("[C") ?: false
                                 || dependency?.targetClass?.name?.startsWith("[F") ?: false
                                 || dependency?.targetClass?.name?.startsWith("[B") ?: false

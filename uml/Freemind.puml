@@ -1,6 +1,6 @@
-@startuml
+@startuml Freemind
 
-package "Freemind" {
+package "Freemind (Java)" {
     [Main] <<freemind.main>>
     [Controllers] <<freemind.controller..>>
     [Modes] <<freemind.modes..>>
@@ -9,6 +9,10 @@ package "Freemind" {
     [Preferences] <<freemind.preferences..>>
     [Extensions] <<freemind.extensions..>>
     [Swing] <<freemind.swing..>>
+}
+
+package "Freemind (Kotlin)" {
+    [Adapters] <<freemind.adapters.view..>>
 }
 
 package "Tests and Accessories" {

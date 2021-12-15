@@ -1,5 +1,6 @@
 plugins {
-    kotlin("jvm") version "1.6.0"
+    kotlin("jvm") version "1.6.10"
+    id("org.jmailen.kotlinter") version "3.7.0"
 }
 
 sourceSets {
@@ -50,5 +51,13 @@ dependencies {
         "freemind/lib/groovy-all.jar"))
 
     testImplementation(kotlin("test"))
+    testImplementation("org.jetbrains.kotlin:kotlin-reflect:1.6.0")
+
     testImplementation("com.tngtech.archunit:archunit:0.22.0")
+
+    testImplementation("io.kotest:kotest-assertions-core:5.0.2")
+    testImplementation("io.kotest:kotest-runner-junit5:5.0.2")
+    testImplementation("io.kotest:kotest-property:5.0.2")
+
+    testImplementation("io.mockk:mockk:1.12.1")
 }

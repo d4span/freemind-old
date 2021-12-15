@@ -12,6 +12,7 @@ package "Freemind (Java)" {
 }
 
 package "Freemind (Kotlin)" {
+    [Model] <<freemind.model..>>
     [Adapters] <<freemind.adapters.view..>>
 }
 
@@ -79,6 +80,7 @@ package "Third-party libs" {
 [Preferences] --> [Controllers]
 [Preferences] --> [Java Swing]
 
+[Modes] --> [Model]
 [Modes] --> [Preferences]
 [Modes] --> [Controllers]
 [Modes] --> [Views]

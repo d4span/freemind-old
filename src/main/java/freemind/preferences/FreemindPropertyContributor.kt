@@ -20,21 +20,97 @@
  * Created on 26.03.2006
  */
 /*$Id: FreemindPropertyContributor.java,v 1.1.2.1.2.1 2007/08/05 20:33:17 christianfoltin Exp $*/
-package freemind.preferences;
+package freemind.preferences
 
-import java.util.List;
-
-import freemind.common.PropertyControl;
-import freemind.common.TextTranslator;
+import freemind.main.FreeMind.controller
+import freemind.controller.actions.generated.instance.OptionPanelWindowConfigurationStorage.panel
+import freemind.common.PropertyBean.label
+import freemind.main.FreeMind.getAdjustableProperty
+import freemind.common.PropertyBean.value
+import freemind.common.PropertyControl.layout
+import freemind.main.FreeMind.getResourceString
+import freemind.common.PropertyBean.firePropertyChangeEvent
+import freemind.common.TextTranslator.getText
+import freemind.main.Tools.removeTranslateComment
+import freemind.main.FreeMind.getDefaultProperty
+import freemind.controller.Controller.modeController
+import freemind.modes.IconInformation.keystrokeResourceName
+import freemind.modes.IconInformation.description
+import freemind.modes.IconInformation.icon
+import freemind.main.FreeMindMain.getResourceString
+import freemind.main.Tools.isMacOsX
+import freemind.main.FreeMind
+import javax.swing.JDialog
+import freemind.preferences.layout.OptionPanel.OptionPanelFeedback
+import freemind.common.TextTranslator
+import freemind.common.PropertyControl
+import freemind.preferences.layout.OptionPanel.KeyProperty
+import javax.swing.JButton
+import freemind.preferences.layout.OptionPanel.ChangeTabAction
+import java.util.Properties
+import freemind.common.PropertyBean
+import freemind.preferences.layout.OptionPanel
+import com.jgoodies.forms.layout.FormLayout
+import com.jgoodies.forms.builder.DefaultFormBuilder
+import java.awt.CardLayout
+import freemind.preferences.layout.VariableSizeCardLayout
+import javax.swing.JPanel
+import freemind.preferences.layout.OptionPanel.NewTabProperty
+import javax.swing.JScrollPane
+import javax.swing.JSplitPane
+import java.awt.BorderLayout
+import java.awt.event.ActionListener
+import java.awt.event.ActionEvent
+import com.jgoodies.forms.builder.ButtonBarBuilder
+import kotlin.jvm.JvmOverloads
+import javax.swing.ImageIcon
+import com.jgoodies.forms.layout.RowSpec
+import freemind.preferences.layout.GrabKeyDialog
+import java.awt.event.KeyEvent
+import javax.swing.JLabel
+import freemind.common.SeparatorProperty
+import freemind.common.ComboProperty
+import freemind.main.FreeMindCommon
+import freemind.main.Tools
+import freemind.common.BooleanProperty
+import freemind.common.NextLineProperty
+import freemind.common.PasswordProperty
+import freemind.modes.MindMapNode
+import javax.swing.UIManager.LookAndFeelInfo
+import javax.swing.UIManager
+import freemind.controller.StructuredMenuHolder
+import freemind.modes.MindIcon
+import freemind.modes.ModeController
+import freemind.modes.mindmapmode.MindMapController
+import freemind.modes.mindmapmode.actions.IconAction
+import freemind.modes.IconInformation
+import freemind.common.RemindValueProperty
+import freemind.common.DontShowNotificationProperty
+import freemind.preferences.FreemindPropertyContributor
+import freemind.controller.actions.generated.instance.OptionPanelWindowConfigurationStorage
+import freemind.common.XmlBindingTools
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage
+import java.awt.Color
+import freemind.main.FreeMindMain
+import freemind.preferences.layout.GrabKeyDialog.InputPane
+import java.awt.AWTEvent
+import java.awt.GridLayout
+import javax.swing.WindowConstants
+import java.util.Enumeration
+import javax.swing.JTextField
+import freemind.preferences.layout.KeyEventWorkaround
+import freemind.preferences.layout.KeyEventTranslator
+import java.lang.StringBuffer
+import javax.swing.JOptionPane
+import java.awt.event.InputEvent
+import java.awt.Dimension
+import java.awt.Insets
 
 /**
  * Implement this interface to take part in the property dialog.
- * 
+ *
  * @author foltin
- * 
  */
-public interface FreemindPropertyContributor {
-
-	public List<PropertyControl> getControls(TextTranslator pTextTranslator);
-
+interface FreemindPropertyContributor {
+    fun getControls(pTextTranslator: TextTranslator?): List<PropertyControl?>?
 }

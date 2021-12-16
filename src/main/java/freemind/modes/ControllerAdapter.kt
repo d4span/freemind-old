@@ -16,84 +16,805 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package freemind.modes
 
-package freemind.modes;
-
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Point;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
-import java.util.Vector;
-import java.util.logging.Level;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
-import javax.swing.filechooser.FileFilter;
-
-import freemind.controller.Controller;
-import freemind.controller.LastStateStorageManagement;
-import freemind.controller.MapModuleManager;
-import freemind.controller.MapMouseMotionListener;
-import freemind.controller.MapMouseWheelListener;
-import freemind.controller.MindMapNodesSelection;
-import freemind.controller.NodeDragListener;
-import freemind.controller.NodeDropListener;
-import freemind.controller.NodeKeyListener;
-import freemind.controller.NodeMotionListener;
-import freemind.controller.NodeMouseMotionListener;
-import freemind.controller.StructuredMenuHolder;
-import freemind.controller.actions.generated.instance.MindmapLastStateStorage;
-import freemind.controller.actions.generated.instance.NodeListMember;
-import freemind.extensions.PermanentNodeHook;
-import freemind.main.FreeMindCommon;
-import freemind.main.FreeMindMain;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.main.XMLParseException;
-import freemind.modes.FreeMindFileDialog.DirectoryResultListener;
-import freemind.modes.common.listeners.MindMapMouseWheelEventHandler;
-import freemind.view.MapModule;
-import freemind.view.mindmapview.IndependantMapViewCreator;
-import freemind.view.mindmapview.MapView;
-import freemind.view.mindmapview.NodeView;
-import freemind.view.mindmapview.ViewFeedback;
+import freemind.controller.Controller.informationMessage
+import freemind.main.FreeMindMain.jFrame
+import freemind.main.Tools.addEscapeActionToDialog
+import freemind.main.Tools.setLabelAndMnemonic
+import freemind.main.Tools.setDialogLocationRelativeTo
+import freemind.common.TextTranslator.getText
+import freemind.main.FreeMindMain.getResourceString
+import freemind.main.FreeMindMain.getAdjustableProperty
+import freemind.main.FreeMindMain.getProperty
+import freemind.main.FreeMindMain.setProperty
+import freemind.extensions.PermanentNodeHookAdapter.loadFrom
+import freemind.extensions.PermanentNodeHookAdapter.loadNameValuePairs
+import freemind.extensions.PermanentNodeHookAdapter.save
+import freemind.extensions.PermanentNodeHookAdapter.saveNameValuePairs
+import freemind.extensions.NodeHookAdapter.getNode
+import freemind.extensions.HookAdapter.name
+import freemind.extensions.PermanentNodeHookAdapter.shutdownMapHook
+import freemind.extensions.NodeHookAdapter.invoke
+import freemind.extensions.HookAdapter.getResourceString
+import freemind.extensions.HookAdapter.getController
+import freemind.main.Tools.safeEquals
+import freemind.extensions.PermanentNodeHookAdapter.setToolTip
+import freemind.main.Tools.BooleanHolder.value
+import freemind.main.Tools.IntHolder.value
+import freemind.main.FreeMindMain.getLogger
+import freemind.main.FreeMindMain.out
+import freemind.main.Tools.isLinux
+import freemind.main.Tools.isMacOsX
+import freemind.main.FreeMindMain.getIntProperty
+import freemind.controller.Controller.setZoom
+import freemind.controller.Controller.mapModuleManager
+import freemind.controller.MapModuleManager.changeToMapOfMode
+import freemind.main.Tools.fileToUrl
+import freemind.controller.Controller.getResourceString
+import freemind.controller.Controller.view
+import freemind.controller.Controller.frame
+import freemind.controller.NodeMouseMotionListener.register
+import freemind.controller.MapMouseMotionListener.register
+import freemind.controller.NodeKeyListener.register
+import freemind.controller.NodeMouseMotionListener.deregister
+import freemind.controller.MapMouseMotionListener.deregister
+import freemind.controller.NodeKeyListener.deregister
+import freemind.controller.Controller.obtainFocusForSelected
+import freemind.controller.Controller.errorMessage
+import freemind.controller.Controller.removeSplitPane
+import freemind.controller.Controller.insertComponentIntoSplitPane
+import freemind.main.FreeMindMain.openDocument
+import freemind.controller.Controller.getResource
+import freemind.controller.StructuredMenuHolder.addSeparator
+import freemind.main.FreeMindMain.controller
+import freemind.extensions.MindMapHook.setProperties
+import freemind.extensions.MindMapHook.name
+import freemind.extensions.MindMapHook.setPluginBaseClass
+import freemind.main.Tools.DesEncrypter.decrypt
+import freemind.extensions.HookDescriptorPluginAction.modes
+import freemind.extensions.ImportWizard.buildClassList
+import freemind.controller.actions.generated.instance.Plugin.listChoiceList
+import freemind.controller.actions.generated.instance.PluginAction.label
+import freemind.extensions.HookDescriptorBase.pluginClassLoader
+import freemind.extensions.HookDescriptorPluginAction.className
+import freemind.extensions.HookDescriptorBase.pluginClasspath
+import freemind.controller.actions.generated.instance.PluginClasspath.jar
+import freemind.extensions.HookDescriptorPluginAction.properties
+import freemind.extensions.HookDescriptorPluginAction.name
+import freemind.extensions.HookDescriptorPluginAction.documentation
+import freemind.extensions.HookDescriptorPluginAction.iconPath
+import freemind.extensions.HookDescriptorPluginAction.keyStroke
+import freemind.extensions.HookDescriptorPluginAction.instanciationMethod
+import freemind.extensions.HookDescriptorRegistration.listPluginModeList
+import freemind.controller.actions.generated.instance.PluginMode.className
+import freemind.extensions.HookDescriptorBase.pluginBase
+import freemind.extensions.HookDescriptorRegistration.className
+import freemind.controller.actions.generated.instance.Plugin.label
+import freemind.extensions.HookDescriptorPluginAction.isSelectable
+import freemind.controller.actions.generated.instance.NodeAction.node
+import freemind.controller.actions.generated.instance.CompoundAction.addChoice
+import freemind.controller.actions.generated.instance.CompoundAction.addAtChoice
+import freemind.controller.actions.generated.instance.CompoundAction.sizeChoiceList
+import freemind.controller.actions.generated.instance.TextNodeAction.text
+import freemind.controller.actions.generated.instance.AddCloudXmlAction.enabled
+import freemind.controller.actions.generated.instance.AddCloudXmlAction.color
+import freemind.main.Tools.colorToXml
+import freemind.main.Tools.xmlToColor
+import freemind.controller.actions.generated.instance.PasteNodeAction.transferableContent
+import freemind.controller.actions.generated.instance.PasteNodeAction.asSibling
+import freemind.controller.actions.generated.instance.UndoPasteNodeAction.asSibling
+import freemind.main.Tools.marshall
+import freemind.main.Tools.fileToRelativeUrlString
+import freemind.main.Tools.fromBase64
+import freemind.main.Tools.firstLetterCapitalized
+import freemind.controller.actions.generated.instance.TransferableFile.fileName
+import freemind.controller.actions.generated.instance.TransferableContent.addTransferableFile
+import freemind.controller.actions.generated.instance.UndoPasteNodeAction.nodeAmount
+import freemind.controller.actions.generated.instance.TransferableContent.transferable
+import freemind.main.Tools.countOccurrences
+import freemind.controller.actions.generated.instance.TransferableContent.transferableAsHtml
+import freemind.controller.actions.generated.instance.TransferableContent.transferableAsPlainText
+import freemind.main.Tools.toBase64
+import freemind.controller.actions.generated.instance.TransferableContent.transferableAsImage
+import freemind.controller.actions.generated.instance.TransferableContent.listTransferableFileList
+import freemind.controller.actions.generated.instance.TransferableContent.transferableAsRTF
+import freemind.controller.actions.generated.instance.TransferableContent.transferableAsDrop
+import freemind.extensions.PermanentNodeHook.processUnfinishedLinks
+import freemind.controller.actions.generated.instance.MoveNodesAction.listNodeListMemberList
+import freemind.controller.actions.generated.instance.NodeListMember.node
+import freemind.controller.actions.generated.instance.MoveNodesAction.direction
+import freemind.controller.actions.generated.instance.MoveNodesAction.addNodeListMember
+import freemind.controller.actions.generated.instance.RevertXmlAction.localFileName
+import freemind.controller.actions.generated.instance.RevertXmlAction.map
+import freemind.controller.actions.generated.instance.RevertXmlAction.filePrefix
+import freemind.extensions.HookFactory.getInstanciationMethod
+import freemind.extensions.HookInstanciationMethod.isPermanent
+import freemind.extensions.HookInstanciationMethod.isUndoable
+import freemind.extensions.HookInstanciationMethod.getDestinationNodes
+import freemind.extensions.HookInstanciationMethod.getCenterNode
+import freemind.extensions.HookInstanciationMethod.isAlreadyPresent
+import freemind.extensions.PermanentNodeHook.save
+import freemind.main.XMLElement.countChildren
+import freemind.main.XMLElement.getChildren
+import freemind.main.XMLElement.name
+import freemind.main.XMLElement.enumerateAttributeNames
+import freemind.controller.actions.generated.instance.NodeChildParameter.key
+import freemind.controller.actions.generated.instance.NodeChildParameter.value
+import freemind.main.XMLElement.getStringAttribute
+import freemind.controller.actions.generated.instance.HookNodeAction.addNodeChildParameter
+import freemind.controller.actions.generated.instance.HookNodeAction.hookName
+import freemind.controller.actions.generated.instance.HookNodeAction.addNodeListMember
+import freemind.controller.actions.generated.instance.HookNodeAction.listNodeListMemberList
+import freemind.main.XMLElement.addChild
+import freemind.controller.actions.generated.instance.HookNodeAction.listNodeChildParameterList
+import freemind.main.XMLElement.setAttribute
+import freemind.extensions.PermanentNodeHook.loadFrom
+import freemind.extensions.PermanentNodeHook.onFocusNode
+import freemind.controller.actions.generated.instance.AddIconAction.iconName
+import freemind.controller.actions.generated.instance.AddIconAction.iconPosition
+import freemind.main.Tools.iconFirstIndex
+import freemind.main.Tools.iconLastIndex
+import freemind.controller.actions.generated.instance.AddLinkXmlAction.destination
+import freemind.controller.actions.generated.instance.BoldNodeAction.bold
+import freemind.controller.actions.generated.instance.CompoundAction.listChoiceList
+import freemind.controller.actions.generated.instance.FontSizeNodeAction.size
+import freemind.controller.actions.generated.instance.MoveNodeXmlAction.hGap
+import freemind.controller.actions.generated.instance.MoveNodeXmlAction.shiftY
+import freemind.controller.actions.generated.instance.MoveNodeXmlAction.vGap
+import freemind.controller.actions.generated.instance.NewNodeAction.index
+import freemind.controller.actions.generated.instance.NewNodeAction.position
+import freemind.controller.actions.generated.instance.NewNodeAction.newId
+import freemind.extensions.PermanentNodeHook.onNewChild
+import freemind.controller.actions.generated.instance.EdgeColorFormatAction.color
+import freemind.controller.actions.generated.instance.EdgeStyleFormatAction.style
+import freemind.controller.actions.generated.instance.EdgeWidthFormatAction.width
+import freemind.controller.actions.generated.instance.NodeColorFormatAction.color
+import freemind.controller.actions.generated.instance.NodeStyleFormatAction.style
+import freemind.controller.actions.generated.instance.UnderlinedNodeAction.underlined
+import freemind.controller.actions.generated.instance.CloudColorXmlAction.color
+import freemind.controller.actions.generated.instance.FontNodeAction.font
+import freemind.controller.actions.generated.instance.ItalicNodeAction.italic
+import freemind.controller.actions.generated.instance.RemoveIconXmlAction.iconPosition
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction.destination
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction.newId
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction.color
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction.endArrow
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction.endInclination
+import freemind.main.Tools.xmlToPoint
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction.startArrow
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction.startInclination
+import freemind.controller.actions.generated.instance.AddAttributeAction.name
+import freemind.controller.actions.generated.instance.AddAttributeAction.value
+import freemind.controller.actions.generated.instance.SetAttributeAction.name
+import freemind.controller.actions.generated.instance.SetAttributeAction.value
+import freemind.controller.actions.generated.instance.SetAttributeAction.position
+import freemind.controller.actions.generated.instance.FoldAction.folded
+import freemind.main.Tools.compareText
+import freemind.controller.actions.generated.instance.ArrowLinkColorXmlAction.id
+import freemind.controller.actions.generated.instance.ArrowLinkColorXmlAction.color
+import freemind.controller.actions.generated.instance.InsertAttributeAction.name
+import freemind.controller.actions.generated.instance.InsertAttributeAction.value
+import freemind.controller.actions.generated.instance.InsertAttributeAction.position
+import freemind.controller.actions.generated.instance.RemoveArrowLinkXmlAction.id
+import freemind.main.Tools.PointToXml
+import freemind.controller.actions.generated.instance.RemoveAttributeAction.position
+import freemind.controller.actions.generated.instance.StrikethroughNodeAction.strikethrough
+import freemind.controller.actions.generated.instance.NodeBackgroundColorFormatAction.color
+import freemind.controller.actions.generated.instance.ArrowLinkArrowXmlAction.id
+import freemind.controller.actions.generated.instance.ArrowLinkArrowXmlAction.startArrow
+import freemind.controller.actions.generated.instance.ArrowLinkArrowXmlAction.endArrow
+import freemind.controller.actions.generated.instance.ArrowLinkPointXmlAction.id
+import freemind.controller.actions.generated.instance.ArrowLinkPointXmlAction.startPoint
+import freemind.controller.actions.generated.instance.ArrowLinkPointXmlAction.endPoint
+import freemind.common.OptionalDontShowMeAgainDialog.show
+import freemind.common.OptionalDontShowMeAgainDialog.result
+import freemind.controller.Controller.getProperty
+import freemind.main.Tools.getKeyStroke
+import freemind.main.Tools.printXmlAction
+import freemind.main.Tools.deepCopy
+import freemind.main.FreeMindMain.setWaitingCursor
+import freemind.extensions.HookFactory.getPluginBaseClass
+import freemind.controller.MenuItemEnabledListener.isEnabled
+import freemind.controller.MenuItemSelectedListener.isSelected
+import freemind.main.Tools.removeMnemonic
+import freemind.main.Tools.getMindMapNodesFromClipboard
+import freemind.controller.actions.generated.instance.Pattern.name
+import freemind.main.FreeMindMain.err
+import freemind.main.Tools.getFileNameProposal
+import freemind.main.Tools.getExtension
+import freemind.main.Tools.expandPlaceholders
+import freemind.main.FreeMindMain.contentPane
+import freemind.main.Tools.removeExtension
+import freemind.common.PropertyControl.layout
+import freemind.common.PropertyBean.addPropertyChangeListener
+import freemind.common.ThreeCheckBoxProperty.value
+import freemind.main.FreeMind.getDefaultProperty
+import freemind.controller.actions.generated.instance.Pattern.patternNodeColor
+import freemind.controller.actions.generated.instance.Pattern.patternNodeBackgroundColor
+import freemind.controller.actions.generated.instance.Pattern.patternNodeStyle
+import freemind.controller.actions.generated.instance.Pattern.patternNodeText
+import freemind.controller.actions.generated.instance.Pattern.patternEdgeColor
+import freemind.controller.actions.generated.instance.Pattern.patternEdgeStyle
+import freemind.controller.actions.generated.instance.Pattern.patternEdgeWidth
+import freemind.controller.actions.generated.instance.Pattern.patternNodeFontName
+import freemind.controller.Controller.defaultFontFamilyName
+import freemind.controller.actions.generated.instance.Pattern.patternNodeFontSize
+import freemind.controller.actions.generated.instance.Pattern.patternNodeFontBold
+import freemind.controller.actions.generated.instance.Pattern.patternNodeFontStrikethrough
+import freemind.controller.actions.generated.instance.Pattern.patternNodeFontItalic
+import freemind.controller.actions.generated.instance.Pattern.patternIcon
+import freemind.controller.actions.generated.instance.Pattern.patternScript
+import freemind.common.StringProperty.value
+import freemind.controller.actions.generated.instance.Pattern.patternChild
+import freemind.common.ThreeCheckBoxProperty.label
+import freemind.common.PropertyBean.value
+import freemind.controller.actions.generated.instance.PatternPropertyBase.value
+import freemind.main.Tools.edgeWidthStringToInt
+import freemind.common.PropertyControl.setEnabled
+import freemind.common.ComboProperty.updateComboBoxEntries
+import freemind.common.ComboProperty.value
+import freemind.main.Tools.convertPointToAncestor
+import freemind.main.Tools.availableFonts
+import freemind.controller.Controller.getIntProperty
+import freemind.controller.Controller.zooms
+import freemind.controller.StructuredMenuHolder.updateMenus
+import freemind.controller.Controller.registerZoomListener
+import freemind.controller.Controller.deregisterZoomListener
+import freemind.main.Tools.setHidden
+import freemind.main.Tools.getVectorWithSingleElement
+import freemind.main.FreeMindMain.getResource
+import freemind.main.FreeMindMain.patternsFile
+import freemind.main.Tools.getUpdateReader
+import freemind.main.Tools.getReaderFromFile
+import freemind.main.Tools.urlToFile
+import freemind.extensions.HookFactory.registrations
+import freemind.extensions.HookFactory.registerRegistrationContainer
+import freemind.extensions.HookRegistration.register
+import freemind.controller.NodeDropListener.register
+import freemind.controller.NodeMotionListener.register
+import freemind.extensions.HookRegistration.deRegister
+import freemind.extensions.HookFactory.deregisterAllRegistrationContainer
+import freemind.controller.NodeDropListener.deregister
+import freemind.controller.NodeMotionListener.deregister
+import freemind.controller.Controller.mapModule
+import freemind.controller.actions.generated.instance.MenuStructure.listChoiceList
+import freemind.controller.StructuredMenuHolder.addMenuItem
+import freemind.controller.StructuredMenuHolder.addMenu
+import freemind.controller.StructuredMenuHolder.addAction
+import freemind.controller.actions.generated.instance.MenuCategoryBase.name
+import freemind.controller.StructuredMenuHolder.addCategory
+import freemind.controller.actions.generated.instance.MenuSubmenu.nameRef
+import freemind.controller.actions.generated.instance.MenuCategoryBase.listChoiceList
+import freemind.controller.actions.generated.instance.MenuActionBase.field
+import freemind.controller.actions.generated.instance.MenuActionBase.name
+import freemind.controller.actions.generated.instance.MenuActionBase.keyRef
+import freemind.main.Tools.getField
+import freemind.controller.actions.generated.instance.MenuRadioAction.selected
+import freemind.main.ExampleFileFilter.addExtension
+import freemind.main.ExampleFileFilter.setDescription
+import freemind.extensions.HookFactory.createNodeHook
+import freemind.extensions.MindMapHook.setController
+import freemind.extensions.NodeHook.setMap
+import freemind.extensions.HookInstanciationMethod.isSingleton
+import freemind.extensions.HookFactory.getHookInNode
+import freemind.extensions.MindMapHook.startupMapHook
+import freemind.extensions.MindMapHook.shutdownMapHook
+import freemind.extensions.PermanentNodeHook.onUpdateNodeHook
+import freemind.extensions.PermanentNodeHook.onUpdateChildrenHook
+import freemind.main.Tools.unMarshall
+import freemind.main.Tools.invokeAndWait
+import freemind.extensions.HookFactory.createModeControllerHook
+import freemind.controller.Controller.close
+import freemind.extensions.PermanentNodeHook.saveHtml
+import freemind.main.Tools.DesEncrypter.encrypt
+import freemind.main.XMLElement.toString
+import freemind.controller.filter.util.SortedMapListModel.addAll
+import freemind.main.XMLElement.parseFromReader
+import freemind.main.Tools.readFileStart
+import freemind.main.Tools.ReaderCreator.createReader
+import freemind.main.Tools.getActualReader
+import freemind.main.Tools.isHeadless
+import freemind.extensions.PermanentNodeHook.onAddChild
+import freemind.extensions.PermanentNodeHook.onAddChildren
+import freemind.extensions.PermanentNodeHook.onRemoveChild
+import freemind.extensions.PermanentNodeHook.onRemoveChildren
+import freemind.extensions.NodeHook.setNode
+import freemind.extensions.NodeHook.invoke
+import freemind.main.XMLElement.setEncodedContent
+import freemind.main.Tools.dateToString
+import freemind.main.XMLElement.writeWithoutClosingTag
+import freemind.main.XMLElement.writeClosingTag
+import freemind.main.XMLElement.write
+import freemind.controller.filter.Filter.isVisible
+import freemind.main.XMLElement.enumerateChildren
+import freemind.controller.Controller.setTitle
+import freemind.extensions.PermanentNodeHook.onLostFocusNode
+import freemind.extensions.PermanentNodeHook.onViewCreatedHook
+import freemind.extensions.PermanentNodeHook.onViewRemovedHook
+import freemind.controller.MapModuleManager.newMapModule
+import freemind.controller.MapModuleManager.checkIfFileIsAlreadyOpened
+import freemind.controller.MapModuleManager.changeToMapModule
+import freemind.controller.Controller.modeController
+import freemind.controller.LastStateStorageManagement.getStorage
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.lastZoom
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.lastSelected
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.listNodeListMemberList
+import freemind.main.Tools.isAbsolutePath
+import freemind.main.Tools.getURLWithoutReference
+import freemind.controller.MapModuleManager.tryToChangeToMapModule
+import freemind.main.Tools.makeFileHidden
+import freemind.controller.MapModuleManager.updateMapModuleName
+import freemind.controller.MapModuleManager.mapModule
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.restorableName
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.x
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.y
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.clearNodeListMemberList
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.addNodeListMember
+import freemind.controller.LastStateStorageManagement.changeOrAdd
+import freemind.controller.LastStateStorageManagement.xml
+import freemind.controller.MapMouseWheelListener.deregister
+import freemind.main.FreeMindMain.view
+import freemind.controller.MapMouseWheelListener.register
+import freemind.controller.MapModuleManager.getModuleGivenModeController
+import freemind.controller.Controller.defaultFont
+import freemind.controller.Controller.getFontThroughMap
+import freemind.controller.Controller.nodeMouseMotionListener
+import freemind.controller.Controller.nodeMotionListener
+import freemind.controller.Controller.nodeKeyListener
+import freemind.controller.Controller.nodeDragListener
+import freemind.controller.Controller.nodeDropListener
+import freemind.controller.Controller.mapMouseMotionListener
+import freemind.controller.Controller.mapMouseWheelListener
+import freemind.controller.Controller.setProperty
+import freemind.main.XMLElement.userObject
+import freemind.main.XMLElement.content
+import freemind.main.XMLElement.getAttribute
+import freemind.main.Tools.xmlToDate
+import freemind.extensions.NodeHookAdapter.setMap
+import freemind.main.Tools.generateID
+import freemind.controller.actions.generated.instance.Patterns.listChoiceList
+import freemind.controller.actions.generated.instance.Pattern.originalName
+import freemind.controller.actions.generated.instance.Patterns.addChoice
+import freemind.modes.ControllerAdapter
+import freemind.modes.FreemindAction
+import freemind.modes.MindMapNode
+import java.lang.StringBuffer
+import freemind.modes.ModeController
+import freemind.modes.common.dialogs.EnterPasswordDialog
+import freemind.common.TextTranslator
+import freemind.modes.IconInformation
+import freemind.modes.common.dialogs.IconSelectionPopupDialog
+import freemind.extensions.PermanentNodeHookAdapter
+import freemind.modes.common.plugins.ReminderHookBase
+import java.text.MessageFormat
+import freemind.modes.common.plugins.ReminderHookBase.TimerBlinkTask
+import freemind.modes.MindIcon
+import freemind.modes.common.plugins.MapNodePositionHolderBase
+import freemind.extensions.PermanentNodeHook
+import freemind.controller.MapMouseMotionListener.MapMouseMotionReceiver
+import freemind.controller.NodeMouseMotionListener.NodeMouseMotionObserver
+import freemind.modes.common.listeners.CommonNodeMouseMotionListener
+import freemind.main.Tools.BooleanHolder
+import java.awt.geom.Point2D
+import freemind.modes.common.listeners.CommonNodeMouseMotionListener.timeDelayedSelection
+import java.lang.Runnable
+import freemind.modes.common.listeners.MindMapMouseWheelEventHandler
+import freemind.preferences.FreemindPropertyListener
+import freemind.view.mindmapview.ViewFeedback.MouseWheelEventHandler
+import freemind.modes.common.CommonNodeKeyListener.EditHandler
+import freemind.modes.common.CommonNodeKeyListener
+import kotlin.jvm.JvmOverloads
+import freemind.modes.common.CommonToggleFoldedAction
+import freemind.modes.filemode.FileController
+import freemind.modes.filemode.FileToolBar
+import freemind.modes.filemode.FileMode
+import freemind.modes.MapAdapter
+import freemind.modes.MindMapLinkRegistry
+import freemind.modes.filemode.FileNodeModel
+import kotlin.Throws
+import java.lang.RuntimeException
+import freemind.modes.MindMap
+import freemind.modes.NodeAdapter
+import freemind.modes.EdgeAdapter
+import freemind.modes.CloudAdapter
+import freemind.modes.ArrowLinkAdapter
+import freemind.modes.ArrowLinkTarget
+import freemind.modes.MapFeedback
+import freemind.modes.filemode.FileEdgeModel
+import java.lang.SecurityException
+import java.net.MalformedURLException
+import freemind.modes.viewmodes.ViewControllerAdapter
+import freemind.modes.common.actions.NewMapAction
+import freemind.modes.filemode.FileController.CenterAction
+import freemind.modes.filemode.FileController.OpenPathAction
+import freemind.modes.filemode.FilePopupMenu
+import freemind.modes.filemode.FileMapModel
+import freemind.extensions.HookFactory
+import java.net.URISyntaxException
+import freemind.modes.viewmodes.CommonToggleChildrenFoldedAction
+import freemind.modes.common.actions.FindAction.FindNextAction
+import freemind.modes.common.listeners.CommonMouseMotionManager
+import freemind.extensions.NodeHook
+import freemind.extensions.PermanentNodeHookSubstituteUnknown
+import javax.swing.table.TableModel
+import freemind.modes.browsemode.BrowseController
+import freemind.modes.browsemode.BrowseMode
+import freemind.modes.common.dialogs.PersistentEditableComboBox
+import freemind.modes.browsemode.BrowseToolBar
+import freemind.modes.browsemode.BrowseNodeModel
+import freemind.modes.browsemode.BrowseMapModel
+import freemind.modes.browsemode.EncryptedBrowseNode
+import freemind.modes.browsemode.BrowseEdgeModel
+import freemind.modes.browsemode.BrowseCloudModel
+import freemind.modes.browsemode.BrowseArrowLinkModel
+import freemind.modes.common.plugins.NodeNoteBase
+import freemind.modes.ModeController.NodeSelectionListener
+import freemind.controller.Controller.SplitComponentType
+import freemind.modes.browsemode.NodeNoteViewer
+import javax.swing.event.PopupMenuListener
+import javax.swing.event.PopupMenuEvent
+import freemind.modes.browsemode.BrowseController.FollowMapLink
+import freemind.modes.browsemode.BrowseHookFactory
+import freemind.modes.browsemode.BrowsePopupMenu
+import freemind.modes.MindMapLink
+import freemind.modes.common.GotoLinkNodeAction
+import java.security.AccessControlException
+import freemind.extensions.HookFactoryAdapter
+import freemind.extensions.ModeControllerHook
+import freemind.modes.browsemode.BrowseReminderHook
+import freemind.extensions.HookInstanciationMethod
+import freemind.extensions.HookFactory.RegistrationContainer
+import freemind.main.Tools.SingleDesEncrypter
+import freemind.extensions.ModeControllerHookAdapter
+import freemind.modes.mindmapmode.MindMapController
+import freemind.modes.mindmapmode.hooks.MindMapHookFactory
+import freemind.extensions.HookRegistration
+import freemind.extensions.HookDescriptorPluginAction
+import java.lang.ClassNotFoundException
+import freemind.extensions.ImportWizard
+import freemind.extensions.HookDescriptorRegistration
+import org.jibx.runtime.IUnmarshallingContext
+import freemind.common.XmlBindingTools
+import freemind.controller.actions.generated.instance.PluginAction
+import freemind.controller.actions.generated.instance.PluginRegistration
+import freemind.extensions.MindMapHook
+import freemind.controller.actions.generated.instance.PluginClasspath
+import freemind.extensions.MindMapHook.PluginBaseClassSearcher
+import freemind.controller.actions.generated.instance.PluginMode
+import freemind.extensions.NodeHookAdapter
+import freemind.modes.ExtendedMapFeedback
+import freemind.modes.mindmapmode.actions.xml.actors.XmlActorAdapter
+import freemind.controller.actions.generated.instance.CutNodeAction
+import java.awt.datatransfer.Transferable
+import freemind.controller.actions.generated.instance.CompoundAction
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.NodeCoordinate
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.controller.actions.generated.instance.UndoPasteNodeAction
+import freemind.modes.mindmapmode.actions.xml.ActionPair
+import freemind.controller.actions.generated.instance.EditNodeAction
+import freemind.modes.mindmapmode.actions.xml.actors.NodeXmlActorAdapter
+import freemind.controller.actions.generated.instance.AddCloudXmlAction
+import freemind.modes.mindmapmode.MindMapCloudModel
+import freemind.controller.actions.generated.instance.PasteNodeAction
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor
+import java.awt.datatransfer.UnsupportedFlavorException
+import java.awt.datatransfer.DataFlavor
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.DataFlavorHandler
+import freemind.modes.mindmapmode.MindMapNodeModel
+import freemind.main.Tools.StringReaderCreator
+import freemind.main.HtmlTools.NodeCreator
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.FileListFlavorHandler
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.MindMapNodesFlavorHandler
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.DirectHtmlFlavorHandler
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.StringFlavorHandler
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.ImageFlavorHandler
+import freemind.controller.actions.generated.instance.TransferableContent
+import freemind.controller.actions.generated.instance.TransferableFile
+import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
+import freemind.controller.actions.generated.instance.MoveNodesAction
+import freemind.controller.actions.generated.instance.NodeListMember
+import freemind.controller.actions.generated.instance.RevertXmlAction
+import freemind.modes.mindmapmode.actions.xml.actors.AddHookActor
+import freemind.controller.actions.generated.instance.HookNodeAction
+import freemind.extensions.DontSaveMarker
+import freemind.controller.actions.generated.instance.NodeChildParameter
+import freemind.modes.ViewAbstraction
+import freemind.controller.actions.generated.instance.AddIconAction
+import freemind.controller.actions.generated.instance.AddLinkXmlAction
+import freemind.controller.actions.generated.instance.BoldNodeAction
+import freemind.modes.mindmapmode.actions.xml.ActorXml
+import freemind.controller.actions.generated.instance.FontSizeNodeAction
+import java.lang.NumberFormatException
+import freemind.controller.actions.generated.instance.MoveNodeXmlAction
+import freemind.controller.actions.generated.instance.DeleteNodeAction
+import freemind.controller.actions.generated.instance.EdgeColorFormatAction
+import freemind.modes.mindmapmode.MindMapEdgeModel
+import freemind.controller.actions.generated.instance.EdgeStyleFormatAction
+import freemind.modes.MindMapEdge
+import freemind.controller.actions.generated.instance.EdgeWidthFormatAction
+import freemind.controller.actions.generated.instance.NodeColorFormatAction
+import freemind.controller.actions.generated.instance.NodeStyleFormatAction
+import freemind.controller.actions.generated.instance.UnderlinedNodeAction
+import freemind.controller.actions.generated.instance.CloudColorXmlAction
+import freemind.modes.LineAdapter
+import freemind.controller.actions.generated.instance.FontNodeAction
+import freemind.controller.actions.generated.instance.ItalicNodeAction
+import freemind.controller.actions.generated.instance.RemoveIconXmlAction
+import freemind.modes.mindmapmode.actions.xml.actors.XmlActorFactory
+import freemind.modes.mindmapmode.actions.xml.actors.ItalicNodeActor
+import freemind.modes.mindmapmode.actions.xml.actors.BoldNodeActor
+import freemind.modes.mindmapmode.actions.xml.actors.StrikethroughNodeActor
+import freemind.modes.mindmapmode.actions.xml.actors.NewChildActor
+import freemind.modes.mindmapmode.actions.xml.actors.DeleteChildActor
+import freemind.modes.mindmapmode.actions.xml.actors.RemoveAllIconsActor
+import freemind.modes.mindmapmode.actions.xml.actors.AddIconActor
+import freemind.modes.mindmapmode.actions.xml.actors.RemoveIconActor
+import freemind.modes.mindmapmode.actions.xml.actors.CloudActor
+import freemind.modes.mindmapmode.actions.xml.actors.EdgeStyleActor
+import freemind.modes.mindmapmode.actions.xml.actors.EdgeWidthActor
+import freemind.modes.mindmapmode.actions.xml.actors.FontFamilyActor
+import freemind.modes.mindmapmode.actions.xml.actors.FontSizeActor
+import freemind.modes.mindmapmode.actions.xml.actors.MoveNodeActor
+import freemind.modes.mindmapmode.actions.xml.actors.NodeStyleActor
+import freemind.modes.mindmapmode.actions.xml.actors.UnderlineActor
+import freemind.modes.mindmapmode.actions.xml.actors.AddArrowLinkActor
+import freemind.modes.mindmapmode.actions.xml.actors.RemoveArrowLinkActor
+import freemind.modes.mindmapmode.actions.xml.actors.ChangeArrowLinkEndPointsActor
+import freemind.modes.mindmapmode.actions.xml.actors.ChangeArrowsInArrowLinkActor
+import freemind.modes.mindmapmode.actions.xml.actors.CloudColorActor
+import freemind.modes.mindmapmode.actions.xml.actors.ColorArrowLinkActor
+import freemind.modes.mindmapmode.actions.xml.actors.EdgeColorActor
+import freemind.modes.mindmapmode.actions.xml.actors.EditActor
+import freemind.modes.mindmapmode.actions.xml.actors.NodeBackgroundColorActor
+import freemind.modes.mindmapmode.actions.xml.actors.NodeColorActor
+import freemind.modes.mindmapmode.actions.xml.actors.NodeUpActor
+import freemind.modes.mindmapmode.actions.xml.actors.RevertActor
+import freemind.modes.mindmapmode.actions.xml.actors.ToggleFoldedActor
+import freemind.modes.mindmapmode.actions.xml.actors.SetLinkActor
+import freemind.modes.mindmapmode.actions.xml.actors.AddAttributeActor
+import freemind.modes.mindmapmode.actions.xml.actors.InsertAttributeActor
+import freemind.modes.mindmapmode.actions.xml.actors.RemoveAttributeActor
+import freemind.modes.mindmapmode.actions.xml.actors.SetAttributeActor
+import freemind.modes.mindmapmode.actions.xml.actors.CutActor
+import freemind.modes.mindmapmode.actions.xml.actors.CompoundActor
+import freemind.modes.mindmapmode.actions.xml.actors.UndoPasteActor
+import freemind.modes.mindmapmode.actions.xml.actors.ChangeNoteTextActor
+import java.lang.IllegalStateException
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction
+import freemind.modes.mindmapmode.MindMapArrowLinkModel
+import freemind.controller.actions.generated.instance.RemoveArrowLinkXmlAction
+import freemind.controller.actions.generated.instance.AddAttributeAction
+import freemind.controller.actions.generated.instance.RemoveAttributeAction
+import freemind.controller.actions.generated.instance.SetAttributeAction
+import freemind.controller.actions.generated.instance.FoldAction
+import freemind.controller.actions.generated.instance.EditNoteToNodeAction
+import freemind.controller.actions.generated.instance.ArrowLinkColorXmlAction
+import freemind.modes.mindmapmode.actions.NodeActorXml
+import freemind.controller.actions.generated.instance.RemoveAllIconsXmlAction
+import freemind.controller.actions.generated.instance.InsertAttributeAction
+import freemind.modes.MindMapArrowLink
+import freemind.controller.actions.generated.instance.NodeAction
+import freemind.controller.actions.generated.instance.StrikethroughNodeAction
+import freemind.controller.actions.generated.instance.NodeBackgroundColorFormatAction
+import freemind.controller.actions.generated.instance.ArrowLinkArrowXmlAction
+import freemind.controller.actions.generated.instance.ArrowLinkPointXmlAction
+import freemind.modes.mindmapmode.actions.xml.ActionFilter
+import freemind.modes.mindmapmode.actions.xml.UndoActionHandler
+import freemind.modes.mindmapmode.actions.xml.ActionRegistry
+import freemind.modes.mindmapmode.actions.xml.ActionFilter.FinalActionFilter
+import freemind.modes.mindmapmode.actions.xml.ActionFilter.FirstActionFilter
+import freemind.modes.mindmapmode.actions.MindmapAction
+import freemind.modes.mindmapmode.actions.xml.PrintActionHandler
+import freemind.common.OptionalDontShowMeAgainDialog
+import freemind.common.OptionalDontShowMeAgainDialog.StandardPropertyHandler
+import freemind.modes.mindmapmode.actions.NodeGeneralAction
+import freemind.modes.mindmapmode.actions.MindMapActions
+import freemind.view.mindmapview.EditNodeBase.EditControl
+import freemind.modes.mindmapmode.actions.EditAction
+import freemind.modes.mindmapmode.actions.RemoveIconAction
+import freemind.modes.mindmapmode.actions.xml.AbstractXmlAction
+import freemind.modes.mindmapmode.actions.NodeUpAction
+import freemind.modes.mindmapmode.actions.NewChildAction
+import freemind.modes.mindmapmode.EncryptedMindMapNode
+import freemind.modes.mindmapmode.actions.HookAction
+import freemind.modes.mindmapmode.actions.NodeHookAction
+import freemind.modes.mindmapmode.actions.EdgeWidthAction
+import freemind.modes.mindmapmode.actions.JoinNodesAction
+import freemind.modes.mindmapmode.actions.SingleNodeOperation
+import freemind.modes.mindmapmode.MindMapMapModel
+import freemind.modes.mindmapmode.actions.IconAction
+import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin
+import freemind.modes.StylePatternFactory
+import freemind.modes.FreeMindFileDialog
+import freemind.modes.mindmapmode.actions.PasteAsPlainTextAction
+import freemind.modes.mindmapmode.actions.ImportFolderStructureAction
+import java.beans.PropertyChangeListener
+import freemind.common.PropertyControl
+import freemind.common.ThreeCheckBoxProperty
+import freemind.common.ComboProperty
+import freemind.common.FontProperty
+import freemind.common.BooleanProperty
+import freemind.common.IconProperty
+import freemind.common.ScriptEditorProperty
+import com.jgoodies.forms.layout.FormLayout
+import com.jgoodies.forms.builder.DefaultFormBuilder
+import freemind.common.PropertyBean
+import java.beans.PropertyChangeEvent
+import freemind.common.SeparatorProperty
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.StylePatternFrameType
+import freemind.common.NextLineProperty
+import freemind.controller.*
+import freemind.modes.mindmapmode.dialogs.IntegerComboProperty
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.EdgeWidthTransformer
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.ValueTransformator
+import freemind.controller.actions.generated.instance.PatternPropertyBase
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.IdentityTransformer
+import freemind.modes.mindmapmode.actions.ApplyPatternAction
+import freemind.controller.actions.generated.instance.PatternNodeColor
+import freemind.controller.actions.generated.instance.PatternNodeBackgroundColor
+import freemind.controller.actions.generated.instance.PatternNodeStyle
+import freemind.controller.actions.generated.instance.PatternNodeText
+import freemind.controller.actions.generated.instance.PatternEdgeColor
+import freemind.controller.actions.generated.instance.PatternEdgeStyle
+import freemind.controller.actions.generated.instance.PatternEdgeWidth
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.EdgeWidthBackTransformer
+import freemind.controller.actions.generated.instance.PatternNodeFontName
+import freemind.controller.actions.generated.instance.PatternNodeFontSize
+import freemind.controller.actions.generated.instance.PatternNodeFontBold
+import freemind.controller.actions.generated.instance.PatternNodeFontStrikethrough
+import freemind.controller.actions.generated.instance.PatternNodeFontItalic
+import freemind.controller.actions.generated.instance.PatternIcon
+import freemind.controller.actions.generated.instance.PatternScript
+import freemind.controller.actions.generated.instance.PatternChild
+import java.awt.dnd.DropTargetListener
+import java.awt.dnd.DropTargetDragEvent
+import java.awt.dnd.DropTargetDropEvent
+import java.awt.dnd.DnDConstants
+import java.awt.dnd.DropTargetEvent
+import freemind.controller.NodeMotionListener.NodeMotionAdapter
+import freemind.modes.mindmapmode.listeners.MindMapNodeMotionListener
+import freemind.modes.mindmapmode.MindMapMode
+import freemind.modes.mindmapmode.JAutoScrollBarPane
+import freemind.controller.color.JColorCombo
+import freemind.modes.mindmapmode.MindMapToolBar
+import freemind.modes.mindmapmode.MindMapToolBar.FreeMindComboBox
+import freemind.controller.color.ColorPair
+import freemind.view.ImageFactory
+import freemind.modes.mindmapmode.MindMapMapModel.DummyLockManager
+import freemind.modes.mindmapmode.MindMapMapModel.DoAutomaticSave
+import java.nio.channels.FileLock
+import java.lang.UnsatisfiedLinkError
+import java.lang.NoClassDefFoundError
+import java.lang.InterruptedException
+import java.lang.reflect.InvocationTargetException
+import freemind.modes.mindmapmode.MindMapPopupMenu
+import freemind.modes.MindMap.MapSourceChangedObserver
+import java.awt.datatransfer.Clipboard
+import freemind.modes.mindmapmode.MindMapController.ExportToHTMLAction
+import freemind.modes.mindmapmode.MindMapController.ExportBranchToHTMLAction
+import freemind.modes.mindmapmode.MindMapController.EditLongAction
+import freemind.modes.mindmapmode.actions.NewSiblingAction
+import freemind.modes.mindmapmode.actions.NewPreviousSiblingAction
+import freemind.modes.mindmapmode.MindMapController.SetLinkByFileChooserAction
+import freemind.modes.mindmapmode.MindMapController.SetImageByFileChooserAction
+import freemind.modes.mindmapmode.MindMapController.OpenLinkDirectoryAction
+import freemind.modes.mindmapmode.actions.ExportBranchAction
+import freemind.modes.mindmapmode.MindMapController.ImportBranchAction
+import freemind.modes.mindmapmode.MindMapController.ImportLinkedBranchAction
+import freemind.modes.mindmapmode.MindMapController.ImportLinkedBranchWithoutRootAction
+import freemind.modes.mindmapmode.actions.StrikethroughAction
+import freemind.modes.mindmapmode.actions.UnderlinedAction
+import freemind.modes.mindmapmode.actions.NodeColorAction
+import freemind.modes.mindmapmode.actions.DeleteChildAction
+import freemind.modes.mindmapmode.actions.ToggleFoldedAction
+import freemind.modes.mindmapmode.actions.ToggleChildrenFoldedAction
+import freemind.modes.mindmapmode.actions.UseRichFormattingAction
+import freemind.modes.mindmapmode.actions.UsePlainTextAction
+import freemind.modes.NodeDownAction
+import freemind.modes.mindmapmode.actions.EdgeColorAction
+import freemind.modes.mindmapmode.actions.EdgeStyleAction
+import freemind.modes.mindmapmode.actions.NodeColorBlendAction
+import freemind.modes.mindmapmode.actions.NodeStyleAction
+import freemind.modes.mindmapmode.actions.CloudAction
+import freemind.modes.mindmapmode.actions.CloudColorAction
+import freemind.modes.mindmapmode.actions.AddArrowLinkAction
+import freemind.modes.mindmapmode.actions.RemoveArrowLinkAction
+import freemind.modes.mindmapmode.actions.ColorArrowLinkAction
+import freemind.modes.mindmapmode.actions.ChangeArrowsInArrowLinkAction
+import freemind.modes.mindmapmode.actions.NodeBackgroundColorAction
+import freemind.modes.mindmapmode.actions.NodeBackgroundColorAction.RemoveNodeBackgroundColorAction
+import freemind.modes.mindmapmode.actions.RemoveAllIconsAction
+import freemind.modes.mindmapmode.actions.SetLinkByTextFieldAction
+import freemind.modes.mindmapmode.actions.AddLocalLinkAction
+import freemind.modes.mindmapmode.actions.MoveNodeAction
+import freemind.modes.mindmapmode.actions.ImportExplorerFavoritesAction
+import freemind.modes.mindmapmode.actions.RevertAction
+import freemind.modes.mindmapmode.actions.SelectBranchAction
+import freemind.modes.mindmapmode.MindMapController.MindMapFilter
+import freemind.controller.actions.generated.instance.MenuStructure
+import freemind.modes.MapFeedbackAdapter
+import freemind.modes.mindmapmode.actions.xml.DefaultActionHandler
+import freemind.modes.mindmapmode.actions.CopySingleAction
+import freemind.main.Tools.FileReaderCreator
+import freemind.main.Tools.ReaderCreator
+import freemind.modes.MindMap.AskUserBeforeUpdateCallback
+import freemind.modes.mindmapmode.listeners.MindMapMouseMotionManager
+import freemind.modes.mindmapmode.listeners.MindMapNodeDropListener
+import freemind.modes.mindmapmode.actions.MindMapControllerHookAction
+import freemind.view.MapModule
+import freemind.modes.mindmapmode.MindMapController.NewNodeCreator
+import freemind.modes.mindmapmode.MindMapController.NodeInformationTimerAction
+import freemind.modes.mindmapmode.MindMapController.DefaultMindMapNodeCreator
+import org.jibx.runtime.JiBXException
+import freemind.controller.actions.generated.instance.MenuCategoryBase
+import freemind.controller.actions.generated.instance.MenuSubmenu
+import freemind.controller.actions.generated.instance.MenuActionBase
+import freemind.controller.actions.generated.instance.MenuCheckedAction
+import freemind.controller.actions.generated.instance.MenuRadioAction
+import freemind.controller.actions.generated.instance.MenuSeparator
+import freemind.modes.mindmapmode.MindMapController.LinkActionBase
+import javax.swing.text.html.HTMLEditorKit
+import javax.swing.text.BadLocationException
+import freemind.extensions.UndoEventReceiver
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage
+import freemind.modes.mindmapmode.MindMapController.MapSourceChangeDialog
+import freemind.modes.mindmapmode.MindMapHTMLWriter
+import javax.swing.tree.MutableTreeNode
+import javax.swing.tree.TreeModel
+import freemind.controller.filter.util.SortedListModel
+import freemind.view.ScalableImageIcon
+import javax.swing.tree.DefaultTreeModel
+import javax.swing.event.TreeModelEvent
+import javax.swing.event.TreeModelListener
+import freemind.controller.filter.util.SortedMapListModel
+import freemind.modes.XMLElementAdapter
+import freemind.controller.filter.condition.NoFilteringCondition
+import freemind.modes.MapAdapter.FileChangeInspectorTimerTask
+import freemind.modes.MapAdapter.DontAskUserBeforeUpdateAdapter
+import freemind.modes.EdgeAdapter.EdgeAdapterListener
+import freemind.modes.MindMapLine
+import java.lang.CloneNotSupportedException
+import freemind.modes.LinkAdapter
+import freemind.modes.LinkAdapter.LinkAdapterListener
+import freemind.modes.MindMapCloud
+import freemind.modes.HistoryInformation
+import java.lang.NullPointerException
+import freemind.modes.CloudAdapter.CloudAdapterListener
+import freemind.modes.ModesCreator
+import freemind.modes.StylePattern
+import freemind.modes.ModeController.NodeLifetimeListener
+import freemind.modes.FreeMindFileDialog.DirectoryResultListener
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage
+import freemind.modes.ControllerAdapter.FileOpener
+import java.awt.dnd.DropTarget
+import freemind.main.*
+import freemind.modes.MapFeedbackAdapter.NodesDepthComparator
+import freemind.modes.MindMapLinkRegistry.SynchronousVector
+import freemind.modes.mindmapmode.actions.ApplyPatternAction.ExternalPatternAction
+import freemind.modes.FreeMindAwtFileDialog.FreeMindFilenameFilter
+import freemind.modes.FreeMindAwtFileDialog
+import freemind.modes.FreeMindAwtFileDialog.DirFilter
+import freemind.modes.FreeMindAwtFileDialog.FileOnlyFilter
+import freemind.modes.FreeMindAwtFileDialog.FileAndDirFilter
+import kotlin.jvm.JvmStatic
+import freemind.modes.NodeViewEvent
+import freemind.modes.ExtendedMapFeedbackAdapter
+import freemind.modes.ExtendedMapFeedbackAdapter.DummyTransferable
+import freemind.view.mindmapview.*
+import java.awt.*
+import java.awt.event.*
+import java.io.*
+import java.lang.Exception
+import java.lang.IllegalArgumentException
+import java.lang.UnsupportedOperationException
+import java.net.URL
+import java.util.*
+import java.util.logging.Level
+import javax.swing.*
+import javax.swing.filechooser.FileFilter
 
 /**
  * Derive from this class to implement the Controller for your mode. Overload
@@ -101,1470 +822,1332 @@ import freemind.view.mindmapview.ViewFeedback;
  * default Actions you may want to use for easy editing of your model. Take
  * MindMapController as a sample.
  */
-@SuppressWarnings("serial")
-public abstract class ControllerAdapter extends MapFeedbackAdapter implements ModeController,
-		DirectoryResultListener {
+abstract class ControllerAdapter(mode: Mode?) : MapFeedbackAdapter(), ModeController, DirectoryResultListener {
+    //
+    // Convenience methods
+    //
+    override var mode: Mode? = null
+        protected set
 
+    /**
+     */
+    override val selectionColor = Color(200, 220, 200)
 
-	private Mode mode;
+    /**
+     * The model, this controller belongs to. It may be null, if it is the
+     * default controller that does not show a map.
+     */
+    private var mModel: MapAdapter? = null
+    private val mNodeSelectionListeners = HashSet<NodeSelectionListener>()
+    val nodeLifetimeListeners = HashSet<NodeLifetimeListener>()
+    private var lastCurrentDir: File? = null
+    override fun setModel(model: MapAdapter?) {
+        mModel = model
+    }
 
-	private Color selectionColor = new Color(200, 220, 200);
-	/**
-	 * The model, this controller belongs to. It may be null, if it is the
-	 * default controller that does not show a map.
-	 */
-	private MapAdapter mModel;
-	private HashSet<NodeSelectionListener> mNodeSelectionListeners = new HashSet<>();
-	private HashSet<NodeLifetimeListener> mNodeLifetimeListeners = new HashSet<>();
-	private File lastCurrentDir = null;
+    //
+    // Methods that should be overloaded
+    //
+    abstract fun newNode(userObject: Any?, map: MindMap?): MindMapNode?
 
-	/**
-	 * Instantiation order: first me and then the model.
-	 */
-	public ControllerAdapter(Mode mode) {
-		this.setMode(mode);
-		// for updates of nodes:
-		// FIXME
-		// do not associate each new ControllerAdapter
-		// with the only one application viewport
-		// DropTarget dropTarget = new DropTarget(getFrame().getViewport(),
-		// new FileOpener());
-	}
+    /**
+     * You _must_ implement this if you use one of the following actions:
+     * OpenAction, NewMapAction.
+     *
+     * @param modeController
+     * TODO
+     */
+    open fun newModel(modeController: ModeController?): MapAdapter {
+        throw UnsupportedOperationException()
+    }
 
-	public void setModel(MapAdapter model) {
-		mModel = model;
-	}
+    /**
+     * You may want to implement this... It returns the FileFilter that is used
+     * by the open() and save() JFileChoosers.
+     */
+    protected open val fileFilter: FileFilter?
+        protected get() = null
 
-	//
-	// Methods that should be overloaded
-	//
+    /**
+     * Currently, this method is called by the mapAdapter. This is buggy, and is
+     * to be changed.
+     */
+    override fun nodeChanged(node: MindMapNode?) {
+        setSaved(false)
+        nodeRefresh(node, true)
+    }
 
-	public abstract MindMapNode newNode(Object userObject, MindMap map);
+    override fun setSaved(pIsClean: Boolean) {
+        val stateChanged = map!!.setSaved(pIsClean)
+        if (stateChanged) {
+            controller!!.setTitle()
+        }
+    }
 
-	/**
-	 * You _must_ implement this if you use one of the following actions:
-	 * OpenAction, NewMapAction.
-	 * 
-	 * @param modeController
-	 *            TODO
-	 */
-	public MapAdapter newModel(ModeController modeController) {
-		throw new java.lang.UnsupportedOperationException();
-	}
+    override fun nodeRefresh(node: MindMapNode?) {
+        nodeRefresh(node, false)
+    }
 
-	/**
-	 * You may want to implement this... It returns the FileFilter that is used
-	 * by the open() and save() JFileChoosers.
-	 */
-	protected FileFilter getFileFilter() {
-		return null;
-	}
+    private fun nodeRefresh(node: MindMapNode?, isUpdate: Boolean) {
+        MapFeedbackAdapter.Companion.logger!!.finest("nodeChanged called for node " + node + " parent="
+                + node.getParentNode())
+        if (isUpdate) {
+            // update modification times:
+            if (node.getHistoryInformation() != null) {
+                node.getHistoryInformation().setLastModifiedAt(Date())
+            }
+            // Tell any node hooks that the node is changed:
+            updateNode(node)
+        }
+        // fc, 10.10.06: Dirty hack in order to keep this method away from being
+        // used by everybody.
+        (map as MapAdapter?)!!.nodeChangedInternal(node)
+    }
 
-	/**
-	 * Currently, this method is called by the mapAdapter. This is buggy, and is
-	 * to be changed.
-	 */
-	public void nodeChanged(MindMapNode node) {
-		setSaved(false);
-		nodeRefresh(node, true);
-	}
+    override fun refreshMap() {
+        val root = map.getRootNode()
+        refreshMapFrom(root)
+    }
 
-	public void setSaved(boolean pIsClean) {
-		boolean stateChanged = getMap().setSaved(pIsClean);
-		if (stateChanged) {
-			getController().setTitle();
-		}
-	}
+    fun refreshMapFrom(node: MindMapNode?) {
+        for (child in node.getChildren()) {
+            refreshMapFrom(child)
+        }
+        (map as MapAdapter?)!!.nodeChangedInternal(node)
+    }
 
+    /**
+     */
+    fun nodeStructureChanged(node: MindMapNode?) {
+        map!!.nodeStructureChanged(node)
+    }
 
-	public void nodeRefresh(MindMapNode node) {
-		nodeRefresh(node, false);
-	}
+    /**
+     * Overwrite this method to perform additional operations to an node update.
+     */
+    protected open fun updateNode(node: MindMapNode?) {
+        for (listener in mNodeSelectionListeners) {
+            listener.onUpdateNodeHook(node)
+        }
+    }
 
-	private void nodeRefresh(MindMapNode node, boolean isUpdate) {
-		logger.finest("nodeChanged called for node " + node + " parent="
-				+ node.getParentNode());
-		if (isUpdate) {
-			// update modification times:
-			if (node.getHistoryInformation() != null) {
-				node.getHistoryInformation().setLastModifiedAt(new Date());
-			}
-			// Tell any node hooks that the node is changed:
-			updateNode(node);
-		}
-		// fc, 10.10.06: Dirty hack in order to keep this method away from being
-		// used by everybody.
-		((MapAdapter) getMap()).nodeChangedInternal(node);
-	}
+    override fun onLostFocusNode(node: NodeView) {
+        try {
+            // deselect the old node:
+            val copy = HashSet(mNodeSelectionListeners)
+            // we copied the set to be able to remove listeners during a
+            // listener method.
+            for (listener in copy) {
+                listener.onLostFocusNode(node)
+            }
+            for (hook in node.model.activatedHooks) {
+                hook.onLostFocusNode(node)
+            }
+        } catch (e: RuntimeException) {
+            MapFeedbackAdapter.Companion.logger!!.log(Level.SEVERE, "Error in node selection listeners", e)
+        }
+    }
 
-	public void refreshMap() {
-		final MindMapNode root = getMap().getRootNode();
-		refreshMapFrom(root);
-	}
+    override fun onFocusNode(node: NodeView) {
+        try {
+            // select the new node:
+            val copy = HashSet(mNodeSelectionListeners)
+            // we copied the set to be able to remove listeners during a
+            // listener method.
+            for (listener in copy) {
+                listener.onFocusNode(node)
+            }
+            for (hook in node.model.activatedHooks) {
+                hook.onFocusNode(node)
+            }
+        } catch (e: RuntimeException) {
+            MapFeedbackAdapter.Companion.logger!!.log(Level.SEVERE, "Error in node selection listeners", e)
+        }
+    }
 
-	public void refreshMapFrom(MindMapNode node) {
-		for(MindMapNode child : node.getChildren()) {
-			refreshMapFrom(child);
-		}
-		((MapAdapter) getMap()).nodeChangedInternal(node);
+    override fun changeSelection(pNode: NodeView, pIsSelected: Boolean) {
+        try {
+            val copy = HashSet(mNodeSelectionListeners)
+            for (listener in copy) {
+                listener.onSelectionChange(pNode, pIsSelected)
+            }
+        } catch (e: RuntimeException) {
+            MapFeedbackAdapter.Companion.logger!!.log(Level.SEVERE, "Error in node selection listeners", e)
+        }
+    }
 
-	}
+    override fun onViewCreatedHook(node: NodeView) {
+        for (hook in node.model.activatedHooks) {
+            hook.onViewCreatedHook(node)
+        }
+    }
 
-	/**
-	 */
-	public void nodeStructureChanged(MindMapNode node) {
-		getMap().nodeStructureChanged(node);
-	}
+    override fun onViewRemovedHook(node: NodeView) {
+        for (hook in node.model.activatedHooks) {
+            hook.onViewRemovedHook(node)
+        }
+    }
 
-	/**
-	 * Overwrite this method to perform additional operations to an node update.
-	 */
-	protected void updateNode(MindMapNode node) {
-		for (NodeSelectionListener listener : mNodeSelectionListeners) {
-			listener.onUpdateNodeHook(node);
-		}
-	}
+    override fun registerNodeSelectionListener(listener: NodeSelectionListener,
+                                               pCallWithCurrentSelection: Boolean) {
+        mNodeSelectionListeners.add(listener)
+        if (pCallWithCurrentSelection) {
+            try {
+                listener.onFocusNode(selectedView)
+            } catch (e: Exception) {
+                Resources.getInstance().logException(e)
+            }
+            for (view in view!!.selecteds) {
+                try {
+                    listener.onSelectionChange(view, true)
+                } catch (e: Exception) {
+                    Resources.getInstance().logException(e)
+                }
+            }
+        }
+    }
 
-	public void onLostFocusNode(NodeView node) {
-		try {
-			// deselect the old node:
-			HashSet<NodeSelectionListener> copy = new HashSet<>(mNodeSelectionListeners);
-			// we copied the set to be able to remove listeners during a
-			// listener method.
-			for (NodeSelectionListener listener : copy) {
-				listener.onLostFocusNode(node);
-			}
-			for (PermanentNodeHook hook : node.getModel().getActivatedHooks()) {
-				hook.onLostFocusNode(node);
-			}
-		} catch (RuntimeException e) {
-			logger.log(Level.SEVERE, "Error in node selection listeners", e);
-		}
+    override fun deregisterNodeSelectionListener(listener: NodeSelectionListener) {
+        mNodeSelectionListeners.remove(listener)
+    }
 
-	}
+    override fun registerNodeLifetimeListener(listener: NodeLifetimeListener, pFireCreateEvent: Boolean) {
+        nodeLifetimeListeners.add(listener)
+        if (pFireCreateEvent) {
+            // call create node for all:
+            // TODO: fc, 10.2.08: this event goes to all listeners. It should be for
+            // the new listener only?
+            fireRecursiveNodeCreateEvent(rootNode)
+        }
+    }
 
-	public void onFocusNode(NodeView node) {
-		try {
-			// select the new node:
-			HashSet<NodeSelectionListener> copy = new HashSet<>(mNodeSelectionListeners);
-			// we copied the set to be able to remove listeners during a
-			// listener method.
-			for (NodeSelectionListener listener : copy) {
-				listener.onFocusNode(node);
-			}
-			for (PermanentNodeHook hook : node.getModel().getActivatedHooks()) {
-				hook.onFocusNode(node);
-			}
-		} catch (RuntimeException e) {
-			logger.log(Level.SEVERE, "Error in node selection listeners", e);
-		}
+    override fun deregisterNodeLifetimeListener(listener: NodeLifetimeListener) {
+        nodeLifetimeListeners.remove(listener)
+    }
 
-	}
+    override fun fireNodePreDeleteEvent(node: MindMapNode?) {
+        // call lifetime listeners:
+        for (listener in nodeLifetimeListeners) {
+            listener.onPreDeleteNode(node)
+        }
+    }
 
-	public void changeSelection(NodeView pNode, boolean pIsSelected) {
-		try {
-			HashSet<NodeSelectionListener> copy = new HashSet<>(mNodeSelectionListeners);
-			for (NodeSelectionListener listener : copy) {
-				listener.onSelectionChange(pNode, pIsSelected);
-			}
-		} catch (RuntimeException e) {
-			logger.log(Level.SEVERE, "Error in node selection listeners", e);
-		}
+    override fun fireNodePostDeleteEvent(node: MindMapNode?, parent: MindMapNode?) {
+        // call lifetime listeners:
+        for (listener in nodeLifetimeListeners) {
+            listener.onPostDeleteNode(node, parent)
+        }
+    }
 
-	}
+    override fun fireRecursiveNodeCreateEvent(node: MindMapNode?) {
+        val i: Iterator<MindMapNode?>? = node!!.childrenUnfolded()
+        while (i!!.hasNext()) {
+            val child = i.next()
+            fireRecursiveNodeCreateEvent(child)
+        }
+        // call lifetime listeners:
+        for (listener in nodeLifetimeListeners) {
+            listener.onCreateNodeHook(node)
+        }
+    }
 
-	public void onViewCreatedHook(NodeView node) {
-		for (PermanentNodeHook hook : node.getModel().getActivatedHooks()) {
-			hook.onViewCreatedHook(node);
-		}
-	}
+    override fun firePreSaveEvent(node: MindMapNode?) {
+        // copy to prevent concurrent modification.
+        val listenerCopy = HashSet(mNodeSelectionListeners)
+        for (listener in listenerCopy) {
+            listener.onSaveNode(node)
+        }
+    }
 
-	public void onViewRemovedHook(NodeView node) {
-		for (PermanentNodeHook hook : node.getModel().getActivatedHooks()) {
-			hook.onViewRemovedHook(node);
-		}
-	}
+    //
+    // Map Management
+    //
+    override fun getText(textId: String?): String {
+        return controller!!.getResourceString(textId)
+    }
 
-	public void registerNodeSelectionListener(NodeSelectionListener listener,
-			boolean pCallWithCurrentSelection) {
-		mNodeSelectionListeners.add(listener);
-		if (pCallWithCurrentSelection) {
-			try {
-				listener.onFocusNode(getSelectedView());
-			} catch (Exception e) {
-				freemind.main.Resources.getInstance().logException(e);
-			}
-			for (NodeView view : getView().getSelecteds()) {
-				try {
-					listener.onSelectionChange(view, true);
-				} catch (Exception e) {
-					freemind.main.Resources.getInstance().logException(e);
-				}
-			}
-		}
-	}
+    override fun newMap(): ModeController? {
+        val newModeController = mode!!.createModeController()
+        val newModel = newModel(newModeController)
+        newMap(newModel, newModeController)
+        newModeController.view.moveToRoot()
+        return newModeController
+    }
 
-	public void deregisterNodeSelectionListener(NodeSelectionListener listener) {
-		mNodeSelectionListeners.remove(listener);
-	}
+    open fun newMap(mapModel: MindMap, pModeController: ModeController?) {
+        controller!!.mapModuleManager!!.newMapModule(mapModel,
+                pModeController!!)
+        pModeController.setSaved(false)
+    }
 
-	public void registerNodeLifetimeListener(NodeLifetimeListener listener, boolean pFireCreateEvent) {
-		mNodeLifetimeListeners.add(listener);
-		if (pFireCreateEvent) {
-			// call create node for all:
-			// TODO: fc, 10.2.08: this event goes to all listeners. It should be for
-			// the new listener only?
-			fireRecursiveNodeCreateEvent(getRootNode());
-		}
-	}
+    /**
+     * You may decide to overload this or take the default and implement the
+     * functionality in your MapModel (implements MindMap)
+     */
+    @Throws(FileNotFoundException::class, IOException::class, XMLParseException::class, URISyntaxException::class)
+    override fun load(file: URL?): MapFeedback? {
+        val mapDisplayName = controller!!.mapModuleManager
+                .checkIfFileIsAlreadyOpened(file!!)
+        return if (null != mapDisplayName) {
+            controller!!.mapModuleManager!!.changeToMapModule(
+                    mapDisplayName)
+            controller!!.modeController
+        } else {
+            val newModeController = mode!!.createModeController()
+            val model = newModel(newModeController)
+            (newModeController as ControllerAdapter).loadInternally(file, model)
+            newMap(model, newModeController)
+            newModeController.setSaved(true)
+            restoreMapsLastState(newModeController, model)
+            newModeController
+        }
+    }
 
-	public void deregisterNodeLifetimeListener(NodeLifetimeListener listener) {
-		mNodeLifetimeListeners.remove(listener);
-	}
+    /**
+     * @param model
+     * @param pFile
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws XMLParseException
+     */
+    @Throws(URISyntaxException::class, XMLParseException::class, IOException::class)
+    protected abstract fun loadInternally(url: URL?, model: MapAdapter)
 
-	public HashSet<NodeLifetimeListener> getNodeLifetimeListeners() {
-		return mNodeLifetimeListeners;
-	}
+    /**
+     * You may decide to overload this or take the default and implement the
+     * functionality in your MapModel (implements MindMap)
+     */
+    @Throws(FileNotFoundException::class, IOException::class)
+    override fun load(file: File?): MapFeedback? {
+        return try {
+            load(fileToUrl(file))
+        } catch (e: XMLParseException) {
+            Resources.getInstance().logException(e)
+            throw RuntimeException(e)
+        } catch (e: URISyntaxException) {
+            Resources.getInstance().logException(e)
+            throw RuntimeException(e)
+        }
+    }
 
-	public void fireNodePreDeleteEvent(MindMapNode node) {
-		// call lifetime listeners:
-		for (NodeLifetimeListener listener : mNodeLifetimeListeners) {
-			listener.onPreDeleteNode(node);
-		}
-	}
+    protected open fun restoreMapsLastState(newModeController: ModeController?,
+                                            model: MapAdapter) {
+        // restore zoom, etc.
+        val lastStateMapXml = frame.getProperty(
+                FreeMindCommon.MINDMAP_LAST_STATE_MAP_STORAGE)
+        val management = LastStateStorageManagement(
+                lastStateMapXml)
+        val store = management.getStorage(model
+                .restorable)
+        if (store != null) {
+            // Zoom must be set on combo box, too.
+            controller!!.setZoom(store.lastZoom)
+            var sel: MindMapNode? = null
+            try {
+                // Selected:
+                sel = newModeController!!.getNodeFromID(store.lastSelected)
+                newModeController.centerNode(sel)
+                val selected: MutableList<MindMapNode?> = Vector()
+                val iter: Iterator<NodeListMember> = store.listNodeListMemberList.iterator()
+                while (iter.hasNext()) {
+                    val member = iter.next()
+                    val selNode: MindMapNode? = newModeController.getNodeFromID(member.node)
+                    selected.add(selNode)
+                }
+                newModeController.select(sel, selected)
+            } catch (e: Exception) {
+                Resources.getInstance().logException(e)
+                newModeController.getView().moveToRoot()
+            }
+        } else {
+            newModeController.getView().moveToRoot()
+        }
+    }
 
-	public void fireNodePostDeleteEvent(MindMapNode node, MindMapNode parent) {
-		// call lifetime listeners:
-		for (NodeLifetimeListener listener : mNodeLifetimeListeners) {
-			listener.onPostDeleteNode(node, parent);
-		}
-	}
+    override fun save(): Boolean {
+        if (getModel()!!.isSaved) return true
+        return if (getModel().getFile() == null || getModel()!!.isReadOnly) {
+            saveAs()
+        } else {
+            save(getModel().getFile())
+        }
+    }
 
-	public void fireRecursiveNodeCreateEvent(MindMapNode node) {
-		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = i.next();
-			fireRecursiveNodeCreateEvent(child);
-		}
-		// call lifetime listeners:
-		for (NodeLifetimeListener listener : mNodeLifetimeListeners) {
-			listener.onCreateNodeHook(node);
-		}
-	}
+    override fun loadURL(relative: String?) {
+        try {
+            MapFeedbackAdapter.Companion.logger!!.info("Trying to open $relative")
+            var absolute: URL? = null
+            absolute = if (isAbsolutePath(relative!!)) {
+                // Protocol can be identified by rexep pattern "[a-zA-Z]://.*".
+                // This should distinguish a protocol path from a file path on
+                // most platforms.
+                // 1) UNIX / Linux - obviously
+                // 2) Windows - relative path does not contain :, in absolute
+                // path is : followed by \.
+                // 3) Mac - cannot remember
 
-	public void firePreSaveEvent(MindMapNode node) {
-		// copy to prevent concurrent modification.
-		HashSet<NodeSelectionListener> listenerCopy = new HashSet<>(mNodeSelectionListeners);
-		for (NodeSelectionListener listener : listenerCopy) {
-			listener.onSaveNode(node);
-		}
-	}
+                // If relative is an absolute path, then it cannot be a
+                // protocol.
+                // At least on Unix and Windows. But this is not true for Mac!!
 
-	//
-	// Map Management
-	//
+                // Here is hidden an assumption that the existence of protocol
+                // implies !Tools.isAbsolutePath(relative).
+                // The code should probably be rewritten to convey more logical
+                // meaning, on the other hand
+                // it works on Windows and Linux.
 
-	public String getText(String textId) {
-		return getController().getResourceString(textId);
-	}
-
-	public ModeController newMap() {
-		ModeController newModeController = getMode().createModeController();
-		MapAdapter newModel = newModel(newModeController);
-		newMap(newModel, newModeController);
-		newModeController.getView().moveToRoot();
-		return newModeController;
-	}
-
-	public void newMap(final MindMap mapModel, ModeController pModeController) {
-		getController().getMapModuleManager().newMapModule(mapModel,
-				pModeController);
-		pModeController.setSaved(false);
-	}
-
-	/**
-	 * You may decide to overload this or take the default and implement the
-	 * functionality in your MapModel (implements MindMap)
-	 */
-	public MapFeedback load(URL file) throws FileNotFoundException,
-			IOException, XMLParseException, URISyntaxException {
-		String mapDisplayName = getController().getMapModuleManager()
-				.checkIfFileIsAlreadyOpened(file);
-		if (null != mapDisplayName) {
-			getController().getMapModuleManager().changeToMapModule(
-					mapDisplayName);
-			return getController().getModeController();
-		} else {
-			final ModeController newModeController = getMode().createModeController();
-			final MapAdapter model = newModel(newModeController);
-			((ControllerAdapter) newModeController).loadInternally(file, model);
-			newMap(model, newModeController);
-			newModeController.setSaved(true);
-			restoreMapsLastState(newModeController, model);
-			return newModeController;
-		}
-	}
-
-	/**
-	 * @param model 
-	 * @param pFile
-	 * @throws URISyntaxException 
-	 * @throws IOException 
-	 * @throws XMLParseException 
-	 */
-	abstract protected void loadInternally(URL url, MapAdapter model) throws URISyntaxException, XMLParseException, IOException;
-
-	/**
-	 * You may decide to overload this or take the default and implement the
-	 * functionality in your MapModel (implements MindMap)
-	 */
-	public MapFeedback load(File file) throws FileNotFoundException,
-			IOException {
-		try {
-			return load(Tools.fileToUrl(file));
-		} catch (XMLParseException e) {
-			freemind.main.Resources.getInstance().logException(e);
-			throw new RuntimeException(e);
-		} catch (URISyntaxException e) {
-			freemind.main.Resources.getInstance().logException(e);
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected void restoreMapsLastState(final ModeController newModeController,
-			final MapAdapter model) {
-		// restore zoom, etc.
-		String lastStateMapXml = getFrame().getProperty(
-				FreeMindCommon.MINDMAP_LAST_STATE_MAP_STORAGE);
-		LastStateStorageManagement management = new LastStateStorageManagement(
-				lastStateMapXml);
-		MindmapLastStateStorage store = management.getStorage(model
-				.getRestorable());
-		if (store != null) {
-			ModeController modeController = newModeController;
-			// Zoom must be set on combo box, too.
-			getController().setZoom(store.getLastZoom());
-			MindMapNode sel = null;
-			try {
-				// Selected:
-				sel = modeController.getNodeFromID(store.getLastSelected());
-				modeController.centerNode(sel);
-				List<MindMapNode> selected = new Vector<>();
-				for (Iterator<NodeListMember> iter = store.getListNodeListMemberList().iterator(); iter.hasNext();) {
-					NodeListMember member = iter.next();
-					MindMapNode selNode = modeController.getNodeFromID(member.getNode());
-					selected.add(selNode);
-				}
-				modeController.select(sel, selected);
-			} catch (Exception e) {
-				freemind.main.Resources.getInstance().logException(e);
-				newModeController.getView().moveToRoot();
-			}
-		} else {
-			newModeController.getView().moveToRoot();
-		}
-	}
-
-	public boolean save() {
-		if (getModel().isSaved())
-			return true;
-		if (getModel().getFile() == null || getModel().isReadOnly()) {
-			return saveAs();
-		} else {
-			return save(getModel().getFile());
-		}
-	}
-
-	public void loadURL(String relative) {
-		try {
-			logger.info("Trying to open " + relative);
-			URL absolute = null;
-			if (Tools.isAbsolutePath(relative)) {
-				// Protocol can be identified by rexep pattern "[a-zA-Z]://.*".
-				// This should distinguish a protocol path from a file path on
-				// most platforms.
-				// 1) UNIX / Linux - obviously
-				// 2) Windows - relative path does not contain :, in absolute
-				// path is : followed by \.
-				// 3) Mac - cannot remember
-
-				// If relative is an absolute path, then it cannot be a
-				// protocol.
-				// At least on Unix and Windows. But this is not true for Mac!!
-
-				// Here is hidden an assumption that the existence of protocol
-				// implies !Tools.isAbsolutePath(relative).
-				// The code should probably be rewritten to convey more logical
-				// meaning, on the other hand
-				// it works on Windows and Linux.
-
-				// absolute = new URL("file://"+relative); }
-				absolute = Tools.fileToUrl(new File(relative));
-			} else if (relative.startsWith("#")) {
-				// inner map link, fc, 12.10.2004
-				logger.finest("found relative link to " + relative);
-				String target = relative.substring(1);
-				try {
-					centerNode(getNodeFromID(target));
-				} catch (Exception e) {
-					freemind.main.Resources.getInstance().logException(e);
-					// give "not found" message
-					getFrame().out(
-							Tools.expandPlaceholders(getText("link_not_found"),
-									target));
-				}
-				return;
-
-			} else {
-				/*
+                // absolute = new URL("file://"+relative); }
+                fileToUrl(File(relative))
+            } else if (relative.startsWith("#")) {
+                // inner map link, fc, 12.10.2004
+                MapFeedbackAdapter.Companion.logger!!.finest("found relative link to $relative")
+                val target = relative.substring(1)
+                try {
+                    centerNode(getNodeFromID(target))
+                } catch (e: Exception) {
+                    Resources.getInstance().logException(e)
+                    // give "not found" message
+                    frame.out(
+                            expandPlaceholders(getText("link_not_found"),
+                                    target))
+                }
+                return
+            } else {
+                /*
 				 * Remark: getMap().getURL() returns URLs like file:/C:/... It
 				 * seems, that it does not cause any problems.
 				 */
-				absolute = new URL(getMap().getURL(), relative);
-			}
-			// look for reference part in URL:
-			URL originalURL = absolute;
-			String ref = absolute.getRef();
-			if (ref != null) {
-				// remove ref from absolute:
-				absolute = Tools.getURLWithoutReference(absolute);
-			}
-			String extension = Tools.getExtension(absolute.toString());
-			if ((extension != null)
-					&& extension
-							.equals(freemind.main.FreeMindCommon.FREEMIND_FILE_EXTENSION_WITHOUT_DOT)) { // ----
-																											// Open
-																											// Mind
-																											// Map
-				logger.info("Trying to open mind map " + absolute);
-				MapModuleManager mapModuleManager = getController()
-						.getMapModuleManager();
-				/*
+                URL(map.getURL(), relative)
+            }
+            // look for reference part in URL:
+            val originalURL = absolute
+            val ref = absolute!!.ref
+            if (ref != null) {
+                // remove ref from absolute:
+                absolute = getURLWithoutReference(absolute)
+            }
+            val extension = getExtension(absolute.toString())
+            if (extension != null
+                    && (extension
+                            == FreeMindCommon.FREEMIND_FILE_EXTENSION_WITHOUT_DOT)) { // ----
+                // Open
+                // Mind
+                // Map
+                MapFeedbackAdapter.Companion.logger!!.info("Trying to open mind map $absolute")
+                val mapModuleManager = controller
+                        .mapModuleManager
+                /*
 				 * this can lead to confusion if the user handles multiple maps
 				 * with the same name. Obviously, this is wrong. Get a better
 				 * check whether or not the file is already opened.
 				 */
-				String mapExtensionKey = mapModuleManager
-						.checkIfFileIsAlreadyOpened(absolute);
-				if (mapExtensionKey == null) {
-					setWaitingCursor(true);
-					load(absolute);
-				} else {
-					mapModuleManager.tryToChangeToMapModule(mapExtensionKey);
-				}
-				if (ref != null) {
-					try {
-						ModeController newModeController = getController()
-								.getModeController();
-						// jump to link:
-						newModeController.centerNode(newModeController
-								.getNodeFromID(ref));
-					} catch (Exception e) {
-						freemind.main.Resources.getInstance().logException(e);
-						getFrame().out(
-								Tools.expandPlaceholders(
-										getText("link_not_found"), ref));
-						return;
-					}
-				}
-			} else {
-				// ---- Open URL in browser
-				getFrame().openDocument(originalURL);
-			}
-		} catch (MalformedURLException ex) {
-			freemind.main.Resources.getInstance().logException(ex);
-			getController().errorMessage(getText("url_error") + "\n" + ex);
-			return;
-		} catch (Exception e) {
-			freemind.main.Resources.getInstance().logException(e);
-		} finally {
-			setWaitingCursor(false);
-		}
-	}
+                val mapExtensionKey = mapModuleManager
+                        .checkIfFileIsAlreadyOpened(absolute)
+                if (mapExtensionKey == null) {
+                    setWaitingCursor(true)
+                    load(absolute)
+                } else {
+                    mapModuleManager!!.tryToChangeToMapModule(mapExtensionKey)
+                }
+                if (ref != null) {
+                    try {
+                        val newModeController = controller
+                                .modeController
+                        // jump to link:
+                        newModeController!!.centerNode(newModeController
+                                .getNodeFromID(ref))
+                    } catch (e: Exception) {
+                        Resources.getInstance().logException(e)
+                        frame.out(
+                                expandPlaceholders(
+                                        getText("link_not_found"), ref))
+                        return
+                    }
+                }
+            } else {
+                // ---- Open URL in browser
+                frame.openDocument(originalURL!!)
+            }
+        } catch (ex: MalformedURLException) {
+            Resources.getInstance().logException(ex)
+            controller!!.errorMessage("""
+    ${getText("url_error")}
+    $ex
+    """.trimIndent())
+            return
+        } catch (e: Exception) {
+            Resources.getInstance().logException(e)
+        } finally {
+            setWaitingCursor(false)
+        }
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see freemind.modes.ExtendedMapFeedback#setWaitingCursor(boolean)
 	 */
-	public void setWaitingCursor(boolean pWaiting) {
-		getFrame().setWaitingCursor(pWaiting);
-	}
+    fun setWaitingCursor(pWaiting: Boolean) {
+        frame.setWaitingCursor(pWaiting)
+    }
 
-	
-	/**
-	 * fc, 24.1.2004: having two methods getSelecteds with different return
-	 * values (linkedlists of models resp. views) is asking for trouble. @see
-	 * MapView
-	 * 
-	 * @return returns a list of MindMapNode s.
-	 */
-	public List<MindMapNode> getSelecteds() {
-		LinkedList<MindMapNode> selecteds = new LinkedList<>();
-		ListIterator<NodeView> it = getView().getSelecteds().listIterator();
-		if (it != null) {
-			while (it.hasNext()) {
-				NodeView selected = it.next();
-				selecteds.add(selected.getModel());
-			}
-		}
-		return selecteds;
-	}
+    /**
+     * fc, 24.1.2004: having two methods getSelecteds with different return
+     * values (linkedlists of models resp. views) is asking for trouble. @see
+     * MapView
+     *
+     * @return returns a list of MindMapNode s.
+     */
+    override val selecteds: List<MindMapNode?>
+        get() {
+            val selecteds = LinkedList<MindMapNode?>()
+            val it: ListIterator<NodeView> = view!!.selecteds.listIterator()
+            if (it != null) {
+                while (it.hasNext()) {
+                    val selected = it.next()
+                    selecteds.add(selected.model)
+                }
+            }
+            return selecteds
+        }
 
-	@Override
-	public void select(NodeView node) {
-		getView().select(node);
-	}
+    override fun select(node: NodeView?) {
+        view!!.select(node)
+    }
 
-	public void select(MindMapNode primarySelected, List<MindMapNode> selecteds) {
-		// are they visible?
-		for (MindMapNode node : selecteds) {
-			displayNode(node);
-		}
-		final NodeView focussedNodeView = getNodeView(primarySelected);
-		if (focussedNodeView != null) {
-			getView().selectAsTheOnlyOneSelected(focussedNodeView);
-			getView().scrollNodeToVisible(focussedNodeView);
-			for (Iterator<MindMapNode> i = selecteds.iterator(); i.hasNext();) {
-				MindMapNode node = i.next();
-				NodeView nodeView = getNodeView(node);
-				if (nodeView != null) {
-					getView().makeTheSelected(nodeView);
-				}
-			}
-		}
-		getController().obtainFocusForSelected();
-	}
+    override fun select(primarySelected: MindMapNode?, selecteds: List<MindMapNode?>) {
+        // are they visible?
+        for (node in selecteds) {
+            displayNode(node)
+        }
+        val focussedNodeView = getNodeView(primarySelected)
+        if (focussedNodeView != null) {
+            view!!.selectAsTheOnlyOneSelected(focussedNodeView)
+            view!!.scrollNodeToVisible(focussedNodeView)
+            val i = selecteds.iterator()
+            while (i.hasNext()) {
+                val node = i.next()
+                val nodeView = getNodeView(node)
+                if (nodeView != null) {
+                    view!!.makeTheSelected(nodeView)
+                }
+            }
+        }
+        controller!!.obtainFocusForSelected()
+    }
 
-	public void selectBranch(NodeView selected, boolean extend) {
-		displayNode(selected.getModel());
-		getView().selectBranch(selected, extend);
-	}
+    override fun selectBranch(selected: NodeView, extend: Boolean) {
+        displayNode(selected.model)
+        view!!.selectBranch(selected, extend)
+    }
 
-	public List<MindMapNode> getSelectedsByDepth() {
-		// return an ArrayList of MindMapNodes.
-		List<MindMapNode> result = getSelecteds();
-		sortNodesByDepth(result);
-		return result;
-	}
+    // return an ArrayList of MindMapNodes.
+    override val selectedsByDepth: List<MindMapNode?>
+        get() {
+            // return an ArrayList of MindMapNodes.
+            val result = selecteds
+            sortNodesByDepth(result)
+            return result
+        }
 
-	/**
-	 * Return false is the action was cancelled, e.g. when it has to lead to
-	 * saving as.
-	 */
-	public boolean save(File file) {
-		boolean result = false;
-		try {
-			setWaitingCursor(true);
-			result = getModel().save(file);
-			// create thumbnail if desired.
-			if (result && "true"
-					.equals(getProperty(FreeMindCommon.CREATE_THUMBNAIL_ON_SAVE))) {
-				File baseFileName = getModel().getFile();
-				String fileName = Resources.getInstance()
-						.createThumbnailFileName(baseFileName);
-				// due to a windows bug, the file must not be hidden before writing it.
-				Tools.makeFileHidden(new File(fileName), false);
-				IndependantMapViewCreator.printToFile(getView(), fileName,
-						true,
-						getIntProperty(FreeMindCommon.THUMBNAIL_SIZE, 800));
-				Tools.makeFileHidden(new File(fileName), true);
-			}
-		} catch (FileNotFoundException e) {
-			freemind.main.Resources.getInstance().logException(e);
-			String message = Tools.expandPlaceholders(getText("save_failed"),
-					file.getName());
-			getController().errorMessage(message);
-		} catch (Exception e) {
-			logger.severe("Error in MindMapMapModel.save(): ");
-			freemind.main.Resources.getInstance().logException(e);
-		} finally {
-			setWaitingCursor(false);
-		}
-		if(result) {
-			setSaved(true);
-		}
-		return result;
-	}
+    /**
+     * Return false is the action was cancelled, e.g. when it has to lead to
+     * saving as.
+     */
+    override fun save(file: File?): Boolean {
+        var result = false
+        try {
+            setWaitingCursor(true)
+            result = getModel()!!.save(file)
+            // create thumbnail if desired.
+            if (result && ("true"
+                            == getProperty(FreeMindCommon.CREATE_THUMBNAIL_ON_SAVE))) {
+                val baseFileName = getModel().getFile()
+                val fileName: String = Resources.getInstance()
+                        .createThumbnailFileName(baseFileName)
+                // due to a windows bug, the file must not be hidden before writing it.
+                makeFileHidden(File(fileName), false)
+                IndependantMapViewCreator.printToFile(view, fileName,
+                        true,
+                        getIntProperty(FreeMindCommon.THUMBNAIL_SIZE, 800))
+                makeFileHidden(File(fileName), true)
+            }
+        } catch (e: FileNotFoundException) {
+            Resources.getInstance().logException(e)
+            val message = expandPlaceholders(getText("save_failed"),
+                    file!!.name)
+            controller!!.errorMessage(message)
+        } catch (e: Exception) {
+            MapFeedbackAdapter.Companion.logger!!.severe("Error in MindMapMapModel.save(): ")
+            Resources.getInstance().logException(e)
+        } finally {
+            setWaitingCursor(false)
+        }
+        if (result) {
+            setSaved(true)
+        }
+        return result
+    }
 
-	/** @return returns the new JMenuItem. */
-	protected JMenuItem add(JMenu menu, Action action, String keystroke) {
-		JMenuItem item = menu.add(action);
-		item.setAccelerator(KeyStroke.getKeyStroke(getFrame()
-				.getAdjustableProperty(keystroke)));
-		return item;
-	}
+    /** @return returns the new JMenuItem.
+     */
+    protected fun add(menu: JMenu, action: Action?, keystroke: String?): JMenuItem {
+        val item = menu.add(action)
+        item.accelerator = KeyStroke.getKeyStroke(frame
+                .getAdjustableProperty(keystroke!!))
+        return item
+    }
 
-	/**
-	 * @return returns the new JMenuItem.
-	 * @param keystroke
-	 *            can be null, if no keystroke should be assigned.
-	 */
-	protected JMenuItem add(StructuredMenuHolder holder, String category,
-			Action action, String keystroke) {
-		JMenuItem item = holder.addAction(action, category);
-		if (keystroke != null) {
-			String keyProperty = getFrame().getAdjustableProperty(keystroke);
-			logger.finest("Found key stroke: " + keyProperty);
-			item.setAccelerator(KeyStroke.getKeyStroke(keyProperty));
-		}
-		return item;
-	}
+    /**
+     * @return returns the new JMenuItem.
+     * @param keystroke
+     * can be null, if no keystroke should be assigned.
+     */
+    protected fun add(holder: StructuredMenuHolder, category: String?,
+                      action: Action?, keystroke: String?): JMenuItem? {
+        val item = holder.addAction(action, category)
+        if (keystroke != null) {
+            val keyProperty = frame.getAdjustableProperty(keystroke)
+            MapFeedbackAdapter.Companion.logger!!.finest("Found key stroke: $keyProperty")
+            item!!.accelerator = KeyStroke.getKeyStroke(keyProperty)
+        }
+        return item
+    }
 
-	/**
-	 * @return returns the new JCheckBoxMenuItem.
-	 * @param keystroke
-	 *            can be null, if no keystroke should be assigned.
-	 */
-	protected JMenuItem addCheckBox(StructuredMenuHolder holder,
-			String category, Action action, String keystroke) {
-		JCheckBoxMenuItem item = (JCheckBoxMenuItem) holder.addMenuItem(
-				new JCheckBoxMenuItem(action), category);
-		if (keystroke != null) {
-			item.setAccelerator(KeyStroke.getKeyStroke(getFrame()
-					.getAdjustableProperty(keystroke)));
-		}
-		return item;
-	}
+    /**
+     * @return returns the new JCheckBoxMenuItem.
+     * @param keystroke
+     * can be null, if no keystroke should be assigned.
+     */
+    protected fun addCheckBox(holder: StructuredMenuHolder,
+                              category: String?, action: Action?, keystroke: String?): JMenuItem {
+        val item = holder.addMenuItem(
+                JCheckBoxMenuItem(action), category) as JCheckBoxMenuItem
+        if (keystroke != null) {
+            item.accelerator = KeyStroke.getKeyStroke(frame
+                    .getAdjustableProperty(keystroke))
+        }
+        return item
+    }
 
-	protected JMenuItem addRadioItem(StructuredMenuHolder holder,
-			String category, Action action, String keystroke, boolean isSelected) {
-		JRadioButtonMenuItem item = (JRadioButtonMenuItem) holder.addMenuItem(
-				new JRadioButtonMenuItem(action), category);
-		if (keystroke != null) {
-			item.setAccelerator(KeyStroke.getKeyStroke(getFrame()
-					.getAdjustableProperty(keystroke)));
-		}
-		item.setSelected(isSelected);
-		return item;
-	}
+    protected fun addRadioItem(holder: StructuredMenuHolder,
+                               category: String?, action: Action?, keystroke: String?, isSelected: Boolean): JMenuItem {
+        val item = holder.addMenuItem(
+                JRadioButtonMenuItem(action), category) as JRadioButtonMenuItem
+        if (keystroke != null) {
+            item.accelerator = KeyStroke.getKeyStroke(frame
+                    .getAdjustableProperty(keystroke))
+        }
+        item.isSelected = isSelected
+        return item
+    }
 
-	protected void add(JMenu menu, Action action) {
-		menu.add(action);
-	}
+    protected fun add(menu: JMenu, action: Action?) {
+        menu.add(action)
+    }
 
-	//
-	// Dialogs with user
-	//
+    //
+    // Dialogs with user
+    //
+    override fun open() {
+        val chooser = fileChooser
+        // fc, 24.4.2008: multi selection has problems as setTitle in Controller
+        // doesn't works
+        // chooser.setMultiSelectionEnabled(true);
+        val returnVal = chooser.showOpenDialog(view!!)
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            val selectedFiles: Array<File?>?
+            selectedFiles = if (chooser.isMultiSelectionEnabled) {
+                chooser.selectedFiles
+            } else {
+                arrayOf(chooser.selectedFile)
+            }
+            for (i in selectedFiles!!.indices) {
+                val theFile = selectedFiles[i]
+                try {
+                    lastCurrentDir = theFile!!.parentFile
+                    load(theFile)
+                } catch (ex: Exception) {
+                    handleLoadingException(ex)
+                    break
+                }
+            }
+        }
+        controller!!.setTitle()
+    }
 
-	public void open() {
-		FreeMindFileDialog chooser = getFileChooser();
-		// fc, 24.4.2008: multi selection has problems as setTitle in Controller
-		// doesn't works
-		// chooser.setMultiSelectionEnabled(true);
-		int returnVal = chooser.showOpenDialog(getView());
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File[] selectedFiles;
-			if (chooser.isMultiSelectionEnabled()) {
-				selectedFiles = chooser.getSelectedFiles();
-			} else {
-				selectedFiles = new File[] { chooser.getSelectedFile() };
-			}
-			for (int i = 0; i < selectedFiles.length; i++) {
-				File theFile = selectedFiles[i];
-				try {
-					lastCurrentDir = theFile.getParentFile();
-					load(theFile);
-				} catch (Exception ex) {
-					handleLoadingException(ex);
-					break;
-				}
-			}
-		}
-		getController().setTitle();
-	}
-
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * freemind.modes.FreeMindFileDialog.DirectoryResultListener#setChosenDirectory
 	 * (java.io.File)
 	 */
-	public void setChosenDirectory(File pDir) {
-		lastCurrentDir = pDir;
-	}
+    override fun setChosenDirectory(pDir: File?) {
+        lastCurrentDir = pDir
+    }
 
-	/**
-	 * Creates a file chooser with the last selected directory as default.
-	 */
-	public FreeMindFileDialog getFileChooser(FileFilter filter) {
-		FreeMindFileDialog chooser = Resources.getInstance().getStandardFileChooser(filter);
-		chooser.registerDirectoryResultListener(this);
-		File parentFile = getMapsParentFile();
-		// choose new lastCurrentDir only, if not previously set.
-		if (parentFile != null && lastCurrentDir == null) {
-			lastCurrentDir = parentFile;
-		}
-		if (lastCurrentDir != null) {
-			chooser.setCurrentDirectory(lastCurrentDir);
-		}
-		return chooser;
-	}
+    /**
+     * Creates a file chooser with the last selected directory as default.
+     */
+    override fun getFileChooser(filter: FileFilter?): FreeMindFileDialog {
+        val chooser: FreeMindFileDialog = Resources.getInstance().getStandardFileChooser(filter)
+        chooser.registerDirectoryResultListener(this)
+        val parentFile = mapsParentFile
+        // choose new lastCurrentDir only, if not previously set.
+        if (parentFile != null && lastCurrentDir == null) {
+            lastCurrentDir = parentFile
+        }
+        if (lastCurrentDir != null) {
+            chooser.setCurrentDirectory(lastCurrentDir)
+        }
+        return chooser
+    }
 
-	public FreeMindFileDialog getFileChooser() {
-		return getFileChooser(getFileFilter());
-	}
+    val fileChooser: FreeMindFileDialog
+        get() = getFileChooser(fileFilter)
+    private val mapsParentFile: File?
+        private get() = if (map != null && map.getFile() != null
+                && map.getFile().parentFile != null) {
+            map.getFile().parentFile
+        } else null
 
-	private File getMapsParentFile() {
-		if ((getMap() != null) && (getMap().getFile() != null)
-				&& (getMap().getFile().getParentFile() != null)) {
-			return getMap().getFile().getParentFile();
-		}
-		return null;
-	}
+    fun handleLoadingException(ex: Exception) {
+        val exceptionType = ex.javaClass.name
+        if (exceptionType == "freemind.main.XMLParseException") {
+            val showDetail = JOptionPane.showConfirmDialog(view,
+                    getText("map_corrupted"), "FreeMind",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE)
+            if (showDetail == JOptionPane.YES_OPTION) {
+                controller!!.errorMessage(ex)
+            }
+        } else if (exceptionType == "java.io.FileNotFoundException") {
+            controller!!.errorMessage(ex.message)
+        } else {
+            Resources.getInstance().logException(ex)
+            controller!!.errorMessage(ex)
+        }
+    }
 
-	public void handleLoadingException(Exception ex) {
-		String exceptionType = ex.getClass().getName();
-		if (exceptionType.equals("freemind.main.XMLParseException")) {
-			int showDetail = JOptionPane.showConfirmDialog(getView(),
-					getText("map_corrupted"), "FreeMind",
-					JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
-			if (showDetail == JOptionPane.YES_OPTION) {
-				getController().errorMessage(ex);
-			}
-		} else if (exceptionType.equals("java.io.FileNotFoundException")) {
-			getController().errorMessage(ex.getMessage());
-		} else {
-			freemind.main.Resources.getInstance().logException(ex);
-			getController().errorMessage(ex);
-		}
-	}
+    /**
+     * Save as; return false is the action was cancelled
+     */
+    override fun saveAs(): Boolean {
+        var f: File
+        val chooser = fileChooser
+        if (mapsParentFile == null) {
+            chooser.selectedFile = File(fileNameProposal
+                    + FreeMindCommon.FREEMIND_FILE_EXTENSION)
+        }
+        chooser.setDialogTitle(getText("save_as"))
+        var repeatSaveAsQuestion: Boolean
+        do {
+            repeatSaveAsQuestion = false
+            val returnVal = chooser.showSaveDialog(view!!)
+            if (returnVal != JFileChooser.APPROVE_OPTION) { // not ok pressed
+                return false
+            }
 
-	/**
-	 * Save as; return false is the action was cancelled
-	 */
-	public boolean saveAs() {
-		File f;
-		FreeMindFileDialog chooser = getFileChooser();
-		if (getMapsParentFile() == null) {
-			chooser.setSelectedFile(new File(getFileNameProposal()
-					+ freemind.main.FreeMindCommon.FREEMIND_FILE_EXTENSION));
-		}
-		chooser.setDialogTitle(getText("save_as"));
-		boolean repeatSaveAsQuestion;
-		do {
-			repeatSaveAsQuestion = false;
-			int returnVal = chooser.showSaveDialog(getView());
-			if (returnVal != JFileChooser.APPROVE_OPTION) {// not ok pressed
-				return false;
-			}
+            // |= Pressed O.K.
+            f = chooser.selectedFile
+            lastCurrentDir = f.parentFile
+            // Force the extension to be .mm
+            val ext = getExtension(f.name)
+            if (ext != FreeMindCommon.FREEMIND_FILE_EXTENSION_WITHOUT_DOT) {
+                f = File(f.parent, f.name
+                        + FreeMindCommon.FREEMIND_FILE_EXTENSION)
+            }
+            if (f.exists()) { // If file exists, ask before overwriting.
+                val overwriteMap = JOptionPane.showConfirmDialog(view,
+                        getText("map_already_exists"), "FreeMind",
+                        JOptionPane.YES_NO_OPTION)
+                if (overwriteMap != JOptionPane.YES_OPTION) {
+                    // repeat the save as dialog.
+                    repeatSaveAsQuestion = true
+                }
+            }
+        } while (repeatSaveAsQuestion)
+        try { // We have to lock the file of the map even when it does not exist
+            // yet
+            val lockingUser = getModel()!!.tryToLock(f)
+            if (lockingUser != null) {
+                frame.controller!!.informationMessage(
+                        expandPlaceholders(
+                                getText("map_locked_by_save_as"), f.name,
+                                lockingUser))
+                return false
+            }
+        } catch (e: Exception) { // Throwed by tryToLock
+            frame.controller!!.informationMessage(
+                    expandPlaceholders(
+                            getText("locking_failed_by_save_as"), f.name))
+            return false
+        }
+        save(f)
+        // Update the name of the map
+        controller!!.mapModuleManager!!.updateMapModuleName()
+        return true
+    }
 
-			// |= Pressed O.K.
-			f = chooser.getSelectedFile();
-			lastCurrentDir = f.getParentFile();
-			// Force the extension to be .mm
-			String ext = Tools.getExtension(f.getName());
-			if (!ext.equals(freemind.main.FreeMindCommon.FREEMIND_FILE_EXTENSION_WITHOUT_DOT)) {
-				f = new File(f.getParent(), f.getName()
-						+ freemind.main.FreeMindCommon.FREEMIND_FILE_EXTENSION);
-			}
+    /**
+     * Creates a proposal for a file name to save the map. Removes all illegal
+     * characters.
+     *
+     * Fixed: When creating file names based on the text of the root node, now
+     * all the extra unicode characters are replaced with _. This is not very
+     * good. For chinese content, you would only get a list of ______ as a file
+     * name. Only characters special for building file paths shall be removed
+     * (rather than replaced with _), like : or /. The exact list of dangeous
+     * characters needs to be investigated. 0.8.0RC3.
+     *
+     *
+     * Keywords: suggest file name.
+     *
+     */
+    private val fileNameProposal: String
+        private get() = getFileNameProposal(map.getRootNode())
 
-			if (f.exists()) { // If file exists, ask before overwriting.
-				int overwriteMap = JOptionPane.showConfirmDialog(getView(),
-						getText("map_already_exists"), "FreeMind",
-						JOptionPane.YES_NO_OPTION);
-				if (overwriteMap != JOptionPane.YES_OPTION) {
-					// repeat the save as dialog.
-					repeatSaveAsQuestion = true;
-				}
-			}
-		} while (repeatSaveAsQuestion);
-		try { // We have to lock the file of the map even when it does not exist
-				// yet
-			String lockingUser = getModel().tryToLock(f);
-			if (lockingUser != null) {
-				getFrame().getController().informationMessage(
-						Tools.expandPlaceholders(
-								getText("map_locked_by_save_as"), f.getName(),
-								lockingUser));
-				return false;
-			}
-		} catch (Exception e) { // Throwed by tryToLock
-			getFrame().getController().informationMessage(
-					Tools.expandPlaceholders(
-							getText("locking_failed_by_save_as"), f.getName()));
-			return false;
-		}
+    /**
+     * Return false if user has canceled.
+     */
+    override fun close(force: Boolean, mapModuleManager: MapModuleManager): Boolean {
+        // remove old messages.
+        frame.out("")
+        if (!force && !getModel()!!.isSaved) {
+            val text = """
+                ${getText("save_unsaved")}
+                ${mapModuleManager.mapModule.toString()}
+                """.trimIndent()
+            val title = removeMnemonic(getText("save"))
+            val returnVal = JOptionPane.showOptionDialog(frame
+                    .contentPane, text, title,
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, null, null, null)
+            if (returnVal == JOptionPane.YES_OPTION) {
+                val savingNotCancelled = save()
+                if (!savingNotCancelled) {
+                    return false
+                }
+            } else if (returnVal == JOptionPane.CANCEL_OPTION
+                    || returnVal == JOptionPane.CLOSED_OPTION) {
+                return false
+            }
+        }
+        val management = LastStateStorageManagement(
+                frame.getProperty(
+                        FreeMindCommon.MINDMAP_LAST_STATE_MAP_STORAGE))
+        val restorable = getModel().getRestorable()
+        if (restorable != null) {
+            var store = management.getStorage(restorable)
+            if (store == null) {
+                store = MindmapLastStateStorage()
+            }
+            store.restorableName = restorable
+            store.lastZoom = view!!.zoom
+            val viewLocation = view!!.viewPosition
+            if (viewLocation != null) {
+                store.x = viewLocation.x
+                store.y = viewLocation.y
+            }
+            val lastSelected = getNodeID(selected)
+            store.lastSelected = lastSelected
+            store.clearNodeListMemberList()
+            val selecteds = selecteds
+            for (node in selecteds) {
+                val member = NodeListMember()
+                member.node = getNodeID(node)
+                store.addNodeListMember(member)
+            }
+            management.changeOrAdd(store)
+            frame.setProperty(
+                    FreeMindCommon.MINDMAP_LAST_STATE_MAP_STORAGE,
+                    management.xml)
+        }
+        getModel()!!.destroy()
+        return true
+    }
 
-		save(f);
-		// Update the name of the map
-		getController().getMapModuleManager().updateMapModuleName();
-		return true;
-	}
-
-	/**
-	 * Creates a proposal for a file name to save the map. Removes all illegal
-	 * characters.
-	 * 
-	 * Fixed: When creating file names based on the text of the root node, now
-	 * all the extra unicode characters are replaced with _. This is not very
-	 * good. For chinese content, you would only get a list of ______ as a file
-	 * name. Only characters special for building file paths shall be removed
-	 * (rather than replaced with _), like : or /. The exact list of dangeous
-	 * characters needs to be investigated. 0.8.0RC3.
-	 * 
-	 * 
-	 * Keywords: suggest file name.
-	 * 
-	 */
-	private String getFileNameProposal() {
-		return Tools.getFileNameProposal(getMap().getRootNode());
-	}
-
-	/**
-	 * Return false if user has canceled.
-	 */
-	public boolean close(boolean force, MapModuleManager mapModuleManager) {
-		// remove old messages.
-		getFrame().out("");
-		if (!force && !getModel().isSaved()) {
-			String text = getText("save_unsaved") + "\n"
-					+ mapModuleManager.getMapModule().toString();
-			String title = Tools.removeMnemonic(getText("save"));
-			int returnVal = JOptionPane.showOptionDialog(getFrame()
-					.getContentPane(), text, title,
-					JOptionPane.YES_NO_CANCEL_OPTION,
-					JOptionPane.QUESTION_MESSAGE, null, null, null);
-			if (returnVal == JOptionPane.YES_OPTION) {
-				boolean savingNotCancelled = save();
-				if (!savingNotCancelled) {
-					return false;
-				}
-			} else if ((returnVal == JOptionPane.CANCEL_OPTION)
-					|| (returnVal == JOptionPane.CLOSED_OPTION)) {
-				return false;
-			}
-		}
-		LastStateStorageManagement management = new LastStateStorageManagement(
-				getFrame().getProperty(
-						FreeMindCommon.MINDMAP_LAST_STATE_MAP_STORAGE));
-		String restorable = getModel().getRestorable();
-		if (restorable != null) {
-			MindmapLastStateStorage store = management.getStorage(restorable);
-			if (store == null) {
-				store = new MindmapLastStateStorage();
-			}
-			store.setRestorableName(restorable);
-			store.setLastZoom(getView().getZoom());
-			Point viewLocation = getView().getViewPosition();
-			if (viewLocation != null) {
-				store.setX(viewLocation.x);
-				store.setY(viewLocation.y);
-			}
-			String lastSelected = this.getNodeID(this.getSelected());
-			store.setLastSelected(lastSelected);
-			store.clearNodeListMemberList();
-			List<MindMapNode> selecteds = this.getSelecteds();
-			for (MindMapNode node : selecteds) {
-				NodeListMember member = new NodeListMember();
-				member.setNode(this.getNodeID(node));
-				store.addNodeListMember(member);
-			}
-			management.changeOrAdd(store);
-			getFrame().setProperty(
-					FreeMindCommon.MINDMAP_LAST_STATE_MAP_STORAGE,
-					management.getXml());
-		}
-
-		getModel().destroy();
-		return true;
-	}
-
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.modes.ModeController#setVisible(boolean)
 	 */
-	public void setVisible(boolean visible) {
-		NodeView node = getSelectedView();
-		if (visible) {
-			onFocusNode(node);
-		} else {
-			// bug fix, fc 18.5.2004. This should not be here.
-			if (node != null) {
-				onLostFocusNode(node);
-			}
-		}
-		changeSelection(node, !visible);
-	}
+    override fun setVisible(visible: Boolean) {
+        val node = selectedView
+        if (visible) {
+            onFocusNode(node!!)
+        } else {
+            // bug fix, fc 18.5.2004. This should not be here.
+            node?.let { onLostFocusNode(it) }
+        }
+        changeSelection(node!!, !visible)
+    }
 
-	/**
-	 * Overwrite this to set all of your actions which are dependent on whether
-	 * there is a map or not.
-	 */
-	protected void setAllActions(boolean enabled) {
-		// controller actions:
-		getController().zoomIn.setEnabled(enabled);
-		getController().zoomOut.setEnabled(enabled);
-		getController().showFilterToolbarAction.setEnabled(enabled);
-	}
+    /**
+     * Overwrite this to set all of your actions which are dependent on whether
+     * there is a map or not.
+     */
+    protected open fun setAllActions(enabled: Boolean) {
+        // controller actions:
+        controller!!.zoomIn!!.isEnabled = enabled
+        controller!!.zoomOut!!.isEnabled = enabled
+        controller!!.showFilterToolbarAction!!.isEnabled = enabled
+    }
+    //
+    // Node editing
+    //
+    /**
+     * listener, that blocks the controler if the menu is active (PN) Take care!
+     * This listener is also used for modelpopups (as for graphical links).
+     */
+    private inner class ControllerPopupMenuListener : PopupMenuListener {
+        override fun popupMenuWillBecomeVisible(e: PopupMenuEvent) {
+            isBlocked = true // block controller
+        }
 
-	//
-	// Node editing
-	//
+        override fun popupMenuWillBecomeInvisible(e: PopupMenuEvent) {
+            isBlocked = false // unblock controller
+        }
 
-	/**
-	 * listener, that blocks the controler if the menu is active (PN) Take care!
-	 * This listener is also used for modelpopups (as for graphical links).
-	 */
-	private class ControllerPopupMenuListener implements PopupMenuListener {
-		public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-			setBlocked(true); // block controller
-		}
+        override fun popupMenuCanceled(e: PopupMenuEvent) {
+            isBlocked = false // unblock controller
+        }
+    }
 
-		public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-			setBlocked(false); // unblock controller
-		}
+    /**
+     * Take care! This listener is also used for modelpopups (as for graphical
+     * links).
+     */
+    protected val popupListenerSingleton: ControllerPopupMenuListener = ControllerPopupMenuListener()
+    override fun showPopupMenu(e: MouseEvent?) {
+        if (e!!.isPopupTrigger) {
+            val popupmenu = popupMenu
+            if (popupmenu != null) {
+                // adding listener could be optimized but without much profit...
+                popupmenu.addPopupMenuListener(popupListenerSingleton)
+                popupmenu.show(e.component, e.x, e.y)
+                e.consume()
+            }
+        }
+    }
 
-		public void popupMenuCanceled(PopupMenuEvent e) {
-			setBlocked(false); // unblock controller
-		}
+    /** Default implementation: no context menu.  */
+    override fun getPopupForModel(obj: Any?): JPopupMenu? {
+        return null
+    }
 
-	}
+    /**
+     * Overwrite this, if you have one.
+     */
+    override val leftToolBar: Component?
+        get() = null
 
-	/**
-	 * Take care! This listener is also used for modelpopups (as for graphical
-	 * links).
-	 */
-	protected final ControllerPopupMenuListener popupListenerSingleton = new ControllerPopupMenuListener();
+    /**
+     * Overwrite this, if you have one.
+     */
+    override val modeToolBar: JToolBar?
+        get() = null
 
-	public void showPopupMenu(MouseEvent e) {
-		if (e.isPopupTrigger()) {
-			JPopupMenu popupmenu = getPopupMenu();
-			if (popupmenu != null) {
-				// adding listener could be optimized but without much profit...
-				popupmenu.addPopupMenuListener(this.popupListenerSingleton);
-				popupmenu.show(e.getComponent(), e.getX(), e.getY());
-				e.consume();
-			}
-		}
-	}
+    // status, currently: default, blocked (PN)
+    // (blocked to protect against particular events e.g. in edit mode)
+    override var isBlocked = false
+    override var view: MapView? = null
 
-	/** Default implementation: no context menu. */
-	public JPopupMenu getPopupForModel(java.lang.Object obj) {
-		return null;
-	}
+    /**
+     * Instantiation order: first me and then the model.
+     */
+    init {
+        this.mode = mode
+        // for updates of nodes:
+        // FIXME
+        // do not associate each new ControllerAdapter
+        // with the only one application viewport
+        // DropTarget dropTarget = new DropTarget(getFrame().getViewport(),
+        // new FileOpener());
+    }
 
-	/**
-	 * Overwrite this, if you have one.
-	 */
-	public Component getLeftToolBar() {
-		return null;
-	}
+    override val map: MindMap?
+        get() = mModel
+    val rootNode: MindMapNode
+        get() = map!!.root as MindMapNode
 
-	/**
-	 * Overwrite this, if you have one.
-	 */
-	public JToolBar getModeToolBar() {
-		return null;
-	}
+    override fun getResource(name: String?): URL? {
+        return frame.getResource(name!!)
+    }
 
-	// status, currently: default, blocked (PN)
-	// (blocked to protect against particular events e.g. in edit mode)
-	private boolean isBlocked = false;
-
-	private MapView mView;
-
-	public boolean isBlocked() {
-		return this.isBlocked;
-	}
-
-	public void setBlocked(boolean isBlocked) {
-		this.isBlocked = isBlocked;
-	}
-
-	//
-	// Convenience methods
-	//
-
-	public Mode getMode() {
-		return mode;
-	}
-
-	protected void setMode(Mode mode) {
-		this.mode = mode;
-	}
-
-	public MindMap getMap() {
-		return mModel;
-	}
-
-	public MindMapNode getRootNode() {
-		return (MindMapNode) getMap().getRoot();
-	}
-
-	public URL getResource(String name) {
-		return getFrame().getResource(name);
-	}
-	
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see freemind.modes.MindMap.MapFeedback#getResourceString(java.lang.String)
 	 */
-	@Override
-	public String getResourceString(String pTextId) {
-		return getFrame().getResourceString(pTextId);
-	}
+    override fun getResourceString(pTextId: String?): String? {
+        return frame.getResourceString(pTextId)
+    }
 
-	public Controller getController() {
-		return getMode().getController();
-	}
+    override val controller: Controller?
+        get() = mode.getController()
+    override val frame: FreeMindMain
+        get() = controller!!.frame
 
-	public FreeMindMain getFrame() {
-		return getController().getFrame();
-	}
+    /**
+     * This was inserted by fc, 10.03.04 to enable all actions to refer to its
+     * controller easily.
+     */
+    val modeController: ControllerAdapter
+        get() = this
 
-	/**
-	 * This was inserted by fc, 10.03.04 to enable all actions to refer to its
-	 * controller easily.
-	 */
-	public ControllerAdapter getModeController() {
-		return this;
-	}
+    // fc, 29.2.2004: there is no sense in having this private and the
+    // controller public,
+    // because the getController().getModel() method is available anyway.
+    fun getModel(): MapAdapter? {
+        return mModel
+    }
 
-	// fc, 29.2.2004: there is no sense in having this private and the
-	// controller public,
-	// because the getController().getModel() method is available anyway.
-	public MapAdapter getModel() {
-		return mModel;
-	}
-
-	public MapView getView() {
-		return mView;
-	}
-	
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see freemind.modes.MapFeedback#getViewAbstraction()
 	 */
-	@Override
-	public ViewAbstraction getViewAbstraction() {
-		return getView();
-	}
-	
-	/* (non-Javadoc)
+    override val viewAbstraction: ViewAbstraction?
+        get() = view
+
+    /* (non-Javadoc)
 	 * @see freemind.modes.MapFeedback#getViewFeedback()
 	 */
-	@Override
-	public ViewFeedback getViewFeedback() {
-		return this;
-	}
+    override val viewFeedback: ViewFeedback
+        get() = this
 
-	public void setView(MapView pView) {
-		mView = pView;
-	}
+    protected fun updateMapModuleName() {
+        controller!!.mapModuleManager!!.updateMapModuleName()
+    }
 
-	protected void updateMapModuleName() {
-		getController().getMapModuleManager().updateMapModuleName();
-	}
+    override val selected: MindMapNode?
+        get() {
+            val selectedView = selectedView
+            return selectedView?.model
+        }
+    override val selectedView: NodeView?
+        get() = if (view != null) view!!.selected else null
 
-	public MindMapNode getSelected() {
-		final NodeView selectedView = getSelectedView();
-		if (selectedView != null)
-			return selectedView.getModel();
-		return null;
-	}
+    inner class OpenAction(var mc: ControllerAdapter) : AbstractAction(getText("open"), ImageFactory.getInstance().createIcon(
+            getResource("images/fileopen.png"))) {
+        override fun actionPerformed(e: ActionEvent) {
+            mc.open()
+            controller!!.setTitle() // Possible update of read-only
+        }
+    }
 
-	public NodeView getSelectedView() {
-		if (getView() != null)
-			return getView().getSelected();
-		return null;
-	}
+    inner class SaveAction : FreemindAction(removeMnemonic(getText("save")), ImageFactory.getInstance().createIcon(
+            getResource("images/filesave.png")), this@ControllerAdapter) {
+        override fun actionPerformed(e: ActionEvent) {
+            val success = save()
+            if (success) {
+                frame.out(getText("saved")) // perhaps... (PN)
+            } else {
+                val message = "Saving failed."
+                frame.out(message)
+                controller!!.errorMessage(message)
+            }
+            controller!!.setTitle() // Possible update of read-only
+        }
+    }
 
-	
-	public class OpenAction extends AbstractAction {
-		ControllerAdapter mc;
+    inner class SaveAsAction : FreemindAction(getText("save_as"), ImageFactory.getInstance().createIcon(
+            getResource("images/filesaveas.png")), this@ControllerAdapter) {
+        override fun actionPerformed(e: ActionEvent) {
+            saveAs()
+            controller!!.setTitle() // Possible update of read-only
+        }
+    }
 
-		public OpenAction(ControllerAdapter modeController) {
-			super(getText("open"), freemind.view.ImageFactory.getInstance().createIcon(
-					getResource("images/fileopen.png")));
-			mc = modeController;
-		}
+    protected inner class FileOpener : DropTargetListener {
+        private fun isDragAcceptable(event: DropTargetDragEvent): Boolean {
+            // check if there is at least one File Type in the list
+            val flavors = event.currentDataFlavors
+            for (i in flavors.indices) {
+                if (flavors[i].isFlavorJavaFileListType) {
+                    // event.acceptDrag(DnDConstants.ACTION_COPY);
+                    return true
+                }
+            }
+            // event.rejectDrag();
+            return false
+        }
 
-		public void actionPerformed(ActionEvent e) {
-			mc.open();
-			getController().setTitle(); // Possible update of read-only
-		}
-	}
+        private fun isDropAcceptable(event: DropTargetDropEvent): Boolean {
+            // check if there is at least one File Type in the list
+            val flavors = event.currentDataFlavors
+            for (i in flavors.indices) {
+                if (flavors[i].isFlavorJavaFileListType) {
+                    return true
+                }
+            }
+            return false
+        }
 
-	public class SaveAction extends FreemindAction {
+        override fun drop(dtde: DropTargetDropEvent) {
+            if (!isDropAcceptable(dtde)) {
+                dtde.rejectDrop()
+                return
+            }
+            dtde.acceptDrop(DnDConstants.ACTION_COPY)
+            try {
+                val data = dtde.transferable.getTransferData(DataFlavor.javaFileListFlavor)
+                if (data == null) {
+                    // Shouldn't happen because dragEnter() rejects drags w/out
+                    // at least
+                    // one javaFileListFlavor. But just in case it does ...
+                    dtde.dropComplete(false)
+                    return
+                }
+                val iterator = (data as List<File?>).iterator()
+                while (iterator.hasNext()) {
+                    val file = iterator.next()
+                    load(file)
+                }
+            } catch (e: Exception) {
+                JOptionPane.showMessageDialog(
+                        view, "Couldn't open dropped file(s). Reason: "
+                        + e.message // getText("file_not_found")
+                )
+                dtde.dropComplete(false)
+                return
+            }
+            dtde.dropComplete(true)
+        }
 
-		public SaveAction() {
-			super(Tools.removeMnemonic(getText("save")), freemind.view.ImageFactory.getInstance().createIcon(
-					getResource("images/filesave.png")), ControllerAdapter.this);
-		}
+        override fun dragEnter(dtde: DropTargetDragEvent) {
+            if (!isDragAcceptable(dtde)) {
+                dtde.rejectDrag()
+                return
+            }
+        }
 
-		public void actionPerformed(ActionEvent e) {
-			boolean success = save();
-			if (success) {
-				getFrame().out(getText("saved")); // perhaps... (PN)
-			} else {
-				String message = "Saving failed.";
-				getFrame().out(message);
-				getController().errorMessage(message);
-			}
-			getController().setTitle(); // Possible update of read-only
-		}
+        override fun dragOver(e: DropTargetDragEvent) {}
+        override fun dragExit(e: DropTargetEvent) {}
+        fun dragScroll(e: DropTargetDragEvent?) {}
+        override fun dropActionChanged(e: DropTargetDragEvent) {}
+    }
 
-	}
+    override fun copy(node: MindMapNode?, saveInvisible: Boolean): Transferable {
+        throw IllegalArgumentException("No copy so far.")
+    }
 
-	public class SaveAsAction extends FreemindAction {
+    override fun copy(): Transferable? {
+        return copy(view!!.selectedNodesSortedByY, false)
+    }
 
-		public SaveAsAction() {
-			super(getText("save_as"), freemind.view.ImageFactory.getInstance().createIcon(
-					getResource("images/filesaveas.png")), ControllerAdapter.this);
-		}
+    override fun copySingle(): Transferable? {
+        val selectedNodes = view!!.singleSelectedNodes
+        return copy(selectedNodes, false)
+    }
 
-		public void actionPerformed(ActionEvent e) {
-			saveAs();
-			getController().setTitle(); // Possible update of read-only
-		}
-	}
+    override fun copy(selectedNodes: List<MindMapNode?>, copyInvisible: Boolean): Transferable? {
+        try {
+            val forNodesFlavor = createForNodesFlavor(selectedNodes,
+                    copyInvisible)
+            val createForNodeIdsFlavor = createForNodeIdsFlavor(selectedNodes,
+                    copyInvisible)
+            val plainText = map!!.getAsPlainText(selectedNodes)
+            return MindMapNodesSelection(forNodesFlavor, null, plainText!!,
+                    map!!.getAsRTF(selectedNodes), map!!.getAsHTML(
+                    selectedNodes), null, null, createForNodeIdsFlavor)
+        } catch (ex: UnsupportedFlavorException) {
+            Resources.getInstance().logException(ex)
+        } catch (ex: IOException) {
+            Resources.getInstance().logException(ex)
+        }
+        return null
+    }
 
-	protected class FileOpener implements DropTargetListener {
-		private boolean isDragAcceptable(DropTargetDragEvent event) {
-			// check if there is at least one File Type in the list
-			DataFlavor[] flavors = event.getCurrentDataFlavors();
-			for (int i = 0; i < flavors.length; i++) {
-				if (flavors[i].isFlavorJavaFileListType()) {
-					// event.acceptDrag(DnDConstants.ACTION_COPY);
-					return true;
-				}
-			}
-			// event.rejectDrag();
-			return false;
-		}
+    @Throws(UnsupportedFlavorException::class, IOException::class)
+    fun createForNodesFlavor(selectedNodes: List<MindMapNode?>, copyInvisible: Boolean): String {
+        var forNodesFlavor = ""
+        var firstLoop = true
+        for (tmpNode in selectedNodes) {
+            if (firstLoop) {
+                firstLoop = false
+            } else {
+                forNodesFlavor += ModeController.Companion.NODESEPARATOR
+            }
+            forNodesFlavor += copy(tmpNode, copyInvisible).getTransferData(
+                    MindMapNodesSelection.mindMapNodesFlavor)
+        }
+        return forNodesFlavor
+    }
 
-		private boolean isDropAcceptable(DropTargetDropEvent event) {
-			// check if there is at least one File Type in the list
-			DataFlavor[] flavors = event.getCurrentDataFlavors();
-			for (int i = 0; i < flavors.length; i++) {
-				if (flavors[i].isFlavorJavaFileListType()) {
-					return true;
-				}
-			}
-			return false;
-		}
+    @Throws(UnsupportedFlavorException::class, IOException::class)
+    fun createForNodeIdsFlavor(selectedNodes: List<MindMapNode?>, copyInvisible: Boolean): List<String?> {
+        val forNodesFlavor = Vector<String?>()
+        for (tmpNode in selectedNodes) {
+            forNodesFlavor.add(getNodeID(tmpNode))
+        }
+        return forNodesFlavor
+    }
 
-		public void drop(DropTargetDropEvent dtde) {
-			if (!isDropAcceptable(dtde)) {
-				dtde.rejectDrop();
-				return;
-			}
-			dtde.acceptDrop(DnDConstants.ACTION_COPY);
-			try {
-				Object data = dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-				if (data == null) {
-					// Shouldn't happen because dragEnter() rejects drags w/out
-					// at least
-					// one javaFileListFlavor. But just in case it does ...
-					dtde.dropComplete(false);
-					return;
-				}
-				Iterator<File> iterator = ((List<File>) data).iterator();
-				while (iterator.hasNext()) {
-					File file = iterator.next();
-					load(file);
-				}
-			} catch (Exception e) {
-				JOptionPane.showMessageDialog(
-						getView(),
-						"Couldn't open dropped file(s). Reason: "
-								+ e.getMessage()
-				// getText("file_not_found")
-						);
-				dtde.dropComplete(false);
-				return;
-			}
-			dtde.dropComplete(true);
-		}
-
-		public void dragEnter(DropTargetDragEvent dtde) {
-			if (!isDragAcceptable(dtde)) {
-				dtde.rejectDrag();
-				return;
-			}
-		}
-
-		public void dragOver(DropTargetDragEvent e) {
-		}
-
-		public void dragExit(DropTargetEvent e) {
-		}
-
-		public void dragScroll(DropTargetDragEvent e) {
-		}
-
-		public void dropActionChanged(DropTargetDragEvent e) {
-		}
-	}
-
-	public Transferable copy(MindMapNode node, boolean saveInvisible) {
-		throw new IllegalArgumentException("No copy so far.");
-	}
-
-	public Transferable copy() {
-		return copy(getView().getSelectedNodesSortedByY(), false);
-	}
-
-	public Transferable copySingle() {
-
-		final ArrayList<MindMapNode> selectedNodes = getView().getSingleSelectedNodes();
-		return copy(selectedNodes, false);
-	}
-
-	public Transferable copy(List<MindMapNode> selectedNodes, boolean copyInvisible) {
-		try {
-			String forNodesFlavor = createForNodesFlavor(selectedNodes,
-					copyInvisible);
-			List<String> createForNodeIdsFlavor = createForNodeIdsFlavor(selectedNodes,
-					copyInvisible);
-
-			String plainText = getMap().getAsPlainText(selectedNodes);
-			return new MindMapNodesSelection(forNodesFlavor, null, plainText,
-					getMap().getAsRTF(selectedNodes), getMap().getAsHTML(
-							selectedNodes), null, null, createForNodeIdsFlavor);
-		}
-
-		catch (UnsupportedFlavorException ex) {
-			freemind.main.Resources.getInstance().logException(ex);
-		} catch (IOException ex) {
-			freemind.main.Resources.getInstance().logException(ex);
-		}
-		return null;
-	}
-
-	public String createForNodesFlavor(List<MindMapNode> selectedNodes, boolean copyInvisible)
-			throws UnsupportedFlavorException, IOException {
-		String forNodesFlavor = "";
-		boolean firstLoop = true;
-		for (MindMapNode tmpNode : selectedNodes) {
-			if (firstLoop) {
-				firstLoop = false;
-			} else {
-				forNodesFlavor += NODESEPARATOR;
-			}
-
-			forNodesFlavor += copy(tmpNode, copyInvisible).getTransferData(
-					MindMapNodesSelection.mindMapNodesFlavor);
-		}
-		return forNodesFlavor;
-	}
-
-	public List<String> createForNodeIdsFlavor(List<MindMapNode> selectedNodes, boolean copyInvisible)
-			throws UnsupportedFlavorException, IOException {
-		Vector<String> forNodesFlavor = new Vector<>();
-
-		for (MindMapNode tmpNode : selectedNodes) {
-			forNodesFlavor.add(getNodeID(tmpNode));
-		}
-		return forNodesFlavor;
-	}
-
-	/**
-     */
-	public Color getSelectionColor() {
-		return selectionColor;
-	}
-
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.modes.ModeController#updatePopupMenu(freemind.controller.
 	 * StructuredMenuHolder)
 	 */
-	public void updatePopupMenu(StructuredMenuHolder holder) {
+    override fun updatePopupMenu(holder: StructuredMenuHolder?) {}
 
-	}
-
-	/**
+    /**
      *
      */
+    override fun shutdownController() {
+        setAllActions(false)
+        mapMouseWheelListener.deregister()
+    }
 
-	public void shutdownController() {
-		setAllActions(false);
-		getMapMouseWheelListener().deregister();
-	}
+    /**
+     * This method is called after and before a change of the map module. Use it
+     * to perform the actions that cannot be performed at creation time.
+     *
+     */
+    override fun startupController() {
+        setAllActions(true)
+        if (frame.view != null) {
+            val fileOpener = FileOpener()
+            DropTarget(frame.view, fileOpener)
+        }
+        mapMouseWheelListener.register(
+                MindMapMouseWheelEventHandler(this))
+    }
 
-	/**
-	 * This method is called after and before a change of the map module. Use it
-	 * to perform the actions that cannot be performed at creation time.
-	 * 
-	 */
-	public void startupController() {
-		setAllActions(true);
-		if (getFrame().getView() != null) {
-			FileOpener fileOpener = new FileOpener();
-			new DropTarget(getFrame().getView(),fileOpener);
-		}
-		getMapMouseWheelListener().register(
-				new MindMapMouseWheelEventHandler(this));
-	}
+    override fun getLinkShortText(node: MindMapNode): String? {
+        val adaptedText = node.link ?: return null
+        return if (adaptedText.startsWith("#")) {
+            try {
+                val dest: MindMapNode = getNodeFromID(adaptedText.substring(1))
+                dest.getShortText(this)
+            } catch (e: Exception) {
+                getText("link_not_available_any_more")
+            }
+        } else adaptedText
+    }
 
-	public String getLinkShortText(MindMapNode node) {
-		String adaptedText = node.getLink();
-		if (adaptedText == null)
-			return null;
-		if (adaptedText.startsWith("#")) {
-			try {
-				MindMapNode dest = getNodeFromID(adaptedText.substring(1));
-				return dest.getShortText(this);
-			} catch (Exception e) {
-				return getText("link_not_available_any_more");
-			}
-		}
-		return adaptedText;
-	}
+    override fun displayNode(node: MindMapNode?) {
+        displayNode(node, null)
+    }
 
-	public void displayNode(MindMapNode node) {
-		displayNode(node, null);
-	}
+    /**
+     * Display a node in the display (used by find and the goto action by arrow
+     * link actions).
+     */
+    fun displayNode(node: MindMapNode?, nodesUnfoldedByDisplay: ArrayList<MindMapNode?>?) {
+        // Unfold the path to the node
+        val path: Array<Any?>? = map!!.getPathToRoot(node)
+        // Iterate the path with the exception of the last node
+        for (i in 0 until path!!.size - 1) {
+            val nodeOnPath = path[i] as MindMapNode?
+            // System.out.println(nodeOnPath);
+            if (nodeOnPath!!.isFolded) {
+                nodesUnfoldedByDisplay?.add(nodeOnPath)
+                setFolded(nodeOnPath, false)
+            }
+        }
+    }
 
-	/**
-	 * Display a node in the display (used by find and the goto action by arrow
-	 * link actions).
-	 */
-	public void displayNode(MindMapNode node, ArrayList<MindMapNode> nodesUnfoldedByDisplay) {
-		// Unfold the path to the node
-		Object[] path = getMap().getPathToRoot(node);
-		// Iterate the path with the exception of the last node
-		for (int i = 0; i < path.length - 1; i++) {
-			MindMapNode nodeOnPath = (MindMapNode) path[i];
-			// System.out.println(nodeOnPath);
-			if (nodeOnPath.isFolded()) {
-				if (nodesUnfoldedByDisplay != null)
-					nodesUnfoldedByDisplay.add(nodeOnPath);
-				setFolded(nodeOnPath, false);
-			}
-		}
+    /** Select the node and scroll to it.  */
+    private fun centerNode(node: NodeView?) {
+        view!!.centerNode(node)
+        view!!.selectAsTheOnlyOneSelected(node)
+    }
 
-	}
+    override fun centerNode(node: MindMapNode?) {
+        var view: NodeView? = null
+        view = if (node != null) {
+            controller!!.view!!.getNodeView(node)
+        } else {
+            return
+        }
+        if (view == null) {
+            displayNode(node)
+            view = controller!!.view!!.getNodeView(node)
+        }
+        centerNode(view)
+    }
 
-	/** Select the node and scroll to it. **/
-	private void centerNode(NodeView node) {
-		getView().centerNode(node);
-		getView().selectAsTheOnlyOneSelected(node);
-	}
+    override fun getNodeView(node: MindMapNode?): NodeView? {
+        return view!!.getNodeView(node)
+    }
 
-	public void centerNode(MindMapNode node) {
-		NodeView view = null;
-		if (node != null) {
-			view = getController().getView().getNodeView(node);
-		} else {
-			return;
-		}
-		if (view == null) {
-			displayNode(node);
-			view = getController().getView().getNodeView(node);
-		}
-		centerNode(view);
-	}
+    fun loadURL() {
+        val link = selected.getLink()
+        link?.let { loadURL(it) }
+    }
 
-	@Override
-	public NodeView getNodeView(MindMapNode node) {
-		return getView().getNodeView(node);
-	}
+    open val registeredMouseWheelEventHandler: Set<MouseWheelEventHandler>
+        get() = emptySet()
+    override val mapModule: MapModule?
+        get() = controller!!.mapModuleManager
+                .getModuleGivenModeController(this)
 
-	public void loadURL() {
-		String link = getSelected().getLink();
-		if (link != null) {
-			loadURL(link);
-		}
-	}
+    override fun setToolTip(node: MindMapNode, key: String?, value: String?) {
+        node.setToolTip(key, value)
+        nodeRefresh(node)
+    }
 
-	public Set<MouseWheelEventHandler> getRegisteredMouseWheelEventHandler() {
-		return Collections.emptySet();
-	}
-
-	public MapModule getMapModule() {
-		return getController().getMapModuleManager()
-				.getModuleGivenModeController(this);
-	}
-
-	public void setToolTip(MindMapNode node, String key, String value) {
-		node.setToolTip(key, value);
-		nodeRefresh(node);
-	}
-
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see freemind.modes.MindMap.MapFeedback#getProperty(java.lang.String)
 	 */
-	@Override
-	public String getProperty(String pResourceId) {
-		return getController().getProperty(pResourceId);
-	}
+    override fun getProperty(pResourceId: String): String {
+        return controller!!.getProperty(pResourceId)
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see freemind.modes.MindMap.MapFeedback#getDefaultFont()
 	 */
-	@Override
-	public Font getDefaultFont() {
-		return getController().getDefaultFont();
-	}
+    override fun getDefaultFont(): Font {
+        return controller!!.defaultFont!!
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see freemind.modes.MindMap.MapFeedback#getFontThroughMap(java.awt.Font)
 	 */
-	@Override
-	public Font getFontThroughMap(Font pFont) {
-		return getController().getFontThroughMap(pFont);
-	}
+    override fun getFontThroughMap(pFont: Font): Font? {
+        return controller!!.getFontThroughMap(pFont)
+    }
 
-	@Override
-	public NodeMouseMotionListener getNodeMouseMotionListener() {
-		return getController().getNodeMouseMotionListener();
-	}
+    override fun getNodeMouseMotionListener(): NodeMouseMotionListener {
+        return controller!!.nodeMouseMotionListener!!
+    }
 
-	@Override
-	public NodeMotionListener getNodeMotionListener() {
-		return getController().getNodeMotionListener();
-	}
+    override fun getNodeMotionListener(): NodeMotionListener {
+        return controller!!.nodeMotionListener!!
+    }
 
-	@Override
-	public NodeKeyListener getNodeKeyListener() {
-		return getController().getNodeKeyListener();
-	}
+    override fun getNodeKeyListener(): NodeKeyListener {
+        return controller!!.nodeKeyListener!!
+    }
 
-	@Override
-	public NodeDragListener getNodeDragListener() {
-		return getController().getNodeDragListener();
-	}
+    override fun getNodeDragListener(): NodeDragListener {
+        return controller!!.nodeDragListener!!
+    }
 
-	@Override
-	public NodeDropListener getNodeDropListener() {
-		return getController().getNodeDropListener();
-	}
+    override fun getNodeDropListener(): NodeDropListener {
+        return controller!!.nodeDropListener!!
+    }
 
-	@Override
-	public MapMouseMotionListener getMapMouseMotionListener() {
-		return getController().getMapMouseMotionListener();
-	}
+    override fun getMapMouseMotionListener(): MapMouseMotionListener {
+        return controller!!.mapMouseMotionListener!!
+    }
 
-	@Override
-	public MapMouseWheelListener getMapMouseWheelListener() {
-		return getController().getMapMouseWheelListener();
-	}
+    override fun getMapMouseWheelListener(): MapMouseWheelListener {
+        return controller!!.mapMouseWheelListener!!
+    }
 
+    /**
+     * @throws [IllegalArgumentException] when node isn't found.
+     */
+    override fun getNodeFromID(nodeID: String?): NodeAdapter {
+        return map.getLinkRegistry().getTargetForId(nodeID) as NodeAdapter
+                ?: throw IllegalArgumentException("Node belonging to the node id "
+                        + nodeID + " not found in map " + map.getFile())
+    }
 
-	/**
-	 * @throws {@link IllegalArgumentException} when node isn't found.
-	 */
-	@Override
-	public NodeAdapter getNodeFromID(String nodeID) {
-		NodeAdapter node = (NodeAdapter) getMap().getLinkRegistry().getTargetForId(nodeID);
-		if (node == null) {
-			throw new IllegalArgumentException("Node belonging to the node id "
-					+ nodeID + " not found in map " + getMap().getFile());
-		}
-		return node;
-	}
+    override fun getNodeID(selected: MindMapNode?): String? {
+        return map.getLinkRegistry().registerLinkTarget(selected)
+    }
 
-	@Override
-	public String getNodeID(MindMapNode selected) {
-		return getMap().getLinkRegistry().registerLinkTarget(selected);
-	}
-
-	@Override
-	public void setProperty(String pProperty, String pValue) {
-		// this method fires a property change event to inform others.
-		getController().setProperty(pProperty, pValue);
-	}
-	
-	
+    override fun setProperty(pProperty: String?, pValue: String?) {
+        // this method fires a property change event to inform others.
+        controller!!.setProperty(pProperty, pValue)
+    }
 }

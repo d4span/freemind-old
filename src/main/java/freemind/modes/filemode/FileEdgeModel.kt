@@ -17,16 +17,10 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: FileEdgeModel.java,v 1.5 2001/03/24 22:45:46 ponder Exp $*/
+package freemind.modes.filemode
 
-package freemind.modes.filemode;
+import freemind.modes.EdgeAdapter
+import freemind.modes.MapFeedback
+import freemind.modes.MindMapNode
 
-import freemind.modes.EdgeAdapter;
-import freemind.modes.MapFeedback;
-import freemind.modes.MindMapNode;
-
-public class FileEdgeModel extends EdgeAdapter {
-
-	public FileEdgeModel(MindMapNode node, MapFeedback pMapFeedback) {
-		super(node, pMapFeedback);
-	}
-}
+class FileEdgeModel(node: MindMapNode?, pMapFeedback: MapFeedback?) : EdgeAdapter(node, pMapFeedback)

@@ -16,198 +16,996 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package freemind.modes
 
-package freemind.modes;
+import freemind.controller.Controller.informationMessage
+import freemind.main.FreeMindMain.jFrame
+import freemind.main.Tools.addEscapeActionToDialog
+import freemind.main.Tools.setLabelAndMnemonic
+import freemind.main.Tools.setDialogLocationRelativeTo
+import freemind.common.TextTranslator.getText
+import freemind.main.FreeMindMain.getResourceString
+import freemind.main.FreeMindMain.getAdjustableProperty
+import freemind.main.FreeMindMain.getProperty
+import freemind.main.FreeMindMain.setProperty
+import freemind.extensions.PermanentNodeHookAdapter.loadFrom
+import freemind.extensions.PermanentNodeHookAdapter.loadNameValuePairs
+import freemind.extensions.PermanentNodeHookAdapter.save
+import freemind.extensions.PermanentNodeHookAdapter.saveNameValuePairs
+import freemind.extensions.NodeHookAdapter.getNode
+import freemind.extensions.HookAdapter.name
+import freemind.extensions.PermanentNodeHookAdapter.shutdownMapHook
+import freemind.extensions.NodeHookAdapter.invoke
+import freemind.extensions.HookAdapter.getResourceString
+import freemind.extensions.HookAdapter.getController
+import freemind.main.Tools.safeEquals
+import freemind.extensions.PermanentNodeHookAdapter.setToolTip
+import freemind.main.Tools.BooleanHolder.value
+import freemind.main.Tools.IntHolder.value
+import freemind.main.FreeMindMain.getLogger
+import freemind.main.FreeMindMain.out
+import freemind.main.Tools.isLinux
+import freemind.main.Tools.isMacOsX
+import freemind.main.FreeMindMain.getIntProperty
+import freemind.controller.Controller.setZoom
+import freemind.controller.Controller.mapModuleManager
+import freemind.controller.MapModuleManager.changeToMapOfMode
+import freemind.main.Tools.fileToUrl
+import freemind.controller.Controller.getResourceString
+import freemind.controller.Controller.view
+import freemind.controller.Controller.frame
+import freemind.controller.NodeMouseMotionListener.register
+import freemind.controller.MapMouseMotionListener.register
+import freemind.controller.NodeKeyListener.register
+import freemind.controller.NodeMouseMotionListener.deregister
+import freemind.controller.MapMouseMotionListener.deregister
+import freemind.controller.NodeKeyListener.deregister
+import freemind.controller.Controller.obtainFocusForSelected
+import freemind.controller.Controller.errorMessage
+import freemind.controller.Controller.removeSplitPane
+import freemind.controller.Controller.insertComponentIntoSplitPane
+import freemind.main.FreeMindMain.openDocument
+import freemind.controller.Controller.getResource
+import freemind.controller.StructuredMenuHolder.addSeparator
+import freemind.main.FreeMindMain.controller
+import freemind.extensions.MindMapHook.setProperties
+import freemind.extensions.MindMapHook.name
+import freemind.extensions.MindMapHook.setPluginBaseClass
+import freemind.main.Tools.DesEncrypter.decrypt
+import freemind.extensions.HookDescriptorPluginAction.modes
+import freemind.extensions.ImportWizard.buildClassList
+import freemind.controller.actions.generated.instance.Plugin.listChoiceList
+import freemind.controller.actions.generated.instance.PluginAction.label
+import freemind.extensions.HookDescriptorBase.pluginClassLoader
+import freemind.extensions.HookDescriptorPluginAction.className
+import freemind.extensions.HookDescriptorBase.pluginClasspath
+import freemind.controller.actions.generated.instance.PluginClasspath.jar
+import freemind.extensions.HookDescriptorPluginAction.properties
+import freemind.extensions.HookDescriptorPluginAction.name
+import freemind.extensions.HookDescriptorPluginAction.documentation
+import freemind.extensions.HookDescriptorPluginAction.iconPath
+import freemind.extensions.HookDescriptorPluginAction.keyStroke
+import freemind.extensions.HookDescriptorPluginAction.instanciationMethod
+import freemind.extensions.HookDescriptorRegistration.listPluginModeList
+import freemind.controller.actions.generated.instance.PluginMode.className
+import freemind.extensions.HookDescriptorBase.pluginBase
+import freemind.extensions.HookDescriptorRegistration.className
+import freemind.controller.actions.generated.instance.Plugin.label
+import freemind.extensions.HookDescriptorPluginAction.isSelectable
+import freemind.controller.actions.generated.instance.NodeAction.node
+import freemind.controller.actions.generated.instance.CompoundAction.addChoice
+import freemind.controller.actions.generated.instance.CompoundAction.addAtChoice
+import freemind.controller.actions.generated.instance.CompoundAction.sizeChoiceList
+import freemind.controller.actions.generated.instance.TextNodeAction.text
+import freemind.controller.actions.generated.instance.AddCloudXmlAction.enabled
+import freemind.controller.actions.generated.instance.AddCloudXmlAction.color
+import freemind.main.Tools.colorToXml
+import freemind.main.Tools.xmlToColor
+import freemind.controller.actions.generated.instance.PasteNodeAction.transferableContent
+import freemind.controller.actions.generated.instance.PasteNodeAction.asSibling
+import freemind.controller.actions.generated.instance.UndoPasteNodeAction.asSibling
+import freemind.main.Tools.marshall
+import freemind.main.Tools.fileToRelativeUrlString
+import freemind.main.Tools.fromBase64
+import freemind.main.Tools.firstLetterCapitalized
+import freemind.controller.actions.generated.instance.TransferableFile.fileName
+import freemind.controller.actions.generated.instance.TransferableContent.addTransferableFile
+import freemind.controller.actions.generated.instance.UndoPasteNodeAction.nodeAmount
+import freemind.controller.actions.generated.instance.TransferableContent.transferable
+import freemind.main.Tools.countOccurrences
+import freemind.controller.actions.generated.instance.TransferableContent.transferableAsHtml
+import freemind.controller.actions.generated.instance.TransferableContent.transferableAsPlainText
+import freemind.main.Tools.toBase64
+import freemind.controller.actions.generated.instance.TransferableContent.transferableAsImage
+import freemind.controller.actions.generated.instance.TransferableContent.listTransferableFileList
+import freemind.controller.actions.generated.instance.TransferableContent.transferableAsRTF
+import freemind.controller.actions.generated.instance.TransferableContent.transferableAsDrop
+import freemind.extensions.PermanentNodeHook.processUnfinishedLinks
+import freemind.controller.actions.generated.instance.MoveNodesAction.listNodeListMemberList
+import freemind.controller.actions.generated.instance.NodeListMember.node
+import freemind.controller.actions.generated.instance.MoveNodesAction.direction
+import freemind.controller.actions.generated.instance.MoveNodesAction.addNodeListMember
+import freemind.controller.actions.generated.instance.RevertXmlAction.localFileName
+import freemind.controller.actions.generated.instance.RevertXmlAction.map
+import freemind.controller.actions.generated.instance.RevertXmlAction.filePrefix
+import freemind.extensions.HookFactory.getInstanciationMethod
+import freemind.extensions.HookInstanciationMethod.isPermanent
+import freemind.extensions.HookInstanciationMethod.isUndoable
+import freemind.extensions.HookInstanciationMethod.getDestinationNodes
+import freemind.extensions.HookInstanciationMethod.getCenterNode
+import freemind.extensions.HookInstanciationMethod.isAlreadyPresent
+import freemind.extensions.PermanentNodeHook.save
+import freemind.main.XMLElement.countChildren
+import freemind.main.XMLElement.getChildren
+import freemind.main.XMLElement.name
+import freemind.main.XMLElement.enumerateAttributeNames
+import freemind.controller.actions.generated.instance.NodeChildParameter.key
+import freemind.controller.actions.generated.instance.NodeChildParameter.value
+import freemind.main.XMLElement.getStringAttribute
+import freemind.controller.actions.generated.instance.HookNodeAction.addNodeChildParameter
+import freemind.controller.actions.generated.instance.HookNodeAction.hookName
+import freemind.controller.actions.generated.instance.HookNodeAction.addNodeListMember
+import freemind.controller.actions.generated.instance.HookNodeAction.listNodeListMemberList
+import freemind.main.XMLElement.addChild
+import freemind.controller.actions.generated.instance.HookNodeAction.listNodeChildParameterList
+import freemind.main.XMLElement.setAttribute
+import freemind.extensions.PermanentNodeHook.loadFrom
+import freemind.extensions.PermanentNodeHook.onFocusNode
+import freemind.controller.actions.generated.instance.AddIconAction.iconName
+import freemind.controller.actions.generated.instance.AddIconAction.iconPosition
+import freemind.main.Tools.iconFirstIndex
+import freemind.main.Tools.iconLastIndex
+import freemind.controller.actions.generated.instance.AddLinkXmlAction.destination
+import freemind.controller.actions.generated.instance.BoldNodeAction.bold
+import freemind.controller.actions.generated.instance.CompoundAction.listChoiceList
+import freemind.controller.actions.generated.instance.FontSizeNodeAction.size
+import freemind.controller.actions.generated.instance.MoveNodeXmlAction.hGap
+import freemind.controller.actions.generated.instance.MoveNodeXmlAction.shiftY
+import freemind.controller.actions.generated.instance.MoveNodeXmlAction.vGap
+import freemind.controller.actions.generated.instance.NewNodeAction.index
+import freemind.controller.actions.generated.instance.NewNodeAction.position
+import freemind.controller.actions.generated.instance.NewNodeAction.newId
+import freemind.extensions.PermanentNodeHook.onNewChild
+import freemind.controller.actions.generated.instance.EdgeColorFormatAction.color
+import freemind.controller.actions.generated.instance.EdgeStyleFormatAction.style
+import freemind.controller.actions.generated.instance.EdgeWidthFormatAction.width
+import freemind.controller.actions.generated.instance.NodeColorFormatAction.color
+import freemind.controller.actions.generated.instance.NodeStyleFormatAction.style
+import freemind.controller.actions.generated.instance.UnderlinedNodeAction.underlined
+import freemind.controller.actions.generated.instance.CloudColorXmlAction.color
+import freemind.controller.actions.generated.instance.FontNodeAction.font
+import freemind.controller.actions.generated.instance.ItalicNodeAction.italic
+import freemind.controller.actions.generated.instance.RemoveIconXmlAction.iconPosition
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction.destination
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction.newId
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction.color
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction.endArrow
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction.endInclination
+import freemind.main.Tools.xmlToPoint
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction.startArrow
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction.startInclination
+import freemind.controller.actions.generated.instance.AddAttributeAction.name
+import freemind.controller.actions.generated.instance.AddAttributeAction.value
+import freemind.controller.actions.generated.instance.SetAttributeAction.name
+import freemind.controller.actions.generated.instance.SetAttributeAction.value
+import freemind.controller.actions.generated.instance.SetAttributeAction.position
+import freemind.controller.actions.generated.instance.FoldAction.folded
+import freemind.main.Tools.compareText
+import freemind.controller.actions.generated.instance.ArrowLinkColorXmlAction.id
+import freemind.controller.actions.generated.instance.ArrowLinkColorXmlAction.color
+import freemind.controller.actions.generated.instance.InsertAttributeAction.name
+import freemind.controller.actions.generated.instance.InsertAttributeAction.value
+import freemind.controller.actions.generated.instance.InsertAttributeAction.position
+import freemind.controller.actions.generated.instance.RemoveArrowLinkXmlAction.id
+import freemind.main.Tools.PointToXml
+import freemind.controller.actions.generated.instance.RemoveAttributeAction.position
+import freemind.controller.actions.generated.instance.StrikethroughNodeAction.strikethrough
+import freemind.controller.actions.generated.instance.NodeBackgroundColorFormatAction.color
+import freemind.controller.actions.generated.instance.ArrowLinkArrowXmlAction.id
+import freemind.controller.actions.generated.instance.ArrowLinkArrowXmlAction.startArrow
+import freemind.controller.actions.generated.instance.ArrowLinkArrowXmlAction.endArrow
+import freemind.controller.actions.generated.instance.ArrowLinkPointXmlAction.id
+import freemind.controller.actions.generated.instance.ArrowLinkPointXmlAction.startPoint
+import freemind.controller.actions.generated.instance.ArrowLinkPointXmlAction.endPoint
+import freemind.common.OptionalDontShowMeAgainDialog.show
+import freemind.common.OptionalDontShowMeAgainDialog.result
+import freemind.controller.Controller.getProperty
+import freemind.main.Tools.getKeyStroke
+import freemind.main.Tools.printXmlAction
+import freemind.main.Tools.deepCopy
+import freemind.main.FreeMindMain.setWaitingCursor
+import freemind.extensions.HookFactory.getPluginBaseClass
+import freemind.controller.MenuItemEnabledListener.isEnabled
+import freemind.controller.MenuItemSelectedListener.isSelected
+import freemind.main.Tools.removeMnemonic
+import freemind.main.Tools.getMindMapNodesFromClipboard
+import freemind.controller.actions.generated.instance.Pattern.name
+import freemind.main.FreeMindMain.err
+import freemind.main.Tools.getFileNameProposal
+import freemind.main.Tools.getExtension
+import freemind.main.Tools.expandPlaceholders
+import freemind.main.FreeMindMain.contentPane
+import freemind.main.Tools.removeExtension
+import freemind.common.PropertyControl.layout
+import freemind.common.PropertyBean.addPropertyChangeListener
+import freemind.common.ThreeCheckBoxProperty.value
+import freemind.main.FreeMind.getDefaultProperty
+import freemind.controller.actions.generated.instance.Pattern.patternNodeColor
+import freemind.controller.actions.generated.instance.Pattern.patternNodeBackgroundColor
+import freemind.controller.actions.generated.instance.Pattern.patternNodeStyle
+import freemind.controller.actions.generated.instance.Pattern.patternNodeText
+import freemind.controller.actions.generated.instance.Pattern.patternEdgeColor
+import freemind.controller.actions.generated.instance.Pattern.patternEdgeStyle
+import freemind.controller.actions.generated.instance.Pattern.patternEdgeWidth
+import freemind.controller.actions.generated.instance.Pattern.patternNodeFontName
+import freemind.controller.Controller.defaultFontFamilyName
+import freemind.controller.actions.generated.instance.Pattern.patternNodeFontSize
+import freemind.controller.actions.generated.instance.Pattern.patternNodeFontBold
+import freemind.controller.actions.generated.instance.Pattern.patternNodeFontStrikethrough
+import freemind.controller.actions.generated.instance.Pattern.patternNodeFontItalic
+import freemind.controller.actions.generated.instance.Pattern.patternIcon
+import freemind.controller.actions.generated.instance.Pattern.patternScript
+import freemind.common.StringProperty.value
+import freemind.controller.actions.generated.instance.Pattern.patternChild
+import freemind.common.ThreeCheckBoxProperty.label
+import freemind.common.PropertyBean.value
+import freemind.controller.actions.generated.instance.PatternPropertyBase.value
+import freemind.main.Tools.edgeWidthStringToInt
+import freemind.common.PropertyControl.setEnabled
+import freemind.common.ComboProperty.updateComboBoxEntries
+import freemind.common.ComboProperty.value
+import freemind.main.Tools.convertPointToAncestor
+import freemind.main.Tools.availableFonts
+import freemind.controller.Controller.getIntProperty
+import freemind.controller.Controller.zooms
+import freemind.controller.StructuredMenuHolder.updateMenus
+import freemind.controller.Controller.registerZoomListener
+import freemind.controller.Controller.deregisterZoomListener
+import freemind.main.Tools.setHidden
+import freemind.main.Tools.getVectorWithSingleElement
+import freemind.main.FreeMindMain.getResource
+import freemind.main.FreeMindMain.patternsFile
+import freemind.main.Tools.getUpdateReader
+import freemind.main.Tools.getReaderFromFile
+import freemind.main.Tools.urlToFile
+import freemind.extensions.HookFactory.registrations
+import freemind.extensions.HookFactory.registerRegistrationContainer
+import freemind.extensions.HookRegistration.register
+import freemind.controller.NodeDropListener.register
+import freemind.controller.NodeMotionListener.register
+import freemind.extensions.HookRegistration.deRegister
+import freemind.extensions.HookFactory.deregisterAllRegistrationContainer
+import freemind.controller.NodeDropListener.deregister
+import freemind.controller.NodeMotionListener.deregister
+import freemind.controller.Controller.mapModule
+import freemind.controller.actions.generated.instance.MenuStructure.listChoiceList
+import freemind.controller.StructuredMenuHolder.addMenuItem
+import freemind.controller.StructuredMenuHolder.addMenu
+import freemind.controller.StructuredMenuHolder.addAction
+import freemind.controller.actions.generated.instance.MenuCategoryBase.name
+import freemind.controller.StructuredMenuHolder.addCategory
+import freemind.controller.actions.generated.instance.MenuSubmenu.nameRef
+import freemind.controller.actions.generated.instance.MenuCategoryBase.listChoiceList
+import freemind.controller.actions.generated.instance.MenuActionBase.field
+import freemind.controller.actions.generated.instance.MenuActionBase.name
+import freemind.controller.actions.generated.instance.MenuActionBase.keyRef
+import freemind.main.Tools.getField
+import freemind.controller.actions.generated.instance.MenuRadioAction.selected
+import freemind.main.ExampleFileFilter.addExtension
+import freemind.main.ExampleFileFilter.setDescription
+import freemind.extensions.HookFactory.createNodeHook
+import freemind.extensions.MindMapHook.setController
+import freemind.extensions.NodeHook.setMap
+import freemind.extensions.HookInstanciationMethod.isSingleton
+import freemind.extensions.HookFactory.getHookInNode
+import freemind.extensions.MindMapHook.startupMapHook
+import freemind.extensions.MindMapHook.shutdownMapHook
+import freemind.extensions.PermanentNodeHook.onUpdateNodeHook
+import freemind.extensions.PermanentNodeHook.onUpdateChildrenHook
+import freemind.main.Tools.unMarshall
+import freemind.main.Tools.invokeAndWait
+import freemind.extensions.HookFactory.createModeControllerHook
+import freemind.controller.Controller.close
+import freemind.extensions.PermanentNodeHook.saveHtml
+import freemind.main.Tools.DesEncrypter.encrypt
+import freemind.main.XMLElement.toString
+import freemind.controller.filter.util.SortedMapListModel.addAll
+import freemind.main.XMLElement.parseFromReader
+import freemind.main.Tools.readFileStart
+import freemind.main.Tools.ReaderCreator.createReader
+import freemind.main.Tools.getActualReader
+import freemind.main.Tools.isHeadless
+import freemind.extensions.PermanentNodeHook.onAddChild
+import freemind.extensions.PermanentNodeHook.onAddChildren
+import freemind.extensions.PermanentNodeHook.onRemoveChild
+import freemind.extensions.PermanentNodeHook.onRemoveChildren
+import freemind.extensions.NodeHook.setNode
+import freemind.extensions.NodeHook.invoke
+import freemind.main.XMLElement.setEncodedContent
+import freemind.main.Tools.dateToString
+import freemind.main.XMLElement.writeWithoutClosingTag
+import freemind.main.XMLElement.writeClosingTag
+import freemind.main.XMLElement.write
+import freemind.controller.filter.Filter.isVisible
+import freemind.main.XMLElement.enumerateChildren
+import freemind.controller.Controller.setTitle
+import freemind.extensions.PermanentNodeHook.onLostFocusNode
+import freemind.extensions.PermanentNodeHook.onViewCreatedHook
+import freemind.extensions.PermanentNodeHook.onViewRemovedHook
+import freemind.controller.MapModuleManager.newMapModule
+import freemind.controller.MapModuleManager.checkIfFileIsAlreadyOpened
+import freemind.controller.MapModuleManager.changeToMapModule
+import freemind.controller.Controller.modeController
+import freemind.controller.LastStateStorageManagement.getStorage
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.lastZoom
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.lastSelected
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.listNodeListMemberList
+import freemind.main.Tools.isAbsolutePath
+import freemind.main.Tools.getURLWithoutReference
+import freemind.controller.MapModuleManager.tryToChangeToMapModule
+import freemind.main.Tools.makeFileHidden
+import freemind.controller.MapModuleManager.updateMapModuleName
+import freemind.controller.MapModuleManager.mapModule
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.restorableName
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.x
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.y
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.clearNodeListMemberList
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.addNodeListMember
+import freemind.controller.LastStateStorageManagement.changeOrAdd
+import freemind.controller.LastStateStorageManagement.xml
+import freemind.controller.MapMouseWheelListener.deregister
+import freemind.main.FreeMindMain.view
+import freemind.controller.MapMouseWheelListener.register
+import freemind.controller.MapModuleManager.getModuleGivenModeController
+import freemind.controller.Controller.defaultFont
+import freemind.controller.Controller.getFontThroughMap
+import freemind.controller.Controller.nodeMouseMotionListener
+import freemind.controller.Controller.nodeMotionListener
+import freemind.controller.Controller.nodeKeyListener
+import freemind.controller.Controller.nodeDragListener
+import freemind.controller.Controller.nodeDropListener
+import freemind.controller.Controller.mapMouseMotionListener
+import freemind.controller.Controller.mapMouseWheelListener
+import freemind.controller.Controller.setProperty
+import freemind.main.XMLElement.userObject
+import freemind.main.XMLElement.content
+import freemind.main.XMLElement.getAttribute
+import freemind.main.Tools.xmlToDate
+import freemind.extensions.NodeHookAdapter.setMap
+import freemind.main.Tools.generateID
+import freemind.controller.actions.generated.instance.Patterns.listChoiceList
+import freemind.controller.actions.generated.instance.Pattern.originalName
+import freemind.controller.actions.generated.instance.Patterns.addChoice
+import freemind.modes.ControllerAdapter
+import freemind.modes.FreemindAction
+import freemind.modes.MindMapNode
+import javax.swing.JDialog
+import javax.swing.JCheckBox
+import javax.swing.JTextField
+import java.awt.event.ActionEvent
+import javax.swing.JOptionPane
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import javax.swing.JLabel
+import javax.swing.ImageIcon
+import javax.swing.JButton
+import java.lang.StringBuffer
+import freemind.modes.ModeController
+import freemind.modes.common.dialogs.EnterPasswordDialog
+import javax.swing.JPanel
+import javax.swing.JPasswordField
+import freemind.common.TextTranslator
+import javax.swing.JFrame
+import freemind.modes.IconInformation
+import java.awt.event.KeyListener
+import java.awt.event.MouseListener
+import javax.swing.BorderFactory
+import freemind.modes.common.dialogs.IconSelectionPopupDialog
+import java.awt.event.InputEvent
+import java.awt.event.KeyEvent
+import javax.swing.KeyStroke
+import javax.swing.JComboBox
+import java.awt.event.ActionListener
+import freemind.extensions.PermanentNodeHookAdapter
+import freemind.modes.common.plugins.ReminderHookBase
+import java.text.MessageFormat
+import freemind.modes.common.plugins.ReminderHookBase.TimerBlinkTask
+import freemind.modes.MindIcon
+import freemind.modes.common.plugins.MapNodePositionHolderBase
+import freemind.extensions.PermanentNodeHook
+import freemind.controller.MapMouseMotionListener.MapMouseMotionReceiver
+import freemind.view.mindmapview.MapView
+import freemind.controller.NodeMouseMotionListener.NodeMouseMotionObserver
+import freemind.modes.common.listeners.CommonNodeMouseMotionListener
+import freemind.main.Tools.BooleanHolder
+import freemind.view.mindmapview.MainView
+import java.awt.geom.Point2D
+import freemind.modes.common.listeners.CommonNodeMouseMotionListener.timeDelayedSelection
+import javax.swing.SwingUtilities
+import java.lang.Runnable
+import java.awt.event.MouseWheelListener
+import freemind.modes.common.listeners.MindMapMouseWheelEventHandler
+import freemind.preferences.FreemindPropertyListener
+import java.awt.event.MouseWheelEvent
+import freemind.view.mindmapview.ViewFeedback.MouseWheelEventHandler
+import freemind.modes.common.CommonNodeKeyListener.EditHandler
+import freemind.modes.common.CommonNodeKeyListener
+import kotlin.jvm.JvmOverloads
+import freemind.modes.common.CommonToggleFoldedAction
+import freemind.modes.filemode.FileController
+import javax.swing.JToolBar
+import freemind.modes.filemode.FileToolBar
+import freemind.modes.filemode.FileMode
+import freemind.modes.MapAdapter
+import freemind.modes.MindMapLinkRegistry
+import freemind.modes.filemode.FileNodeModel
+import kotlin.Throws
+import java.io.IOException
+import java.lang.RuntimeException
+import freemind.modes.MindMap
+import freemind.modes.NodeAdapter
+import freemind.modes.EdgeAdapter
+import freemind.modes.CloudAdapter
+import freemind.modes.ArrowLinkAdapter
+import freemind.modes.ArrowLinkTarget
+import freemind.modes.MapFeedback
+import freemind.modes.filemode.FileEdgeModel
+import java.lang.SecurityException
+import java.net.MalformedURLException
+import javax.swing.JPopupMenu
+import javax.swing.JMenuItem
+import freemind.modes.viewmodes.ViewControllerAdapter
+import freemind.modes.common.actions.NewMapAction
+import freemind.modes.filemode.FileController.CenterAction
+import freemind.modes.filemode.FileController.OpenPathAction
+import freemind.modes.filemode.FilePopupMenu
+import freemind.modes.filemode.FileMapModel
+import freemind.controller.StructuredMenuHolder
+import freemind.extensions.HookFactory
+import java.net.URISyntaxException
+import java.io.FileNotFoundException
+import freemind.modes.viewmodes.CommonToggleChildrenFoldedAction
+import freemind.modes.common.actions.FindAction.FindNextAction
+import freemind.modes.common.listeners.CommonMouseMotionManager
+import freemind.extensions.NodeHook
+import freemind.extensions.PermanentNodeHookSubstituteUnknown
+import javax.swing.table.TableModel
+import freemind.modes.browsemode.BrowseController
+import freemind.modes.browsemode.BrowseMode
+import freemind.modes.common.dialogs.PersistentEditableComboBox
+import freemind.modes.browsemode.BrowseToolBar
+import freemind.modes.browsemode.BrowseNodeModel
+import freemind.modes.browsemode.BrowseMapModel
+import freemind.modes.browsemode.EncryptedBrowseNode
+import freemind.modes.browsemode.BrowseEdgeModel
+import freemind.modes.browsemode.BrowseCloudModel
+import freemind.modes.browsemode.BrowseArrowLinkModel
+import freemind.modes.common.plugins.NodeNoteBase
+import freemind.modes.ModeController.NodeSelectionListener
+import javax.swing.JComponent
+import javax.swing.JScrollPane
+import freemind.controller.Controller.SplitComponentType
+import freemind.modes.browsemode.NodeNoteViewer
+import javax.swing.event.PopupMenuListener
+import javax.swing.event.PopupMenuEvent
+import freemind.modes.browsemode.BrowseController.FollowMapLink
+import freemind.controller.MenuItemEnabledListener
+import freemind.modes.browsemode.BrowseHookFactory
+import freemind.modes.browsemode.BrowsePopupMenu
+import freemind.modes.MindMapLink
+import freemind.modes.common.GotoLinkNodeAction
+import java.security.AccessControlException
+import freemind.extensions.HookFactoryAdapter
+import freemind.extensions.ModeControllerHook
+import freemind.modes.browsemode.BrowseReminderHook
+import freemind.extensions.HookInstanciationMethod
+import freemind.extensions.HookFactory.RegistrationContainer
+import freemind.main.Tools.SingleDesEncrypter
+import freemind.extensions.ModeControllerHookAdapter
+import freemind.modes.mindmapmode.MindMapController
+import freemind.modes.mindmapmode.hooks.MindMapHookFactory
+import freemind.extensions.HookRegistration
+import freemind.extensions.HookDescriptorPluginAction
+import java.lang.ClassNotFoundException
+import freemind.extensions.ImportWizard
+import freemind.extensions.HookDescriptorRegistration
+import org.jibx.runtime.IUnmarshallingContext
+import freemind.common.XmlBindingTools
+import freemind.controller.actions.generated.instance.PluginAction
+import freemind.controller.actions.generated.instance.PluginRegistration
+import freemind.extensions.MindMapHook
+import freemind.controller.actions.generated.instance.PluginClasspath
+import freemind.extensions.MindMapHook.PluginBaseClassSearcher
+import freemind.controller.actions.generated.instance.PluginMode
+import javax.swing.JCheckBoxMenuItem
+import freemind.extensions.NodeHookAdapter
+import freemind.modes.ExtendedMapFeedback
+import freemind.modes.mindmapmode.actions.xml.actors.XmlActorAdapter
+import freemind.controller.actions.generated.instance.CutNodeAction
+import java.awt.datatransfer.Transferable
+import freemind.controller.actions.generated.instance.CompoundAction
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.NodeCoordinate
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.controller.actions.generated.instance.UndoPasteNodeAction
+import freemind.modes.mindmapmode.actions.xml.ActionPair
+import freemind.controller.actions.generated.instance.EditNodeAction
+import freemind.modes.mindmapmode.actions.xml.actors.NodeXmlActorAdapter
+import freemind.controller.actions.generated.instance.AddCloudXmlAction
+import freemind.modes.mindmapmode.MindMapCloudModel
+import freemind.controller.actions.generated.instance.PasteNodeAction
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor
+import java.awt.datatransfer.UnsupportedFlavorException
+import java.awt.datatransfer.DataFlavor
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.DataFlavorHandler
+import freemind.modes.mindmapmode.MindMapNodeModel
+import freemind.controller.MindMapNodesSelection
+import freemind.main.Tools.StringReaderCreator
+import freemind.main.HtmlTools.NodeCreator
+import java.io.FileOutputStream
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.FileListFlavorHandler
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.MindMapNodesFlavorHandler
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.DirectHtmlFlavorHandler
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.StringFlavorHandler
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.ImageFlavorHandler
+import freemind.controller.actions.generated.instance.TransferableContent
+import freemind.controller.actions.generated.instance.TransferableFile
+import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
+import freemind.controller.actions.generated.instance.MoveNodesAction
+import freemind.controller.actions.generated.instance.NodeListMember
+import freemind.controller.actions.generated.instance.RevertXmlAction
+import java.io.FileReader
+import java.io.FileWriter
+import freemind.modes.mindmapmode.actions.xml.actors.AddHookActor
+import freemind.controller.actions.generated.instance.HookNodeAction
+import freemind.extensions.DontSaveMarker
+import freemind.controller.actions.generated.instance.NodeChildParameter
+import freemind.modes.ViewAbstraction
+import freemind.controller.actions.generated.instance.AddIconAction
+import freemind.controller.actions.generated.instance.AddLinkXmlAction
+import freemind.controller.actions.generated.instance.BoldNodeAction
+import freemind.modes.mindmapmode.actions.xml.ActorXml
+import freemind.controller.actions.generated.instance.FontSizeNodeAction
+import java.lang.NumberFormatException
+import freemind.controller.actions.generated.instance.MoveNodeXmlAction
+import freemind.controller.actions.generated.instance.DeleteNodeAction
+import freemind.controller.actions.generated.instance.EdgeColorFormatAction
+import freemind.modes.mindmapmode.MindMapEdgeModel
+import freemind.controller.actions.generated.instance.EdgeStyleFormatAction
+import freemind.modes.MindMapEdge
+import freemind.controller.actions.generated.instance.EdgeWidthFormatAction
+import freemind.controller.actions.generated.instance.NodeColorFormatAction
+import freemind.controller.actions.generated.instance.NodeStyleFormatAction
+import freemind.controller.actions.generated.instance.UnderlinedNodeAction
+import freemind.controller.actions.generated.instance.CloudColorXmlAction
+import freemind.modes.LineAdapter
+import freemind.controller.actions.generated.instance.FontNodeAction
+import freemind.controller.actions.generated.instance.ItalicNodeAction
+import freemind.controller.actions.generated.instance.RemoveIconXmlAction
+import freemind.view.mindmapview.ViewFeedback
+import freemind.modes.mindmapmode.actions.xml.actors.XmlActorFactory
+import freemind.modes.mindmapmode.actions.xml.actors.ItalicNodeActor
+import freemind.modes.mindmapmode.actions.xml.actors.BoldNodeActor
+import freemind.modes.mindmapmode.actions.xml.actors.StrikethroughNodeActor
+import freemind.modes.mindmapmode.actions.xml.actors.NewChildActor
+import freemind.modes.mindmapmode.actions.xml.actors.DeleteChildActor
+import freemind.modes.mindmapmode.actions.xml.actors.RemoveAllIconsActor
+import freemind.modes.mindmapmode.actions.xml.actors.AddIconActor
+import freemind.modes.mindmapmode.actions.xml.actors.RemoveIconActor
+import freemind.modes.mindmapmode.actions.xml.actors.CloudActor
+import freemind.modes.mindmapmode.actions.xml.actors.EdgeStyleActor
+import freemind.modes.mindmapmode.actions.xml.actors.EdgeWidthActor
+import freemind.modes.mindmapmode.actions.xml.actors.FontFamilyActor
+import freemind.modes.mindmapmode.actions.xml.actors.FontSizeActor
+import freemind.modes.mindmapmode.actions.xml.actors.MoveNodeActor
+import freemind.modes.mindmapmode.actions.xml.actors.NodeStyleActor
+import freemind.modes.mindmapmode.actions.xml.actors.UnderlineActor
+import freemind.modes.mindmapmode.actions.xml.actors.AddArrowLinkActor
+import freemind.modes.mindmapmode.actions.xml.actors.RemoveArrowLinkActor
+import freemind.modes.mindmapmode.actions.xml.actors.ChangeArrowLinkEndPointsActor
+import freemind.modes.mindmapmode.actions.xml.actors.ChangeArrowsInArrowLinkActor
+import freemind.modes.mindmapmode.actions.xml.actors.CloudColorActor
+import freemind.modes.mindmapmode.actions.xml.actors.ColorArrowLinkActor
+import freemind.modes.mindmapmode.actions.xml.actors.EdgeColorActor
+import freemind.modes.mindmapmode.actions.xml.actors.EditActor
+import freemind.modes.mindmapmode.actions.xml.actors.NodeBackgroundColorActor
+import freemind.modes.mindmapmode.actions.xml.actors.NodeColorActor
+import freemind.modes.mindmapmode.actions.xml.actors.NodeUpActor
+import freemind.modes.mindmapmode.actions.xml.actors.RevertActor
+import freemind.modes.mindmapmode.actions.xml.actors.ToggleFoldedActor
+import freemind.modes.mindmapmode.actions.xml.actors.SetLinkActor
+import freemind.modes.mindmapmode.actions.xml.actors.AddAttributeActor
+import freemind.modes.mindmapmode.actions.xml.actors.InsertAttributeActor
+import freemind.modes.mindmapmode.actions.xml.actors.RemoveAttributeActor
+import freemind.modes.mindmapmode.actions.xml.actors.SetAttributeActor
+import freemind.modes.mindmapmode.actions.xml.actors.CutActor
+import freemind.modes.mindmapmode.actions.xml.actors.CompoundActor
+import freemind.modes.mindmapmode.actions.xml.actors.UndoPasteActor
+import freemind.modes.mindmapmode.actions.xml.actors.ChangeNoteTextActor
+import java.lang.IllegalStateException
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction
+import freemind.modes.mindmapmode.MindMapArrowLinkModel
+import freemind.controller.actions.generated.instance.RemoveArrowLinkXmlAction
+import freemind.controller.actions.generated.instance.AddAttributeAction
+import freemind.controller.actions.generated.instance.RemoveAttributeAction
+import freemind.controller.actions.generated.instance.SetAttributeAction
+import freemind.controller.actions.generated.instance.FoldAction
+import freemind.controller.actions.generated.instance.EditNoteToNodeAction
+import freemind.controller.actions.generated.instance.ArrowLinkColorXmlAction
+import freemind.modes.mindmapmode.actions.NodeActorXml
+import freemind.controller.actions.generated.instance.RemoveAllIconsXmlAction
+import freemind.controller.actions.generated.instance.InsertAttributeAction
+import freemind.modes.MindMapArrowLink
+import freemind.controller.actions.generated.instance.NodeAction
+import freemind.controller.actions.generated.instance.StrikethroughNodeAction
+import freemind.controller.actions.generated.instance.NodeBackgroundColorFormatAction
+import freemind.controller.actions.generated.instance.ArrowLinkArrowXmlAction
+import freemind.controller.actions.generated.instance.ArrowLinkPointXmlAction
+import freemind.modes.mindmapmode.actions.xml.ActionFilter
+import freemind.modes.mindmapmode.actions.xml.UndoActionHandler
+import freemind.modes.mindmapmode.actions.xml.ActionRegistry
+import freemind.modes.mindmapmode.actions.xml.ActionFilter.FinalActionFilter
+import freemind.modes.mindmapmode.actions.xml.ActionFilter.FirstActionFilter
+import javax.swing.Icon
+import freemind.modes.mindmapmode.actions.MindmapAction
+import freemind.modes.mindmapmode.actions.xml.PrintActionHandler
+import freemind.common.OptionalDontShowMeAgainDialog
+import freemind.common.OptionalDontShowMeAgainDialog.StandardPropertyHandler
+import freemind.modes.mindmapmode.actions.NodeGeneralAction
+import freemind.controller.MenuItemSelectedListener
+import freemind.view.mindmapview.EditNodeBase
+import freemind.modes.mindmapmode.actions.MindMapActions
+import freemind.view.mindmapview.EditNodeWYSIWYG
+import freemind.view.mindmapview.EditNodeBase.EditControl
+import freemind.view.mindmapview.EditNodeExternalApplication
+import freemind.view.mindmapview.EditNodeDialog
+import freemind.view.mindmapview.EditNodeTextField
+import freemind.modes.mindmapmode.actions.EditAction
+import freemind.modes.mindmapmode.actions.RemoveIconAction
+import freemind.modes.mindmapmode.actions.xml.AbstractXmlAction
+import freemind.modes.mindmapmode.actions.NodeUpAction
+import freemind.modes.mindmapmode.actions.NewChildAction
+import freemind.modes.mindmapmode.EncryptedMindMapNode
+import freemind.modes.mindmapmode.actions.HookAction
+import freemind.modes.mindmapmode.actions.NodeHookAction
+import freemind.modes.mindmapmode.actions.EdgeWidthAction
+import freemind.modes.mindmapmode.actions.JoinNodesAction
+import freemind.modes.mindmapmode.actions.SingleNodeOperation
+import freemind.modes.mindmapmode.MindMapMapModel
+import freemind.modes.mindmapmode.actions.IconAction
+import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin
+import freemind.modes.StylePatternFactory
+import freemind.modes.FreeMindFileDialog
+import javax.swing.JFileChooser
+import freemind.modes.mindmapmode.actions.PasteAsPlainTextAction
+import freemind.modes.mindmapmode.actions.ImportFolderStructureAction
+import java.io.BufferedReader
+import java.beans.PropertyChangeListener
+import freemind.common.PropertyControl
+import freemind.common.ThreeCheckBoxProperty
+import freemind.common.ComboProperty
+import freemind.common.FontProperty
+import freemind.common.BooleanProperty
+import freemind.common.IconProperty
+import freemind.common.ScriptEditorProperty
+import com.jgoodies.forms.layout.FormLayout
+import com.jgoodies.forms.builder.DefaultFormBuilder
+import freemind.common.PropertyBean
+import java.beans.PropertyChangeEvent
+import freemind.common.SeparatorProperty
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.StylePatternFrameType
+import freemind.common.NextLineProperty
+import freemind.modes.mindmapmode.dialogs.IntegerComboProperty
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.EdgeWidthTransformer
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.ValueTransformator
+import freemind.controller.actions.generated.instance.PatternPropertyBase
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.IdentityTransformer
+import freemind.modes.mindmapmode.actions.ApplyPatternAction
+import freemind.controller.actions.generated.instance.PatternNodeColor
+import freemind.controller.actions.generated.instance.PatternNodeBackgroundColor
+import freemind.controller.actions.generated.instance.PatternNodeStyle
+import freemind.controller.actions.generated.instance.PatternNodeText
+import freemind.controller.actions.generated.instance.PatternEdgeColor
+import freemind.controller.actions.generated.instance.PatternEdgeStyle
+import freemind.controller.actions.generated.instance.PatternEdgeWidth
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.EdgeWidthBackTransformer
+import freemind.controller.actions.generated.instance.PatternNodeFontName
+import freemind.controller.actions.generated.instance.PatternNodeFontSize
+import freemind.controller.actions.generated.instance.PatternNodeFontBold
+import freemind.controller.actions.generated.instance.PatternNodeFontStrikethrough
+import freemind.controller.actions.generated.instance.PatternNodeFontItalic
+import freemind.controller.actions.generated.instance.PatternIcon
+import freemind.controller.actions.generated.instance.PatternScript
+import freemind.controller.actions.generated.instance.PatternChild
+import java.awt.dnd.DropTargetListener
+import java.awt.dnd.DropTargetDragEvent
+import java.awt.dnd.DropTargetDropEvent
+import java.awt.dnd.DnDConstants
+import java.awt.dnd.DropTargetEvent
+import freemind.controller.NodeMotionListener.NodeMotionAdapter
+import freemind.modes.mindmapmode.listeners.MindMapNodeMotionListener
+import freemind.view.mindmapview.NodeMotionListenerView
+import freemind.modes.mindmapmode.MindMapMode
+import freemind.controller.FreeMindToolBar
+import freemind.controller.ZoomListener
+import freemind.modes.mindmapmode.JAutoScrollBarPane
+import java.awt.event.ItemListener
+import freemind.controller.color.JColorCombo
+import freemind.modes.mindmapmode.MindMapToolBar
+import freemind.modes.mindmapmode.MindMapToolBar.FreeMindComboBox
+import java.awt.event.ItemEvent
+import freemind.controller.color.ColorPair
+import freemind.view.ImageFactory
+import freemind.modes.mindmapmode.MindMapMapModel.DummyLockManager
+import java.io.BufferedWriter
+import java.io.OutputStreamWriter
+import freemind.modes.mindmapmode.MindMapMapModel.DoAutomaticSave
+import java.nio.channels.FileLock
+import java.lang.UnsatisfiedLinkError
+import java.lang.NoClassDefFoundError
+import java.lang.InterruptedException
+import java.lang.reflect.InvocationTargetException
+import freemind.controller.FreeMindPopupMenu
+import freemind.modes.mindmapmode.MindMapPopupMenu
+import freemind.modes.MindMap.MapSourceChangedObserver
+import java.awt.datatransfer.Clipboard
+import freemind.modes.mindmapmode.MindMapController.ExportToHTMLAction
+import freemind.modes.mindmapmode.MindMapController.ExportBranchToHTMLAction
+import freemind.modes.mindmapmode.MindMapController.EditLongAction
+import freemind.modes.mindmapmode.actions.NewSiblingAction
+import freemind.modes.mindmapmode.actions.NewPreviousSiblingAction
+import freemind.modes.mindmapmode.MindMapController.SetLinkByFileChooserAction
+import freemind.modes.mindmapmode.MindMapController.SetImageByFileChooserAction
+import freemind.modes.mindmapmode.MindMapController.OpenLinkDirectoryAction
+import freemind.modes.mindmapmode.actions.ExportBranchAction
+import freemind.modes.mindmapmode.MindMapController.ImportBranchAction
+import freemind.modes.mindmapmode.MindMapController.ImportLinkedBranchAction
+import freemind.modes.mindmapmode.MindMapController.ImportLinkedBranchWithoutRootAction
+import freemind.modes.mindmapmode.actions.StrikethroughAction
+import freemind.modes.mindmapmode.actions.UnderlinedAction
+import freemind.modes.mindmapmode.actions.NodeColorAction
+import freemind.modes.mindmapmode.actions.DeleteChildAction
+import freemind.modes.mindmapmode.actions.ToggleFoldedAction
+import freemind.modes.mindmapmode.actions.ToggleChildrenFoldedAction
+import freemind.modes.mindmapmode.actions.UseRichFormattingAction
+import freemind.modes.mindmapmode.actions.UsePlainTextAction
+import freemind.modes.NodeDownAction
+import freemind.modes.mindmapmode.actions.EdgeColorAction
+import freemind.modes.mindmapmode.actions.EdgeStyleAction
+import freemind.modes.mindmapmode.actions.NodeColorBlendAction
+import freemind.modes.mindmapmode.actions.NodeStyleAction
+import freemind.modes.mindmapmode.actions.CloudAction
+import freemind.modes.mindmapmode.actions.CloudColorAction
+import freemind.modes.mindmapmode.actions.AddArrowLinkAction
+import freemind.modes.mindmapmode.actions.RemoveArrowLinkAction
+import freemind.modes.mindmapmode.actions.ColorArrowLinkAction
+import freemind.modes.mindmapmode.actions.ChangeArrowsInArrowLinkAction
+import freemind.modes.mindmapmode.actions.NodeBackgroundColorAction
+import freemind.modes.mindmapmode.actions.NodeBackgroundColorAction.RemoveNodeBackgroundColorAction
+import freemind.modes.mindmapmode.actions.RemoveAllIconsAction
+import freemind.modes.mindmapmode.actions.SetLinkByTextFieldAction
+import freemind.modes.mindmapmode.actions.AddLocalLinkAction
+import freemind.modes.mindmapmode.actions.MoveNodeAction
+import freemind.modes.mindmapmode.actions.ImportExplorerFavoritesAction
+import freemind.modes.mindmapmode.actions.RevertAction
+import freemind.modes.mindmapmode.actions.SelectBranchAction
+import freemind.modes.mindmapmode.MindMapController.MindMapFilter
+import freemind.controller.actions.generated.instance.MenuStructure
+import freemind.modes.MapFeedbackAdapter
+import freemind.modes.mindmapmode.actions.xml.DefaultActionHandler
+import freemind.modes.mindmapmode.actions.CopySingleAction
+import freemind.main.Tools.FileReaderCreator
+import freemind.main.Tools.ReaderCreator
+import freemind.modes.MindMap.AskUserBeforeUpdateCallback
+import freemind.modes.mindmapmode.listeners.MindMapMouseMotionManager
+import freemind.modes.mindmapmode.listeners.MindMapNodeDropListener
+import java.io.FilenameFilter
+import freemind.modes.mindmapmode.actions.MindMapControllerHookAction
+import freemind.view.MapModule
+import freemind.modes.mindmapmode.MindMapController.NewNodeCreator
+import freemind.modes.mindmapmode.MindMapController.NodeInformationTimerAction
+import freemind.modes.mindmapmode.MindMapController.DefaultMindMapNodeCreator
+import javax.swing.JMenu
+import org.jibx.runtime.JiBXException
+import javax.swing.ButtonGroup
+import freemind.controller.actions.generated.instance.MenuCategoryBase
+import freemind.controller.actions.generated.instance.MenuSubmenu
+import freemind.controller.actions.generated.instance.MenuActionBase
+import freemind.controller.actions.generated.instance.MenuCheckedAction
+import freemind.controller.actions.generated.instance.MenuRadioAction
+import javax.swing.JRadioButtonMenuItem
+import freemind.controller.actions.generated.instance.MenuSeparator
+import freemind.modes.mindmapmode.MindMapController.LinkActionBase
+import javax.swing.text.html.HTMLEditorKit
+import javax.swing.text.BadLocationException
+import freemind.extensions.UndoEventReceiver
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage
+import freemind.modes.mindmapmode.MindMapController.MapSourceChangeDialog
+import freemind.modes.mindmapmode.MindMapHTMLWriter
+import javax.swing.ScrollPaneConstants
+import javax.swing.tree.MutableTreeNode
+import javax.swing.tree.TreeModel
+import freemind.controller.filter.util.SortedListModel
+import freemind.view.ScalableImageIcon
+import javax.swing.tree.DefaultTreeModel
+import javax.swing.event.TreeModelEvent
+import javax.swing.event.TreeModelListener
+import freemind.controller.filter.util.SortedMapListModel
+import freemind.modes.XMLElementAdapter
+import freemind.controller.filter.condition.NoFilteringCondition
+import freemind.modes.MapAdapter.FileChangeInspectorTimerTask
+import freemind.modes.MapAdapter.DontAskUserBeforeUpdateAdapter
+import freemind.modes.EdgeAdapter.EdgeAdapterListener
+import freemind.modes.MindMapLine
+import java.lang.CloneNotSupportedException
+import freemind.modes.LinkAdapter
+import freemind.modes.LinkAdapter.LinkAdapterListener
+import freemind.modes.MindMapCloud
+import freemind.modes.HistoryInformation
+import java.lang.NullPointerException
+import freemind.modes.CloudAdapter.CloudAdapterListener
+import freemind.modes.ModesCreator
+import freemind.modes.StylePattern
+import freemind.controller.MapModuleManager
+import freemind.modes.ModeController.NodeLifetimeListener
+import freemind.modes.FreeMindFileDialog.DirectoryResultListener
+import freemind.controller.LastStateStorageManagement
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage
+import freemind.view.mindmapview.IndependantMapViewCreator
+import freemind.modes.ControllerAdapter.FileOpener
+import java.awt.dnd.DropTarget
+import freemind.controller.NodeMouseMotionListener
+import freemind.controller.NodeMotionListener
+import freemind.controller.NodeKeyListener
+import freemind.controller.NodeDragListener
+import freemind.controller.NodeDropListener
+import freemind.controller.MapMouseMotionListener
+import freemind.controller.MapMouseWheelListener
+import freemind.main.*
+import freemind.modes.MapFeedbackAdapter.NodesDepthComparator
+import freemind.modes.MindMapLinkRegistry.SynchronousVector
+import freemind.modes.mindmapmode.actions.ApplyPatternAction.ExternalPatternAction
+import freemind.modes.FreeMindAwtFileDialog.FreeMindFilenameFilter
+import freemind.modes.FreeMindAwtFileDialog
+import freemind.modes.FreeMindAwtFileDialog.DirFilter
+import freemind.modes.FreeMindAwtFileDialog.FileOnlyFilter
+import freemind.modes.FreeMindAwtFileDialog.FileAndDirFilter
+import kotlin.jvm.JvmStatic
+import freemind.modes.NodeViewEvent
+import freemind.modes.ExtendedMapFeedbackAdapter
+import freemind.modes.ExtendedMapFeedbackAdapter.DummyTransferable
+import freemind.modes.attributes.Attribute
+import java.awt.*
+import java.awt.font.TextAttribute
+import java.lang.Exception
+import java.util.*
+import java.util.logging.Logger
 
-import java.awt.Font;
-import java.awt.font.TextAttribute;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
+class XMLElementAdapter @JvmOverloads constructor(protected val mMapFeedback: MapFeedback?,
+        // arrow link attributes:
+                                                  protected var mArrowLinkAdapters: Vector<ArrowLinkAdapter?> = Vector(), var iDToTarget: HashMap<String?, NodeAdapter?> = HashMap()) : XMLElement() {
+    override var userObject: Any? = null
+        protected set
+    var mapChild: NodeAdapter? = null
+        private set
+    private val nodeAttributes = HashMap<String, String>()
 
-import freemind.extensions.PermanentNodeHook;
-import freemind.extensions.PermanentNodeHookSubstituteUnknown;
-import freemind.main.Tools;
-import freemind.main.XMLElement;
-import freemind.modes.attributes.Attribute;
+    // Font attributes
+    private var fontName: String? = null
+    private var fontStyle = 0
+    private var fontSize = 0
 
-public class XMLElementAdapter extends XMLElement {
+    // Icon attributes
+    private var iconName: String? = null
+    private var attributeName: String? = null
+    private var attributeValue: String? = null
+    private var fontStyleStrikethrough = false
 
+    // Overhead methods
+    init {
+        if (logger == null) {
+            logger = Resources.getInstance().getLogger(
+                    this.javaClass.name)
+        }
+    }
 
-	// Logging:
-	protected static java.util.logging.Logger logger;
+    /** abstract method to create elements of my type (factory).  */
+    override fun createAnotherElement(): XMLElement {
+        // We do not need to initialize the things of XMLElement.
+        return XMLElementAdapter(mMapFeedback, mArrowLinkAdapters,
+                iDToTarget)
+    }// for childs of hooks// we gather the xml element and send it to the hook after
 
-	private Object userObject = null;
-	private NodeAdapter mapChild = null;
-	private HashMap<String, String> nodeAttributes = new HashMap<>();
+    // completion.
+// Create user object based on name
+    // Real parsing methods
+    override var name: String
+        get() = super.name!!
+        set(name) {
+            super.name = name
+            // Create user object based on name
+            if (name == XML_NODE) {
+                userObject = map!!.createNodeAdapter(map, null)
+                nodeAttributes.clear()
+            } else if (name == "edge") {
+                userObject = map!!.createEdgeAdapter(null)
+            } else if (name == "cloud") {
+                userObject = map!!.createCloudAdapter(null)
+            } else if (name == "arrowlink") {
+                userObject = map!!.createArrowLinkAdapter(null, null)
+            } else if (name == "linktarget") {
+                userObject = map!!.createArrowLinkTarget(null, null)
+            } else if (name == "font") {
+                userObject = null
+            } else if (name == XML_NODE_ATTRIBUTE) {
+                userObject = null
+            } else if (name == XML_NODE_ATTRIBUTE_LAYOUT) {
+                userObject = null
+            } else if (name == "map") {
+                userObject = null
+            } else if (name == XML_NODE_ATTRIBUTE_REGISTRY) {
+                userObject = null
+            } else if (name == XML_NODE_REGISTERED_ATTRIBUTE_NAME) {
+                userObject = null
+            } else if (name == XML_NODE_REGISTERED_ATTRIBUTE_VALUE) {
+                userObject = null
+            } else if (name == "icon") {
+                userObject = null
+            } else if (name == "hook") {
+                // we gather the xml element and send it to the hook after
+                // completion.
+                userObject = XMLElement()
+            } else {
+                userObject = XMLElement() // for childs of hooks
+            }
+        }
+    protected val map: MindMap?
+        protected get() = mMapFeedback.getMap()
 
-	// Font attributes
-
-	private String fontName;
-	private int fontStyle = 0;
-	private int fontSize = 0;
-
-	// Icon attributes
-
-	private String iconName;
-
-	// arrow link attributes:
-	protected Vector<ArrowLinkAdapter> mArrowLinkAdapters;
-	protected HashMap<String, NodeAdapter> mIdToTarget;
-	public static final String XML_NODE_TEXT = "TEXT";
-	public static final String XML_NODE = "node";
-	public static final String XML_NODE_ATTRIBUTE = "attribute";
-	public static final String XML_NODE_ATTRIBUTE_LAYOUT = "attribute_layout";
-	public static final String XML_NODE_ATTRIBUTE_REGISTRY = "attribute_registry";
-	public static final String XML_NODE_REGISTERED_ATTRIBUTE_NAME = "attribute_name";
-	public static final String XML_NODE_REGISTERED_ATTRIBUTE_VALUE = "attribute_value";
-	// public static final String XML_NODE_CLASS_PREFIX = XML_NODE+"_";
-	public static final String XML_NODE_CLASS = "AA_NODE_CLASS";
-	public static final String XML_NODE_ADDITIONAL_INFO = "ADDITIONAL_INFO";
-	public static final String XML_NODE_ENCRYPTED_CONTENT = "ENCRYPTED_CONTENT";
-	public static final String XML_NODE_HISTORY_CREATED_AT = "CREATED";
-	public static final String XML_NODE_HISTORY_LAST_MODIFIED_AT = "MODIFIED";
-
-	public static final String XML_NODE_XHTML_TYPE_TAG = "TYPE";
-	public static final String XML_NODE_XHTML_TYPE_NODE = "NODE";
-	public static final String XML_NODE_XHTML_TYPE_NOTE = "NOTE";
-
-	private String attributeName;
-
-	private String attributeValue;
-
-	protected final MapFeedback mMapFeedback;
-
-	private boolean fontStyleStrikethrough;
-
-	// Overhead methods
-
-	public XMLElementAdapter(MapFeedback pMapFeedback) {
-		this(pMapFeedback, new Vector<ArrowLinkAdapter>(), new HashMap<String, NodeAdapter>());
-	}
-
-	protected XMLElementAdapter(MapFeedback pMapFeedback,
-			Vector<ArrowLinkAdapter> arrowLinkAdapters, HashMap<String, NodeAdapter> IDToTarget) {
-		this.mMapFeedback = pMapFeedback;
-		this.mArrowLinkAdapters = arrowLinkAdapters;
-		this.mIdToTarget = IDToTarget;
-		if (logger == null) {
-			logger = freemind.main.Resources.getInstance().getLogger(
-					this.getClass().getName());
-		}
-	}
-
-	/** abstract method to create elements of my type (factory). */
-	protected XMLElement createAnotherElement() {
-		// We do not need to initialize the things of XMLElement.
-		return new XMLElementAdapter(mMapFeedback, mArrowLinkAdapters,
-				mIdToTarget);
-	}
-
-
-
-	public Object getUserObject() {
-		return userObject;
-	}
-
-	protected void setUserObject(Object obj) {
-		userObject = obj;
-	}
-
-	public NodeAdapter getMapChild() {
-		return mapChild;
-	}
-
-	// Real parsing methods
-
-	public void setName(String name) {
-		super.setName(name);
-		// Create user object based on name
-		if (name.equals(XML_NODE)) {
-			userObject = getMap().createNodeAdapter(getMap(), null);
-			nodeAttributes.clear();
-		} else if (name.equals("edge")) {
-			userObject = getMap().createEdgeAdapter(null);
-		} else if (name.equals("cloud")) {
-			userObject = getMap().createCloudAdapter(null);
-		} else if (name.equals("arrowlink")) {
-			userObject = getMap().createArrowLinkAdapter(null, null);
-		} else if (name.equals("linktarget")) {
-			userObject = getMap().createArrowLinkTarget(null, null);
-		} else if (name.equals("font")) {
-			userObject = null;
-		} else if (name.equals(XML_NODE_ATTRIBUTE)) {
-			userObject = null;
-		} else if (name.equals(XML_NODE_ATTRIBUTE_LAYOUT)) {
-			userObject = null;
-		} else if (name.equals("map")) {
-			userObject = null;
-		} else if (name.equals(XML_NODE_ATTRIBUTE_REGISTRY)) {
-			userObject = null;
-		} else if (name.equals(XML_NODE_REGISTERED_ATTRIBUTE_NAME)) {
-			userObject = null;
-		} else if (name.equals(XML_NODE_REGISTERED_ATTRIBUTE_VALUE)) {
-			userObject = null;
-		} else if (name.equals("icon")) {
-			userObject = null;
-		} else if (name.equals("hook")) {
-			// we gather the xml element and send it to the hook after
-			// completion.
-			userObject = new XMLElement();
-		} else {
-			userObject = new XMLElement(); // for childs of hooks
-		}
-	}
-
-	protected MindMap getMap() {
-		return mMapFeedback.getMap();
-	}
-
-	public void addChild(XMLElement child) {
-		if (getName().equals("map")) {
-			mapChild = (NodeAdapter) child.getUserObject();
-			return;
-		}
-		if (userObject instanceof XMLElement) {
-			// ((XMLElement) userObject).addChild(child);
-			super.addChild(child);
-			return;
-		}
-		if (userObject instanceof NodeAdapter) {
-			NodeAdapter node = (NodeAdapter) userObject;
-			if (child.getUserObject() instanceof NodeAdapter) {
-				node.insert((NodeAdapter) child.getUserObject(), -1);
-			} // to the end without preferable... (PN)
-				// node.getRealChildCount()); }
-			else if (child.getUserObject() instanceof EdgeAdapter) {
-				EdgeAdapter edge = (EdgeAdapter) child.getUserObject();
-				edge.setTarget(node);
-				node.setEdge(edge);
-			} else if (child.getUserObject() instanceof CloudAdapter) {
-				CloudAdapter cloud = (CloudAdapter) child.getUserObject();
-				cloud.setTarget(node);
-				node.setCloud(cloud);
-			} else if (child.getUserObject() instanceof ArrowLinkTarget) {
-				// ArrowLinkTarget is derived from ArrowLinkAdapter, so it must
-				// be checked first.
-				ArrowLinkTarget arrowLinkTarget = (ArrowLinkTarget) child
-						.getUserObject();
-				arrowLinkTarget.setTarget(node);
-				mArrowLinkAdapters.add(arrowLinkTarget);
-			} else if (child.getUserObject() instanceof ArrowLinkAdapter) {
-				ArrowLinkAdapter arrowLink = (ArrowLinkAdapter) child
-						.getUserObject();
-				arrowLink.setSource(node);
-				// annotate this link: (later processed by caller.).
-				// System.out.println("arrowLink="+arrowLink);
-				mArrowLinkAdapters.add(arrowLink);
-			} else if (child.getName().equals("font")) {
-				node.setFont((Font) child.getUserObject());
-			} else if (child.getName().equals(XML_NODE_ATTRIBUTE)) {
-				node.addAttribute(
-						(Attribute) child.getUserObject());
-
-			} else if (child.getName().equals(XML_NODE_ATTRIBUTE_LAYOUT)) {
+    override fun addChild(child: XMLElement) {
+        if (name == "map") {
+            mapChild = child.userObject as NodeAdapter?
+            return
+        }
+        if (userObject is XMLElement) {
+            // ((XMLElement) userObject).addChild(child);
+            super.addChild(child)
+            return
+        }
+        if (userObject is NodeAdapter) {
+            val node = userObject as NodeAdapter
+            if (child.userObject is NodeAdapter) {
+                node.insert((child.userObject as NodeAdapter?)!!, -1)
+            } // to the end without preferable... (PN)
+            else if (child.userObject is EdgeAdapter) {
+                val edge = child.userObject as EdgeAdapter?
+                edge!!.setTarget(node)
+                node.edge = edge
+            } else if (child.userObject is CloudAdapter) {
+                val cloud = child.userObject as CloudAdapter?
+                cloud!!.setTarget(node)
+                node.setCloud(cloud)
+            } else if (child.userObject is ArrowLinkTarget) {
+                // ArrowLinkTarget is derived from ArrowLinkAdapter, so it must
+                // be checked first.
+                val arrowLinkTarget = child
+                        .userObject as ArrowLinkTarget?
+                arrowLinkTarget!!.setTarget(node)
+                mArrowLinkAdapters.add(arrowLinkTarget)
+            } else if (child.userObject is ArrowLinkAdapter) {
+                val arrowLink = child
+                        .userObject as ArrowLinkAdapter?
+                arrowLink.setSource(node)
+                // annotate this link: (later processed by caller.).
+                // System.out.println("arrowLink="+arrowLink);
+                mArrowLinkAdapters.add(arrowLink)
+            } else if (child.name == "font") {
+                node.setFont(child.userObject as Font?)
+            } else if (child.name == XML_NODE_ATTRIBUTE) {
+                node.addAttribute(
+                        child.userObject as Attribute?)
+            } else if (child.name == XML_NODE_ATTRIBUTE_LAYOUT) {
 //				node.createAttributeTableModel();
 //				AttributeTableLayoutModel layout = node.getAttributes()
 //						.getLayout();
@@ -215,398 +1013,396 @@ public class XMLElementAdapter extends XMLElement {
 //						((XMLElementAdapter) child).attributeNameWidth);
 //				layout.setColumnWidth(1,
 //						((XMLElementAdapter) child).attributeValueWidth);
-			} else if (child.getName().equals("icon")) {
-				node.addIcon((MindIcon) child.getUserObject(), MindIcon.LAST);
-			} else if (child.getName().equals(XML_NODE_XHTML_CONTENT_TAG)) {
-				String xmlText = ((XMLElement) child).getContent();
-				Object typeAttribute = child
-						.getAttribute(XML_NODE_XHTML_TYPE_TAG);
-				if (typeAttribute == null
-						|| XML_NODE_XHTML_TYPE_NODE.equals(typeAttribute)) {
-					// output:
-					logger.finest("Setting node html content to:" + xmlText);
-					node.setXmlText(xmlText);
-				} else {
-					logger.finest("Setting note html content to:" + xmlText);
-					node.setXmlNoteText(xmlText);
-				}
-			} else if (child.getName().equals("hook")) {
-				XMLElement xml = (XMLElement) child/* .getUserObject() */;
-				String loadName = (String) xml.getAttribute("NAME");
-				PermanentNodeHook hook = null;
-				try {
-					// loadName=loadName.replace('/', File.separatorChar);
-					/*
+            } else if (child.name == "icon") {
+                node.addIcon(child.userObject as MindIcon?, MindIcon.Companion.LAST)
+            } else if (child.name == XML_NODE_XHTML_CONTENT_TAG) {
+                val xmlText = child.content
+                val typeAttribute = child
+                        .getAttribute(XML_NODE_XHTML_TYPE_TAG)
+                if (typeAttribute == null
+                        || XML_NODE_XHTML_TYPE_NODE == typeAttribute) {
+                    // output:
+                    logger!!.finest("Setting node html content to:$xmlText")
+                    node.xmlText = xmlText
+                } else {
+                    logger!!.finest("Setting note html content to:$xmlText")
+                    node.xmlNoteText = xmlText
+                }
+            } else if (child.name == "hook") {
+                val xml = child /* .getUserObject() */
+                val loadName = xml.getAttribute("NAME") as String?
+                var hook: PermanentNodeHook? = null
+                try {
+                    // loadName=loadName.replace('/', File.separatorChar);
+                    /*
 					 * The next code snippet is an exception. Normally, hooks
 					 * have to be created via the ModeController. DO NOT COPY.
 					 */
-					hook = (PermanentNodeHook) mMapFeedback.createNodeHook(loadName, node);
-					// this is a bad hack. Don't make use of this data unless
-					// you know exactly what you are doing.
-					hook.setNode(node);
-				} catch (Exception e) {
-					freemind.main.Resources.getInstance().logException(e);
-					hook = new PermanentNodeHookSubstituteUnknown(loadName);
-				}
-				hook.loadFrom(xml);
-				node.addHook(hook);
-			}
-			return;
-		}
-		if (child instanceof XMLElementAdapter
-				&& getName().equals(XML_NODE_REGISTERED_ATTRIBUTE_NAME)
-				&& child.getName().equals(XML_NODE_REGISTERED_ATTRIBUTE_VALUE)) {
-		}
-	}
+                    hook = mMapFeedback!!.createNodeHook(loadName, node) as PermanentNodeHook
+                    // this is a bad hack. Don't make use of this data unless
+                    // you know exactly what you are doing.
+                    hook!!.setNode(node)
+                } catch (e: Exception) {
+                    Resources.getInstance().logException(e)
+                    hook = PermanentNodeHookSubstituteUnknown(loadName!!)
+                }
+                hook!!.loadFrom(xml)
+                node.addHook(hook)
+            }
+            return
+        }
+        if (child is XMLElementAdapter
+                && name == XML_NODE_REGISTERED_ATTRIBUTE_NAME && child.name == XML_NODE_REGISTERED_ATTRIBUTE_VALUE) {
+        }
+    }
 
-	public void setAttribute(String name, Object value) {
-		// We take advantage of precondition that value != null.
-		String sValue = value.toString();
-		if (ignoreCase) {
-			name = name.toUpperCase();
-		}
-		if (userObject instanceof XMLElement) {
-			// ((XMLElement) userObject).setAttribute(name, value);
-			super.setAttribute(name, value); // and to myself, as I am also an
-												// xml element.
-			return;
-		}
-
-		if (userObject instanceof NodeAdapter) {
-			//
-			NodeAdapter node = (NodeAdapter) userObject;
-			userObject = setNodeAttribute(name, sValue, node);
-			nodeAttributes.put(name, sValue);
-			return;
-		}
-
-		if (userObject instanceof EdgeAdapter) {
-			EdgeAdapter edge = (EdgeAdapter) userObject;
-			if (name.equals("STYLE")) {
-				edge.setStyle(sValue);
-			} else if (name.equals("COLOR")) {
-				edge.setColor(Tools.xmlToColor(sValue));
-			} else if (name.equals("WIDTH")) {
-				if (sValue.equals(EdgeAdapter.EDGE_WIDTH_THIN_STRING)) {
-					edge.setWidth(EdgeAdapter.WIDTH_THIN);
-				} else {
-					edge.setWidth(Integer.parseInt(sValue));
-				}
-			}
-			return;
-		}
-
-		if (userObject instanceof CloudAdapter) {
-			CloudAdapter cloud = (CloudAdapter) userObject;
-			if (name.equals("STYLE")) {
-				cloud.setStyle(sValue);
-			} else if (name.equals("COLOR")) {
-				cloud.setColor(Tools.xmlToColor(sValue));
-			} else if (name.equals("WIDTH")) {
-				cloud.setWidth(Integer.parseInt(sValue));
-			}
-			return;
-		}
-
-		if (userObject instanceof ArrowLinkAdapter) {
-			ArrowLinkAdapter arrowLink = (ArrowLinkAdapter) userObject;
-			if (name.equals("STYLE")) {
-				arrowLink.setStyle(sValue);
-			} else if (name.equals("ID")) {
-				arrowLink.setUniqueId(sValue);
-			} else if (name.equals("COLOR")) {
-				arrowLink.setColor(Tools.xmlToColor(sValue));
-			} else if (name.equals("DESTINATION")) {
-				arrowLink.setDestinationLabel(sValue);
-			} else if (name.equals("REFERENCETEXT")) {
-				arrowLink.setReferenceText((sValue));
-			} else if (name.equals("STARTINCLINATION")) {
-				arrowLink.setStartInclination(Tools.xmlToPoint(sValue));
-			} else if (name.equals("ENDINCLINATION")) {
-				arrowLink.setEndInclination(Tools.xmlToPoint(sValue));
-			} else if (name.equals("STARTARROW")) {
-				arrowLink.setStartArrow(sValue);
-			} else if (name.equals("ENDARROW")) {
-				arrowLink.setEndArrow(sValue);
-			} else if (name.equals("WIDTH")) {
-				arrowLink.setWidth(Integer.parseInt(sValue));
-			}
-			if (userObject instanceof ArrowLinkTarget) {
-				ArrowLinkTarget arrowLinkTarget = (ArrowLinkTarget) userObject;
-				if (name.equals("SOURCE")) {
-					arrowLinkTarget.setSourceLabel(sValue);
-				}
-			}
-			return;
-		}
-
-		if (getName().equals("font")) {
-			if (name.equals("SIZE")) {
-				fontSize = Integer.parseInt(sValue);
-			} else if (name.equals("NAME")) {
-				fontName = sValue;
-			}
-
-			// Styling
-			else if (sValue.equals("true")) {
-				if (name.equals("BOLD")) {
-					fontStyle += Font.BOLD;
-				} else if (name.equals("ITALIC")) {
-					fontStyle += Font.ITALIC;
-				} else if (name.equals("STRIKETHROUGH")){
-					fontStyleStrikethrough = true;
-				}
-			}
-		}
-		/* icons */
-		if (getName().equals("icon")) {
-			if (name.equals("BUILTIN")) {
-				iconName = sValue;
-			}
-		}
-		/* attributes */
-		else if (getName().equals(XML_NODE_ATTRIBUTE)) {
-			if (name.equals("NAME")) {
-				attributeName = sValue;
-			} else if (name.equals("VALUE")) {
-				attributeValue = sValue;
-			}
-		} else if (getName().equals(XML_NODE_ATTRIBUTE_LAYOUT)) {
+    override fun setAttribute(name: String, value: Any) {
+        // We take advantage of precondition that value != null.
+        var name = name
+        val sValue = value.toString()
+        if (ignoreCase) {
+            name = name.uppercase(Locale.getDefault())
+        }
+        if (userObject is XMLElement) {
+            // ((XMLElement) userObject).setAttribute(name, value);
+            super.setAttribute(name, value) // and to myself, as I am also an
+            // xml element.
+            return
+        }
+        if (userObject is NodeAdapter) {
+            //
+            val node = userObject as NodeAdapter
+            userObject = setNodeAttribute(name, sValue, node)
+            nodeAttributes[name] = sValue
+            return
+        }
+        if (userObject is EdgeAdapter) {
+            val edge = userObject as EdgeAdapter
+            if (name == "STYLE") {
+                edge.setStyle(sValue)
+            } else if (name == "COLOR") {
+                edge.setColor(xmlToColor(sValue))
+            } else if (name == "WIDTH") {
+                if (sValue == EdgeAdapter.Companion.EDGE_WIDTH_THIN_STRING) {
+                    edge.setWidth(EdgeAdapter.Companion.WIDTH_THIN)
+                } else {
+                    edge.setWidth(sValue.toInt())
+                }
+            }
+            return
+        }
+        if (userObject is CloudAdapter) {
+            val cloud = userObject as CloudAdapter
+            if (name == "STYLE") {
+                cloud.setStyle(sValue)
+            } else if (name == "COLOR") {
+                cloud.setColor(xmlToColor(sValue))
+            } else if (name == "WIDTH") {
+                cloud.setWidth(sValue.toInt())
+            }
+            return
+        }
+        if (userObject is ArrowLinkAdapter) {
+            val arrowLink = userObject as ArrowLinkAdapter
+            if (name == "STYLE") {
+                arrowLink.setStyle(sValue)
+            } else if (name == "ID") {
+                arrowLink.uniqueId = sValue
+            } else if (name == "COLOR") {
+                arrowLink.setColor(xmlToColor(sValue))
+            } else if (name == "DESTINATION") {
+                arrowLink.setDestinationLabel(sValue)
+            } else if (name == "REFERENCETEXT") {
+                arrowLink.setReferenceText(sValue)
+            } else if (name == "STARTINCLINATION") {
+                arrowLink.setStartInclination(xmlToPoint(sValue))
+            } else if (name == "ENDINCLINATION") {
+                arrowLink.setEndInclination(xmlToPoint(sValue))
+            } else if (name == "STARTARROW") {
+                arrowLink.setStartArrow(sValue)
+            } else if (name == "ENDARROW") {
+                arrowLink.setEndArrow(sValue)
+            } else if (name == "WIDTH") {
+                arrowLink.setWidth(sValue.toInt())
+            }
+            if (userObject is ArrowLinkTarget) {
+                val arrowLinkTarget = userObject as ArrowLinkTarget
+                if (name == "SOURCE") {
+                    arrowLinkTarget.sourceLabel = sValue
+                }
+            }
+            return
+        }
+        if (name == "font") {
+            if (name == "SIZE") {
+                fontSize = sValue.toInt()
+            } else if (name == "NAME") {
+                fontName = sValue
+            } else if (sValue == "true") {
+                if (name == "BOLD") {
+                    fontStyle += Font.BOLD
+                } else if (name == "ITALIC") {
+                    fontStyle += Font.ITALIC
+                } else if (name == "STRIKETHROUGH") {
+                    fontStyleStrikethrough = true
+                }
+            }
+        }
+        /* icons */if (name == "icon") {
+            if (name == "BUILTIN") {
+                iconName = sValue
+            }
+        } else if (name == XML_NODE_ATTRIBUTE) {
+            if (name == "NAME") {
+                attributeName = sValue
+            } else if (name == "VALUE") {
+                attributeValue = sValue
+            }
+        } else if (name == XML_NODE_ATTRIBUTE_LAYOUT) {
 //			if (name.equals("NAME_WIDTH")) {
 //				attributeNameWidth = Integer.parseInt(sValue);
 //			} else if (name.equals("VALUE_WIDTH")) {
 //				attributeValueWidth = Integer.parseInt(sValue);
 //			}
-		} else if (getName().equals(XML_NODE_ATTRIBUTE_REGISTRY)) {
-		} else if (getName().equals(XML_NODE_REGISTERED_ATTRIBUTE_NAME)) {
-			if (name.equals("NAME")) {
-				attributeName = sValue;
-			} else {
-				super.setAttribute(name, sValue);
-			}
-		} else if (getName().equals(XML_NODE_REGISTERED_ATTRIBUTE_VALUE)) {
-			if (name.equals("VALUE")) {
-				attributeValue = sValue;
-			}
-		}
-	}
+        } else if (name == XML_NODE_ATTRIBUTE_REGISTRY) {
+        } else if (name == XML_NODE_REGISTERED_ATTRIBUTE_NAME) {
+            if (name == "NAME") {
+                attributeName = sValue
+            } else {
+                super.setAttribute(name, sValue)
+            }
+        } else if (name == XML_NODE_REGISTERED_ATTRIBUTE_VALUE) {
+            if (name == "VALUE") {
+                attributeValue = sValue
+            }
+        }
+    }
 
-	private NodeAdapter setNodeAttribute(String name, String sValue,
-			NodeAdapter node) {
-		if (name.equals(XML_NODE_TEXT)) {
-			logger.finest("Setting node text content to:" + sValue);
-			node.setUserObject(sValue);
-		} else if (name.equals(XML_NODE_ENCRYPTED_CONTENT)) {
-			// we change the node implementation to EncryptedMindMapNode.
-			node = getMap().createEncryptedNode(sValue);
-			setUserObject(node);
-			copyAttributesToNode(node);
-		} else if (name.equals(XML_NODE_HISTORY_CREATED_AT)) {
-			if (node.getHistoryInformation() == null) {
-				node.setHistoryInformation(new HistoryInformation());
-			}
-			node.getHistoryInformation().setCreatedAt(Tools.xmlToDate(sValue));
-		} else if (name.equals(XML_NODE_HISTORY_LAST_MODIFIED_AT)) {
-			if (node.getHistoryInformation() == null) {
-				node.setHistoryInformation(new HistoryInformation());
-			}
-			node.getHistoryInformation().setLastModifiedAt(
-					Tools.xmlToDate(sValue));
-		} else if (name.equals("FOLDED")) {
-			if (sValue.equals("true")) {
-				node.setFolded(true);
-			}
-		} else if (name.equals("POSITION")) {
-			// fc, 17.12.2003: Remove the left/right bug.
-			node.setLeft(sValue.equals("left"));
-		} else if (name.equals("COLOR")) {
-			if (sValue.length() == 7) {
-				node.setColor(Tools.xmlToColor(sValue));
-			}
-		} else if (name.equals("BACKGROUND_COLOR")) {
-			if (sValue.length() == 7) {
-				node.setBackgroundColor(Tools.xmlToColor(sValue));
-			}
-		} else if (name.equals("LINK")) {
-			node.setLink(sValue);
-		} else if (name.equals("STYLE")) {
-			node.setStyle(sValue);
-		} else if (name.equals("ID")) {
-			// do not set label but annotate in list:
-			// System.out.println("(sValue, node) = " + sValue + ", "+ node);
-			mIdToTarget.put(sValue, node);
-		} else if (name.equals("VSHIFT")) {
-			node.setShiftY(Integer.parseInt(sValue));
-		} else if (name.equals("VGAP")) {
-			node.setVGap(Integer.parseInt(sValue));
-		} else if (name.equals("HGAP")) {
-			node.setHGap(Integer.parseInt(sValue));
-		}
-		return node;
-	}
+    private fun setNodeAttribute(name: String, sValue: String?,
+                                 node: NodeAdapter?): NodeAdapter {
+        var node = node
+        if (name == XML_NODE_TEXT) {
+            logger!!.finest("Setting node text content to:$sValue")
+            node!!.setUserObject(sValue!!)
+        } else if (name == XML_NODE_ENCRYPTED_CONTENT) {
+            // we change the node implementation to EncryptedMindMapNode.
+            node = map!!.createEncryptedNode(sValue)
+            userObject = node
+            copyAttributesToNode(node)
+        } else if (name == XML_NODE_HISTORY_CREATED_AT) {
+            if (node.getHistoryInformation() == null) {
+                node.setHistoryInformation(HistoryInformation())
+            }
+            node.getHistoryInformation().setCreatedAt(xmlToDate(sValue))
+        } else if (name == XML_NODE_HISTORY_LAST_MODIFIED_AT) {
+            if (node.getHistoryInformation() == null) {
+                node.setHistoryInformation(HistoryInformation())
+            }
+            node.getHistoryInformation().setLastModifiedAt(
+                    xmlToDate(sValue))
+        } else if (name == "FOLDED") {
+            if (sValue == "true") {
+                node.setFolded(true)
+            }
+        } else if (name == "POSITION") {
+            // fc, 17.12.2003: Remove the left/right bug.
+            node.setLeft(sValue == "left")
+        } else if (name == "COLOR") {
+            if (sValue!!.length == 7) {
+                node.setColor(xmlToColor(sValue))
+            }
+        } else if (name == "BACKGROUND_COLOR") {
+            if (sValue!!.length == 7) {
+                node.setBackgroundColor(xmlToColor(sValue))
+            }
+        } else if (name == "LINK") {
+            node.setLink(sValue)
+        } else if (name == "STYLE") {
+            node!!.setStyle(sValue)
+        } else if (name == "ID") {
+            // do not set label but annotate in list:
+            // System.out.println("(sValue, node) = " + sValue + ", "+ node);
+            iDToTarget[sValue] = node
+        } else if (name == "VSHIFT") {
+            node.setShiftY(sValue!!.toInt())
+        } else if (name == "VGAP") {
+            node!!.vGap = sValue!!.toInt()
+        } else if (name == "HGAP") {
+            node.setHGap(sValue!!.toInt())
+        }
+        return node!!
+    }
 
-	/**
-	 * Sets all attributes that were formely applied to the current userObject
-	 * to a given (new) node. Thus, the instance of a node can be changed after
-	 * the creation. (At the moment, relevant for encrypted nodes).
-	 */
-	protected void copyAttributesToNode(NodeAdapter node) {
-		// reactivate all settings from nodeAttributes:
-		for (String key : nodeAttributes.keySet()) {
-			// to avoid self reference:
-			setNodeAttribute(key, (String) nodeAttributes.get(key), node);
-		}
-	}
+    /**
+     * Sets all attributes that were formely applied to the current userObject
+     * to a given (new) node. Thus, the instance of a node can be changed after
+     * the creation. (At the moment, relevant for encrypted nodes).
+     */
+    protected fun copyAttributesToNode(node: NodeAdapter?) {
+        // reactivate all settings from nodeAttributes:
+        for (key in nodeAttributes.keys) {
+            // to avoid self reference:
+            setNodeAttribute(key, nodeAttributes[key], node)
+        }
+    }
 
-	protected void completeElement() {
-		if (getName().equals(XML_NODE)) {
-			// unify map child behaviour:
-			if (mapChild == null) {
-				mapChild = (NodeAdapter) userObject;
-			}
-			return;
-		}
-		if (getName().equals("font")) {
-			Font font = new Font(fontName, fontStyle, fontSize);
-			if(fontStyleStrikethrough){
-				Map attr = font.getAttributes();
-				attr.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
-				font = new Font(attr);
-			}
-			userObject = mMapFeedback.getFontThroughMap(font);
-			return;
-		}
-		/* icons */
-		if (getName().equals("icon")) {
-			userObject = MindIcon.factory(iconName);
-			return;
-		}
-		/* attributes */
-		if (getName().equals(XML_NODE_ATTRIBUTE)) {
-			userObject = new Attribute(attributeName, attributeValue);
-			return;
-		}
-		if (getName().equals(XML_NODE_REGISTERED_ATTRIBUTE_NAME)) {
-			return;
-		}
-	}
+    override fun completeElement() {
+        if (name == XML_NODE) {
+            // unify map child behaviour:
+            if (mapChild == null) {
+                mapChild = userObject as NodeAdapter?
+            }
+            return
+        }
+        if (name == "font") {
+            var font = Font(fontName, fontStyle, fontSize)
+            if (fontStyleStrikethrough) {
+                val attr: MutableMap<*, *> = font.attributes
+                attr[TextAttribute.STRIKETHROUGH] = TextAttribute.STRIKETHROUGH_ON
+                font = Font(attr)
+            }
+            userObject = mMapFeedback!!.getFontThroughMap(font)
+            return
+        }
+        /* icons */if (name == "icon") {
+            userObject = MindIcon.Companion.factory(iconName)
+            return
+        }
+        /* attributes */if (name == XML_NODE_ATTRIBUTE) {
+            userObject = Attribute(attributeName, attributeValue)
+            return
+        }
+        if (name == XML_NODE_REGISTERED_ATTRIBUTE_NAME) {
+            return
+        }
+    }
 
-	/**
-	 * Completes the links within the getMap(). They are registered in the
-	 * registry.
-	 * 
-	 * Case I: Source+Destination are pasted (Ia: cut, Ib: copy) Case II: Source
-	 * is pasted, Destination remains unchanged in the map (IIa: cut, IIb: copy)
-	 * Case III: Destination is pasted, Source remains unchanged in the map
-	 * (IIIa: cut, IIIb: copy)
-	 */
-	public void processUnfinishedLinks(MindMapLinkRegistry registry) {
-		// add labels to the nodes:
-		for (String key : mIdToTarget.keySet()) {
-			NodeAdapter target1 = (NodeAdapter) mIdToTarget.get(key);
-			/*
+    /**
+     * Completes the links within the getMap(). They are registered in the
+     * registry.
+     *
+     * Case I: Source+Destination are pasted (Ia: cut, Ib: copy) Case II: Source
+     * is pasted, Destination remains unchanged in the map (IIa: cut, IIb: copy)
+     * Case III: Destination is pasted, Source remains unchanged in the map
+     * (IIIa: cut, IIIb: copy)
+     */
+    fun processUnfinishedLinks(registry: MindMapLinkRegistry?) {
+        // add labels to the nodes:
+        for (key in iDToTarget.keys) {
+            /*
 			 * key is the proposed name for the target, is changed by the
 			 * registry, if already present.
-			 */
-			registry.registerLinkTarget(target1, key);
-		}
-		// complete arrow links with right labels:
-		for (int i = 0; i < mArrowLinkAdapters.size(); ++i) {
-			Object arrowObject = mArrowLinkAdapters.get(i);
-			if (arrowObject instanceof ArrowLinkTarget) {
-				ArrowLinkTarget linkTarget = (ArrowLinkTarget) arrowObject;
-				// do the same as for ArrowLinkAdapter and start to search for the source.
-				String oldId = linkTarget.getSourceLabel();
-				MindMapNode source = (MindMapNode) registry.getTargetForId(oldId);
-				// find oldId in target list:
-				if (mIdToTarget.containsKey(oldId)) {
-					// link source present in the paste as well and has probably
-					// been renamed (case I), do nothing, as the source does
-					// all.
-					continue;
-				} else if (source == null) {
-					// link source is in nowhere-land
-					logger.severe("Cannot find the label " + oldId
-							+ " in the map. The link target " + linkTarget
-							+ " is not restored.");
-					continue;
-				}
-				// link source remains in the map (case III)
-				// set the source:
-				linkTarget.setSource(source);
-				// here, it is getting more complex: case IIIa: the arrowLink
-				// has to be recreated.
-				// case IIIb: the arrowLink has to be doubled! First,
-				// distinguish between a and b.
-				MindMapNode target = linkTarget.getTarget();
-				String targetCurrentId = registry.getLabel(target);
-				if (!mIdToTarget.containsKey(targetCurrentId)) {
-					// the id of target has changed, we have case IIIb.
-					MindMapLink link = registry.getLinkForId(linkTarget
-							.getUniqueId());
-					if (link == null) {
-						logger.severe("Cannot find the label "
-								+ linkTarget.getUniqueId()
-								+ " for the link in the map. The link target "
-								+ linkTarget + " is not restored.");
-						continue;
-					} else {
-						// double the link.
-						MindMapLink clone = (MindMapLink) link.clone();
-						clone.setTarget(target);
-						((ArrowLinkAdapter) clone)
-								.setDestinationLabel(targetCurrentId);
-						// add the new arrowLink and give it a new id
-						registry.registerLink(clone);
-						linkTarget.setUniqueId(clone.getUniqueId());
-					}
-				} else {
-					// case IIIa: The link must only be re-added:
-					// change from linkTarget to ArrowLinkAdapter and add it:
-					ArrowLinkAdapter linkAdapter = linkTarget.createArrowLinkAdapter(registry);
-					registry.registerLink(linkAdapter);
-				}
-			} else if (arrowObject instanceof ArrowLinkAdapter) {
-				ArrowLinkAdapter arrowLink = (ArrowLinkAdapter) arrowObject;
-				// here, the source is in the paste, and the destination is now
-				// searched:
-				String oldId = arrowLink.getDestinationLabel();
-				NodeAdapter target = null;
-				String newId = null;
-				// find oldId in target list:
-				if (mIdToTarget.containsKey(oldId)) {
-					// link target present in the paste as well and has probably
-					// been renamed (case I)
-					target = (NodeAdapter) mIdToTarget.get(oldId);
-					newId = registry.getLabel(target);
-				} else if (registry.getTargetForId(oldId) != null) {
-					// link target remains in the map (case II)
-					target = (NodeAdapter) registry.getTargetForId(oldId);
-					newId = oldId;
-				} else {
-					// link target is in nowhere-land
-					logger.severe("Cannot find the label " + oldId
-							+ " in the map. The link " + arrowLink
-							+ " is not restored.");
-					continue;
-				}
-				// set the new ID:
-				arrowLink.setDestinationLabel(newId);
-				// set the target:
-				arrowLink.setTarget(target);
-				// add the arrowLink:
-				registry.registerLink(arrowLink);
-			}
-		}
-	}
+			 */registry!!.registerLinkTarget(iDToTarget[key], key)
+        }
+        // complete arrow links with right labels:
+        for (i in mArrowLinkAdapters.indices) {
+            val arrowObject: Any? = mArrowLinkAdapters[i]
+            if (arrowObject is ArrowLinkTarget) {
+                val linkTarget = arrowObject
+                // do the same as for ArrowLinkAdapter and start to search for the source.
+                val oldId = linkTarget.sourceLabel
+                val source = registry!!.getTargetForId(oldId) as MindMapNode
+                // find oldId in target list:
+                if (iDToTarget.containsKey(oldId)) {
+                    // link source present in the paste as well and has probably
+                    // been renamed (case I), do nothing, as the source does
+                    // all.
+                    continue
+                } else if (source == null) {
+                    // link source is in nowhere-land
+                    logger!!.severe("Cannot find the label " + oldId
+                            + " in the map. The link target " + linkTarget
+                            + " is not restored.")
+                    continue
+                }
+                // link source remains in the map (case III)
+                // set the source:
+                linkTarget.setSource(source)
+                // here, it is getting more complex: case IIIa: the arrowLink
+                // has to be recreated.
+                // case IIIb: the arrowLink has to be doubled! First,
+                // distinguish between a and b.
+                val target = linkTarget.getTarget()!!
+                val targetCurrentId = registry.getLabel(target)
+                if (!iDToTarget.containsKey(targetCurrentId)) {
+                    // the id of target has changed, we have case IIIb.
+                    val link = registry.getLinkForId(linkTarget
+                            .uniqueId)
+                    if (link == null) {
+                        logger!!.severe("Cannot find the label "
+                                + linkTarget.uniqueId
+                                + " for the link in the map. The link target "
+                                + linkTarget + " is not restored.")
+                        continue
+                    } else {
+                        // double the link.
+                        val clone = link.clone() as MindMapLink
+                        clone.target = target
+                        (clone as ArrowLinkAdapter)
+                                .setDestinationLabel(targetCurrentId)
+                        // add the new arrowLink and give it a new id
+                        registry.registerLink(clone)
+                        linkTarget.uniqueId = clone.getUniqueId()
+                    }
+                } else {
+                    // case IIIa: The link must only be re-added:
+                    // change from linkTarget to ArrowLinkAdapter and add it:
+                    val linkAdapter = linkTarget.createArrowLinkAdapter(registry)
+                    registry.registerLink(linkAdapter)
+                }
+            } else if (arrowObject is ArrowLinkAdapter) {
+                val arrowLink = arrowObject
+                // here, the source is in the paste, and the destination is now
+                // searched:
+                val oldId = arrowLink.getDestinationLabel()
+                var target: NodeAdapter? = null
+                var newId: String? = null
+                // find oldId in target list:
+                if (iDToTarget.containsKey(oldId)) {
+                    // link target present in the paste as well and has probably
+                    // been renamed (case I)
+                    target = iDToTarget[oldId]
+                    newId = registry!!.getLabel(target)
+                } else if (registry!!.getTargetForId(oldId) != null) {
+                    // link target remains in the map (case II)
+                    target = registry.getTargetForId(oldId) as NodeAdapter
+                    newId = oldId
+                } else {
+                    // link target is in nowhere-land
+                    logger!!.severe("Cannot find the label " + oldId
+                            + " in the map. The link " + arrowLink
+                            + " is not restored.")
+                    continue
+                }
+                // set the new ID:
+                arrowLink.setDestinationLabel(newId)
+                // set the target:
+                arrowLink.setTarget(target)
+                // add the arrowLink:
+                registry.registerLink(arrowLink)
+            }
+        }
+    }
 
-	public HashMap<String, NodeAdapter> getIDToTarget() {
-		return mIdToTarget;
-	}
+    companion object {
+        // Logging:
+        protected var logger: Logger? = null
+        const val XML_NODE_TEXT = "TEXT"
+        const val XML_NODE = "node"
+        const val XML_NODE_ATTRIBUTE = "attribute"
+        const val XML_NODE_ATTRIBUTE_LAYOUT = "attribute_layout"
+        const val XML_NODE_ATTRIBUTE_REGISTRY = "attribute_registry"
+        const val XML_NODE_REGISTERED_ATTRIBUTE_NAME = "attribute_name"
+        const val XML_NODE_REGISTERED_ATTRIBUTE_VALUE = "attribute_value"
 
-	public void setIDToTarget(HashMap<String, NodeAdapter> pToTarget) {
-		mIdToTarget = pToTarget;
-	}
-
-
+        // public static final String XML_NODE_CLASS_PREFIX = XML_NODE+"_";
+        const val XML_NODE_CLASS = "AA_NODE_CLASS"
+        const val XML_NODE_ADDITIONAL_INFO = "ADDITIONAL_INFO"
+        const val XML_NODE_ENCRYPTED_CONTENT = "ENCRYPTED_CONTENT"
+        const val XML_NODE_HISTORY_CREATED_AT = "CREATED"
+        const val XML_NODE_HISTORY_LAST_MODIFIED_AT = "MODIFIED"
+        const val XML_NODE_XHTML_TYPE_TAG = "TYPE"
+        const val XML_NODE_XHTML_TYPE_NODE = "NODE"
+        const val XML_NODE_XHTML_TYPE_NOTE = "NOTE"
+    }
 }

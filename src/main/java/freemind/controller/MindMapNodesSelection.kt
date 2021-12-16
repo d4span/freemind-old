@@ -404,10 +404,19 @@ class MindMapNodesSelection     //
     }
 
     companion object {
-        var mindMapNodesFlavor: DataFlavor? = null
+        var dataFlavor: DataFlavor? = null
+public get() {
+            return MindMapNodesSelection.mindMapNodesFlavor
+        }
         var rtfFlavor: DataFlavor? = null
-        var htmlFlavor: DataFlavor? = null
-        var fileListFlavor: DataFlavor? = null
+        var dataFlavor: DataFlavor? = null
+public get() {
+            return MindMapNodesSelection.htmlFlavor
+        }
+        var dataFlavor: DataFlavor? = null
+public get() {
+            return MindMapNodesSelection.fileListFlavor
+        }
 
         /**
          * fc, 7.8.2004: This is a quite interesting flavor, but how does it

@@ -1023,10 +1023,22 @@ class FreeMind(pDefaultPreferences: Properties,
         const val RESOURCES_SELECTED_NODE_COLOR = "standardselectednodecolor"
         const val RESOURCES_SELECTED_NODE_RECTANGLE_COLOR = "standardselectednoderectanglecolor"
         const val RESOURCE_DRAW_RECTANGLE_FOR_SELECTION = "standarddrawrectangleforselection"
-        const val RESOURCES_EDGE_COLOR = "standardedgecolor"
-        const val RESOURCES_EDGE_STYLE = "standardedgestyle"
-        const val RESOURCES_CLOUD_COLOR = "standardcloudcolor"
-        const val RESOURCES_LINK_COLOR = "standardlinkcolor"
+        protected const val standardColorPropertyString = "standardedgecolor"
+protected get() {
+        return FreeMind.RESOURCES_EDGE_COLOR
+    }
+        protected const val standardStylePropertyString = "standardedgestyle"
+protected get() {
+        return FreeMind.RESOURCES_EDGE_STYLE
+    }
+        protected const val standardColorPropertyString = "standardcloudcolor"
+protected get() {
+        return FreeMind.RESOURCES_CLOUD_COLOR
+    }
+        protected const val standardColorPropertyString = "standardlinkcolor"
+protected get() {
+        return FreeMind.RESOURCES_LINK_COLOR
+    }
         const val RESOURCES_BACKGROUND_COLOR = "standardbackgroundcolor"
         const val RESOURCE_PRINT_ON_WHITE_BACKGROUND = "printonwhitebackground"
         const val RESOURCES_WHEEL_VELOCITY = "wheel_velocity"

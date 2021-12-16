@@ -34,143 +34,316 @@ or based on this library.  If you modify this library, you may extend
 this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
+package freemind.main
 
-package freemind.main;
-
-import java.io.ByteArrayOutputStream;
+import freemind.controller.actions.generated.instance.CompoundAction.listChoiceList
+import freemind.controller.Controller.init
+import freemind.controller.Controller.OptionAntialiasAction.changeAntialias
+import freemind.controller.Controller.createNewMode
+import freemind.controller.Controller.filterController
+import freemind.controller.filter.FilterController.saveConditions
+import freemind.controller.Controller.view
+import freemind.controller.Controller.obtainFocusForSelected
+import freemind.controller.Controller.addTabbedPane
+import freemind.controller.Controller.modeController
+import freemind.controller.LastStateStorageManagement.lastOpenList
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.restorableName
+import freemind.controller.Controller.lastOpenedList
+import freemind.controller.LastOpenedList.open
+import freemind.controller.LastStateStorageManagement.lastFocussedTab
+import freemind.controller.Controller.mapModule
+import freemind.controller.Controller.mapModuleManager
+import freemind.controller.MapModuleManager.changeToMapModule
+import freemind.controller.Controller.errorMessage
+import freemind.main.Tools
+import java.awt.Color
+import java.util.StringTokenizer
+import java.util.LinkedList
+import java.lang.StringBuffer
+import java.awt.GraphicsEnvironment
+import java.util.Locale
+import java.net.MalformedURLException
+import freemind.main.Base64Coding
+import java.util.zip.Deflater
+import java.util.zip.Inflater
+import java.util.zip.DataFormatException
+import java.lang.RuntimeException
+import freemind.main.Tools.BooleanHolder
+import javax.swing.JDialog
+import java.awt.Dimension
+import java.awt.Insets
+import kotlin.Throws
+import java.lang.Runnable
+import freemind.main.HtmlTools
+import java.awt.datatransfer.Transferable
+import java.awt.datatransfer.DataFlavor
+import java.awt.event.ActionEvent
+import javax.swing.JComponent
+import javax.swing.KeyStroke
+import freemind.main.FreeMindCommon
+import javax.swing.SwingUtilities
+import javax.swing.AbstractButton
+import freemind.main.Tools.ButtonHolder
+import freemind.main.Tools.ActionHolder
+import freemind.main.Tools.NameMnemonicHolder
+import java.net.URISyntaxException
+import java.awt.Graphics2D
+import java.awt.RenderingHints
+import freemind.modes.MindMapNode
+import java.net.InetAddress
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.common.XmlBindingTools
+import java.lang.SecurityException
+import java.lang.IllegalAccessException
+import java.lang.NoSuchFieldException
+import freemind.modes.mindmapmode.MindMapController
+import java.awt.datatransfer.Clipboard
+import freemind.controller.MindMapNodesSelection
+import java.awt.event.ActionListener
+import java.awt.KeyboardFocusManager
+import java.awt.event.KeyEvent
+import javax.swing.InputMap
+import javax.swing.UIManager
+import java.awt.print.Paper
+import freemind.controller.actions.generated.instance.CompoundAction
+import java.lang.reflect.InvocationTargetException
+import java.lang.InterruptedException
+import freemind.main.FreeMindStarter
+import java.net.URLDecoder
+import java.util.Properties
+import freemind.modes.EdgeAdapter
+import freemind.modes.MindIcon
+import java.nio.file.attribute.DosFileAttributes
+import java.awt.GraphicsDevice
+import freemind.main.FreeMind
+import javax.crypto.Cipher
+import java.security.spec.KeySpec
+import javax.crypto.spec.PBEKeySpec
+import javax.crypto.SecretKey
+import javax.crypto.SecretKeyFactory
+import java.security.spec.AlgorithmParameterSpec
+import javax.crypto.spec.PBEParameterSpec
+import java.security.InvalidAlgorithmParameterException
+import java.security.spec.InvalidKeySpecException
+import javax.crypto.NoSuchPaddingException
+import java.security.NoSuchAlgorithmException
+import freemind.main.Tools.DesEncrypter
+import javax.crypto.BadPaddingException
+import javax.crypto.IllegalBlockSizeException
+import freemind.main.Tools.ReaderCreator
+import javax.swing.JFrame
+import freemind.main.FreeMindMain
+import javax.swing.JLabel
+import javax.swing.JScrollPane
+import javax.swing.JSplitPane
+import javax.swing.JTabbedPane
+import javax.swing.ImageIcon
+import freemind.main.FreeMindMain.StartupDoneListener
+import freemind.main.EditServer
+import freemind.main.FreeMindSecurityManager
+import java.util.Collections
+import freemind.main.FeedBack
+import java.awt.BorderLayout
+import freemind.preferences.FreemindPropertyListener
+import freemind.main.FreeMindMain.VersionInformation
+import java.lang.NumberFormatException
+import freemind.view.mindmapview.MapView
+import java.awt.Desktop
+import java.awt.Cursor
+import java.util.ResourceBundle
+import java.util.logging.ConsoleHandler
+import java.util.logging.FileHandler
+import freemind.main.StdFormatter
+import freemind.main.LogFileLogHandler
+import java.util.logging.SimpleFormatter
+import com.inet.jortho.SpellChecker
+import freemind.main.FreeMindStarter.ProxyAuthenticator
+import java.net.Socket
+import java.awt.event.InputEvent
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import freemind.modes.ModeController
+import freemind.controller.LastStateStorageManagement
+import freemind.view.MapModule
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
+import javax.swing.JPanel
+import freemind.main.IFreeMindSplash
+import freemind.main.FreeMindSplashModern
+import java.awt.event.WindowFocusListener
+import javax.swing.JOptionPane
+import freemind.main.XHTMLWriter
+import javax.swing.text.BadLocationException
+import freemind.main.HtmlTools.IndexPair
+import freemind.main.HtmlTools.NodeCreator
+import org.jsoup.select.NodeTraversor
+import freemind.main.HtmlTools.HtmlNodeVisitor
+import org.jsoup.Jsoup
+import kotlin.jvm.JvmOverloads
+import freemind.common.TextTranslator
+import java.text.MessageFormat
+import freemind.modes.FreeMindFileDialog
+import freemind.modes.FreeMindJFileDialog
+import freemind.modes.FreeMindAwtFileDialog
+import tests.freemind.FreeMindMainMock
+import java.net.ServerSocket
+import java.util.TreeMap
+import freemind.main.XMLElement
+import java.util.Enumeration
+import java.lang.ClassCastException
+import freemind.main.FixedHTMLWriter
+import freemind.main.XHTMLWriter.XHTMLFilterWriter
+import javax.swing.text.html.HTMLEditorKit
+import kotlin.jvm.JvmStatic
+import javax.swing.JLayeredPane
+import freemind.main.StdFormatter.StdOutErrLevel
+import javax.swing.JApplet
+import freemind.main.FreeMindApplet
+import java.util.PropertyResourceBundle
+import freemind.main.FreeMindCommon.FreeMindResourceBundle
+import java.net.URLClassLoader
+import javax.swing.text.html.HTMLWriter
+import javax.swing.text.MutableAttributeSet
+import javax.swing.text.SimpleAttributeSet
+import javax.swing.text.html.HTML
+import javax.swing.text.StyleConstants
+import javax.swing.text.html.CSS
+import java.net.PasswordAuthentication
+import freemind.main.LogFileLogHandler.LogReceiver
+import freemind.main.FreeMindSplashModern.FeedBackImpl
+import javax.swing.JProgressBar
+import freemind.view.ImageFactory
+import javax.swing.JRootPane
+import java.awt.Graphics
+import java.awt.Rectangle
+import java.io.*
+import java.util.logging.Logger
 
 /**
  * Partial implementation of a Preference node.
- * 
+ *
  * @since 1.4
  * @author Mark Wielaard (mark@klomp.org)
- * 
- *         22.3.2008: FC: Changed name from AbstractPreferences to the current,
- *         Removed all but base64 coding.
+ *
+ * 22.3.2008: FC: Changed name from AbstractPreferences to the current,
+ * Removed all but base64 coding.
  */
-public class Base64Coding {
-	private static java.util.logging.Logger logger = null;
-	static {
-		logger = freemind.main.Resources.getInstance()
-				.getLogger("Base64Coding");
-	}
+object Base64Coding {
+    private var logger: Logger? = null
 
-	/**
-	 * Helper method for decoding a Base64 string as an byte array. Returns null
-	 * on encoding error. This method does not allow any other characters
-	 * present in the string then the 65 special base64 chars.
-	 */
-	public static byte[] decode64(String s) {
-		ByteArrayOutputStream bs = new ByteArrayOutputStream(
-				(s.length() / 4) * 3);
-		char[] c = new char[s.length()];
-		s.getChars(0, s.length(), c, 0);
+    init {
+        logger = Resources.Companion.getInstance()
+                .getLogger("Base64Coding")
+    }
 
-		// Convert from base64 chars
-		int endchar = -1;
-		for (int j = 0; j < c.length && endchar == -1; j++) {
-			if (c[j] >= 'A' && c[j] <= 'Z') {
-				c[j] -= 'A';
-			} else if (c[j] >= 'a' && c[j] <= 'z') {
-				c[j] = (char) (c[j] + 26 - 'a');
-			} else if (c[j] >= '0' && c[j] <= '9') {
-				c[j] = (char) (c[j] + 52 - '0');
-			} else if (c[j] == '+') {
-				c[j] = 62;
-			} else if (c[j] == '/') {
-				c[j] = 63;
-			} else if (c[j] == '=') {
-				endchar = j;
-			} else {
-				logger.severe("Found illegal character in base64 coding: '"
-						+ c[j] + "'");
-				return null; // encoding exception
-			}
-		}
+    /**
+     * Helper method for decoding a Base64 string as an byte array. Returns null
+     * on encoding error. This method does not allow any other characters
+     * present in the string then the 65 special base64 chars.
+     */
+    fun decode64(s: String): ByteArray? {
+        val bs = ByteArrayOutputStream(
+                s.length / 4 * 3)
+        val c = CharArray(s.length)
+        s.toCharArray(c, 0, 0, s.length)
 
-		int remaining = endchar == -1 ? c.length : endchar;
-		int i = 0;
-		while (remaining > 0) {
-			// Four input chars (6 bits) are decoded as three bytes as
-			// 000000 001111 111122 222222
+        // Convert from base64 chars
+        var endchar = -1
+        var j = 0
+        while (j < c.size && endchar == -1) {
+            if (c[j] >= 'A' && c[j] <= 'Z') {
+                (c[j] -= 'A').toChar()
+            } else if (c[j] >= 'a' && c[j] <= 'z') {
+                c[j] = (c[j].code + 26 - 'a'.code).toChar()
+            } else if (c[j] >= '0' && c[j] <= '9') {
+                c[j] = (c[j].code + 52 - '0'.code).toChar()
+            } else if (c[j] == '+') {
+                c[j] = 62.toChar()
+            } else if (c[j] == '/') {
+                c[j] = 63.toChar()
+            } else if (c[j] == '=') {
+                endchar = j
+            } else {
+                logger!!.severe("Found illegal character in base64 coding: '"
+                        + c[j] + "'")
+                return null // encoding exception
+            }
+            j++
+        }
+        var remaining = if (endchar == -1) c.size else endchar
+        var i = 0
+        while (remaining > 0) {
+            // Four input chars (6 bits) are decoded as three bytes as
+            // 000000 001111 111122 222222
+            var b0 = (c[i].code shl 2).toByte()
+            if (remaining >= 2) {
+                (b0 += (c[i + 1].code and 0x30 shr 4).toByte()).toByte()
+            }
+            bs.write(b0.toInt())
+            if (remaining >= 3) {
+                var b1 = (c[i + 1].code and 0x0F shl 4).toByte()
+                (b1 += (c[i + 2].code and 0x3C shr 2).toByte()).toByte()
+                bs.write(b1.toInt())
+            }
+            if (remaining >= 4) {
+                var b2 = (c[i + 2].code and 0x03 shl 6).toByte()
+                (b2 += c[i + 3].code.toByte()).toByte()
+                bs.write(b2.toInt())
+            }
+            i += 4
+            remaining -= 4
+        }
+        return bs.toByteArray()
+    }
 
-			byte b0 = (byte) (c[i] << 2);
-			if (remaining >= 2) {
-				b0 += (c[i + 1] & 0x30) >> 4;
-			}
-			bs.write(b0);
+    /**
+     * Helper method for encoding an array of bytes as a Base64 String.
+     */
+    fun encode64(b: ByteArray): String {
+        val sb = StringBuffer(b.size / 3 * 4)
+        var i = 0
+        var remaining = b.size
+        val c = CharArray(4)
+        while (remaining > 0) {
+            // Three input bytes are encoded as four chars (6 bits) as
+            // 00000011 11112222 22333333
+            c[0] = (b[i] and 0xFC shr 2).toChar()
+            c[1] = (b[i] and 0x03 shl 4).toChar()
+            if (remaining >= 2) {
+                c[1] += (b[i + 1] and 0xF0 shr 4).toChar()
+                c[2] = (b[i + 1] and 0x0F shl 2).toChar()
+                if (remaining >= 3) {
+                    c[2] += (b[i + 2] and 0xC0 shr 6).toChar()
+                    c[3] = (b[i + 2] and 0x3F).toChar()
+                } else {
+                    c[3] = 64.toChar()
+                }
+            } else {
+                c[2] = 64.toChar()
+                c[3] = 64.toChar()
+            }
 
-			if (remaining >= 3) {
-				byte b1 = (byte) ((c[i + 1] & 0x0F) << 4);
-				b1 += (byte) ((c[i + 2] & 0x3C) >> 2);
-				bs.write(b1);
-			}
-
-			if (remaining >= 4) {
-				byte b2 = (byte) ((c[i + 2] & 0x03) << 6);
-				b2 += c[i + 3];
-				bs.write(b2);
-			}
-
-			i += 4;
-			remaining -= 4;
-		}
-
-		return bs.toByteArray();
-	}
-
-	/**
-	 * Helper method for encoding an array of bytes as a Base64 String.
-	 */
-	public static String encode64(byte[] b) {
-		StringBuffer sb = new StringBuffer((b.length / 3) * 4);
-
-		int i = 0;
-		int remaining = b.length;
-		char c[] = new char[4];
-		while (remaining > 0) {
-			// Three input bytes are encoded as four chars (6 bits) as
-			// 00000011 11112222 22333333
-
-			c[0] = (char) ((b[i] & 0xFC) >> 2);
-			c[1] = (char) ((b[i] & 0x03) << 4);
-			if (remaining >= 2) {
-				c[1] += (char) ((b[i + 1] & 0xF0) >> 4);
-				c[2] = (char) ((b[i + 1] & 0x0F) << 2);
-				if (remaining >= 3) {
-					c[2] += (char) ((b[i + 2] & 0xC0) >> 6);
-					c[3] = (char) (b[i + 2] & 0x3F);
-				} else {
-					c[3] = 64;
-				}
-			} else {
-				c[2] = 64;
-				c[3] = 64;
-			}
-
-			// Convert to base64 chars
-			for (int j = 0; j < 4; j++) {
-				if (c[j] < 26) {
-					c[j] += 'A';
-				} else if (c[j] < 52) {
-					c[j] = (char) (c[j] - 26 + 'a');
-				} else if (c[j] < 62) {
-					c[j] = (char) (c[j] - 52 + '0');
-				} else if (c[j] == 62) {
-					c[j] = '+';
-				} else if (c[j] == 63) {
-					c[j] = '/';
-				} else {
-					c[j] = '=';
-				}
-			}
-
-			sb.append(c);
-			i += 3;
-			remaining -= 3;
-		}
-
-		return sb.toString();
-	}
-
+            // Convert to base64 chars
+            for (j in 0..3) {
+                if (c[j].code < 26) {
+                    c[j] += 'A'
+                } else if (c[j].code < 52) {
+                    c[j] = (c[j].code - 26 + 'a'.code).toChar()
+                } else if (c[j].code < 62) {
+                    c[j] = (c[j].code - 52 + '0'.code).toChar()
+                } else if (c[j].code == 62) {
+                    c[j] = '+'
+                } else if (c[j].code == 63) {
+                    c[j] = '/'
+                } else {
+                    c[j] = '='
+                }
+            }
+            sb.append(c)
+            i += 3
+            remaining -= 3
+        }
+        return sb.toString()
+    }
 }

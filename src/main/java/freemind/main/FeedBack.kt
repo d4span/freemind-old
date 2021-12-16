@@ -20,14 +20,11 @@
  * Created on 03.01.2006
  */
 /*$Id: FeedBack.java,v 1.1.2.1.2.2 2007/02/03 23:19:26 christianfoltin Exp $*/
-package freemind.main;
+package freemind.main
 
-public interface FeedBack {
-	void progress(int act, String messageId, Object[] pMessageParameters);
-
-	int getActualValue();
-
-	void setMaximumValue(int max);
-
-	void increase(String messageId, Object[] pMessageParameters);
+interface FeedBack {
+    fun progress(act: Int, messageId: String, pMessageParameters: Array<Any>?)
+    val actualValue: Int
+    fun setMaximumValue(max: Int)
+    fun increase(messageId: String, pMessageParameters: Array<Any>?)
 }

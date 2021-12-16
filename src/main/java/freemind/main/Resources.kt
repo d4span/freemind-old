@@ -21,192 +21,333 @@
  * Created on 12.07.2005
  * Copyright (C) 2005-2008 Dimitri Polivaev, Christian Foltin
  */
-package freemind.main;
+package freemind.main
 
-import java.io.File;
-import java.net.URL;
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.filechooser.FileFilter;
-
-import tests.freemind.FreeMindMainMock;
-import freemind.common.NamedObject;
-import freemind.common.TextTranslator;
-import freemind.main.FreeMindMain.VersionInformation;
-import freemind.modes.FreeMindAwtFileDialog;
-import freemind.modes.FreeMindFileDialog;
-import freemind.modes.FreeMindJFileDialog;
+import freemind.controller.actions.generated.instance.CompoundAction.listChoiceList
+import freemind.controller.Controller.init
+import freemind.controller.Controller.OptionAntialiasAction.changeAntialias
+import freemind.controller.Controller.createNewMode
+import freemind.controller.Controller.filterController
+import freemind.controller.filter.FilterController.saveConditions
+import freemind.controller.Controller.view
+import freemind.controller.Controller.obtainFocusForSelected
+import freemind.controller.Controller.addTabbedPane
+import freemind.controller.Controller.modeController
+import freemind.controller.LastStateStorageManagement.lastOpenList
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.restorableName
+import freemind.controller.Controller.lastOpenedList
+import freemind.controller.LastOpenedList.open
+import freemind.controller.LastStateStorageManagement.lastFocussedTab
+import freemind.controller.Controller.mapModule
+import freemind.controller.Controller.mapModuleManager
+import freemind.controller.MapModuleManager.changeToMapModule
+import freemind.controller.Controller.errorMessage
+import freemind.main.Tools
+import java.awt.Color
+import java.util.StringTokenizer
+import java.util.LinkedList
+import java.lang.StringBuffer
+import java.awt.GraphicsEnvironment
+import java.util.Locale
+import freemind.main.Base64Coding
+import java.util.zip.Deflater
+import java.util.zip.Inflater
+import java.util.zip.DataFormatException
+import java.lang.RuntimeException
+import freemind.main.Tools.BooleanHolder
+import javax.swing.JDialog
+import java.awt.Dimension
+import java.awt.Insets
+import kotlin.Throws
+import java.lang.Runnable
+import freemind.main.HtmlTools
+import java.awt.datatransfer.Transferable
+import java.awt.datatransfer.DataFlavor
+import java.awt.event.ActionEvent
+import javax.swing.JComponent
+import javax.swing.KeyStroke
+import freemind.main.FreeMindCommon
+import javax.swing.SwingUtilities
+import javax.swing.AbstractButton
+import freemind.main.Tools.ButtonHolder
+import freemind.main.Tools.ActionHolder
+import freemind.main.Tools.NameMnemonicHolder
+import java.awt.Graphics2D
+import java.awt.RenderingHints
+import freemind.modes.MindMapNode
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.common.XmlBindingTools
+import java.lang.SecurityException
+import java.lang.IllegalAccessException
+import java.lang.NoSuchFieldException
+import freemind.modes.mindmapmode.MindMapController
+import java.awt.datatransfer.Clipboard
+import freemind.controller.MindMapNodesSelection
+import java.awt.event.ActionListener
+import java.awt.KeyboardFocusManager
+import java.awt.event.KeyEvent
+import javax.swing.InputMap
+import javax.swing.UIManager
+import java.awt.print.Paper
+import freemind.controller.actions.generated.instance.CompoundAction
+import java.lang.reflect.InvocationTargetException
+import java.lang.InterruptedException
+import freemind.main.FreeMindStarter
+import java.util.Properties
+import freemind.modes.EdgeAdapter
+import freemind.modes.MindIcon
+import java.nio.file.attribute.DosFileAttributes
+import java.awt.GraphicsDevice
+import freemind.main.FreeMind
+import javax.crypto.Cipher
+import java.security.spec.KeySpec
+import javax.crypto.spec.PBEKeySpec
+import javax.crypto.SecretKey
+import javax.crypto.SecretKeyFactory
+import java.security.spec.AlgorithmParameterSpec
+import javax.crypto.spec.PBEParameterSpec
+import java.security.InvalidAlgorithmParameterException
+import java.security.spec.InvalidKeySpecException
+import javax.crypto.NoSuchPaddingException
+import java.security.NoSuchAlgorithmException
+import freemind.main.Tools.DesEncrypter
+import javax.crypto.BadPaddingException
+import javax.crypto.IllegalBlockSizeException
+import freemind.main.Tools.ReaderCreator
+import javax.swing.JFrame
+import freemind.main.FreeMindMain
+import javax.swing.JLabel
+import javax.swing.JScrollPane
+import javax.swing.JSplitPane
+import javax.swing.JTabbedPane
+import javax.swing.ImageIcon
+import freemind.main.FreeMindMain.StartupDoneListener
+import freemind.main.EditServer
+import freemind.main.FreeMindSecurityManager
+import java.util.Collections
+import freemind.main.FeedBack
+import java.awt.BorderLayout
+import freemind.preferences.FreemindPropertyListener
+import freemind.main.FreeMindMain.VersionInformation
+import java.lang.NumberFormatException
+import freemind.view.mindmapview.MapView
+import java.awt.Desktop
+import java.awt.Cursor
+import java.util.ResourceBundle
+import freemind.main.StdFormatter
+import freemind.main.LogFileLogHandler
+import com.inet.jortho.SpellChecker
+import freemind.common.NamedObject
+import freemind.main.FreeMindStarter.ProxyAuthenticator
+import java.awt.event.InputEvent
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import freemind.modes.ModeController
+import freemind.controller.LastStateStorageManagement
+import freemind.view.MapModule
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
+import javax.swing.JPanel
+import freemind.main.IFreeMindSplash
+import freemind.main.FreeMindSplashModern
+import java.awt.event.WindowFocusListener
+import javax.swing.JOptionPane
+import freemind.main.XHTMLWriter
+import javax.swing.text.BadLocationException
+import freemind.main.HtmlTools.IndexPair
+import freemind.main.HtmlTools.NodeCreator
+import org.jsoup.select.NodeTraversor
+import freemind.main.HtmlTools.HtmlNodeVisitor
+import org.jsoup.Jsoup
+import kotlin.jvm.JvmOverloads
+import freemind.common.TextTranslator
+import java.text.MessageFormat
+import freemind.modes.FreeMindFileDialog
+import freemind.modes.FreeMindJFileDialog
+import freemind.modes.FreeMindAwtFileDialog
+import tests.freemind.FreeMindMainMock
+import java.util.TreeMap
+import freemind.main.XMLElement
+import java.util.Enumeration
+import java.lang.ClassCastException
+import freemind.main.FixedHTMLWriter
+import freemind.main.XHTMLWriter.XHTMLFilterWriter
+import javax.swing.text.html.HTMLEditorKit
+import kotlin.jvm.JvmStatic
+import javax.swing.JLayeredPane
+import freemind.main.StdFormatter.StdOutErrLevel
+import javax.swing.JApplet
+import freemind.main.FreeMindApplet
+import java.util.PropertyResourceBundle
+import freemind.main.FreeMindCommon.FreeMindResourceBundle
+import javax.swing.text.html.HTMLWriter
+import javax.swing.text.MutableAttributeSet
+import javax.swing.text.SimpleAttributeSet
+import javax.swing.text.html.HTML
+import javax.swing.text.StyleConstants
+import javax.swing.text.html.CSS
+import freemind.main.LogFileLogHandler.LogReceiver
+import freemind.main.FreeMindSplashModern.FeedBackImpl
+import javax.swing.JProgressBar
+import freemind.view.ImageFactory
+import javax.swing.JRootPane
+import java.awt.Graphics
+import java.awt.Rectangle
+import java.io.*
+import java.net.*
+import java.util.HashMap
+import java.util.logging.*
+import javax.swing.filechooser.FileFilter
 
 /**
  * @author Dimitri Polivaev 12.07.2005
  */
-public class Resources implements TextTranslator {
-	private FreeMindMain main;
-	static Resources resourcesInstance = null;
-	private HashMap<String, String> countryMap;
-	private Logger logger = null;
+class Resources private constructor(private val main: FreeMindMain) : TextTranslator {
+    private var countryMap: HashMap<String, String>? = null
+    private var logger: Logger? = null
 
-	private Resources(FreeMindMain frame) {
-		this.main = frame;
-		if (logger == null) {
-			logger = main.getLogger(this.getClass().getName());
-		}
-	}
+    init {
+        if (logger == null) {
+            logger = main.getLogger(this.javaClass.name)
+        }
+    }
 
-	static public void createInstance(FreeMindMain frame) {
-		if (resourcesInstance == null) {
-			resourcesInstance = new Resources(frame);
-		}
-	}
+    fun getResource(resource: String): URL? {
+        return main.getResource(resource)
+    }
 
-	public URL getResource(String resource) {
-		return main.getResource(resource);
-	}
+    fun getResourceString(resource: String?): String? {
+        return main.getResourceString(resource)
+    }
 
-	public String getResourceString(String resource) {
-		return main.getResourceString(resource);
-	}
+    fun getResourceString(key: String?, resource: String?): String? {
+        return main.getResourceString(key, resource)
+    }
 
-	public String getResourceString(String key, String resource) {
-		return main.getResourceString(key, resource);
-	}
+    val freemindDirectory: String?
+        get() = main.freemindDirectory
+    val freemindBaseDir: String?
+        get() = main.freemindBaseDir
+    val freemindVersion: VersionInformation?
+        get() = main.freemindVersion
+    val freeMindClassLoader: ClassLoader?
+        get() = main.freeMindClassLoader
 
-	static public Resources getInstance() {
-		if(resourcesInstance == null) {
-			createInstance(new FreeMindMainMock());
-			System.err.println("Resources without FreeMind called.");
-		}
-		return resourcesInstance;
-	}
+    fun getIntProperty(key: String?, defaultValue: Int): Int {
+        return main.getIntProperty(key, defaultValue)
+    }
 
-	public String getFreemindDirectory() {
-		return main.getFreemindDirectory();
-	}
+    fun getLongProperty(key: String?, defaultValue: Long): Long {
+        return try {
+            getProperty(key)!!.toLong()
+        } catch (nfe: NumberFormatException) {
+            defaultValue
+        }
+    }
 
-	public String getFreemindBaseDir() {
-		return main.getFreemindBaseDir();
-	}
-	
-	public VersionInformation getFreemindVersion() {
-		return main.getFreemindVersion();
-	}
-	
-	public ClassLoader getFreeMindClassLoader() {
-		return main.getFreeMindClassLoader();
-	}
+    /**
+     * @param key
+     * Property key
+     * @return the boolean value of the property resp. the default.
+     */
+    fun getBoolProperty(key: String?): Boolean {
+        val boolProperty = getProperty(key)
+        return Tools.safeEquals("true", boolProperty)
+    }
 
-	public int getIntProperty(String key, int defaultValue) {
-		return main.getIntProperty(key, defaultValue);
-	}
-	
-	public long getLongProperty(String key, long defaultValue) {
-		try {
-			return Long.parseLong(getProperty(key));
-		} catch (NumberFormatException nfe) {
-			return defaultValue;
-		}
-	}
+    val properties: Properties?
+        get() = main.properties
 
+    fun getProperty(key: String?): String? {
+        return main.getProperty(key)
+    }
 
+    val resources: ResourceBundle?
+        get() = main.resources
 
-	/**
-	 * @param key
-	 *            Property key
-	 * @return the boolean value of the property resp. the default.
-	 */
-	public boolean getBoolProperty(String key) {
-		String boolProperty = getProperty(key);
-		return Tools.safeEquals("true", boolProperty);
-	}
+    fun getCountryMap(): HashMap<String, String> {
+        if (countryMap == null) {
+            val countryMapArray = arrayOf("de", "DE", "en", "UK",
+                    "en", "US", "es", "ES", "es", "MX", "fi", "FI", "fr", "FR",
+                    "hu", "HU", "it", "CH", "it", "IT", "nl", "NL", "no", "NO",
+                    "pt", "PT", "ru", "RU", "sl", "SI", "uk", "UA", "zh", "CN")
+            countryMap = HashMap()
+            var i = 0
+            while (i < countryMapArray.size) {
+                countryMap!![countryMapArray[i]] = countryMapArray[i + 1]
+                i = i + 2
+            }
+        }
+        return countryMap!!
+    }
 
-	public Properties getProperties() {
-		return main.getProperties();
-	}
+    /* To obtain a logging element, ask here. */
+    fun getLogger(forClass: String?): Logger? {
+        return main.getLogger(forClass)
+    }
 
-	public String getProperty(String key) {
-		return main.getProperty(key);
-	}
+    @JvmOverloads
+    fun logException(e: Throwable?, comment: String = "") {
+        logger!!.log(Level.SEVERE, "An exception occured: $comment", e)
+    }
 
-	public ResourceBundle getResources() {
-		return main.getResources();
-	}
+    fun format(resourceKey: String?, messageArguments: Array<Any?>?): String {
+        val formatter = MessageFormat(getResourceString(resourceKey))
+        return formatter.format(messageArguments)
+    }
 
-	public HashMap<String, String> getCountryMap() {
-		if (countryMap == null) {
-			String[] countryMapArray = new String[] { "de", "DE", "en", "UK",
-					"en", "US", "es", "ES", "es", "MX", "fi", "FI", "fr", "FR",
-					"hu", "HU", "it", "CH", "it", "IT", "nl", "NL", "no", "NO",
-					"pt", "PT", "ru", "RU", "sl", "SI", "uk", "UA", "zh", "CN" };
+    fun createTranslatedString(key: String?): NamedObject {
+        val fs = getResourceString(key)
+        return NamedObject(key, fs)
+    }
 
-			countryMap = new HashMap<>();
-			for (int i = 0; i < countryMapArray.length; i = i + 2) {
-				countryMap.put(countryMapArray[i], countryMapArray[i + 1]);
-			}
-		}
-		return countryMap;
-	}
+    override fun getText(pKey: String?): String {
+        return getResourceString(pKey)!!
+    }
 
-	/* To obtain a logging element, ask here. */
-	public java.util.logging.Logger getLogger(String forClass) {
-		return main.getLogger(forClass);
-	}
+    fun getStandardFileChooser(filter: FileFilter?): FreeMindFileDialog {
+        val chooser: FreeMindFileDialog
+        chooser = if (!Tools.isMacOsX()) {
+            FreeMindJFileDialog()
+        } else {
+            // only for mac
+            FreeMindAwtFileDialog()
+        }
+        if (filter != null) {
+            chooser.addChoosableFileFilterAsDefault(filter)
+        }
+        return chooser
+    }
 
-	public void logException(Throwable e) {
-		logException(e, "");
-	}
+    /**
+     * @param baseFileName
+     * @return
+     */
+    fun createThumbnailFileName(baseFileName: File): String {
+        return (baseFileName.parent
+                + File.separatorChar
+                + "." // hidden
+                + baseFileName.name.replaceFirst((
+                FreeMindCommon.Companion.FREEMIND_FILE_EXTENSION + "$").toRegex(),
+                ".png"))
+    }
 
-	public void logException(Throwable e, String comment) {
-		logger.log(Level.SEVERE, "An exception occured: " + comment, e);
-	}
+    companion object {
+        var resourcesInstance: Resources? = null
+        fun createInstance(frame: FreeMindMain) {
+            if (resourcesInstance == null) {
+                resourcesInstance = Resources(frame)
+            }
+        }
 
-	public String format(String resourceKey, Object[] messageArguments) {
-		MessageFormat formatter =
-			new MessageFormat(getResourceString(resourceKey));
-		String stringResult = formatter.format(messageArguments);
-		return stringResult;
-	}
-
-	public NamedObject createTranslatedString(String key) {
-		String fs = getResourceString(key);
-		return new NamedObject(key, fs);
-	}
-
-	public String getText(String pKey) {
-		return getResourceString(pKey);
-	}
-	
-	public FreeMindFileDialog getStandardFileChooser(FileFilter filter) {
-		FreeMindFileDialog chooser;
-		if (!Tools.isMacOsX()) {
-			chooser = new FreeMindJFileDialog();
-		} else {
-			// only for mac
-			chooser = new FreeMindAwtFileDialog();
-		}
-		if (filter != null) {
-			chooser.addChoosableFileFilterAsDefault(filter);
-		}
-		return chooser;
-	}
-
-	/**
-	 * @param baseFileName
-	 * @return
-	 */
-	public String createThumbnailFileName(File baseFileName) {
-		String fileName = baseFileName.getParent()
-				+ File.separatorChar
-				+ "." // hidden
-				+ baseFileName.getName().replaceFirst(
-						FreeMindCommon.FREEMIND_FILE_EXTENSION + "$",
-						".png");
-		return fileName;
-	}
-
-
+        val instance: Resources?
+            get() {
+                if (resourcesInstance == null) {
+                    createInstance(FreeMindMainMock())
+                    System.err.println("Resources without FreeMind called.")
+                }
+                return resourcesInstance
+            }
+    }
 }

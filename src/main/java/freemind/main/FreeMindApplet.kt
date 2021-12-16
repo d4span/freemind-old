@@ -17,424 +17,513 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: FreeMindApplet.java,v 1.18.14.13.2.25 2009/04/19 19:44:01 christianfoltin Exp $*/
+package freemind.main
 
-package freemind.main;
+import freemind.controller.actions.generated.instance.CompoundAction.listChoiceList
+import freemind.controller.Controller.init
+import freemind.controller.Controller.OptionAntialiasAction.changeAntialias
+import freemind.controller.Controller.createNewMode
+import freemind.controller.Controller.filterController
+import freemind.controller.filter.FilterController.saveConditions
+import freemind.controller.Controller.view
+import freemind.controller.Controller.obtainFocusForSelected
+import freemind.controller.Controller.addTabbedPane
+import freemind.controller.Controller.modeController
+import freemind.controller.LastStateStorageManagement.lastOpenList
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.restorableName
+import freemind.controller.Controller.lastOpenedList
+import freemind.controller.LastOpenedList.open
+import freemind.controller.LastStateStorageManagement.lastFocussedTab
+import freemind.controller.Controller.mapModule
+import freemind.controller.Controller.mapModuleManager
+import freemind.controller.MapModuleManager.changeToMapModule
+import freemind.controller.Controller.errorMessage
+import freemind.main.Tools
+import java.awt.Color
+import java.lang.StringBuffer
+import java.awt.GraphicsEnvironment
+import freemind.main.Base64Coding
+import java.util.zip.Deflater
+import java.util.zip.Inflater
+import java.util.zip.DataFormatException
+import java.lang.RuntimeException
+import freemind.main.Tools.BooleanHolder
+import javax.swing.JDialog
+import java.awt.Dimension
+import java.awt.Insets
+import kotlin.Throws
+import java.lang.Runnable
+import freemind.main.HtmlTools
+import java.awt.datatransfer.Transferable
+import java.awt.datatransfer.DataFlavor
+import java.awt.event.ActionEvent
+import javax.swing.JComponent
+import javax.swing.KeyStroke
+import freemind.main.FreeMindCommon
+import javax.swing.SwingUtilities
+import javax.swing.AbstractButton
+import freemind.main.Tools.ButtonHolder
+import freemind.main.Tools.ActionHolder
+import freemind.main.Tools.NameMnemonicHolder
+import java.awt.Graphics2D
+import java.awt.RenderingHints
+import freemind.modes.MindMapNode
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.common.XmlBindingTools
+import java.lang.SecurityException
+import java.lang.IllegalAccessException
+import java.lang.NoSuchFieldException
+import freemind.modes.mindmapmode.MindMapController
+import java.awt.datatransfer.Clipboard
+import freemind.controller.MindMapNodesSelection
+import java.awt.event.ActionListener
+import java.awt.KeyboardFocusManager
+import java.awt.event.KeyEvent
+import javax.swing.InputMap
+import javax.swing.UIManager
+import java.awt.print.Paper
+import freemind.controller.actions.generated.instance.CompoundAction
+import java.lang.reflect.InvocationTargetException
+import java.lang.InterruptedException
+import freemind.main.FreeMindStarter
+import freemind.modes.EdgeAdapter
+import freemind.modes.MindIcon
+import java.nio.file.attribute.DosFileAttributes
+import java.awt.GraphicsDevice
+import freemind.main.FreeMind
+import javax.crypto.Cipher
+import java.security.spec.KeySpec
+import javax.crypto.spec.PBEKeySpec
+import javax.crypto.SecretKey
+import javax.crypto.SecretKeyFactory
+import java.security.spec.AlgorithmParameterSpec
+import javax.crypto.spec.PBEParameterSpec
+import java.security.InvalidAlgorithmParameterException
+import java.security.spec.InvalidKeySpecException
+import javax.crypto.NoSuchPaddingException
+import java.security.NoSuchAlgorithmException
+import freemind.main.Tools.DesEncrypter
+import javax.crypto.BadPaddingException
+import javax.crypto.IllegalBlockSizeException
+import freemind.main.Tools.ReaderCreator
+import javax.swing.JFrame
+import freemind.main.FreeMindMain
+import javax.swing.JLabel
+import javax.swing.JScrollPane
+import javax.swing.JSplitPane
+import javax.swing.JTabbedPane
+import javax.swing.ImageIcon
+import freemind.main.FreeMindMain.StartupDoneListener
+import freemind.main.EditServer
+import freemind.main.FreeMindSecurityManager
+import freemind.main.FeedBack
+import java.awt.BorderLayout
+import freemind.preferences.FreemindPropertyListener
+import freemind.main.FreeMindMain.VersionInformation
+import java.lang.NumberFormatException
+import freemind.view.mindmapview.MapView
+import java.awt.Desktop
+import java.awt.Cursor
+import java.util.logging.ConsoleHandler
+import java.util.logging.FileHandler
+import freemind.main.StdFormatter
+import freemind.main.LogFileLogHandler
+import java.util.logging.SimpleFormatter
+import com.inet.jortho.SpellChecker
+import freemind.main.FreeMindStarter.ProxyAuthenticator
+import java.awt.event.InputEvent
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import freemind.modes.ModeController
+import freemind.controller.LastStateStorageManagement
+import freemind.view.MapModule
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
+import javax.swing.JPanel
+import freemind.main.IFreeMindSplash
+import freemind.main.FreeMindSplashModern
+import java.awt.event.WindowFocusListener
+import javax.swing.JOptionPane
+import freemind.main.XHTMLWriter
+import javax.swing.text.BadLocationException
+import freemind.main.HtmlTools.IndexPair
+import freemind.main.HtmlTools.NodeCreator
+import org.jsoup.select.NodeTraversor
+import freemind.main.HtmlTools.HtmlNodeVisitor
+import org.jsoup.Jsoup
+import kotlin.jvm.JvmOverloads
+import freemind.common.TextTranslator
+import freemind.controller.Controller
+import freemind.controller.MenuBar
+import java.text.MessageFormat
+import freemind.modes.FreeMindFileDialog
+import freemind.modes.FreeMindJFileDialog
+import freemind.modes.FreeMindAwtFileDialog
+import tests.freemind.FreeMindMainMock
+import freemind.main.XMLElement
+import java.lang.ClassCastException
+import freemind.main.FixedHTMLWriter
+import freemind.main.XHTMLWriter.XHTMLFilterWriter
+import javax.swing.text.html.HTMLEditorKit
+import kotlin.jvm.JvmStatic
+import javax.swing.JLayeredPane
+import freemind.main.StdFormatter.StdOutErrLevel
+import javax.swing.JApplet
+import freemind.main.FreeMindApplet
+import freemind.main.FreeMindCommon.FreeMindResourceBundle
+import javax.swing.text.html.HTMLWriter
+import javax.swing.text.MutableAttributeSet
+import javax.swing.text.SimpleAttributeSet
+import javax.swing.text.html.HTML
+import javax.swing.text.StyleConstants
+import javax.swing.text.html.CSS
+import freemind.main.LogFileLogHandler.LogReceiver
+import freemind.main.FreeMindSplashModern.FeedBackImpl
+import javax.swing.JProgressBar
+import freemind.view.ImageFactory
+import javax.swing.JRootPane
+import java.awt.Graphics
+import java.awt.Rectangle
+import java.io.*
+import java.lang.Exception
+import java.lang.IllegalArgumentException
+import java.net.*
+import java.util.*
+import java.util.logging.Logger
 
-import java.awt.BorderLayout;
-import java.awt.Cursor;
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.Vector;
+class FreeMindApplet : JApplet(), FreeMindMain {
+    // public static final String defaultPropsURL;
+    var defaultPropsURL: URL? = null
+    private override val scrollPane: JScrollPane = MapView.ScrollPane()
+    override var freeMindMenuBar: MenuBar? = null
+        private set
+    private var status: JLabel? = null
+    override var controller // the one and only controller
+            : Controller? = null
+    private val mFreeMindCommon: FreeMindCommon
 
-import javax.swing.JApplet;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-
-import freemind.controller.Controller;
-import freemind.controller.MenuBar;
-import freemind.view.mindmapview.MapView;
-
-@SuppressWarnings("serial")
-public class FreeMindApplet extends JApplet implements FreeMindMain {
-
-	public static final VersionInformation version = FreeMind.VERSION;
-	// public static final String defaultPropsURL;
-	public URL defaultPropsURL;
-	public static Properties defaultProps;
-	public static Properties userProps;
-	private JScrollPane scrollPane = new MapView.ScrollPane();
-	private MenuBar menuBar;
-	private JLabel status;
-	Controller c;// the one and only controller
-	private FreeMindCommon mFreeMindCommon;
-	private JPanel southPanel;
-	private JComponent mComponentInSplitPane;
-
-	public FreeMindApplet() {
-		mFreeMindCommon = new FreeMindCommon(this);
-		Resources.createInstance(this);
-	}// Constructor
-
-	public boolean isApplet() {
-		return true;
-	}
-
-	public File getPatternsFile() {
-		return null;
-	}
-
-	public Controller getController() {
-		return c;
-	}
-
-	public MapView getView() {
-		return c.getView();
-	}
-
-	public void setView(MapView view) {
-		scrollPane.setViewportView(view);
-	}
-
-	public MenuBar getFreeMindMenuBar() {
-		return menuBar;
-	}
-
-	public VersionInformation getFreemindVersion() {
-		return version;
-	}
-
-	// "dummy" implementation of the interface (PN)
-	public int getWinHeight() {
-		return getRootPane().getHeight();
-	}
-
-	public int getWinWidth() {
-		return getRootPane().getWidth();
-	}
-
-	public int getWinState() {
-		return 6;
-	}
-
-	public int getWinX() {
-		return 0;
-	}
-
-	public int getWinY() {
-		return 0;
-	}
-
-	/**
-	 * Returns the ResourceBundle with the current language
-	 */
-	public ResourceBundle getResources() {
-		return mFreeMindCommon.getResources();
-	}
-
-	public String getResourceString(String resource) {
-		return mFreeMindCommon.getResourceString(resource);
-	}
-
-	public String getResourceString(String key, String resource) {
-		return mFreeMindCommon.getResourceString(key, resource);
-	}
-
-	public String getProperty(String key) {
-		return userProps.getProperty(key);
-	}
-
-	public int getIntProperty(String key, int defaultValue) {
-		try {
-			return Integer.parseInt(getProperty(key));
-		} catch (NumberFormatException nfe) {
-			return defaultValue;
-		}
-	}
-
-	public Properties getProperties() {
-		return userProps;
-	}
-
-	public void setProperty(String key, String value) {
-	}
-
-	public void setDefaultProperty(String key, String value) {
-		userProps.setProperty(key, value);
-	}
-
-	public String getFreemindDirectory() {
-		return null;
-	};
-
-	static int iMaxNodeWidth = 0;
-
-	static public int getMaxNodeWidth() {
-		if (iMaxNodeWidth == 0) {
-			try {
-				iMaxNodeWidth = Integer.parseInt(userProps
-						.getProperty("max_node_width"));
-			} catch (NumberFormatException nfe) {
-				iMaxNodeWidth = Integer.parseInt(userProps
-						.getProperty("el__max_default_window_width"));
-			}
-		}
-		return iMaxNodeWidth;
-	}
-
-	public void saveProperties(boolean pIsShutdown) {
-	}
-
-	public void setTitle(String title) {
-	}
-
-	public void out(String msg) {
-		status.setText(msg);
-	}
-
-	public void err(String msg) {
-		status.setText("ERROR: " + msg);
-	}
-
-	public void openDocument(URL doc) throws Exception {
-		getAppletContext().showDocument(doc, "_blank");
-	}
-
-	public void start() {
-		// Make sure the map is centered at the very beginning.
-		try {
-			if (getView() != null) {
-				getView().moveToRoot();
-			} else {
-				System.err.println("View is null.");
-			}
-		} catch (Exception e) {
-			freemind.main.Resources.getInstance().logException(e);
-		}
-	}
-
-	public void setWaitingCursor(boolean waiting) {
-		if (waiting) {
-			getRootPane().getGlassPane().setCursor(
-					Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			getRootPane().getGlassPane().setVisible(true);
-		} else {
-			getRootPane().getGlassPane().setCursor(
-					Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			getRootPane().getGlassPane().setVisible(false);
-		}
-	}
-
-	public URL getResource(String name) {
-		final URL resourceURL = this.getClass().getResource("/" + name);
-		if (resourceURL == null || !resourceURL.getProtocol().equals("jar")
-				&& System.getProperty("freemind.debug", null) == null)
-			return null;
-		return resourceURL;
-	}
-
-	public java.util.logging.Logger getLogger(String forClass) {
-		/*
-		 * Applet logging is anonymous due to security reasons. (Calling a named
-		 * logger is answered with a security exception).
-		 */
-		return java.util.logging.Logger.getAnonymousLogger();
-	}
-
-	public void init() {
-		createRootPane();
-		// load properties
-		defaultPropsURL = getResource("freemind.properties");
-		try {
-			// load properties
-			defaultProps = new Properties();
-			InputStream in = defaultPropsURL.openStream();
-			defaultProps.load(in);
-			in.close();
-			userProps = defaultProps;
-		} catch (Exception ex) {
-			System.err.println("Could not load properties.");
-		}
-
-		updateLookAndFeel();
-
-		// try to overload some properties with given command-line (html tag)
-		// Arguments
-		Enumeration allKeys = userProps.propertyNames();
-		while (allKeys.hasMoreElements()) {
-			String key = (String) allKeys.nextElement();
-			setPropertyByParameter(key);
-		}
-
-		// Layout everything
-		getContentPane().setLayout(new BorderLayout());
-
-		c = new Controller(this);
-		c.init();
-
-		c.optionAntialiasAction
-				.changeAntialias(getProperty(FreeMindCommon.RESOURCE_ANTIALIAS));
-
-		// Create the MenuBar
-		menuBar = new MenuBar(c); // new MenuBar(c);
-		setJMenuBar(menuBar);
-		c.setToolbarVisible(false);
-		c.setMenubarVisible(false);
-
-		// Create the scroll pane.
-
-		getContentPane().add(scrollPane, BorderLayout.CENTER);
-		// taken from Lukasz Pekacki, NodeText version:
-		southPanel = new JPanel(new BorderLayout());
-
-		status = new JLabel();
-		southPanel.add(status, BorderLayout.SOUTH);
-
-		getContentPane().add(southPanel, BorderLayout.SOUTH);
-		// end taken.
-
-		SwingUtilities.updateComponentTreeUI(this); // Propagate LookAndFeel to
-													// JComponents
-
-		// wait until AWT thread starts
-		Tools.waitForEventQueue();
-		c.createNewMode(getProperty("initial_mode"));
-		String initialMapName = getProperty("browsemode_initial_map");
-		if (initialMapName != null && initialMapName.startsWith(".")) {
-			/* new handling for relative urls. fc, 29.10.2003. */
-			try {
-				URL documentBaseUrl = new URL(getDocumentBase(), initialMapName);
-				initialMapName = documentBaseUrl.toString();
-			} catch (java.net.MalformedURLException e) {
-				getController().errorMessage(
-						"Could not open relative URL " + initialMapName
-								+ ". It is malformed.");
-				System.err.println(e);
-				return;
-			}
-			/* end: new handling for relative urls. fc, 29.10.2003. */
-		}
-		if (initialMapName != "") {
-			try {
-				// get URL:
-				URL mapUrl = new URL(initialMapName);
-				getController().getModeController().load(mapUrl);
-			} catch (Exception e) {
-				freemind.main.Resources.getInstance().logException(e);
-			}
-		}
-
-	}
-
-	private void setPropertyByParameter(String key) {
-		String val = getParameter(key);
-		// System.out.println("Got prop:"+key+":"+val);
-		if (val != null && val != "") {
-			userProps.setProperty(key, val);
-		}
-	}
-
-	private void updateLookAndFeel() {
-		// set Look&Feel
-		String lookAndFeel = "";
-		try {
-			setPropertyByParameter("lookandfeel");
-			lookAndFeel = userProps.getProperty("lookandfeel");
-			if (lookAndFeel.equals("windows")) {
-				UIManager
-						.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-			} else if (lookAndFeel.equals("motif")) {
-				UIManager
-						.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-			} else if (lookAndFeel.equals("mac")) {
-				// Only available on macOS
-				UIManager.setLookAndFeel("javax.swing.plaf.mac.MacLookAndFeel");
-			} else if (lookAndFeel.equals("metal")) {
-				UIManager
-						.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-			} else if (lookAndFeel.equals("gtk")) {
-				UIManager
-						.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-			} else if (lookAndFeel.equals("nothing")) {
-			} else if (lookAndFeel.indexOf('.') != -1) { // string contains a
-				// dot
-				UIManager.setLookAndFeel(lookAndFeel);
-				// we assume class name
-			} else {
-				// default.
-				UIManager.setLookAndFeel(UIManager
-						.getSystemLookAndFeelClassName());
-			}
-		} catch (Exception ex) {
-			System.err.println("Error while setting Look&Feel" + lookAndFeel);
-		}
-		mFreeMindCommon.loadUIProperties(userProps);
-		userProps.put(FreeMind.RESOURCE_DRAW_RECTANGLE_FOR_SELECTION,
-				Tools.BooleanToXml(true));
-	}
-
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.main.FreeMindMain#getSouthPanel()
-	 */
-	public JPanel getSouthPanel() {
-		return southPanel;
-	}
+	 */  var southPanel: JPanel? = null
+        private set
+    private var mComponentInSplitPane: JComponent? = null
+    override val isApplet: Boolean
+        get() = true
+    override val patternsFile: File?
+        get() = null
+    override var view: MapView?
+        get() = controller!!.view
+        set(view) {
+            scrollPane.setViewportView(view)
+        }
 
-	/*
+    // "dummy" implementation of the interface (PN)
+    override val winHeight: Int
+        get() = getRootPane().height
+    override val winWidth: Int
+        get() = getRootPane().width
+    override val winState: Int
+        get() = 6
+    override val winX: Int
+        get() = 0
+    override val winY: Int
+        get() = 0
+
+    /**
+     * Returns the ResourceBundle with the current language
+     */
+    override val resources: ResourceBundle?
+        get() = mFreeMindCommon.resources
+
+    override fun getResourceString(resource: String?): String? {
+        return mFreeMindCommon.getResourceString(resource)
+    }
+
+    override fun getResourceString(key: String?, resource: String?): String? {
+        return mFreeMindCommon.getResourceString(key, resource)
+    }
+
+    override fun getProperty(key: String?): String? {
+        return Companion.properties!!.getProperty(key)
+    }
+
+    override fun getIntProperty(key: String?, defaultValue: Int): Int {
+        return try {
+            getProperty(key)!!.toInt()
+        } catch (nfe: NumberFormatException) {
+            defaultValue
+        }
+    }
+
+    override fun setProperty(key: String?, value: String?) {}
+    override fun setDefaultProperty(key: String?, value: String?) {
+        Companion.properties!!.setProperty(key, value)
+    }
+
+    override val freemindDirectory: String?
+        get() = null
+
+    init {
+        mFreeMindCommon = FreeMindCommon(this)
+        Resources.Companion.createInstance(this)
+    } // Constructor
+
+    override fun saveProperties(pIsShutdown: Boolean) {}
+    override fun setTitle(title: String?) {}
+    override fun out(msg: String?) {
+        status!!.text = msg
+    }
+
+    override fun err(msg: String) {
+        status!!.text = "ERROR: $msg"
+    }
+
+    @Throws(Exception::class)
+    override fun openDocument(doc: URL) {
+        appletContext.showDocument(doc, "_blank")
+    }
+
+    override fun start() {
+        // Make sure the map is centered at the very beginning.
+        try {
+            if (view != null) {
+                view!!.moveToRoot()
+            } else {
+                System.err.println("View is null.")
+            }
+        } catch (e: Exception) {
+            Resources.Companion.getInstance().logException(e)
+        }
+    }
+
+    override fun setWaitingCursor(waiting: Boolean) {
+        if (waiting) {
+            getRootPane().glassPane.cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)
+            getRootPane().glassPane.isVisible = true
+        } else {
+            getRootPane().glassPane.cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
+            getRootPane().glassPane.isVisible = false
+        }
+    }
+
+    override fun getResource(name: String): URL? {
+        val resourceURL = this.javaClass.getResource("/$name")
+        return if (resourceURL == null || resourceURL.protocol != "jar"
+                && System.getProperty("freemind.debug", null) == null) null else resourceURL
+    }
+
+    override fun getLogger(forClass: String?): Logger {
+        /*
+		 * Applet logging is anonymous due to security reasons. (Calling a named
+		 * logger is answered with a security exception).
+		 */
+        return Logger.getAnonymousLogger()
+    }
+
+    override fun init() {
+        createRootPane()
+        // load properties
+        defaultPropsURL = getResource("freemind.properties")
+        try {
+            // load properties
+            defaultProps = Properties()
+            val `in` = defaultPropsURL!!.openStream()
+            defaultProps!!.load(`in`)
+            `in`.close()
+            Companion.properties = defaultProps
+        } catch (ex: Exception) {
+            System.err.println("Could not load properties.")
+        }
+        updateLookAndFeel()
+
+        // try to overload some properties with given command-line (html tag)
+        // Arguments
+        val allKeys = Companion.properties!!.propertyNames()
+        while (allKeys.hasMoreElements()) {
+            val key = allKeys.nextElement() as String
+            setPropertyByParameter(key)
+        }
+
+        // Layout everything
+        contentPane.layout = BorderLayout()
+        controller = Controller(this)
+        controller!!.init()
+        controller!!.optionAntialiasAction
+                .changeAntialias(getProperty(FreeMindCommon.Companion.RESOURCE_ANTIALIAS))
+
+        // Create the MenuBar
+        freeMindMenuBar = MenuBar(controller!!) // new MenuBar(c);
+        jMenuBar = freeMindMenuBar
+        controller!!.setToolbarVisible(false)
+        controller!!.setMenubarVisible(false)
+
+        // Create the scroll pane.
+        contentPane.add(scrollPane, BorderLayout.CENTER)
+        // taken from Lukasz Pekacki, NodeText version:
+        southPanel = JPanel(BorderLayout())
+        status = JLabel()
+        southPanel!!.add(status, BorderLayout.SOUTH)
+        contentPane.add(southPanel, BorderLayout.SOUTH)
+        // end taken.
+        SwingUtilities.updateComponentTreeUI(this) // Propagate LookAndFeel to
+        // JComponents
+
+        // wait until AWT thread starts
+        Tools.waitForEventQueue()
+        controller!!.createNewMode(getProperty("initial_mode")!!)
+        var initialMapName = getProperty("browsemode_initial_map")
+        if (initialMapName != null && initialMapName.startsWith(".")) {
+            /* new handling for relative urls. fc, 29.10.2003. */
+            initialMapName = try {
+                val documentBaseUrl = URL(documentBase, initialMapName)
+                documentBaseUrl.toString()
+            } catch (e: MalformedURLException) {
+                controller!!.errorMessage(
+                        "Could not open relative URL " + initialMapName
+                                + ". It is malformed.")
+                System.err.println(e)
+                return
+            }
+            /* end: new handling for relative urls. fc, 29.10.2003. */
+        }
+        if (initialMapName !== "") {
+            try {
+                // get URL:
+                val mapUrl = URL(initialMapName)
+                controller!!.modeController!!.load(mapUrl)
+            } catch (e: Exception) {
+                Resources.Companion.getInstance().logException(e)
+            }
+        }
+    }
+
+    private fun setPropertyByParameter(key: String) {
+        val `val` = getParameter(key)
+        // System.out.println("Got prop:"+key+":"+val);
+        if (`val` != null && `val` !== "") {
+            Companion.properties!!.setProperty(key, `val`)
+        }
+    }
+
+    private fun updateLookAndFeel() {
+        // set Look&Feel
+        var lookAndFeel = ""
+        try {
+            setPropertyByParameter("lookandfeel")
+            lookAndFeel = Companion.properties!!.getProperty("lookandfeel")
+            if (lookAndFeel == "windows") {
+                UIManager
+                        .setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel")
+            } else if (lookAndFeel == "motif") {
+                UIManager
+                        .setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel")
+            } else if (lookAndFeel == "mac") {
+                // Only available on macOS
+                UIManager.setLookAndFeel("javax.swing.plaf.mac.MacLookAndFeel")
+            } else if (lookAndFeel == "metal") {
+                UIManager
+                        .setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel")
+            } else if (lookAndFeel == "gtk") {
+                UIManager
+                        .setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")
+            } else if (lookAndFeel == "nothing") {
+            } else if (lookAndFeel.indexOf('.') != -1) { // string contains a
+                // dot
+                UIManager.setLookAndFeel(lookAndFeel)
+                // we assume class name
+            } else {
+                // default.
+                UIManager.setLookAndFeel(UIManager
+                        .getSystemLookAndFeelClassName())
+            }
+        } catch (ex: Exception) {
+            System.err.println("Error while setting Look&Feel$lookAndFeel")
+        }
+        mFreeMindCommon.loadUIProperties(Companion.properties)
+        Companion.properties!![FreeMind.Companion.RESOURCE_DRAW_RECTANGLE_FOR_SELECTION] = Tools.BooleanToXml(true)
+    }
+
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.main.FreeMindMain#getJFrame()
 	 */
-	public JFrame getJFrame() {
-		throw new IllegalArgumentException("The applet has no frames");
-	}
+    override val jFrame: JFrame
+        get() {
+            throw IllegalArgumentException("The applet has no frames")
+        }
+    override val freeMindClassLoader: ClassLoader?
+        get() = mFreeMindCommon.freeMindClassLoader
+    override val freemindBaseDir: String?
+        get() = mFreeMindCommon.freemindBaseDir
 
-	public ClassLoader getFreeMindClassLoader() {
-		return mFreeMindCommon.getFreeMindClassLoader();
-	}
+    override fun getAdjustableProperty(label: String): String? {
+        return mFreeMindCommon.getAdjustableProperty(label)
+    }
 
-	public String getFreemindBaseDir() {
-		return mFreeMindCommon.getFreemindBaseDir();
-	}
+    override fun insertComponentIntoSplitPane(pMindMapComponent: JComponent): JSplitPane? {
+        if (mComponentInSplitPane === pMindMapComponent) {
+            return null
+        }
+        removeSplitPane()
+        mComponentInSplitPane = pMindMapComponent
+        southPanel!!.add(pMindMapComponent, BorderLayout.CENTER)
+        southPanel!!.revalidate()
+        return null
+    }
 
-	public String getAdjustableProperty(String label) {
-		return mFreeMindCommon.getAdjustableProperty(label);
-	}
+    override fun removeSplitPane() {
+        if (mComponentInSplitPane != null) {
+            southPanel!!.remove(mComponentInSplitPane)
+            southPanel!!.revalidate()
+            mComponentInSplitPane = null
+        }
+    }
 
-	public JSplitPane insertComponentIntoSplitPane(JComponent pMindMapComponent) {
-		if (mComponentInSplitPane == pMindMapComponent) {
-			return null;
-		}
-		removeSplitPane();
-		mComponentInSplitPane = pMindMapComponent;
-		southPanel.add(pMindMapComponent, BorderLayout.CENTER);
-		southPanel.revalidate();
-		return null;
-	}
+    // TODO: Is that correct?
+    override val contentComponent: JComponent?
+        get() =// TODO: Is that correct?
+            if (mComponentInSplitPane != null) {
+                mComponentInSplitPane
+            } else southPanel
 
-	public void removeSplitPane() {
-		if (mComponentInSplitPane != null) {
-			southPanel.remove(mComponentInSplitPane);
-			southPanel.revalidate();
-			mComponentInSplitPane = null;
-		}
-	}
+    override fun getScrollPane(): JScrollPane? {
+        return scrollPane
+    }
 
-	public JComponent getContentComponent() {
-		// TODO: Is that correct?
-		if (mComponentInSplitPane != null) {
-			return mComponentInSplitPane;
-		}
-		return southPanel;
-	}
+    override fun registerStartupDoneListener(
+            pStartupDoneListener: StartupDoneListener) {
+        // TODO Auto-generated method stub
+    }
 
-	public JScrollPane getScrollPane() {
-		return scrollPane;
-	}
-
-	public void registerStartupDoneListener(
-			StartupDoneListener pStartupDoneListener) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see freemind.main.FreeMindMain#getLoggerList()
 	 */
-	public List getLoggerList() {
-		return new Vector<>();
-	}
+    override val loggerList: List<Logger>
+        get() = Vector<Any>()
 
+    companion object {
+        val freemindVersion: VersionInformation = FreeMind.Companion.VERSION
+            get() = Companion.field
+        var defaultProps: Properties? = null
+        var properties: Properties? = null
+            get() = Companion.field
+        var iMaxNodeWidth = 0
+        val maxNodeWidth: Int
+            get() {
+                if (iMaxNodeWidth == 0) {
+                    try {
+                        iMaxNodeWidth = properties
+                                .getProperty("max_node_width").toInt()
+                    } catch (nfe: NumberFormatException) {
+                        iMaxNodeWidth = properties
+                                .getProperty("el__max_default_window_width").toInt()
+                    }
+                }
+                return iMaxNodeWidth
+            }
+    }
 }

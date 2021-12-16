@@ -17,21 +17,13 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: IFreeMindSplash.java,v 1.1.2.1 2007/02/03 23:19:26 christianfoltin Exp $*/
+package freemind.main
 
-package freemind.main;
+import javax.swing.ImageIcon
 
-import javax.swing.ImageIcon;
-
-public interface IFreeMindSplash {
-
-	public abstract FeedBack getFeedBack();
-
-	public abstract void close();
-
-	public abstract void setVisible(boolean pB);
-
-	public abstract ImageIcon getWindowIcon();
-
+interface IFreeMindSplash {
+    fun getFeedBack(): FeedBack
+    fun close()
+    fun setVisible(pB: Boolean)
+    fun getWindowIcon(): ImageIcon
 }
-// private static java.util.logging.Logger logger =
-// freemind.main.Resources.getInstance().getLogger(IFreeMindSplash.class.getName());

@@ -309,7 +309,10 @@ import java.util.TreeMap
 /* PluginAction...*/   class PluginAction {
     var label: String? = null
     var name: String? = null
-    var base: String? = null
+    var baseClass: String? = null
+get() {
+        return pluginAction.base
+    }
     var className: String? = null
     var documentation: String? = null
     var iconPath: String? = null

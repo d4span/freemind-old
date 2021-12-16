@@ -21,144 +21,202 @@
  * Created on 29.02.2004
  *
  */
-package freemind.extensions;
+package freemind.extensions
 
-import java.net.URL;
-import java.util.Properties;
-
-import freemind.modes.MapFeedback;
-import freemind.modes.ModeController;
+import freemind.controller.Controller.obtainFocusForSelected
+import freemind.controller.actions.generated.instance.Plugin.listChoiceList
+import freemind.controller.actions.generated.instance.PluginClasspath.jar
+import freemind.controller.actions.generated.instance.Plugin.label
+import freemind.controller.actions.generated.instance.PluginAction.name
+import freemind.controller.actions.generated.instance.PluginAction.label
+import freemind.controller.actions.generated.instance.PluginAction.listChoiceList
+import freemind.controller.actions.generated.instance.PluginMenu.location
+import freemind.controller.actions.generated.instance.PluginProperty.name
+import freemind.controller.actions.generated.instance.PluginProperty.value
+import freemind.controller.actions.generated.instance.PluginMode.className
+import freemind.controller.actions.generated.instance.PluginAction.instanciation
+import freemind.controller.actions.generated.instance.PluginAction.base
+import freemind.controller.actions.generated.instance.PluginAction.className
+import freemind.controller.actions.generated.instance.PluginAction.documentation
+import freemind.controller.actions.generated.instance.PluginAction.iconPath
+import freemind.controller.actions.generated.instance.PluginAction.keyStroke
+import freemind.controller.actions.generated.instance.PluginRegistration.className
+import freemind.controller.actions.generated.instance.PluginRegistration.listPluginModeList
+import freemind.extensions.MindMapHook
+import freemind.modes.MindMap
+import freemind.modes.MindMapNode
+import freemind.extensions.ModeControllerHookAdapter
+import freemind.view.mindmapview.MapView
+import freemind.modes.ModeController
+import freemind.extensions.ExportHook
+import freemind.main.Tools
+import java.awt.image.BufferedImage
+import java.awt.Rectangle
+import java.awt.Graphics
+import java.io.FileOutputStream
+import java.io.FileInputStream
+import freemind.modes.FreeMindFileDialog
+import javax.swing.JFileChooser
+import java.text.MessageFormat
+import javax.swing.JOptionPane
+import java.util.Properties
+import freemind.extensions.MindMapHook.PluginBaseClassSearcher
+import freemind.modes.MapFeedback
+import freemind.extensions.ModeControllerHook
+import freemind.extensions.NodeHook
+import freemind.extensions.PermanentNodeHook
+import freemind.extensions.HookInstanciationMethod
+import freemind.extensions.HookFactory.RegistrationContainer
+import freemind.extensions.HookRegistration
+import freemind.extensions.ImportWizard
+import java.util.StringTokenizer
+import java.io.IOException
+import java.util.Locale
+import java.util.zip.ZipFile
+import java.util.Enumeration
+import java.util.zip.ZipEntry
+import freemind.extensions.HookAdapter
+import freemind.main.XMLElement
+import kotlin.Throws
+import freemind.controller.actions.generated.instance.PluginClasspath
+import freemind.extensions.HookDescriptorBase
+import java.net.URLClassLoader
+import java.net.MalformedURLException
+import freemind.extensions.HookFactory
+import freemind.extensions.HookInstanciationMethod.DestinationNodesGetter
+import freemind.extensions.HookInstanciationMethod.DefaultDestinationNodesGetter
+import freemind.extensions.HookInstanciationMethod.RootDestinationNodesGetter
+import freemind.extensions.HookInstanciationMethod.AllDestinationNodesGetter
+import freemind.extensions.NodeHookAdapter
+import freemind.extensions.PermanentNodeHookAdapter
+import java.lang.InterruptedException
+import java.lang.reflect.InvocationTargetException
+import freemind.modes.mindmapmode.actions.xml.ActionPair
+import freemind.controller.actions.generated.instance.PluginAction
+import freemind.controller.actions.generated.instance.PluginMenu
+import freemind.controller.actions.generated.instance.PluginProperty
+import freemind.controller.actions.generated.instance.PluginMode
+import freemind.controller.actions.generated.instance.PluginRegistration
+import freemind.main.Resources
+import java.net.URL
+import java.util.logging.Logger
 
 /**
  * Implments MindMapHook as an Adapter class. Implementation is straight
  * forward.
- * 
+ *
  * @author foltin
- * 
  */
-public class HookAdapter implements MindMapHook {
-
-	private String name;
-	private Properties properties;
-	private ModeController controller;
-
-	// Logging:
-	protected java.util.logging.Logger logger;
-	/**
-	 * Stores the plugin base class as declared by the
-	 * plugin_registration/isBaseClass attribute.
-	 */
-	private PluginBaseClassSearcher baseClass;
-	protected MapFeedback mapFeedback;
-
-	/**
-	 */
-	public HookAdapter() {
-		if (logger == null)
-			logger = freemind.main.Resources.getInstance().getLogger(
-					this.getClass().getName());
-		baseClass = null;
-	}
-
-	/*
+open class HookAdapter : MindMapHook {
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.modes.NodeHook#getName()
-	 */
-	public String getName() {
-		return this.name;
-	}
+	 */  override var name: String? = null
+    private var properties: Properties? = null
+    private var controller: ModeController? = null
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    // Logging:
+    protected var logger: Logger? = null
 
-	/*
+    /**
+     * Stores the plugin base class as declared by the
+     * plugin_registration/isBaseClass attribute.
+     */
+    private var baseClass: PluginBaseClassSearcher?
+    protected var mapFeedback: MapFeedback? = null
+
+    /**
+     */
+    init {
+        if (logger == null) logger = Resources.getInstance().getLogger(
+                this.javaClass.name)
+        baseClass = null
+    }
+
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.modes.NodeHook#startupMapHook(java.lang.String)
 	 */
-	public void startupMapHook() {
-		// TODO Auto-generated method stub
+    override fun startupMapHook() {
+        // TODO Auto-generated method stub
+    }
 
-	}
-
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.modes.NodeHook#shutdownMapHook()
 	 */
-	public void shutdownMapHook() {
-		controller = null;
-	}
+    override fun shutdownMapHook() {
+        controller = null
+    }
 
-	/**
-	 */
-	protected ModeController getController() {
-		return controller;
-	}
+    /**
+     */
+    protected fun getController(): ModeController? {
+        return controller
+    }
 
-	/**
-	 */
-	protected Properties getProperties() {
-		return properties;
-	}
+    /**
+     */
+    protected fun getProperties(): Properties? {
+        return properties
+    }
 
-	/**
-	 */
-	public void setProperties(Properties properties) {
-		this.properties = properties;
-	}
+    /**
+     */
+    override fun setProperties(properties: Properties?) {
+        this.properties = properties
+    }
 
-	/**
-	 */
-	public void setController(MapFeedback controller) {
-		this.mapFeedback = controller;
-		if (controller instanceof ModeController) {
-			this.controller = (ModeController) controller;
-		}
-	}
+    /**
+     */
+    override fun setController(controller: MapFeedback?) {
+        mapFeedback = controller
+        if (controller is ModeController) {
+            this.controller = controller
+        }
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.extensions.MindMapHook#getResourceString(java.lang.String)
 	 */
-	public String getResourceString(String property) {
-		String result = properties.getProperty(property);
-		if (result == null) {
-			result = getController().getText(property);
-		}
-		if (result == null) {
-			logger.warning("The following property was not found:" + property);
-		}
-		return result;
-	}
+    override fun getResourceString(property: String): String {
+        var result = properties!!.getProperty(property)
+        if (result == null) {
+            result = getController()!!.getText(property)
+        }
+        if (result == null) {
+            logger!!.warning("The following property was not found:$property")
+        }
+        return result
+    }
 
-	public URL getResource(String resourceName) {
-		return this.getClass().getClassLoader().getResource(resourceName);
-	}
+    fun getResource(resourceName: String?): URL {
+        return this.javaClass.classLoader.getResource(resourceName)
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.extensions.MindMapHook#getPluginBaseClass()
 	 */
-	public Object getPluginBaseClass() {
-		return baseClass.getPluginBaseObject();
-	}
+    override fun getPluginBaseClass(): Any? {
+        return baseClass.getPluginBaseObject()
+    }
 
-	public void setPluginBaseClass(PluginBaseClassSearcher baseClass) {
-		this.baseClass = baseClass;
-	}
+    override fun setPluginBaseClass(baseClass: PluginBaseClassSearcher?) {
+        this.baseClass = baseClass
+    }
 
-	/**
-	 * After tree node change, the focus must be obtained as it is invalid.
-	 */
-	protected void obtainFocusForSelected() {
-		// Focus fix
-		getController().getController().obtainFocusForSelected();
-	}
-
-
+    /**
+     * After tree node change, the focus must be obtained as it is invalid.
+     */
+    protected fun obtainFocusForSelected() {
+        // Focus fix
+        getController()!!.controller.obtainFocusForSelected()
+    }
 }

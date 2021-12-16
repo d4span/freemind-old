@@ -20,62 +20,126 @@
  * Created on 31.12.2005
  */
 /*$Id: HookFactoryAdapter.java,v 1.1.2.1.2.2 2006/07/25 20:28:20 christianfoltin Exp $*/
-package freemind.extensions;
+package freemind.extensions
 
-import java.util.HashMap;
-
-import freemind.modes.MindMapNode;
+import freemind.controller.Controller.obtainFocusForSelected
+import freemind.controller.actions.generated.instance.Plugin.listChoiceList
+import freemind.controller.actions.generated.instance.PluginClasspath.jar
+import freemind.controller.actions.generated.instance.Plugin.label
+import freemind.controller.actions.generated.instance.PluginAction.name
+import freemind.controller.actions.generated.instance.PluginAction.label
+import freemind.controller.actions.generated.instance.PluginAction.listChoiceList
+import freemind.controller.actions.generated.instance.PluginMenu.location
+import freemind.controller.actions.generated.instance.PluginProperty.name
+import freemind.controller.actions.generated.instance.PluginProperty.value
+import freemind.controller.actions.generated.instance.PluginMode.className
+import freemind.controller.actions.generated.instance.PluginAction.instanciation
+import freemind.controller.actions.generated.instance.PluginAction.base
+import freemind.controller.actions.generated.instance.PluginAction.className
+import freemind.controller.actions.generated.instance.PluginAction.documentation
+import freemind.controller.actions.generated.instance.PluginAction.iconPath
+import freemind.controller.actions.generated.instance.PluginAction.keyStroke
+import freemind.controller.actions.generated.instance.PluginRegistration.className
+import freemind.controller.actions.generated.instance.PluginRegistration.listPluginModeList
+import freemind.extensions.MindMapHook
+import freemind.modes.MindMap
+import freemind.modes.MindMapNode
+import freemind.extensions.ModeControllerHookAdapter
+import freemind.view.mindmapview.MapView
+import freemind.modes.ModeController
+import freemind.extensions.ExportHook
+import freemind.main.Tools
+import java.awt.image.BufferedImage
+import java.awt.Rectangle
+import java.awt.Graphics
+import java.io.FileOutputStream
+import java.io.FileInputStream
+import freemind.modes.FreeMindFileDialog
+import javax.swing.JFileChooser
+import java.text.MessageFormat
+import javax.swing.JOptionPane
+import java.util.Properties
+import freemind.extensions.MindMapHook.PluginBaseClassSearcher
+import freemind.modes.MapFeedback
+import freemind.extensions.ModeControllerHook
+import freemind.extensions.NodeHook
+import freemind.extensions.PermanentNodeHook
+import freemind.extensions.HookInstanciationMethod
+import freemind.extensions.HookFactory.RegistrationContainer
+import freemind.extensions.HookRegistration
+import freemind.extensions.ImportWizard
+import java.util.StringTokenizer
+import java.io.IOException
+import java.util.Locale
+import java.util.zip.ZipFile
+import java.util.Enumeration
+import java.util.zip.ZipEntry
+import freemind.extensions.HookAdapter
+import freemind.main.XMLElement
+import kotlin.Throws
+import freemind.controller.actions.generated.instance.PluginClasspath
+import freemind.extensions.HookDescriptorBase
+import java.net.URLClassLoader
+import java.net.MalformedURLException
+import freemind.extensions.HookFactory
+import freemind.extensions.HookInstanciationMethod.DestinationNodesGetter
+import freemind.extensions.HookInstanciationMethod.DefaultDestinationNodesGetter
+import freemind.extensions.HookInstanciationMethod.RootDestinationNodesGetter
+import freemind.extensions.HookInstanciationMethod.AllDestinationNodesGetter
+import freemind.extensions.NodeHookAdapter
+import freemind.extensions.PermanentNodeHookAdapter
+import java.lang.InterruptedException
+import java.lang.reflect.InvocationTargetException
+import freemind.modes.mindmapmode.actions.xml.ActionPair
+import freemind.controller.actions.generated.instance.PluginAction
+import freemind.controller.actions.generated.instance.PluginMenu
+import freemind.controller.actions.generated.instance.PluginProperty
+import freemind.controller.actions.generated.instance.PluginMode
+import freemind.controller.actions.generated.instance.PluginRegistration
+import java.util.HashMap
 
 /**
  * @author foltin
- * 
  */
-public abstract class HookFactoryAdapter implements HookFactory {
+abstract class HookFactoryAdapter
+/**
+ *
+ */
+protected constructor() : HookFactory {
+    /** Contains PluginType -> Object (baseClass) relations.  */
+    protected var allRegistrationInstances: HashMap<String?, HookRegistration>? = null
 
-	/** Contains PluginType -> Object (baseClass) relations. */
-	protected HashMap<String, HookRegistration> allRegistrationInstances;
+    /**
+     * @return null if not present, the hook otherwise.
+     */
+    override fun getHookInNode(node: MindMapNode, hookName: String): PermanentNodeHook? {
+        // search for already instanciated hooks of this type:
+        for (otherHook in node.activatedHooks) {
+            if (otherHook.name == hookName) {
+                // there is already one instance.
+                return otherHook
+            }
+        }
+        return null
+    }
 
-	/**
-	 * 
-	 */
-	protected HookFactoryAdapter() {
-		super();
-	}
+    /**
+     * See getRegistrations. The registration makes sense for the factory, as
+     * the factory observes every object creation. <br></br>
+     * Moreover, the factory can tell other hooks it creates, who is its base
+     * plugin.
+     *
+     */
+    override fun registerRegistrationContainer(
+            container: RegistrationContainer,
+            instanciatedRegistrationObject: HookRegistration) {
+        // registration only for pluginBases.
+        if (container.isPluginBase) {
+            allRegistrationInstances!![container.correspondingPlugin!!.label] = instanciatedRegistrationObject
+        }
+    }
 
-	/**
-	 * @return null if not present, the hook otherwise.
-	 */
-	public PermanentNodeHook getHookInNode(MindMapNode node, String hookName) {
-		// search for already instanciated hooks of this type:
-		for (PermanentNodeHook otherHook : node.getActivatedHooks()) {
-			if (otherHook.getName().equals(hookName)) {
-				// there is already one instance.
-				return otherHook;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * See getRegistrations. The registration makes sense for the factory, as
-	 * the factory observes every object creation. <br>
-	 * Moreover, the factory can tell other hooks it creates, who is its base
-	 * plugin.
-	 * 
-	 */
-	public void registerRegistrationContainer(
-			HookFactory.RegistrationContainer container,
-			HookRegistration instanciatedRegistrationObject) {
-		// registration only for pluginBases.
-		if (container.isPluginBase) {
-			allRegistrationInstances.put(
-					container.correspondingPlugin.getLabel(),
-					instanciatedRegistrationObject);
-		}
-	}
-
-	public void deregisterAllRegistrationContainer() {
-		allRegistrationInstances.clear();
-	}
-
+    override fun deregisterAllRegistrationContainer() {
+        allRegistrationInstances!!.clear()
+    }
 }

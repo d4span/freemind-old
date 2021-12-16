@@ -966,7 +966,10 @@ interface MindMapNode : MutableTreeNode {
      * Html is filtered out.
      */
     fun getShortText(controller: ModeController?): String
-    val edge: MindMapEdge?
+    protected val model: MindMapEdge?
+protected get() {
+        return target.getModel().edge
+    }
     var color: Color?
 
     /**
@@ -1115,7 +1118,11 @@ interface MindMapNode : MutableTreeNode {
 
     // fc, 11.4.2005:
     var historyInformation: HistoryInformation?
-    val isVisible: Boolean
+    /**
+ */val isContentVisible: Boolean
+get() {
+        return model.isVisible
+    }
 
     /**
      * @return true, if there is exactly one visible child.
@@ -1211,8 +1218,22 @@ interface MindMapNode : MutableTreeNode {
     fun hasFoldedParents(): Boolean
 
     companion object {
-        const val STYLE_BUBBLE = "bubble"
-        const val STYLE_FORK = "fork"
+        /*
+	 * (non-Javadoc)
+	 *
+	 * @see freemind.view.mindmapview.NodeView#getStyle()
+	 */const val style = "bubble"
+public get() {
+        return MindMapNode.STYLE_BUBBLE
+    }
+        /*
+	 * (non-Javadoc)
+	 *
+	 * @see freemind.view.mindmapview.NodeView#getStyle()
+	 */const val style = "fork"
+public get() {
+        return MindMapNode.STYLE_FORK
+    }
         const val STYLE_COMBINED = "combined"
         const val STYLE_AS_PARENT = "as_parent"
         val NODE_STYLES = arrayOf(STYLE_FORK,

@@ -18,113 +18,315 @@
  *
  */
 /*$Id: EditNodeWYSIWYG.java,v 1.1.4.46 2010/05/25 20:09:32 christianfoltin Exp $*/
+package freemind.view.mindmapview
 
-package freemind.view.mindmapview;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import javax.swing.JButton;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.html.HTMLDocument;
-
-import accessories.plugins.NodeNoteRegistration.SimplyHtmlResources;
-
-import com.inet.jortho.SpellChecker;
-import com.lightdev.app.shtm.SHTMLPanel;
-
-import freemind.main.FreeMindMain;
-import freemind.main.HtmlTools;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.modes.ModeController;
+import freemind.main.Tools.xmlToColor
+import freemind.main.Tools.xmlToBoolean
+import freemind.preferences.FreemindPropertyListener.propertyChanged
+import freemind.modes.MindMap.rootNode
+import freemind.main.Tools.waitForEventQueue
+import freemind.modes.MindMapNode.isRoot
+import freemind.modes.MindMapNode.isFolded
+import freemind.modes.MindMapNode.nodeLevel
+import freemind.main.Tools.convertPointToAncestor
+import freemind.modes.MindMapNode.parentNode
+import freemind.main.Tools.Pair.first
+import freemind.main.Tools.Pair.second
+import freemind.modes.MindMapNode.shallowCopy
+import freemind.modes.MindMap.restorable
+import freemind.main.Tools.restoreAntialiasing
+import freemind.modes.MindMap.linkRegistry
+import freemind.modes.MindMapLinkRegistry.getLabel
+import freemind.modes.MindMapLinkRegistry.getAllLinks
+import freemind.modes.MindMapLink.source
+import freemind.modes.MindMapLink.target
+import freemind.modes.MindMapNode.addTreeModelListener
+import freemind.modes.MindMapNode.removeTreeModelListener
+import freemind.modes.MindMapLine.width
+import freemind.modes.MindMapNode.edge
+import freemind.modes.MindMapNode.backgroundColor
+import freemind.main.Tools.convertPointFromAncestor
+import freemind.modes.MindMapNode.link
+import freemind.modes.MindMapNode.hasChildren
+import freemind.main.Tools.safeEquals
+import freemind.modes.MindMapNode.hasVisibleChilds
+import freemind.modes.MindMapNode.cloud
+import freemind.modes.MindMapNode.isLeft
+import freemind.modes.MindMapNode.isVisible
+import freemind.modes.MindMapNode.childrenFolded
+import freemind.modes.MindMapNode.toString
+import freemind.modes.MindMap.uRL
+import freemind.modes.MindMapNode.font
+import freemind.modes.MindMapNode.stateIcons
+import freemind.modes.MindMapNode.attributeTableLength
+import freemind.modes.MindMapNode.icons
+import freemind.modes.MindIcon.unscaledIcon
+import freemind.modes.NodeAdapter.link
+import freemind.main.Tools.executableByExtension
+import freemind.modes.MindMapNode.color
+import freemind.modes.MindMapNode.style
+import freemind.modes.MindMapNode.toolTip
+import freemind.modes.MindMapNode.calcShiftY
+import freemind.modes.MindMapNode.vGap
+import freemind.modes.MindMapNode.hGap
+import freemind.modes.MindMapLine.color
+import freemind.modes.MindMapCloud.iterativeLevel
+import freemind.modes.MindMapCloud.exteriorColor
+import freemind.modes.ModeController.view
+import freemind.modes.ModeController.controller
+import freemind.modes.ModeController.getText
+import freemind.modes.ModeController.frame
+import freemind.main.Tools.clipboard
+import freemind.modes.MindMapEdge.styleAsInt
+import freemind.modes.MindMapNode.childrenUnfolded
+import freemind.modes.MindMapArrowLink.startInclination
+import freemind.modes.MindMapArrowLink.endInclination
+import freemind.modes.MindMapArrowLink.startArrow
+import freemind.modes.MindMapArrowLink.endArrow
+import freemind.modes.MindMapArrowLink.showControlPointsFlag
+import freemind.main.FreeMindMain.getProperty
+import freemind.main.Tools.setLabelAndMnemonic
+import freemind.main.Tools.BooleanHolder.value
+import freemind.main.Tools.updateFontSize
+import freemind.main.Tools.setDialogLocationRelativeTo
+import freemind.main.Tools.addEscapeActionToDialog
+import freemind.main.Tools.addKeyActionToDialog
+import freemind.controller.Controller.frame
+import freemind.main.FreeMindMain.openDocument
+import freemind.modes.MindMapNode.isItalic
+import freemind.modes.MindMapNode.isBold
+import freemind.main.Tools.colorToXml
+import freemind.main.Tools.IntHolder.value
+import freemind.modes.MapAdapter.loadTree
+import freemind.modes.MapAdapter.root
+import freemind.main.Tools.getFile
+import freemind.modes.Mode.controller
+import freemind.main.Tools.scalingFactorPlain
+import freemind.main.Tools.scalingFactor
+import freemind.modes.MindMap
+import freemind.view.mindmapview.ViewFeedback
+import javax.swing.JPanel
+import freemind.modes.ViewAbstraction
+import java.awt.print.Printable
+import java.awt.dnd.Autoscroll
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
+import freemind.view.mindmapview.MapView
+import javax.swing.JScrollPane
+import javax.swing.KeyStroke
+import java.awt.event.KeyEvent
+import freemind.view.mindmapview.MapView.Selected
+import freemind.view.mindmapview.ArrowLinkView
+import freemind.preferences.FreemindPropertyListener
+import freemind.view.mindmapview.NodeViewFactory
+import java.lang.NumberFormatException
+import java.util.TimerTask
+import freemind.view.mindmapview.MapView.CheckLaterForCenterNodeTask
+import javax.swing.JComponent
+import kotlin.jvm.JvmOverloads
+import javax.swing.JViewport
+import java.util.LinkedList
+import freemind.controller.NodeMouseMotionListener
+import freemind.controller.NodeMotionListener
+import freemind.controller.NodeKeyListener
+import java.awt.dnd.DragGestureListener
+import java.awt.dnd.DropTargetListener
+import freemind.modes.MindMapNode
+import java.util.Collections
+import freemind.modes.MindMapLink
+import freemind.modes.MindMapArrowLink
+import java.awt.print.PageFormat
+import java.awt.geom.CubicCurve2D
+import freemind.view.mindmapview.PathBBox
+import freemind.view.mindmapview.MindMapLayout
+import freemind.view.mindmapview.NodeViewVisitor
+import freemind.modes.EdgeAdapter
+import freemind.view.mindmapview.EdgeView
+import freemind.modes.MindMapEdge
+import javax.swing.JLabel
+import freemind.view.mindmapview.MainView
+import javax.swing.SwingUtilities
+import java.awt.geom.AffineTransform
+import javax.swing.SwingConstants
+import javax.swing.Icon
+import javax.swing.event.TreeModelListener
+import freemind.view.mindmapview.NodeMotionListenerView
+import freemind.view.mindmapview.NodeFoldingComponent
+import javax.swing.ToolTipManager
+import java.awt.event.ActionListener
+import java.awt.event.ActionEvent
+import java.awt.dnd.DragSource
+import java.awt.dnd.DnDConstants
+import java.awt.dnd.DropTarget
+import freemind.modes.MindMapCloud
+import freemind.view.mindmapview.CloudView
+import freemind.view.mindmapview.NodeViewLayout
+import java.net.MalformedURLException
+import freemind.view.mindmapview.MultipleImage
+import javax.swing.ImageIcon
+import freemind.view.ImageFactory
+import freemind.modes.MindIcon
+import freemind.modes.NodeAdapter
+import java.util.TreeMap
+import java.lang.StringBuffer
+import javax.swing.event.TreeModelEvent
+import freemind.view.mindmapview.BubbleMainView
+import java.awt.geom.Rectangle2D
+import java.awt.geom.QuadCurve2D
+import freemind.view.mindmapview.ConvexHull
+import freemind.view.mindmapview.ConvexHull.thetaComparator
+import freemind.modes.ModeController
+import freemind.view.mindmapview.EditNodeBase.EditControl
+import java.awt.event.FocusListener
+import freemind.view.mindmapview.EditNodeBase
+import javax.swing.JDialog
+import javax.swing.JFrame
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import javax.swing.WindowConstants
+import freemind.view.mindmapview.EditNodeBase.EditDialog.DialogWindowListener
+import javax.swing.JOptionPane
+import javax.swing.text.JTextComponent
+import java.awt.datatransfer.StringSelection
+import javax.swing.JPopupMenu
+import freemind.view.mindmapview.EditNodeBase.EditCopyAction
+import java.awt.datatransfer.Clipboard
+import java.awt.event.FocusEvent
+import freemind.controller.NodeDragListener
+import freemind.controller.NodeDropListener
+import freemind.controller.MapMouseMotionListener
+import freemind.controller.MapMouseWheelListener
+import java.awt.event.MouseWheelEvent
+import freemind.view.mindmapview.ViewFeedback.MouseWheelEventHandler
+import java.awt.geom.FlatteningPathIterator
+import java.awt.geom.Point2D
+import java.awt.image.BufferedImage
+import freemind.view.mindmapview.VerticalRootNodeViewLayout
+import freemind.view.mindmapview.BezierEdgeView
+import freemind.view.mindmapview.EditNodeBase.EditDialog
+import javax.swing.JTextArea
+import javax.swing.JButton
+import javax.swing.JCheckBox
+import freemind.view.mindmapview.EditNodeDialog
+import freemind.main.Tools.BooleanHolder
+import java.lang.Runnable
+import java.awt.event.KeyListener
+import java.awt.event.MouseListener
+import freemind.view.mindmapview.EditNodeBase.EditPopupMenu
+import com.inet.jortho.SpellChecker
+import javax.swing.BoxLayout
+import freemind.view.mindmapview.EditNodeDialog.LongNodeDialog
+import com.lightdev.app.shtm.SHTMLPanel
+import freemind.view.mindmapview.EditNodeBase.EditDialog.SubmitAction
+import kotlin.Throws
+import accessories.plugins.NodeNoteRegistration.SimplyHtmlResources
+import freemind.view.mindmapview.EditNodeWYSIWYG
+import freemind.view.mindmapview.EditNodeWYSIWYG.HTMLDialog
+import javax.swing.JEditorPane
+import freemind.view.mindmapview.NodeViewFactory.ContentPane
+import freemind.view.mindmapview.NodeViewFactory.ContentPaneLayout
+import freemind.view.mindmapview.SharpBezierEdgeView
+import freemind.view.mindmapview.SharpLinearEdgeView
+import freemind.view.mindmapview.LinearEdgeView
+import freemind.view.mindmapview.RootMainView
+import freemind.view.mindmapview.LeftNodeViewLayout
+import freemind.view.mindmapview.RightNodeViewLayout
+import freemind.view.mindmapview.ForkMainView
+import javax.swing.JTextField
+import javax.swing.undo.UndoManager
+import freemind.view.mindmapview.EditNodeTextField
+import freemind.view.mindmapview.EditNodeTextField.TextFieldListener
+import javax.swing.undo.CannotUndoException
+import javax.swing.undo.CannotRedoException
+import java.awt.event.ComponentListener
+import freemind.view.mindmapview.NodeViewLayoutAdapter
+import java.awt.geom.GeneralPath
+import javax.swing.DefaultButtonModel
+import javax.swing.BorderFactory
+import freemind.view.mindmapview.NodeFoldingComponent.RoundImageButtonUI
+import javax.swing.plaf.basic.BasicButtonUI
+import javax.swing.AbstractButton
+import javax.swing.plaf.basic.BasicButtonListener
+import java.awt.geom.Ellipse2D
+import freemind.modes.MapFeedbackAdapter
+import freemind.modes.mindmapmode.MindMapMapModel
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.net.URISyntaxException
+import freemind.main.Tools.FileReaderCreator
+import freemind.modes.MapAdapter
+import freemind.view.mindmapview.IndependantMapViewCreator
+import freemind.extensions.NodeHook
+import freemind.extensions.PermanentNodeHookSubstituteUnknown
+import freemind.main.*
+import kotlin.jvm.JvmStatic
+import tests.freemind.FreeMindMainMock
+import java.io.FileOutputStream
+import javax.imageio.ImageIO
+import java.io.FileWriter
+import java.text.MessageFormat
+import freemind.view.MapModule
+import freemind.view.ScalableImageIcon
+import java.awt.*
+import java.awt.image.ImageObserver
+import java.lang.Exception
+import java.net.URL
 
 /**
  * @author Daniel Polansky
- * 
  */
-public class EditNodeWYSIWYG extends EditNodeBase {
+class EditNodeWYSIWYG(node: NodeView, text: String,
+                      private val firstEvent: KeyEvent, controller: ModeController,
+                      editControl: EditControl) : EditNodeBase(node, text, controller, editControl) {
+    private class HTMLDialog internal constructor(base: EditNodeBase) : EditDialog(base) {
+        /**
+         * @return Returns the htmlEditorPanel.
+         */
+        var htmlEditorPanel: SHTMLPanel? = null
+            private set
 
-	private KeyEvent firstEvent;
+        init {
+            createEditorPanel()
+            contentPane.add(htmlEditorPanel, BorderLayout.CENTER)
+            addEscapeActionToDialog(this, CancelAction())
+            val okButton = JButton()
+            val cancelButton = JButton()
+            val splitButton = JButton()
+            setLabelAndMnemonic(okButton, base.getText("ok"))
+            setLabelAndMnemonic(cancelButton, base.getText("cancel"))
+            setLabelAndMnemonic(splitButton, base.getText("split"))
+            okButton.addActionListener { submit() }
+            cancelButton.addActionListener { cancel() }
+            splitButton.addActionListener { split() }
+            addKeyActionToDialog(this, SubmitAction(), "alt ENTER",
+                    "submit")
+            addKeyActionToDialog(this, SubmitAction(),
+                    "control ENTER", "submit")
+            val buttonPane = JPanel()
+            buttonPane.add(okButton)
+            buttonPane.add(cancelButton)
+            buttonPane.add(splitButton)
+            buttonPane.maximumSize = Dimension(1000, 20)
+            contentPane.add(buttonPane, BorderLayout.SOUTH)
+            htmlEditorPanel!!.setOpenHyperlinkHandler { pE ->
+                try {
+                    getBase().controller.frame
+                            .openDocument(URL(pE.actionCommand))
+                } catch (e: Exception) {
+                    Resources.getInstance().logException(e)
+                }
+            }
+            if (EditNodeBase.Companion.checkSpelling) {
+                SpellChecker.register(htmlEditorPanel!!.editorPane)
+            }
+        }
 
-	private static HTMLDialog htmlEditorWindow;
-
-	private static class HTMLDialog extends EditDialog {
-		private static final long serialVersionUID = 2862979626489782521L;
-		private SHTMLPanel htmlEditorPanel;
-
-		HTMLDialog(EditNodeBase base) throws Exception {
-			super(base);
-			createEditorPanel();
-			getContentPane().add(htmlEditorPanel, BorderLayout.CENTER);
-			Tools.addEscapeActionToDialog(this, new CancelAction());
-			final JButton okButton = new JButton();
-			final JButton cancelButton = new JButton();
-			final JButton splitButton = new JButton();
-
-			Tools.setLabelAndMnemonic(okButton, base.getText("ok"));
-			Tools.setLabelAndMnemonic(cancelButton, base.getText("cancel"));
-			Tools.setLabelAndMnemonic(splitButton, base.getText("split"));
-
-			okButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					submit();
-				}
-			});
-
-			cancelButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					cancel();
-				}
-			});
-
-			splitButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					split();
-				}
-			});
-
-			Tools.addKeyActionToDialog(this, new SubmitAction(), "alt ENTER",
-					"submit");
-			Tools.addKeyActionToDialog(this, new SubmitAction(),
-					"control ENTER", "submit");
-			JPanel buttonPane = new JPanel();
-			buttonPane.add(okButton);
-			buttonPane.add(cancelButton);
-			buttonPane.add(splitButton);
-			buttonPane.setMaximumSize(new Dimension(1000, 20));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			htmlEditorPanel.setOpenHyperlinkHandler(new ActionListener() {
-				public void actionPerformed(ActionEvent pE) {
-					try {
-						getBase().getController().getFrame()
-								.openDocument(new URL(pE.getActionCommand()));
-					} catch (Exception e) {
-						freemind.main.Resources.getInstance().logException(e);
-					}
-				}
-			});
-
-			if (checkSpelling) {
-				SpellChecker.register(htmlEditorPanel.getEditorPane());
-			}
-		}
-
-		private SHTMLPanel createEditorPanel() throws Exception {
-			if (htmlEditorPanel == null) {
-				SHTMLPanel.setResources(new SimplyHtmlResources());
-				htmlEditorPanel = SHTMLPanel.createSHTMLPanel();
-//				htmlEditorPanel.getEditorPane().addMouseListener(new MouseAdapter () {
+        @Throws(Exception::class)
+        private fun createEditorPanel(): SHTMLPanel? {
+            if (htmlEditorPanel == null) {
+                SHTMLPanel.setResources(SimplyHtmlResources())
+                htmlEditorPanel = SHTMLPanel.createSHTMLPanel()
+                //				htmlEditorPanel.getEditorPane().addMouseListener(new MouseAdapter () {
 //					public void mousePressed(MouseEvent e) {
 //						conditionallyShowPopup(e);
 //					}
@@ -148,177 +350,166 @@ public class EditNodeWYSIWYG extends EditNodeBase {
 //						}
 //					}
 //				});
-			}
-			return htmlEditorPanel;
-		}
+            }
+            return htmlEditorPanel
+        }
 
-		/**
-		 * @return Returns the htmlEditorPanel.
-		 */
-		public SHTMLPanel getHtmlEditorPanel() {
-			return htmlEditorPanel;
-		}
-
-		/*
+        /*
 		 * (non-Javadoc)
 		 * 
 		 * @see freemind.view.mindmapview.EditNodeBase.Dialog#close()
 		 */
-		protected void submit() {
-			removeBodyStyle();
-			if (htmlEditorPanel.needsSaving()) {
-				getBase().getEditControl().ok(
-						HtmlTools.unescapeHTMLUnicodeEntity(htmlEditorPanel
-								.getDocumentText()));
-			} else {
-				getBase().getEditControl().cancel();
-			}
-			super.submit();
-		}
+        override fun submit() {
+            removeBodyStyle()
+            if (htmlEditorPanel!!.needsSaving()) {
+                base.editControl.ok(
+                        HtmlTools.unescapeHTMLUnicodeEntity(htmlEditorPanel
+                                .getDocumentText()))
+            } else {
+                base.editControl.cancel()
+            }
+            super.submit()
+        }
 
-		private void removeBodyStyle() {
-			htmlEditorPanel.getDocument().getStyleSheet().removeStyle("body");
-		}
+        private fun removeBodyStyle() {
+            htmlEditorPanel!!.document.styleSheet.removeStyle("body")
+        }
 
-		/*
+        /*
 		 * (non-Javadoc)
 		 * 
 		 * @see freemind.view.mindmapview.EditNodeBase.Dialog#split()
 		 */
-		protected void split() {
-			removeBodyStyle();
-			getBase().getEditControl().split(
-					HtmlTools.unescapeHTMLUnicodeEntity(htmlEditorPanel
-							.getDocumentText()),
-					htmlEditorPanel.getCaretPosition());
-			super.split();
-		}
+        override fun split() {
+            removeBodyStyle()
+            base.editControl.split(
+                    HtmlTools.unescapeHTMLUnicodeEntity(htmlEditorPanel
+                            .getDocumentText()),
+                    htmlEditorPanel!!.caretPosition)
+            super.split()
+        }
 
-		/*
+        /*
 		 * (non-Javadoc)
 		 * 
 		 * @see freemind.view.mindmapview.EditNodeBase.Dialog#close()
 		 */
-		protected void cancel() {
-			removeBodyStyle();
-			getBase().getEditControl().cancel();
-			super.cancel();
-		}
+        override fun cancel() {
+            removeBodyStyle()
+            base.editControl.cancel()
+            super.cancel()
+        }
 
-		protected boolean isChanged() {
-			return htmlEditorPanel.needsSaving();
-		}
+        protected override val isChanged: Boolean
+            protected get() = htmlEditorPanel!!.needsSaving()
 
-		public Component getMostRecentFocusOwner() {
-			if (isFocused()) {
-				return getFocusOwner();
-			} else {
-				return htmlEditorPanel.getMostRecentFocusOwner();
-			}
-		}
-	}
+        override fun getMostRecentFocusOwner(): Component {
+            return if (isFocused) {
+                focusOwner
+            } else {
+                htmlEditorPanel!!.mostRecentFocusOwner
+            }
+        }
 
-	public EditNodeWYSIWYG(final NodeView node, final String text,
-			final KeyEvent firstEvent, ModeController controller,
-			EditControl editControl) {
-		super(node, text, controller, editControl);
-		this.firstEvent = firstEvent;
-	}
+        companion object {
+            private const val serialVersionUID = 2862979626489782521L
+        }
+    }
 
-	public void show() {
-		// Return true if successful.
-		try {
-			final FreeMindMain frame = getFrame();
-			if (htmlEditorWindow == null) {
-				htmlEditorWindow = new HTMLDialog(this);
-			}
-			htmlEditorWindow.setBase(this);
-			final SHTMLPanel htmlEditorPanel = ((HTMLDialog) htmlEditorWindow)
-					.getHtmlEditorPanel();
-			String rule = "BODY {";
-			Font font = node.getTextFont();
-			if (Resources.getInstance().getBoolProperty(
-					"experimental_font_sizing_for_long_node_editors")) {
-				/*
+    fun show() {
+        // Return true if successful.
+        try {
+            val frame = frame
+            if (htmlEditorWindow == null) {
+                htmlEditorWindow = HTMLDialog(this)
+            }
+            htmlEditorWindow.setBase(this)
+            val htmlEditorPanel: SHTMLPanel = htmlEditorWindow
+                    .getHtmlEditorPanel()
+            var rule = "BODY {"
+            var font = node.textFont
+            if (Resources.getInstance().getBoolProperty(
+                            "experimental_font_sizing_for_long_node_editors")) {
+                /*
 				 * This is a proposal of Dan, but it doesn't work as expected.
 				 * 
 				 * http://sourceforge.net/tracker/?func=detail&aid=2800933&group_id
 				 * =7118&atid=107118
 				 */
-				font = Tools.updateFontSize(font, this.getView().getZoom(),
-						font.getSize());
-			}
-			final Color nodeTextBackground = node.getTextBackground();
-			rule += "font-family: " + font.getFamily() + ";";
-			rule += "font-size: " + font.getSize() + "pt;";
-			// Daniel said:, but no effect:
-			// rule += "font-size: "+node.getFont().getSize()+"pt;";
-			if (node.getModel().isItalic()) {
-				rule += "font-style: italic; ";
-			}
-			if (node.getModel().isBold()) {
-				rule += "font-weight: bold; ";
-			}
-			final Color nodeTextColor = node.getTextColor();
-			rule += "color: " + Tools.colorToXml(nodeTextColor) + ";";
-			rule += "}\n";
-			rule += "p {";
-			rule += "margin-top:0;";
-			rule += "}\n";
-			final HTMLDocument document = htmlEditorPanel.getDocument();
-			final JEditorPane editorPane = htmlEditorPanel.getEditorPane();
-			editorPane.setForeground(nodeTextColor);
-			editorPane.setBackground(nodeTextBackground);
-			editorPane.setCaretColor(nodeTextColor);
-			document.getStyleSheet().addRule(rule);
-			try {
-				document.setBase(node.getMap().getModel().getURL());
-			} catch (MalformedURLException e) {
-			}
+                font = updateFontSize(font, this.view.zoom,
+                        font!!.size)
+            }
+            val nodeTextBackground = node.textBackground
+            rule += "font-family: " + font!!.family + ";"
+            rule += "font-size: " + font.size + "pt;"
+            // Daniel said:, but no effect:
+            // rule += "font-size: "+node.getFont().getSize()+"pt;";
+            if (node.getModel().isItalic) {
+                rule += "font-style: italic; "
+            }
+            if (node.getModel().isBold) {
+                rule += "font-weight: bold; "
+            }
+            val nodeTextColor = node.textColor
+            rule += "color: " + colorToXml(nodeTextColor) + ";"
+            rule += "}\n"
+            rule += "p {"
+            rule += "margin-top:0;"
+            rule += "}\n"
+            val document = htmlEditorPanel.document
+            val editorPane = htmlEditorPanel.editorPane
+            editorPane.foreground = nodeTextColor
+            editorPane.background = nodeTextBackground
+            editorPane.caretColor = nodeTextColor
+            document.styleSheet.addRule(rule)
+            try {
+                document.base = node.map.model.uRL
+            } catch (e: MalformedURLException) {
+            }
 
-			// { -- Set size (can be refactored to share code with long node
-			// editor)
-			int preferredHeight = (int) (node.getMainView().getHeight() * 1.2);
-			preferredHeight = Math.max(preferredHeight, Integer.parseInt(frame
-					.getProperty("el__min_default_window_height")));
-			preferredHeight = Math.min(preferredHeight, Integer.parseInt(frame
-					.getProperty("el__max_default_window_height")));
-			int preferredWidth = (int) (node.getMainView().getWidth() * 1.2);
-			preferredWidth = Math.max(preferredWidth, Integer.parseInt(frame
-					.getProperty("el__min_default_window_width")));
-			preferredWidth = Math.min(preferredWidth, Integer.parseInt(frame
-					.getProperty("el__max_default_window_width")));
-			htmlEditorPanel.setContentPanePreferredSize(new Dimension(
-					preferredWidth, preferredHeight));
-			// }
+            // { -- Set size (can be refactored to share code with long node
+            // editor)
+            var preferredHeight = (node.mainView!!.height * 1.2).toInt()
+            preferredHeight = Math.max(preferredHeight, frame
+                    .getProperty("el__min_default_window_height")!!.toInt())
+            preferredHeight = Math.min(preferredHeight, frame
+                    .getProperty("el__max_default_window_height")!!.toInt())
+            var preferredWidth = (node.mainView!!.width * 1.2).toInt()
+            preferredWidth = Math.max(preferredWidth, frame
+                    .getProperty("el__min_default_window_width")!!.toInt())
+            preferredWidth = Math.min(preferredWidth, frame
+                    .getProperty("el__max_default_window_width")!!.toInt())
+            htmlEditorPanel.setContentPanePreferredSize(Dimension(
+                    preferredWidth, preferredHeight))
+            // }
+            htmlEditorWindow!!.pack()
+            setDialogLocationRelativeTo(htmlEditorWindow!!, node)
+            var content = node.getModel().toString()
+            if (!HtmlTools.isHtmlNode(content!!)) {
+                content = HtmlTools.plainToHTML(content!!)
+            }
+            htmlEditorPanel.setCurrentDocumentContent(content)
+            if (firstEvent is KeyEvent) {
+                val currentPane: JTextComponent = htmlEditorPanel
+                        .editorPane
+                if (currentPane === htmlEditorPanel.mostRecentFocusOwner) {
+                    redispatchKeyEvents(currentPane, firstEvent)
+                }
+            } // 1st key event defined
+            else {
+                editorPane.caretPosition = htmlEditorPanel.document
+                        .length
+            }
+            htmlEditorPanel.mostRecentFocusOwner.requestFocus()
+            htmlEditorWindow!!.isVisible = true
+        } catch (ex: Exception) { // Probably class not found exception
+            Resources.getInstance().logException(ex)
+            System.err
+                    .println("Loading of WYSIWYG HTML editor failed. Use the other editors instead.")
+        }
+    }
 
-			htmlEditorWindow.pack();
-
-			Tools.setDialogLocationRelativeTo(htmlEditorWindow, node);
-
-			String content = node.getModel().toString();
-			if (!HtmlTools.isHtmlNode(content)) {
-				content = HtmlTools.plainToHTML(content);
-			}
-			htmlEditorPanel.setCurrentDocumentContent(content);
-			if (firstEvent instanceof KeyEvent) {
-				final KeyEvent firstKeyEvent = (KeyEvent) firstEvent;
-				final JTextComponent currentPane = htmlEditorPanel
-						.getEditorPane();
-				if (currentPane == htmlEditorPanel.getMostRecentFocusOwner()) {
-					redispatchKeyEvents(currentPane, firstKeyEvent);
-				}
-			} // 1st key event defined
-			else {
-				editorPane.setCaretPosition(htmlEditorPanel.getDocument()
-						.getLength());
-			}
-			htmlEditorPanel.getMostRecentFocusOwner().requestFocus();
-			htmlEditorWindow.setVisible(true);
-		} catch (Exception ex) { // Probably class not found exception
-			freemind.main.Resources.getInstance().logException(ex);
-			System.err
-					.println("Loading of WYSIWYG HTML editor failed. Use the other editors instead.");
-		}
-	}
+    companion object {
+        private var htmlEditorWindow: HTMLDialog? = null
+    }
 }

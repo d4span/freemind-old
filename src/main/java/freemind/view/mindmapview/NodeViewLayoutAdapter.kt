@@ -16,378 +16,591 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package freemind.view.mindmapview
 
-package freemind.view.mindmapview;
-
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Point;
-
-import javax.swing.JComponent;
-
-import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.main.Tools.xmlToColor
+import freemind.main.Tools.xmlToBoolean
+import freemind.preferences.FreemindPropertyListener.propertyChanged
+import freemind.modes.MindMap.rootNode
+import freemind.main.Tools.waitForEventQueue
+import freemind.modes.MindMapNode.isRoot
+import freemind.modes.MindMapNode.isFolded
+import freemind.modes.MindMapNode.nodeLevel
+import freemind.main.Tools.convertPointToAncestor
+import freemind.modes.MindMapNode.parentNode
+import freemind.main.Tools.Pair.first
+import freemind.main.Tools.Pair.second
+import freemind.modes.MindMapNode.shallowCopy
+import freemind.modes.MindMap.restorable
+import freemind.main.Tools.restoreAntialiasing
+import freemind.modes.MindMap.linkRegistry
+import freemind.modes.MindMapLinkRegistry.getLabel
+import freemind.modes.MindMapLinkRegistry.getAllLinks
+import freemind.modes.MindMapLink.source
+import freemind.modes.MindMapLink.target
+import freemind.modes.MindMapNode.addTreeModelListener
+import freemind.modes.MindMapNode.removeTreeModelListener
+import freemind.modes.MindMapLine.width
+import freemind.modes.MindMapNode.edge
+import freemind.modes.MindMapNode.backgroundColor
+import freemind.main.Tools.convertPointFromAncestor
+import freemind.modes.MindMapNode.link
+import freemind.modes.MindMapNode.hasChildren
+import freemind.main.Tools.safeEquals
+import freemind.modes.MindMapNode.hasVisibleChilds
+import freemind.modes.MindMapNode.cloud
+import freemind.modes.MindMapNode.isLeft
+import freemind.modes.MindMapNode.isVisible
+import freemind.modes.MindMapNode.childrenFolded
+import freemind.modes.MindMapNode.toString
+import freemind.modes.MindMap.uRL
+import freemind.modes.MindMapNode.font
+import freemind.modes.MindMapNode.stateIcons
+import freemind.modes.MindMapNode.attributeTableLength
+import freemind.modes.MindMapNode.icons
+import freemind.modes.MindIcon.unscaledIcon
+import freemind.modes.NodeAdapter.link
+import freemind.main.Tools.executableByExtension
+import freemind.modes.MindMapNode.color
+import freemind.modes.MindMapNode.style
+import freemind.modes.MindMapNode.toolTip
+import freemind.modes.MindMapNode.calcShiftY
+import freemind.modes.MindMapNode.vGap
+import freemind.modes.MindMapNode.hGap
+import freemind.modes.MindMapLine.color
+import freemind.modes.MindMapCloud.iterativeLevel
+import freemind.modes.MindMapCloud.exteriorColor
+import freemind.modes.ModeController.view
+import freemind.modes.ModeController.controller
+import freemind.modes.ModeController.getText
+import freemind.modes.ModeController.frame
+import freemind.main.Tools.clipboard
+import freemind.modes.MindMapEdge.styleAsInt
+import freemind.modes.MindMapNode.childrenUnfolded
+import freemind.modes.MindMapArrowLink.startInclination
+import freemind.modes.MindMapArrowLink.endInclination
+import freemind.modes.MindMapArrowLink.startArrow
+import freemind.modes.MindMapArrowLink.endArrow
+import freemind.modes.MindMapArrowLink.showControlPointsFlag
+import freemind.main.FreeMindMain.getProperty
+import freemind.main.Tools.setLabelAndMnemonic
+import freemind.main.Tools.BooleanHolder.value
+import freemind.main.Tools.updateFontSize
+import freemind.main.Tools.setDialogLocationRelativeTo
+import freemind.main.Tools.addEscapeActionToDialog
+import freemind.main.Tools.addKeyActionToDialog
+import freemind.controller.Controller.frame
+import freemind.main.FreeMindMain.openDocument
+import freemind.modes.MindMapNode.isItalic
+import freemind.modes.MindMapNode.isBold
+import freemind.main.Tools.colorToXml
+import freemind.main.Tools.IntHolder.value
+import freemind.modes.MapAdapter.loadTree
+import freemind.modes.MapAdapter.root
+import freemind.main.Tools.getFile
+import freemind.modes.Mode.controller
+import freemind.main.Tools.scalingFactorPlain
+import freemind.main.Tools.scalingFactor
+import freemind.modes.MindMap
+import freemind.view.mindmapview.ViewFeedback
+import javax.swing.JPanel
+import freemind.modes.ViewAbstraction
+import java.awt.print.Printable
+import java.awt.dnd.Autoscroll
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
+import freemind.view.mindmapview.MapView
+import javax.swing.JScrollPane
+import javax.swing.KeyStroke
+import java.awt.event.KeyEvent
+import freemind.view.mindmapview.MapView.Selected
+import freemind.view.mindmapview.ArrowLinkView
+import freemind.preferences.FreemindPropertyListener
+import freemind.view.mindmapview.NodeViewFactory
+import java.lang.NumberFormatException
+import java.util.TimerTask
+import freemind.view.mindmapview.MapView.CheckLaterForCenterNodeTask
+import javax.swing.JComponent
+import kotlin.jvm.JvmOverloads
+import javax.swing.JViewport
+import java.util.LinkedList
+import freemind.controller.NodeMouseMotionListener
+import freemind.controller.NodeMotionListener
+import freemind.controller.NodeKeyListener
+import java.awt.dnd.DragGestureListener
+import java.awt.dnd.DropTargetListener
+import freemind.modes.MindMapNode
+import java.util.Collections
+import freemind.modes.MindMapLink
+import freemind.modes.MindMapArrowLink
+import java.awt.print.PageFormat
+import java.awt.geom.CubicCurve2D
+import freemind.view.mindmapview.PathBBox
+import freemind.view.mindmapview.MindMapLayout
+import freemind.view.mindmapview.NodeViewVisitor
+import freemind.modes.EdgeAdapter
+import freemind.view.mindmapview.EdgeView
+import freemind.modes.MindMapEdge
+import javax.swing.JLabel
+import freemind.view.mindmapview.MainView
+import javax.swing.SwingUtilities
+import java.awt.geom.AffineTransform
+import javax.swing.SwingConstants
+import javax.swing.Icon
+import javax.swing.event.TreeModelListener
+import freemind.view.mindmapview.NodeMotionListenerView
+import freemind.view.mindmapview.NodeFoldingComponent
+import javax.swing.ToolTipManager
+import java.awt.event.ActionListener
+import java.awt.event.ActionEvent
+import java.awt.dnd.DragSource
+import java.awt.dnd.DnDConstants
+import java.awt.dnd.DropTarget
+import freemind.modes.MindMapCloud
+import freemind.view.mindmapview.CloudView
+import freemind.view.mindmapview.NodeViewLayout
+import java.net.MalformedURLException
+import freemind.view.mindmapview.MultipleImage
+import javax.swing.ImageIcon
+import freemind.view.ImageFactory
+import freemind.modes.MindIcon
+import freemind.modes.NodeAdapter
+import java.util.TreeMap
+import java.lang.StringBuffer
+import javax.swing.event.TreeModelEvent
+import freemind.view.mindmapview.BubbleMainView
+import java.awt.geom.Rectangle2D
+import java.awt.geom.QuadCurve2D
+import freemind.view.mindmapview.ConvexHull
+import freemind.view.mindmapview.ConvexHull.thetaComparator
+import freemind.modes.ModeController
+import freemind.view.mindmapview.EditNodeBase.EditControl
+import java.awt.event.FocusListener
+import freemind.view.mindmapview.EditNodeBase
+import javax.swing.JDialog
+import javax.swing.JFrame
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import javax.swing.WindowConstants
+import freemind.view.mindmapview.EditNodeBase.EditDialog.DialogWindowListener
+import javax.swing.JOptionPane
+import javax.swing.text.JTextComponent
+import java.awt.datatransfer.StringSelection
+import javax.swing.JPopupMenu
+import freemind.view.mindmapview.EditNodeBase.EditCopyAction
+import java.awt.datatransfer.Clipboard
+import java.awt.event.FocusEvent
+import freemind.controller.NodeDragListener
+import freemind.controller.NodeDropListener
+import freemind.controller.MapMouseMotionListener
+import freemind.controller.MapMouseWheelListener
+import java.awt.event.MouseWheelEvent
+import freemind.view.mindmapview.ViewFeedback.MouseWheelEventHandler
+import java.awt.geom.FlatteningPathIterator
+import java.awt.geom.Point2D
+import java.awt.image.BufferedImage
+import freemind.view.mindmapview.VerticalRootNodeViewLayout
+import freemind.view.mindmapview.BezierEdgeView
+import freemind.view.mindmapview.EditNodeBase.EditDialog
+import javax.swing.JTextArea
+import javax.swing.JButton
+import javax.swing.JCheckBox
+import freemind.view.mindmapview.EditNodeDialog
+import freemind.main.Tools.BooleanHolder
+import java.lang.Runnable
+import java.awt.event.KeyListener
+import java.awt.event.MouseListener
+import freemind.view.mindmapview.EditNodeBase.EditPopupMenu
+import com.inet.jortho.SpellChecker
+import javax.swing.BoxLayout
+import freemind.view.mindmapview.EditNodeDialog.LongNodeDialog
+import com.lightdev.app.shtm.SHTMLPanel
+import freemind.view.mindmapview.EditNodeBase.EditDialog.SubmitAction
+import kotlin.Throws
+import accessories.plugins.NodeNoteRegistration.SimplyHtmlResources
+import freemind.view.mindmapview.EditNodeWYSIWYG
+import freemind.view.mindmapview.EditNodeWYSIWYG.HTMLDialog
+import javax.swing.JEditorPane
+import freemind.view.mindmapview.NodeViewFactory.ContentPane
+import freemind.view.mindmapview.NodeViewFactory.ContentPaneLayout
+import freemind.view.mindmapview.SharpBezierEdgeView
+import freemind.view.mindmapview.SharpLinearEdgeView
+import freemind.view.mindmapview.LinearEdgeView
+import freemind.view.mindmapview.RootMainView
+import freemind.view.mindmapview.LeftNodeViewLayout
+import freemind.view.mindmapview.RightNodeViewLayout
+import freemind.view.mindmapview.ForkMainView
+import javax.swing.JTextField
+import javax.swing.undo.UndoManager
+import freemind.view.mindmapview.EditNodeTextField
+import freemind.view.mindmapview.EditNodeTextField.TextFieldListener
+import javax.swing.undo.CannotUndoException
+import javax.swing.undo.CannotRedoException
+import java.awt.event.ComponentListener
+import freemind.view.mindmapview.NodeViewLayoutAdapter
+import java.awt.geom.GeneralPath
+import javax.swing.DefaultButtonModel
+import javax.swing.BorderFactory
+import freemind.view.mindmapview.NodeFoldingComponent.RoundImageButtonUI
+import javax.swing.plaf.basic.BasicButtonUI
+import javax.swing.AbstractButton
+import javax.swing.plaf.basic.BasicButtonListener
+import java.awt.geom.Ellipse2D
+import freemind.modes.MapFeedbackAdapter
+import freemind.modes.mindmapmode.MindMapMapModel
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.net.URISyntaxException
+import freemind.main.Tools.FileReaderCreator
+import freemind.modes.MapAdapter
+import freemind.view.mindmapview.IndependantMapViewCreator
+import freemind.extensions.NodeHook
+import freemind.extensions.PermanentNodeHookSubstituteUnknown
+import freemind.main.*
+import kotlin.jvm.JvmStatic
+import tests.freemind.FreeMindMainMock
+import java.io.FileOutputStream
+import javax.imageio.ImageIO
+import java.io.FileWriter
+import java.text.MessageFormat
+import freemind.view.MapModule
+import freemind.view.ScalableImageIcon
+import java.awt.*
+import java.awt.image.ImageObserver
+import java.util.logging.Logger
 
 /**
  * @author foltin
  * @date 11.07.2013
  */
-abstract public class NodeViewLayoutAdapter implements NodeViewLayout {
-	protected final int LISTENER_VIEW_WIDTH = 10;
-	protected static java.util.logging.Logger logger = null;
-	protected Point location = new Point();
-	private static Dimension minDimension;
-	private NodeView view;
-	private MindMapNode model;
-	private int childCount;
-	private JComponent content;
-	private int vGap;
-	private int spaceAround;
+abstract class NodeViewLayoutAdapter : NodeViewLayout {
+    protected val LISTENER_VIEW_WIDTH = 10
+    protected var location = Point()
 
-	public NodeViewLayoutAdapter() {
-		if (logger == null) {
-			logger = freemind.main.Resources.getInstance().getLogger(
-					this.getClass().getName());
-		}
-	}
-	
-	public void addLayoutComponent(String arg0, Component arg1) {
-	}
+    /**
+     * @return Returns the view.
+     */
+    protected var view: NodeView? = null
+        private set
 
-	/*
+    /**
+     * @return Returns the model.
+     */
+    protected var model: MindMapNode? = null
+        private set
+
+    /**
+     * @return Returns the childCount.
+     */
+    protected var childCount = 0
+        private set
+
+    /**
+     * @return Returns the content.
+     */
+    protected var content: JComponent? = null
+        private set
+
+    /**
+     * @return Returns the vGap.
+     */
+    var vGap = 0
+        private set
+
+    /**
+     * @return Returns the spaceAround.
+     */
+    var spaceAround = 0
+        private set
+
+    init {
+        if (logger == null) {
+            logger = Resources.getInstance().getLogger(
+                    this.javaClass.name)
+        }
+    }
+
+    override fun addLayoutComponent(arg0: String, arg1: Component) {}
+
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see java.awt.LayoutManager#removeLayoutComponent(java.awt.Component)
 	 */
-	public void removeLayoutComponent(Component arg0) {
-	}
+    override fun removeLayoutComponent(arg0: Component) {}
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see java.awt.LayoutManager#minimumLayoutSize(java.awt.Container)
 	 */
-	public Dimension minimumLayoutSize(Container arg0) {
-		if (minDimension == null)
-			minDimension = new Dimension(0, 0);
-		return minDimension;
-	}
+    override fun minimumLayoutSize(arg0: Container): Dimension {
+        if (minDimension == null) minDimension = Dimension(0, 0)
+        return minDimension!!
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see java.awt.LayoutManager#preferredLayoutSize(java.awt.Container)
 	 */
-	public Dimension preferredLayoutSize(Container c) {
-		if (!c.isValid()) {
-			c.validate();
-		}
-		return c.getSize();
-	}
+    override fun preferredLayoutSize(c: Container): Dimension {
+        if (!c.isValid) {
+            c.validate()
+        }
+        return c.size
+    }
 
-	public void layoutContainer(Container c) {
-		setUp(c);
-		layout();
-		Point location2 = view.getLocation();
-		Tools.convertPointToAncestor(view, location2, view.getMap());
-//		logger.info("Layouting node '" + view.getModel() + "' to " + location2);
-		layoutOtherItems();
-		shutDown();
-	}
+    override fun layoutContainer(c: Container) {
+        setUp(c)
+        layout()
+        val location2 = view!!.location
+        convertPointToAncestor(view, location2, view.getMap())
+        //		logger.info("Layouting node '" + view.getModel() + "' to " + location2);
+        layoutOtherItems()
+        shutDown()
+    }
 
-	/**
-	 * 
-	 */
-	private void layoutOtherItems() {
-		final int componentCount = view.getComponentCount();
-		for (int i = 0; i < componentCount; i++) {
-			final Component component = view.getComponent(i);
-			if (component instanceof NodeMotionListenerView) {
-				NodeMotionListenerView nodeMotionListenerView = (NodeMotionListenerView) component;
-				layoutNodeMotionListenerView(nodeMotionListenerView);
-			} else if (component instanceof NodeFoldingComponent) {
-				NodeFoldingComponent foldingComponent = (NodeFoldingComponent) component;
-				layoutNodeFoldingComponent(foldingComponent);
-			}
-		}
+    /**
+     *
+     */
+    private fun layoutOtherItems() {
+        val componentCount = view!!.componentCount
+        for (i in 0 until componentCount) {
+            val component = view!!.getComponent(i)
+            if (component is NodeMotionListenerView) {
+                layoutNodeMotionListenerView(component)
+            } else if (component is NodeFoldingComponent) {
+                layoutNodeFoldingComponent(component)
+            }
+        }
+    }
 
-	}
+    protected abstract fun layout()
+    private fun setUp(c: Container) {
+        val localView = c as NodeView
+        val localChildCount = localView.componentCount - 1
+        for (i in 0 until localChildCount) {
+            localView.getComponent(i).validate()
+        }
+        view = localView
+        model = localView.getModel()
+        childCount = localChildCount
+        content = localView.content
+        if (model.isVisible) {
+            vGap = view.getVGap()
+        } else {
+            vGap = view.getVisibleParentView().vGap
+        }
+        spaceAround = view.getMap().getZoomed(NodeView.Companion.SPACE_AROUND)
+    }
 
-	abstract protected void layout();
+    private fun shutDown() {
+        view = null
+        model = null
+        content = null
+        childCount = 0
+        vGap = 0
+        spaceAround = 0
+    }
 
-	private void setUp(Container c) {
-		final NodeView localView = (NodeView) c;
-		final int localChildCount = localView.getComponentCount() - 1;
+    protected fun getChildContentHeight(isLeft: Boolean): Int {
+        val childCount = childCount
+        if (childCount == 0) {
+            return 0
+        }
+        var height = 0
+        var count = 0
+        for (i in 0 until childCount) {
+            val component = view!!.getComponent(i)
+            if (component is NodeView) {
+                val child = component
+                if (child.isLeft == isLeft) {
+                    val additionalCloudHeigth = child
+                            .additionalCloudHeigth
+                    val contentHeight = child.content.height
+                    height += contentHeight + additionalCloudHeigth
+                    count++
+                }
+            }
+        }
+        return height + vGap * (count - 1)
+    }
 
-		for (int i = 0; i < localChildCount; i++) {
-			localView.getComponent(i).validate();
-		}
+    /**
+     * @param isLeft
+     * @return a shift, which is less than or equal zero
+     */
+    protected fun getChildVerticalShift(isLeft: Boolean): Int {
+        var shift = 0
+        var isFirstNodeView = false
+        var foundNodeView = false
+        for (i in 0 until childCount) {
+            val component = view!!.getComponent(i)
+            if (component is NodeView) {
+                val child = component
+                if (child.isLeft == isLeft) {
+                    val childShift = child.shift
+                    if (childShift < 0 || isFirstNodeView) {
+                        shift += childShift
+                        isFirstNodeView = false
+                    }
+                    shift -= child.content.y - spaceAround
+                    foundNodeView = true
+                }
+            }
+        }
+        if (foundNodeView) {
+            shift -= spaceAround
+        }
+        return shift
+    }
 
-		this.view = localView;
-		this.model = localView.getModel();
-		this.childCount = localChildCount;
-		this.content = localView.getContent();
+    protected val childHorizontalShift: Int
+        protected get() {
+            if (childCount == 0) return 0
+            var shift = 0
+            for (i in 0 until childCount) {
+                val component = view!!.getComponent(i)
+                if (component is NodeView) {
+                    val child = component
+                    var shiftCandidate: Int
+                    if (child.isLeft) {
+                        shiftCandidate = (-child.content.x
+                                - child.content.width)
+                        if (child.isContentVisible) {
+                            shiftCandidate -= (child.hGap
+                                    + child.additionalCloudHeigth / 2)
+                        }
+                    } else {
+                        shiftCandidate = -child.content.x
+                        if (child.isContentVisible) {
+                            shiftCandidate += child.hGap
+                        }
+                    }
+                    shift = Math.min(shift, shiftCandidate)
+                }
+            }
+            return shift
+        }
 
-		if (getModel().isVisible()) {
-			this.vGap = getView().getVGap();
-		} else {
-			this.vGap = getView().getVisibleParentView().getVGap();
-		}
-		spaceAround = view.getMap().getZoomed(NodeView.SPACE_AROUND);
-	}
+    /**
+     * Implemented in the base class, as the root layout needs it, too.
+     * @param childVerticalShift
+     */
+    protected fun placeRightChildren(childVerticalShift: Int) {
+        val baseX = content!!.x + content!!.width
+        var y = content!!.y + childVerticalShift
+        var right = baseX + spaceAround
+        var child: NodeView? = null
+        for (i in 0 until childCount) {
+            val componentC = view!!.getComponent(i)
+            if (componentC is NodeView) {
+                val component = componentC
+                if (component.isLeft) {
+                    continue
+                }
+                child = component
+                val additionalCloudHeigth = child.additionalCloudHeigth / 2
+                y += additionalCloudHeigth
+                val shiftY = child.shift
+                val childHGap = if (child.content.isVisible) child
+                        .hGap else 0
+                val x = baseX + childHGap - child.content.x
+                if (shiftY < 0) {
+                    child.setLocation(x, y)
+                    y -= shiftY
+                } else {
+                    y += shiftY
+                    child.setLocation(x, y)
+                }
+                //				logger.info("Place of child " + component.getModel().getText() + ": " + child.getLocation());
+                y += (child.height - 2 * spaceAround + vGap
+                        + additionalCloudHeigth)
+                right = Math.max(right, x + child.width
+                        + additionalCloudHeigth)
+            }
+        }
+        val bottom = (content!!.y + content!!.height
+                + spaceAround)
+        if (child != null) {
+            view!!.setSize(
+                    right,
+                    Math.max(
+                            bottom,
+                            child.y + child.height
+                                    + child.additionalCloudHeigth / 2))
+        } else {
+            view!!.setSize(right, bottom)
+        }
+    }
 
-	private void shutDown() {
-		this.view = null;
-		this.model = null;
-		this.content = null;
-		this.childCount = 0;
-		this.vGap = 0;
-		this.spaceAround = 0;
-	}
+    /**
+     * Implemented in the base class, as the root layout needs it, too.
+     * @param childVerticalShift
+     */
+    protected fun placeLeftChildren(childVerticalShift: Int) {
+        val baseX = content!!.x
+        var y = content!!.y + childVerticalShift
+        var right = baseX + content!!.width + spaceAround
+        var child: NodeView? = null
+        for (i in 0 until childCount) {
+            val componentC = view!!.getComponent(i)
+            if (componentC is NodeView) {
+                val component = componentC
+                if (!component.isLeft) {
+                    continue
+                }
+                child = component
+                val additionalCloudHeigth = child.additionalCloudHeigth / 2
+                y += additionalCloudHeigth
+                val shiftY = child.shift
+                val childHGap = if (child.content.isVisible) child
+                        .hGap else 0
+                val x = (baseX - childHGap - child.content.x
+                        - child.content.width)
+                if (shiftY < 0) {
+                    child.setLocation(x, y)
+                    y -= shiftY
+                } else {
+                    y += shiftY
+                    child.setLocation(x, y)
+                }
+                y += (child.height - 2 * spaceAround + vGap
+                        + additionalCloudHeigth)
+                right = Math.max(right, x + child.width)
+            }
+        }
+        val bottom = (content!!.y + content!!.height
+                + spaceAround)
+        if (child != null) {
+            view!!.setSize(
+                    right,
+                    Math.max(
+                            bottom,
+                            child.y + child.height
+                                    + child.additionalCloudHeigth / 2))
+        } else {
+            view!!.setSize(right, bottom)
+        }
+    }
 
-	/**
-	 * @return Returns the view.
-	 */
-	protected NodeView getView() {
-		return view;
-	}
-
-	/**
-	 * @return Returns the model.
-	 */
-	protected MindMapNode getModel() {
-		return model;
-	}
-
-	/**
-	 * @return Returns the childCount.
-	 */
-	protected int getChildCount() {
-		return childCount;
-	}
-
-	/**
-	 * @return Returns the content.
-	 */
-	protected JComponent getContent() {
-		return content;
-	}
-
-	protected int getChildContentHeight(boolean isLeft) {
-		final int childCount = getChildCount();
-		if (childCount == 0) {
-			return 0;
-		}
-		int height = 0;
-		int count = 0;
-		for (int i = 0; i < childCount; i++) {
-			Component component = getView().getComponent(i);
-			if (component instanceof NodeView) {
-				NodeView child = (NodeView) component;
-				if (child.isLeft() == isLeft) {
-					final int additionalCloudHeigth = child
-							.getAdditionalCloudHeigth();
-					final int contentHeight = child.getContent().getHeight();
-					height += contentHeight + additionalCloudHeigth;
-					count++;
-				}
-			}
-		}
-		return height + vGap * (count - 1);
-	}
-
-	/**
-	 * @param isLeft
-	 * @return a shift, which is less than or equal zero
-	 */
-	protected int getChildVerticalShift(boolean isLeft) {
-		int shift = 0;
-		boolean isFirstNodeView = false;
-		boolean foundNodeView = false;
-		for (int i = 0; i < getChildCount(); i++) {
-			Component component = getView().getComponent(i);
-			if (component instanceof NodeView) {
-				NodeView child = (NodeView) component;
-				if (child.isLeft() == isLeft) {
-					final int childShift = child.getShift();
-					if (childShift < 0 || isFirstNodeView) {
-						shift += childShift;
-						isFirstNodeView = false;
-					}
-					shift -= (child.getContent().getY() - getSpaceAround());
-					foundNodeView = true;
-				}
-			}
-		}
-		if(foundNodeView) {
-			shift -= getSpaceAround();
-		}
-		return shift;
-	}
-
-	protected int getChildHorizontalShift() {
-		if (getChildCount() == 0)
-			return 0;
-		int shift = 0;
-		for (int i = 0; i < getChildCount(); i++) {
-			Component component = getView().getComponent(i);
-			if (component instanceof NodeView) {
-				NodeView child = (NodeView) component;
-				int shiftCandidate;
-				if (child.isLeft()) {
-					shiftCandidate = -child.getContent().getX()
-							- child.getContent().getWidth();
-					if (child.isContentVisible()) {
-						shiftCandidate -= child.getHGap()
-								+ child.getAdditionalCloudHeigth() / 2;
-					}
-				} else {
-					shiftCandidate = -child.getContent().getX();
-					if (child.isContentVisible()) {
-						shiftCandidate += child.getHGap();
-					}
-				}
-	
-				shift = Math.min(shift, shiftCandidate);
-			}
-		}
-		return shift;
-	}
-
-	/**
-	 * Implemented in the base class, as the root layout needs it, too.
-	 * @param childVerticalShift
-	 */
-	protected void placeRightChildren(int childVerticalShift) {
-		final int baseX = getContent().getX() + getContent().getWidth();
-		int y = getContent().getY() + childVerticalShift;
-		int right = baseX + getSpaceAround();
-
-		NodeView child = null;
-		for (int i = 0; i < getChildCount(); i++) {
-			Component componentC = getView().getComponent(i);
-			if (componentC instanceof NodeView) {
-				NodeView component = (NodeView) componentC;
-				if (component.isLeft()) {
-					continue;
-				}
-				child = component;
-				final int additionalCloudHeigth = child.getAdditionalCloudHeigth() / 2;
-				y += additionalCloudHeigth;
-				int shiftY = child.getShift();
-				final int childHGap = child.getContent().isVisible() ? child
-						.getHGap() : 0;
-				int x = baseX + childHGap - child.getContent().getX();
-				if (shiftY < 0) {
-					child.setLocation(x, y);
-					y -= shiftY;
-				} else {
-					y += shiftY;
-					child.setLocation(x, y);
-				}
-//				logger.info("Place of child " + component.getModel().getText() + ": " + child.getLocation());
-				
-				y += child.getHeight() - 2 * getSpaceAround() + getVGap()
-						+ additionalCloudHeigth;
-				right = Math.max(right, x + child.getWidth()
-						+ additionalCloudHeigth);
-			}
-		}
-		int bottom = getContent().getY() + getContent().getHeight()
-				+ getSpaceAround();
-
-		if (child != null) {
-			getView().setSize(
-					right,
-					Math.max(
-							bottom,
-							child.getY() + child.getHeight()
-									+ child.getAdditionalCloudHeigth() / 2));
-		} else {
-			getView().setSize(right, bottom);
-		}
-	}
-
-	/**
- 	 * Implemented in the base class, as the root layout needs it, too.
-	 * @param childVerticalShift
-	 */
-	protected void placeLeftChildren(int childVerticalShift) {
-		final int baseX = getContent().getX();
-		int y = getContent().getY() + childVerticalShift;
-		int right = baseX + getContent().getWidth() + getSpaceAround();
-		NodeView child = null;
-		for (int i = 0; i < getChildCount(); i++) {
-			Component componentC = getView().getComponent(i);
-			if (componentC instanceof NodeView) {
-				NodeView component = (NodeView) componentC;
-				if (!component.isLeft()) {
-					continue;
-				}
-				child = component;
-				final int additionalCloudHeigth = child.getAdditionalCloudHeigth() / 2;
-				y += additionalCloudHeigth;
-				int shiftY = child.getShift();
-				final int childHGap = child.getContent().isVisible() ? child
-						.getHGap() : 0;
-				int x = baseX - childHGap - child.getContent().getX()
-						- child.getContent().getWidth();
-				if (shiftY < 0) {
-					child.setLocation(x, y);
-					y -= shiftY;
-				} else {
-					y += shiftY;
-					child.setLocation(x, y);
-				}
-				y += child.getHeight() - 2 * getSpaceAround() + getVGap()
-						+ additionalCloudHeigth;
-				right = Math.max(right, x + child.getWidth());
-			}
-		}
-		int bottom = getContent().getY() + getContent().getHeight()
-				+ getSpaceAround();
-
-		if (child != null) {
-			getView().setSize(
-					right,
-					Math.max(
-							bottom,
-							child.getY() + child.getHeight()
-									+ child.getAdditionalCloudHeigth() / 2));
-		} else {
-			getView().setSize(right, bottom);
-		}
-	}
-
-	/**
-	 * @return Returns the vGap.
-	 */
-	int getVGap() {
-		return vGap;
-	}
-
-	/**
-	 * @return Returns the spaceAround.
-	 */
-	int getSpaceAround() {
-		return spaceAround;
-	}
-
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see freemind.view.mindmapview.NodeViewLayout#layoutNodeFoldingComponent(freemind.view.mindmapview.NodeFoldingListenerView)
 	 */
-	public void layoutNodeFoldingComponent(
-			NodeFoldingComponent pFoldingComponent) {
-		NodeView movedView = pFoldingComponent.getNodeView();
+    override fun layoutNodeFoldingComponent(
+            pFoldingComponent: NodeFoldingComponent) {
+        val movedView = pFoldingComponent.nodeView
+        val location = movedView.foldingMarkPosition
+        val content = movedView.content
+        convertPointToAncestor(content!!, location!!, pFoldingComponent.parent)
+        pFoldingComponent.setCorrectedLocation(location)
+        val preferredSize = pFoldingComponent.preferredSize
+        pFoldingComponent.setSize(preferredSize!!.width, preferredSize.height)
+    }
 
-		Point location = movedView.getFoldingMarkPosition();
-		JComponent content = movedView.getContent();
-		Tools.convertPointToAncestor(content, location, pFoldingComponent.getParent());
-		pFoldingComponent.setCorrectedLocation(location);
-
-		Dimension preferredSize = pFoldingComponent.getPreferredSize();
-		pFoldingComponent.setSize(preferredSize.width, preferredSize.height);
-	}
-	
+    companion object {
+        protected var logger: Logger? = null
+        private var minDimension: Dimension? = null
+    }
 }

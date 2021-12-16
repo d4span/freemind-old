@@ -20,317 +20,477 @@
  * Created on 02.05.2004
  */
 /*$Id: EditNodeDialog.java,v 1.1.4.1.16.20 2009/06/24 20:40:19 christianfoltin Exp $*/
+package freemind.view.mindmapview
 
-package freemind.view.mindmapview;
-
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
-import com.inet.jortho.SpellChecker;
-
-import freemind.main.Tools;
-import freemind.modes.ModeController;
+import freemind.main.Tools.xmlToColor
+import freemind.main.Tools.xmlToBoolean
+import freemind.preferences.FreemindPropertyListener.propertyChanged
+import freemind.modes.MindMap.rootNode
+import freemind.main.Tools.waitForEventQueue
+import freemind.modes.MindMapNode.isRoot
+import freemind.modes.MindMapNode.isFolded
+import freemind.modes.MindMapNode.nodeLevel
+import freemind.main.Tools.convertPointToAncestor
+import freemind.modes.MindMapNode.parentNode
+import freemind.main.Tools.Pair.first
+import freemind.main.Tools.Pair.second
+import freemind.modes.MindMapNode.shallowCopy
+import freemind.modes.MindMap.restorable
+import freemind.main.Tools.restoreAntialiasing
+import freemind.modes.MindMap.linkRegistry
+import freemind.modes.MindMapLinkRegistry.getLabel
+import freemind.modes.MindMapLinkRegistry.getAllLinks
+import freemind.modes.MindMapLink.source
+import freemind.modes.MindMapLink.target
+import freemind.modes.MindMapNode.addTreeModelListener
+import freemind.modes.MindMapNode.removeTreeModelListener
+import freemind.modes.MindMapLine.width
+import freemind.modes.MindMapNode.edge
+import freemind.modes.MindMapNode.backgroundColor
+import freemind.main.Tools.convertPointFromAncestor
+import freemind.modes.MindMapNode.link
+import freemind.modes.MindMapNode.hasChildren
+import freemind.main.Tools.safeEquals
+import freemind.modes.MindMapNode.hasVisibleChilds
+import freemind.modes.MindMapNode.cloud
+import freemind.modes.MindMapNode.isLeft
+import freemind.modes.MindMapNode.isVisible
+import freemind.modes.MindMapNode.childrenFolded
+import freemind.modes.MindMapNode.toString
+import freemind.modes.MindMap.uRL
+import freemind.modes.MindMapNode.font
+import freemind.modes.MindMapNode.stateIcons
+import freemind.modes.MindMapNode.attributeTableLength
+import freemind.modes.MindMapNode.icons
+import freemind.modes.MindIcon.unscaledIcon
+import freemind.modes.NodeAdapter.link
+import freemind.main.Tools.executableByExtension
+import freemind.modes.MindMapNode.color
+import freemind.modes.MindMapNode.style
+import freemind.modes.MindMapNode.toolTip
+import freemind.modes.MindMapNode.calcShiftY
+import freemind.modes.MindMapNode.vGap
+import freemind.modes.MindMapNode.hGap
+import freemind.modes.MindMapLine.color
+import freemind.modes.MindMapCloud.iterativeLevel
+import freemind.modes.MindMapCloud.exteriorColor
+import freemind.modes.ModeController.view
+import freemind.modes.ModeController.controller
+import freemind.modes.ModeController.getText
+import freemind.modes.ModeController.frame
+import freemind.main.Tools.clipboard
+import freemind.modes.MindMapEdge.styleAsInt
+import freemind.modes.MindMapNode.childrenUnfolded
+import freemind.modes.MindMapArrowLink.startInclination
+import freemind.modes.MindMapArrowLink.endInclination
+import freemind.modes.MindMapArrowLink.startArrow
+import freemind.modes.MindMapArrowLink.endArrow
+import freemind.modes.MindMapArrowLink.showControlPointsFlag
+import freemind.main.FreeMindMain.getProperty
+import freemind.main.Tools.setLabelAndMnemonic
+import freemind.main.Tools.BooleanHolder.value
+import freemind.main.Tools.updateFontSize
+import freemind.main.Tools.setDialogLocationRelativeTo
+import freemind.main.Tools.addEscapeActionToDialog
+import freemind.main.Tools.addKeyActionToDialog
+import freemind.controller.Controller.frame
+import freemind.main.FreeMindMain.openDocument
+import freemind.modes.MindMapNode.isItalic
+import freemind.modes.MindMapNode.isBold
+import freemind.main.Tools.colorToXml
+import freemind.main.Tools.IntHolder.value
+import freemind.modes.MapAdapter.loadTree
+import freemind.modes.MapAdapter.root
+import freemind.main.Tools.getFile
+import freemind.modes.Mode.controller
+import freemind.main.Tools.scalingFactorPlain
+import freemind.main.Tools.scalingFactor
+import freemind.modes.MindMap
+import freemind.view.mindmapview.ViewFeedback
+import javax.swing.JPanel
+import freemind.modes.ViewAbstraction
+import java.awt.print.Printable
+import java.awt.dnd.Autoscroll
+import freemind.view.mindmapview.MapView
+import javax.swing.JScrollPane
+import javax.swing.KeyStroke
+import freemind.view.mindmapview.MapView.Selected
+import freemind.view.mindmapview.ArrowLinkView
+import freemind.preferences.FreemindPropertyListener
+import freemind.main.FreeMind
+import freemind.main.Tools
+import freemind.main.FreeMindCommon
+import freemind.view.mindmapview.NodeViewFactory
+import java.lang.NumberFormatException
+import java.util.TimerTask
+import freemind.view.mindmapview.MapView.CheckLaterForCenterNodeTask
+import javax.swing.JComponent
+import kotlin.jvm.JvmOverloads
+import javax.swing.JViewport
+import java.util.LinkedList
+import freemind.controller.NodeMouseMotionListener
+import freemind.controller.NodeMotionListener
+import freemind.controller.NodeKeyListener
+import java.awt.dnd.DragGestureListener
+import java.awt.dnd.DropTargetListener
+import freemind.modes.MindMapNode
+import java.util.Collections
+import freemind.modes.MindMapLink
+import freemind.modes.MindMapArrowLink
+import java.awt.print.PageFormat
+import java.awt.geom.CubicCurve2D
+import freemind.view.mindmapview.PathBBox
+import freemind.view.mindmapview.MindMapLayout
+import freemind.view.mindmapview.NodeViewVisitor
+import freemind.modes.EdgeAdapter
+import freemind.view.mindmapview.EdgeView
+import freemind.modes.MindMapEdge
+import javax.swing.JLabel
+import freemind.view.mindmapview.MainView
+import javax.swing.SwingUtilities
+import freemind.main.HtmlTools
+import java.awt.geom.AffineTransform
+import javax.swing.SwingConstants
+import javax.swing.Icon
+import javax.swing.event.TreeModelListener
+import freemind.view.mindmapview.NodeMotionListenerView
+import freemind.view.mindmapview.NodeFoldingComponent
+import javax.swing.ToolTipManager
+import freemind.main.FreeMindMain
+import java.awt.dnd.DragSource
+import java.awt.dnd.DnDConstants
+import java.awt.dnd.DropTarget
+import freemind.modes.MindMapCloud
+import freemind.view.mindmapview.CloudView
+import freemind.view.mindmapview.NodeViewLayout
+import java.net.MalformedURLException
+import freemind.view.mindmapview.MultipleImage
+import javax.swing.ImageIcon
+import freemind.view.ImageFactory
+import freemind.modes.MindIcon
+import freemind.modes.NodeAdapter
+import java.util.TreeMap
+import java.lang.StringBuffer
+import javax.swing.event.TreeModelEvent
+import freemind.view.mindmapview.BubbleMainView
+import java.awt.geom.Rectangle2D
+import java.awt.geom.QuadCurve2D
+import freemind.view.mindmapview.ConvexHull
+import freemind.view.mindmapview.ConvexHull.thetaComparator
+import freemind.modes.ModeController
+import freemind.view.mindmapview.EditNodeBase.EditControl
+import freemind.view.mindmapview.EditNodeBase
+import javax.swing.JDialog
+import javax.swing.JFrame
+import javax.swing.WindowConstants
+import freemind.view.mindmapview.EditNodeBase.EditDialog.DialogWindowListener
+import javax.swing.JOptionPane
+import javax.swing.text.JTextComponent
+import java.awt.datatransfer.StringSelection
+import javax.swing.JPopupMenu
+import freemind.view.mindmapview.EditNodeBase.EditCopyAction
+import java.awt.datatransfer.Clipboard
+import freemind.controller.NodeDragListener
+import freemind.controller.NodeDropListener
+import freemind.controller.MapMouseMotionListener
+import freemind.controller.MapMouseWheelListener
+import freemind.view.mindmapview.ViewFeedback.MouseWheelEventHandler
+import java.awt.geom.FlatteningPathIterator
+import java.awt.geom.Point2D
+import java.awt.image.BufferedImage
+import freemind.view.mindmapview.VerticalRootNodeViewLayout
+import freemind.view.mindmapview.BezierEdgeView
+import freemind.view.mindmapview.EditNodeBase.EditDialog
+import javax.swing.JTextArea
+import javax.swing.JButton
+import javax.swing.JCheckBox
+import freemind.view.mindmapview.EditNodeDialog
+import freemind.main.Tools.BooleanHolder
+import java.lang.Runnable
+import freemind.view.mindmapview.EditNodeBase.EditPopupMenu
+import com.inet.jortho.SpellChecker
+import javax.swing.BoxLayout
+import freemind.view.mindmapview.EditNodeDialog.LongNodeDialog
+import com.lightdev.app.shtm.SHTMLPanel
+import freemind.view.mindmapview.EditNodeBase.EditDialog.SubmitAction
+import kotlin.Throws
+import accessories.plugins.NodeNoteRegistration.SimplyHtmlResources
+import freemind.view.mindmapview.EditNodeWYSIWYG
+import freemind.view.mindmapview.EditNodeWYSIWYG.HTMLDialog
+import javax.swing.JEditorPane
+import freemind.view.mindmapview.NodeViewFactory.ContentPane
+import freemind.view.mindmapview.NodeViewFactory.ContentPaneLayout
+import freemind.view.mindmapview.SharpBezierEdgeView
+import freemind.view.mindmapview.SharpLinearEdgeView
+import freemind.view.mindmapview.LinearEdgeView
+import freemind.view.mindmapview.RootMainView
+import freemind.view.mindmapview.LeftNodeViewLayout
+import freemind.view.mindmapview.RightNodeViewLayout
+import freemind.view.mindmapview.ForkMainView
+import javax.swing.JTextField
+import javax.swing.undo.UndoManager
+import freemind.view.mindmapview.EditNodeTextField
+import freemind.view.mindmapview.EditNodeTextField.TextFieldListener
+import javax.swing.undo.CannotUndoException
+import javax.swing.undo.CannotRedoException
+import freemind.view.mindmapview.NodeViewLayoutAdapter
+import java.awt.geom.GeneralPath
+import javax.swing.DefaultButtonModel
+import javax.swing.BorderFactory
+import freemind.view.mindmapview.NodeFoldingComponent.RoundImageButtonUI
+import javax.swing.plaf.basic.BasicButtonUI
+import javax.swing.AbstractButton
+import javax.swing.plaf.basic.BasicButtonListener
+import java.awt.geom.Ellipse2D
+import freemind.modes.MapFeedbackAdapter
+import freemind.modes.mindmapmode.MindMapMapModel
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.net.URISyntaxException
+import freemind.main.Tools.FileReaderCreator
+import freemind.modes.MapAdapter
+import freemind.view.mindmapview.IndependantMapViewCreator
+import freemind.extensions.NodeHook
+import freemind.extensions.PermanentNodeHookSubstituteUnknown
+import kotlin.jvm.JvmStatic
+import tests.freemind.FreeMindMainMock
+import java.io.FileOutputStream
+import javax.imageio.ImageIO
+import java.io.FileWriter
+import java.text.MessageFormat
+import freemind.view.MapModule
+import freemind.view.ScalableImageIcon
+import java.awt.*
+import java.awt.event.*
+import java.awt.image.ImageObserver
 
 /**
  * @author foltin
- * 
  */
-public class EditNodeDialog extends EditNodeBase {
-	private KeyEvent firstEvent;
+class EditNodeDialog(node: NodeView, text: String,
+                     private val firstEvent: KeyEvent, controller: ModeController,
+                     editControl: EditControl) : EditNodeBase(node, text, controller, editControl) {
+    internal inner class LongNodeDialog : EditDialog(this@EditNodeDialog) {
+        private val textArea: JTextArea
 
-	/** Private variable to hold the last value of the "Enter confirms" state. */
-	private static Tools.BooleanHolder booleanHolderForConfirmState;
+        init {
+            textArea = JTextArea(getText())
+            textArea.lineWrap = true
+            textArea.wrapStyleWord = true
+            // wish from
+            // https://sourceforge.net/forum/message.php?msg_id=5923410
+            // textArea.setTabSize(4);
+            // wrap around words rather than characters
+            val editorScrollPane = JScrollPane(textArea)
+            editorScrollPane.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
 
-	public EditNodeDialog(final NodeView node, final String text,
-			final KeyEvent firstEvent, ModeController controller,
-			EditControl editControl) {
-		super(node, text, controller, editControl);
-		this.firstEvent = firstEvent;
-	}
+            // int preferredHeight = new
+            // Integer(getFrame().getProperty("el__default_window_height")).intValue();
+            var preferredHeight = getNode().height
+            preferredHeight = Math.max(
+                    preferredHeight, frame.getProperty(
+                    "el__min_default_window_height").toInt())
+            preferredHeight = Math.min(
+                    preferredHeight, frame.getProperty(
+                    "el__max_default_window_height").toInt())
+            var preferredWidth = getNode().width
+            preferredWidth = Math.max(
+                    preferredWidth, frame.getProperty(
+                    "el__min_default_window_width").toInt())
+            preferredWidth = Math.min(
+                    preferredWidth, frame.getProperty(
+                    "el__max_default_window_width").toInt())
+            editorScrollPane.preferredSize = Dimension(preferredWidth,
+                    preferredHeight)
+            // textArea.setPreferredSize(new Dimension(500, 160));
+            val panel = JPanel()
 
-	class LongNodeDialog extends EditDialog {
-		private static final long serialVersionUID = 6185443281994675732L;
-		private JTextArea textArea;
+            // String performedAction;
+            val okButton = JButton()
+            val cancelButton = JButton()
+            val splitButton = JButton()
+            val enterConfirms = JCheckBox("",
+                    binOptionIsTrue("el__enter_confirms_by_default"))
+            setLabelAndMnemonic(okButton, getText("ok"))
+            setLabelAndMnemonic(cancelButton, getText("cancel"))
+            setLabelAndMnemonic(splitButton, getText("split"))
+            setLabelAndMnemonic(enterConfirms, getText("enter_confirms"))
+            if (booleanHolderForConfirmState == null) {
+                booleanHolderForConfirmState = BooleanHolder()
+                booleanHolderForConfirmState!!.value = enterConfirms
+                        .isSelected
+            } else {
+                enterConfirms.isSelected = booleanHolderForConfirmState!!
+                        .value
+            }
+            okButton.addActionListener { // next try to avoid bug 1159: focus jumps to file-menu after closing html-editing-window
+                EventQueue.invokeLater { submit() }
+            }
+            cancelButton.addActionListener { cancel() }
+            splitButton.addActionListener { split() }
+            enterConfirms.addActionListener {
+                textArea.requestFocus()
+                booleanHolderForConfirmState!!.value = enterConfirms
+                        .isSelected
+            }
 
-		LongNodeDialog() {
-			super(EditNodeDialog.this);
-			textArea = new JTextArea(getText());
-			textArea.setLineWrap(true);
-			textArea.setWrapStyleWord(true);
-			// wish from
-			// https://sourceforge.net/forum/message.php?msg_id=5923410
-			// textArea.setTabSize(4);
-			// wrap around words rather than characters
+            // On Enter act as if OK button was pressed
+            textArea.addKeyListener(object : KeyListener {
+                override fun keyPressed(e: KeyEvent) {
+                    // escape key in long text editor (PN)
+                    if (e.keyCode == KeyEvent.VK_ESCAPE) {
+                        e.consume()
+                        confirmedCancel()
+                    } else if (e.keyCode == KeyEvent.VK_ENTER) {
+                        if (enterConfirms.isSelected
+                                && e.modifiers and KeyEvent.SHIFT_MASK != 0) {
+                            e.consume()
+                            textArea.insert("\n", textArea.caretPosition)
+                        } else if (enterConfirms.isSelected
+                                || e.modifiers and KeyEvent.ALT_MASK != 0) {
+                            e.consume()
+                            submit()
+                        } else {
+                            e.consume()
+                            textArea.insert("\n", textArea.caretPosition)
+                        }
+                    }
+                }
 
-			final JScrollPane editorScrollPane = new JScrollPane(textArea);
-			editorScrollPane
-					.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+                override fun keyTyped(e: KeyEvent) {}
+                override fun keyReleased(e: KeyEvent) {}
+            })
+            textArea.addMouseListener(object : MouseListener {
+                override fun mouseClicked(e: MouseEvent) {}
+                override fun mouseEntered(e: MouseEvent) {}
+                override fun mouseExited(e: MouseEvent) {}
+                override fun mousePressed(e: MouseEvent) {
+                    conditionallyShowPopup(e)
+                }
 
-			// int preferredHeight = new
-			// Integer(getFrame().getProperty("el__default_window_height")).intValue();
-			int preferredHeight = getNode().getHeight();
-			preferredHeight = Math.max(
-					preferredHeight,
-					Integer.parseInt(getFrame().getProperty(
-							"el__min_default_window_height")));
-			preferredHeight = Math.min(
-					preferredHeight,
-					Integer.parseInt(getFrame().getProperty(
-							"el__max_default_window_height")));
+                override fun mouseReleased(e: MouseEvent) {
+                    conditionallyShowPopup(e)
+                }
 
-			int preferredWidth = getNode().getWidth();
-			preferredWidth = Math.max(
-					preferredWidth,
-					Integer.parseInt(getFrame().getProperty(
-							"el__min_default_window_width")));
-			preferredWidth = Math.min(
-					preferredWidth,
-					Integer.parseInt(getFrame().getProperty(
-							"el__max_default_window_width")));
+                private fun conditionallyShowPopup(e: MouseEvent) {
+                    if (e.isPopupTrigger) {
+                        val popupMenu: JPopupMenu = EditPopupMenu(textArea)
+                        if (EditNodeBase.Companion.checkSpelling) {
+                            popupMenu.add(SpellChecker.createCheckerMenu())
+                            popupMenu.add(SpellChecker.createLanguagesMenu())
+                        }
+                        popupMenu.show(e.component, e.x, e.y)
+                        e.consume()
+                    }
+                }
+            })
+            var font = getNode().textFont
+            font = updateFontSize(font, view.zoom,
+                    font!!.size)
+            textArea.font = font
+            val nodeTextColor = getNode().textColor
+            textArea.foreground = nodeTextColor
+            val nodeTextBackground = getNode().textBackground
+            textArea.background = nodeTextBackground
+            textArea.caretColor = nodeTextColor
 
-			editorScrollPane.setPreferredSize(new Dimension(preferredWidth,
-					preferredHeight));
-			// textArea.setPreferredSize(new Dimension(500, 160));
+            // panel.setPreferredSize(new Dimension(500, 160));
+            // editorScrollPane.setPreferredSize(new Dimension(500, 160));
+            val buttonPane = JPanel()
+            buttonPane.add(enterConfirms)
+            buttonPane.add(okButton)
+            buttonPane.add(cancelButton)
+            buttonPane.add(splitButton)
+            buttonPane.maximumSize = Dimension(1000, 20)
+            if (frame.getProperty("el__buttons_position") == "above") {
+                panel.add(buttonPane)
+                panel.add(editorScrollPane)
+            } else {
+                panel.add(editorScrollPane)
+                panel.add(buttonPane)
+            }
+            panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
+            contentPane = panel
+            if (firstEvent is KeyEvent) {
+                redispatchKeyEvents(textArea, firstEvent)
+            } // 1st key event defined
+            else {
+                textArea.caretPosition = getText().length
+            }
+            if (EditNodeBase.Companion.checkSpelling) {
+                SpellChecker.register(textArea, false, true, true, true)
+            }
+        }
 
-			final JPanel panel = new JPanel();
+        override fun show() {
+            textArea.requestFocus()
+            super.setVisible(true)
+        }
 
-			// String performedAction;
-			final JButton okButton = new JButton();
-			final JButton cancelButton = new JButton();
-			final JButton splitButton = new JButton();
-			final JCheckBox enterConfirms = new JCheckBox("",
-					binOptionIsTrue("el__enter_confirms_by_default"));
-
-			Tools.setLabelAndMnemonic(okButton, getText("ok"));
-			Tools.setLabelAndMnemonic(cancelButton, getText("cancel"));
-			Tools.setLabelAndMnemonic(splitButton, getText("split"));
-			Tools.setLabelAndMnemonic(enterConfirms, getText("enter_confirms"));
-
-			if (booleanHolderForConfirmState == null) {
-				booleanHolderForConfirmState = new Tools.BooleanHolder();
-				booleanHolderForConfirmState.setValue(enterConfirms
-						.isSelected());
-			} else {
-				enterConfirms.setSelected(booleanHolderForConfirmState
-						.getValue());
-			}
-
-			okButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					// next try to avoid bug 1159: focus jumps to file-menu after closing html-editing-window
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							submit();
-						}
-					});
-				}
-			});
-
-			cancelButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					cancel();
-				}
-			});
-
-			splitButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					split();
-				}
-			});
-
-			enterConfirms.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					textArea.requestFocus();
-					booleanHolderForConfirmState.setValue(enterConfirms
-							.isSelected());
-				}
-			});
-
-			// On Enter act as if OK button was pressed
-
-			textArea.addKeyListener(new KeyListener() {
-				public void keyPressed(KeyEvent e) {
-					// escape key in long text editor (PN)
-					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-						e.consume();
-						confirmedCancel();
-					} else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-						if (enterConfirms.isSelected()
-								&& (e.getModifiers() & KeyEvent.SHIFT_MASK) != 0) {
-							e.consume();
-							textArea.insert("\n", textArea.getCaretPosition());
-						} else if (enterConfirms.isSelected()
-								|| ((e.getModifiers() & KeyEvent.ALT_MASK) != 0)) {
-							e.consume();
-							submit();
-						} else {
-							e.consume();
-							textArea.insert("\n", textArea.getCaretPosition());
-						}
-					}
-				}
-
-				public void keyTyped(KeyEvent e) {
-				}
-
-				public void keyReleased(KeyEvent e) {
-				}
-			});
-
-			textArea.addMouseListener(new MouseListener() {
-				public void mouseClicked(MouseEvent e) {
-				}
-
-				public void mouseEntered(MouseEvent e) {
-				}
-
-				public void mouseExited(MouseEvent e) {
-				}
-
-				public void mousePressed(MouseEvent e) {
-					conditionallyShowPopup(e);
-				}
-
-				public void mouseReleased(MouseEvent e) {
-					conditionallyShowPopup(e);
-				}
-
-				private void conditionallyShowPopup(MouseEvent e) {
-					if (e.isPopupTrigger()) {
-						JPopupMenu popupMenu = new EditPopupMenu(textArea);
-						if (checkSpelling) {
-							popupMenu.add(SpellChecker.createCheckerMenu());
-							popupMenu.add(SpellChecker.createLanguagesMenu());
-						}
-						popupMenu.show(e.getComponent(), e.getX(), e.getY());
-						e.consume();
-					}
-				}
-			});
-
-			Font font = getNode().getTextFont();
-			font = Tools.updateFontSize(font, getView().getZoom(),
-					font.getSize());
-			textArea.setFont(font);
-
-			final Color nodeTextColor = getNode().getTextColor();
-			textArea.setForeground(nodeTextColor);
-			final Color nodeTextBackground = getNode().getTextBackground();
-			textArea.setBackground(nodeTextBackground);
-			textArea.setCaretColor(nodeTextColor);
-
-			// panel.setPreferredSize(new Dimension(500, 160));
-			// editorScrollPane.setPreferredSize(new Dimension(500, 160));
-
-			JPanel buttonPane = new JPanel();
-			buttonPane.add(enterConfirms);
-			buttonPane.add(okButton);
-			buttonPane.add(cancelButton);
-			buttonPane.add(splitButton);
-			buttonPane.setMaximumSize(new Dimension(1000, 20));
-
-			if (getFrame().getProperty("el__buttons_position").equals("above")) {
-				panel.add(buttonPane);
-				panel.add(editorScrollPane);
-			} else {
-				panel.add(editorScrollPane);
-				panel.add(buttonPane);
-			}
-
-			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-			setContentPane(panel);
-
-			if (firstEvent instanceof KeyEvent) {
-				redispatchKeyEvents(textArea, firstEvent);
-			} // 1st key event defined
-			else {
-				textArea.setCaretPosition(getText().length());
-			}
-
-			if (checkSpelling) {
-				SpellChecker.register(textArea, false, true, true, true);
-			}
-		}
-
-		public void show() {
-			textArea.requestFocus();
-			super.setVisible(true);
-		}
-
-		/*
+        /*
 		 * (non-Javadoc)
 		 * 
 		 * @see freemind.view.mindmapview.EditNodeBase.Dialog#cancel()
 		 */
-		protected void cancel() {
-			getEditControl().cancel();
-			super.cancel();
-		}
+        override fun cancel() {
+            editControl.cancel()
+            super.cancel()
+        }
 
-		/*
+        /*
 		 * (non-Javadoc)
 		 * 
 		 * @see freemind.view.mindmapview.EditNodeBase.Dialog#split()
 		 */
-		protected void split() {
-			getEditControl().split(textArea.getText(),
-					textArea.getCaretPosition());
-			super.split();
-		}
+        override fun split() {
+            editControl.split(textArea.text,
+                    textArea.caretPosition)
+            super.split()
+        }
 
-		/*
+        /*
 		 * (non-Javadoc)
 		 * 
 		 * @see freemind.view.mindmapview.EditNodeBase.Dialog#submit()
 		 */
-		protected void submit() {
-			getEditControl().ok(textArea.getText());
-			super.submit();
-		}
+        override fun submit() {
+            editControl.ok(textArea.text)
+            super.submit()
+        }
 
-		/*
+        /*
 		 * (non-Javadoc)
 		 * 
 		 * @see freemind.view.mindmapview.EditNodeBase.Dialog#isChanged()
 		 */
-		protected boolean isChanged() {
-			return !getText().equals(textArea.getText());
-		}
+        protected override val isChanged: Boolean
+            protected get() = getText() != textArea.text
 
-		public Component getMostRecentFocusOwner() {
-			if (isFocused()) {
-				return getFocusOwner();
-			} else {
-				return textArea;
-			}
-		}
-	}
+        override fun getMostRecentFocusOwner(): Component {
+            return if (isFocused) {
+                focusOwner
+            } else {
+                textArea
+            }
+        }
 
-	public void show() {
-		final EditDialog dialog = new LongNodeDialog();
+        companion object {
+            private const val serialVersionUID = 6185443281994675732L
+        }
+    }
 
-		dialog.pack(); // calculate the size
+    fun show() {
+        val dialog: EditDialog = LongNodeDialog()
+        dialog.pack() // calculate the size
 
-		// set position
-		getView().scrollNodeToVisible(getNode(), 0);
-		Tools.setDialogLocationRelativeTo(dialog, getNode());
-		dialog.setVisible(true);
-	}
+        // set position
+        view.scrollNodeToVisible(getNode(), 0)
+        setDialogLocationRelativeTo(dialog, getNode())
+        dialog.isVisible = true
+    }
+
+    companion object {
+        /** Private variable to hold the last value of the "Enter confirms" state.  */
+        private var booleanHolderForConfirmState: BooleanHolder? = null
+    }
 }

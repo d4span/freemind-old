@@ -17,120 +17,107 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+package freemind.view.mindmapview
 
-package freemind.view.mindmapview;
-
-import java.awt.Font;
-import java.awt.event.MouseWheelEvent;
-
-import freemind.controller.MapMouseMotionListener;
-import freemind.controller.MapMouseWheelListener;
-import freemind.controller.NodeDragListener;
-import freemind.controller.NodeDropListener;
-import freemind.controller.NodeKeyListener;
-import freemind.controller.NodeMotionListener;
-import freemind.controller.NodeMouseMotionListener;
-import freemind.modes.MindMapNode;
+import freemind.controller.*
+import freemind.modes.MindMapNode
+import java.awt.Font
+import java.awt.event.MouseWheelEvent
 
 /**
  * ViewFeedback is an interface implemented by the ModeController classes
  * to offer view related methods.
- * 
+ *
  * @author foltin
  * @date 25.04.2014
  */
-public interface ViewFeedback {
+interface ViewFeedback {
+    /**
+     * @param pNode
+     * @param pIsSelected
+     */
+    fun changeSelection(pNode: NodeView?, pIsSelected: Boolean)
 
-	/**
-	 * @param pNode
-	 * @param pIsSelected
-	 */
-	void changeSelection(NodeView pNode, boolean pIsSelected);
+    /**
+     * @param pNode
+     */
+    fun onLostFocusNode(pNode: NodeView?)
 
-	/**
-	 * @param pNode
-	 */
-	void onLostFocusNode(NodeView pNode);
+    /**
+     * @param pNode
+     */
+    fun onFocusNode(pNode: NodeView?)
 
-	/**
-	 * @param pNode
-	 */
-	void onFocusNode(NodeView pNode);
+    /**
+     * @param pModel
+     * @param pFold true means, that the node should be folded.
+     */
+    fun setFolded(pModel: MindMapNode?, pFold: Boolean)
 
-	/**
-	 * @param pModel
-	 * @param pFold true means, that the node should be folded.
-	 */
-	void setFolded(MindMapNode pModel, boolean pFold);
+    /**
+     * @param pNewView
+     */
+    fun onViewCreatedHook(pNewView: NodeView?)
 
-	/**
-	 * @param pNewView
-	 */
-	void onViewCreatedHook(NodeView pNewView);
+    /**
+     * @param pNodeView
+     */
+    fun onViewRemovedHook(pNodeView: NodeView?)
 
-	/**
-	 * @param pNodeView
-	 */
-	void onViewRemovedHook(NodeView pNodeView);
+    /**
+     * @param pResourceId
+     * @return the setting of freemind.properties resp. auto.properties.
+     */
+    fun getProperty(pResourceId: String?): String
 
-	/**
-	 * @param pResourceId 
-	 * @return the setting of freemind.properties resp. auto.properties.
-	 */
-	String getProperty(String pResourceId);
+    /**
+     * @return
+     */
+    val defaultFont: Font?
 
-	/**
-	 * @return
-	 */
-	Font getDefaultFont();
+    /**
+     * @return
+     */
+    val nodeMouseMotionListener: NodeMouseMotionListener?
 
-	/**
-	 * @return
-	 */
-	NodeMouseMotionListener getNodeMouseMotionListener();
+    /**
+     * @return
+     */
+    val nodeMotionListener: NodeMotionListener?
 
-	/**
-	 * @return
-	 */
-	NodeMotionListener getNodeMotionListener();
+    /**
+     * @return
+     */
+    val nodeKeyListener: NodeKeyListener?
 
-	/**
-	 * @return
-	 */
-	NodeKeyListener getNodeKeyListener();
+    /**
+     * @return
+     */
+    val nodeDragListener: NodeDragListener?
 
-	/**
-	 * @return
-	 */
-	NodeDragListener getNodeDragListener();
+    /**
+     * @return
+     */
+    val nodeDropListener: NodeDropListener?
 
-	/**
-	 * @return
-	 */
-	NodeDropListener getNodeDropListener();
+    /**
+     * @return
+     */
+    val mapMouseMotionListener: MapMouseMotionListener?
 
-	/**
-	 * @return
-	 */
-	MapMouseMotionListener getMapMouseMotionListener();
+    /**
+     * @return
+     */
+    val mapMouseWheelListener: MapMouseWheelListener?
 
-	/**
-	 * @return
-	 */
-	MapMouseWheelListener getMapMouseWheelListener();
+    interface MouseWheelEventHandler {
+        /**
+         * @return true if the event was sucessfully processed and false if the
+         * event did not apply.
+         */
+        fun handleMouseWheelEvent(e: MouseWheelEvent?): Boolean
+    }
 
-	public interface MouseWheelEventHandler {
-		/**
-		 * @return true if the event was sucessfully processed and false if the
-		 *         event did not apply.
-		 */
-		boolean handleMouseWheelEvent(MouseWheelEvent e);
-	}
-
-	void registerMouseWheelEventHandler(MouseWheelEventHandler handler);
-
-	void deRegisterMouseWheelEventHandler(MouseWheelEventHandler handler);
-
-
-	
+    fun registerMouseWheelEventHandler(handler: MouseWheelEventHandler?)
+    fun deRegisterMouseWheelEventHandler(handler: MouseWheelEventHandler?)
 }

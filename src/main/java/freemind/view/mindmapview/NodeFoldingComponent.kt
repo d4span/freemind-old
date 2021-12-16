@@ -17,312 +17,484 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: NodeMotionListenerView.java,v 1.1.4.4.4.9 2009/03/29 19:37:23 christianfoltin Exp $*/
-package freemind.view.mindmapview;
+package freemind.view.mindmapview
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.geom.Ellipse2D;
-
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultButtonModel;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.Timer;
-import javax.swing.plaf.basic.BasicButtonListener;
-import javax.swing.plaf.basic.BasicButtonUI;
-
-import freemind.main.FreeMind;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.main.Tools.xmlToColor
+import freemind.main.Tools.xmlToBoolean
+import freemind.preferences.FreemindPropertyListener.propertyChanged
+import freemind.modes.MindMap.rootNode
+import freemind.main.Tools.waitForEventQueue
+import freemind.modes.MindMapNode.isRoot
+import freemind.modes.MindMapNode.isFolded
+import freemind.modes.MindMapNode.nodeLevel
+import freemind.main.Tools.convertPointToAncestor
+import freemind.modes.MindMapNode.parentNode
+import freemind.main.Tools.Pair.first
+import freemind.main.Tools.Pair.second
+import freemind.modes.MindMapNode.shallowCopy
+import freemind.modes.MindMap.restorable
+import freemind.main.Tools.restoreAntialiasing
+import freemind.modes.MindMap.linkRegistry
+import freemind.modes.MindMapLinkRegistry.getLabel
+import freemind.modes.MindMapLinkRegistry.getAllLinks
+import freemind.modes.MindMapLink.source
+import freemind.modes.MindMapLink.target
+import freemind.modes.MindMapNode.addTreeModelListener
+import freemind.modes.MindMapNode.removeTreeModelListener
+import freemind.modes.MindMapLine.width
+import freemind.modes.MindMapNode.edge
+import freemind.modes.MindMapNode.backgroundColor
+import freemind.main.Tools.convertPointFromAncestor
+import freemind.modes.MindMapNode.link
+import freemind.modes.MindMapNode.hasChildren
+import freemind.main.Tools.safeEquals
+import freemind.modes.MindMapNode.hasVisibleChilds
+import freemind.modes.MindMapNode.cloud
+import freemind.modes.MindMapNode.isLeft
+import freemind.modes.MindMapNode.isVisible
+import freemind.modes.MindMapNode.childrenFolded
+import freemind.modes.MindMapNode.toString
+import freemind.modes.MindMap.uRL
+import freemind.modes.MindMapNode.font
+import freemind.modes.MindMapNode.stateIcons
+import freemind.modes.MindMapNode.attributeTableLength
+import freemind.modes.MindMapNode.icons
+import freemind.modes.MindIcon.unscaledIcon
+import freemind.modes.NodeAdapter.link
+import freemind.main.Tools.executableByExtension
+import freemind.modes.MindMapNode.color
+import freemind.modes.MindMapNode.style
+import freemind.modes.MindMapNode.toolTip
+import freemind.modes.MindMapNode.calcShiftY
+import freemind.modes.MindMapNode.vGap
+import freemind.modes.MindMapNode.hGap
+import freemind.modes.MindMapLine.color
+import freemind.modes.MindMapCloud.iterativeLevel
+import freemind.modes.MindMapCloud.exteriorColor
+import freemind.modes.ModeController.view
+import freemind.modes.ModeController.controller
+import freemind.modes.ModeController.getText
+import freemind.modes.ModeController.frame
+import freemind.main.Tools.clipboard
+import freemind.modes.MindMapEdge.styleAsInt
+import freemind.modes.MindMapNode.childrenUnfolded
+import freemind.modes.MindMapArrowLink.startInclination
+import freemind.modes.MindMapArrowLink.endInclination
+import freemind.modes.MindMapArrowLink.startArrow
+import freemind.modes.MindMapArrowLink.endArrow
+import freemind.modes.MindMapArrowLink.showControlPointsFlag
+import freemind.main.FreeMindMain.getProperty
+import freemind.main.Tools.setLabelAndMnemonic
+import freemind.main.Tools.BooleanHolder.value
+import freemind.main.Tools.updateFontSize
+import freemind.main.Tools.setDialogLocationRelativeTo
+import freemind.main.Tools.addEscapeActionToDialog
+import freemind.main.Tools.addKeyActionToDialog
+import freemind.controller.Controller.frame
+import freemind.main.FreeMindMain.openDocument
+import freemind.modes.MindMapNode.isItalic
+import freemind.modes.MindMapNode.isBold
+import freemind.main.Tools.colorToXml
+import freemind.main.Tools.IntHolder.value
+import freemind.modes.MapAdapter.loadTree
+import freemind.modes.MapAdapter.root
+import freemind.main.Tools.getFile
+import freemind.modes.Mode.controller
+import freemind.main.Tools.scalingFactorPlain
+import freemind.main.Tools.scalingFactor
+import freemind.modes.MindMap
+import freemind.view.mindmapview.ViewFeedback
+import freemind.modes.ViewAbstraction
+import java.awt.print.Printable
+import java.awt.dnd.Autoscroll
+import freemind.view.mindmapview.MapView
+import freemind.view.mindmapview.MapView.Selected
+import freemind.view.mindmapview.ArrowLinkView
+import freemind.preferences.FreemindPropertyListener
+import freemind.view.mindmapview.NodeViewFactory
+import java.lang.NumberFormatException
+import java.util.TimerTask
+import freemind.view.mindmapview.MapView.CheckLaterForCenterNodeTask
+import kotlin.jvm.JvmOverloads
+import java.util.LinkedList
+import freemind.controller.NodeMouseMotionListener
+import freemind.controller.NodeMotionListener
+import freemind.controller.NodeKeyListener
+import java.awt.dnd.DragGestureListener
+import java.awt.dnd.DropTargetListener
+import freemind.modes.MindMapNode
+import java.util.Collections
+import freemind.modes.MindMapLink
+import freemind.modes.MindMapArrowLink
+import java.awt.print.PageFormat
+import java.awt.geom.CubicCurve2D
+import freemind.view.mindmapview.PathBBox
+import freemind.view.mindmapview.MindMapLayout
+import freemind.view.mindmapview.NodeViewVisitor
+import freemind.modes.EdgeAdapter
+import freemind.view.mindmapview.EdgeView
+import freemind.modes.MindMapEdge
+import freemind.view.mindmapview.MainView
+import java.awt.geom.AffineTransform
+import javax.swing.event.TreeModelListener
+import freemind.view.mindmapview.NodeMotionListenerView
+import freemind.view.mindmapview.NodeFoldingComponent
+import java.awt.dnd.DragSource
+import java.awt.dnd.DnDConstants
+import java.awt.dnd.DropTarget
+import freemind.modes.MindMapCloud
+import freemind.view.mindmapview.CloudView
+import freemind.view.mindmapview.NodeViewLayout
+import java.net.MalformedURLException
+import freemind.view.mindmapview.MultipleImage
+import freemind.view.ImageFactory
+import freemind.modes.MindIcon
+import freemind.modes.NodeAdapter
+import java.util.TreeMap
+import java.lang.StringBuffer
+import javax.swing.event.TreeModelEvent
+import freemind.view.mindmapview.BubbleMainView
+import java.awt.geom.Rectangle2D
+import java.awt.geom.QuadCurve2D
+import freemind.view.mindmapview.ConvexHull
+import freemind.view.mindmapview.ConvexHull.thetaComparator
+import freemind.modes.ModeController
+import freemind.view.mindmapview.EditNodeBase.EditControl
+import freemind.view.mindmapview.EditNodeBase
+import freemind.view.mindmapview.EditNodeBase.EditDialog.DialogWindowListener
+import javax.swing.text.JTextComponent
+import java.awt.datatransfer.StringSelection
+import freemind.view.mindmapview.EditNodeBase.EditCopyAction
+import java.awt.datatransfer.Clipboard
+import freemind.controller.NodeDragListener
+import freemind.controller.NodeDropListener
+import freemind.controller.MapMouseMotionListener
+import freemind.controller.MapMouseWheelListener
+import freemind.view.mindmapview.ViewFeedback.MouseWheelEventHandler
+import java.awt.geom.FlatteningPathIterator
+import java.awt.geom.Point2D
+import java.awt.image.BufferedImage
+import freemind.view.mindmapview.VerticalRootNodeViewLayout
+import freemind.view.mindmapview.BezierEdgeView
+import freemind.view.mindmapview.EditNodeBase.EditDialog
+import freemind.view.mindmapview.EditNodeDialog
+import freemind.main.Tools.BooleanHolder
+import java.lang.Runnable
+import freemind.view.mindmapview.EditNodeBase.EditPopupMenu
+import com.inet.jortho.SpellChecker
+import freemind.view.mindmapview.EditNodeDialog.LongNodeDialog
+import com.lightdev.app.shtm.SHTMLPanel
+import freemind.view.mindmapview.EditNodeBase.EditDialog.SubmitAction
+import kotlin.Throws
+import accessories.plugins.NodeNoteRegistration.SimplyHtmlResources
+import freemind.view.mindmapview.EditNodeWYSIWYG
+import freemind.view.mindmapview.EditNodeWYSIWYG.HTMLDialog
+import freemind.view.mindmapview.NodeViewFactory.ContentPane
+import freemind.view.mindmapview.NodeViewFactory.ContentPaneLayout
+import freemind.view.mindmapview.SharpBezierEdgeView
+import freemind.view.mindmapview.SharpLinearEdgeView
+import freemind.view.mindmapview.LinearEdgeView
+import freemind.view.mindmapview.RootMainView
+import freemind.view.mindmapview.LeftNodeViewLayout
+import freemind.view.mindmapview.RightNodeViewLayout
+import freemind.view.mindmapview.ForkMainView
+import javax.swing.undo.UndoManager
+import freemind.view.mindmapview.EditNodeTextField
+import freemind.view.mindmapview.EditNodeTextField.TextFieldListener
+import javax.swing.undo.CannotUndoException
+import javax.swing.undo.CannotRedoException
+import freemind.view.mindmapview.NodeViewLayoutAdapter
+import java.awt.geom.GeneralPath
+import freemind.view.mindmapview.NodeFoldingComponent.RoundImageButtonUI
+import javax.swing.plaf.basic.BasicButtonUI
+import javax.swing.plaf.basic.BasicButtonListener
+import java.awt.geom.Ellipse2D
+import freemind.modes.MapFeedbackAdapter
+import freemind.modes.mindmapmode.MindMapMapModel
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.net.URISyntaxException
+import freemind.main.Tools.FileReaderCreator
+import freemind.modes.MapAdapter
+import freemind.view.mindmapview.IndependantMapViewCreator
+import freemind.extensions.NodeHook
+import freemind.extensions.PermanentNodeHookSubstituteUnknown
+import freemind.main.*
+import kotlin.jvm.JvmStatic
+import tests.freemind.FreeMindMainMock
+import java.io.FileOutputStream
+import javax.imageio.ImageIO
+import java.io.FileWriter
+import java.text.MessageFormat
+import freemind.view.MapModule
+import freemind.view.ScalableImageIcon
+import java.awt.*
+import java.awt.event.*
+import java.awt.image.ImageObserver
+import java.util.logging.Logger
+import javax.swing.*
 
 /**
  * @author Foltin
- * 
  */
-@SuppressWarnings("serial")
-public class NodeFoldingComponent extends JButton {
-	private static final int TIMER_DELAY = 50;
-	private static final int COLOR_COUNTER_MAX = 15;
-	private static final int SIZE_FACTOR_ON_MOUSE_OVER = 4;
-	protected static java.util.logging.Logger logger = null;
-	private boolean mIsEntered;
-	private int mColorCounter = 0;
-	private NodeView nodeView;
-	private boolean mIsEnabled = true;
-	private Timer mTimer = null;
+class NodeFoldingComponent(view: NodeView) : JButton() {
+    private var mIsEntered = false
+    private var mColorCounter = 0
+    val nodeView: NodeView
+    private var mIsEnabled = true
+    private var mTimer: Timer? = null
 
-	public NodeFoldingComponent(NodeView view) {
-		super();
-		if (logger == null) {
-			logger = freemind.main.Resources.getInstance().getLogger(
-					this.getClass().getName());			
-		}
-		this.nodeView = view;
-		setModel(new DefaultButtonModel());
-		init(null, null);
-		setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-		setBackground(Color.BLACK);
-		setContentAreaFilled(false);
-		setFocusPainted(false);
-		setFocusable(false);
-		setAlignmentY(Component.TOP_ALIGNMENT);
-		setUI(new RoundImageButtonUI());
-		mIsEnabled = Resources.getInstance().getBoolProperty(
-				FreeMind.RESOURCES_DISPLAY_FOLDING_BUTTONS);
-		if (mIsEnabled) {
-			addMouseListener(new MouseListener() {
-	
-				public void mouseReleased(MouseEvent pE) {
-				}
-	
-				public void mousePressed(MouseEvent pE) {
-				}
-	
-				public void mouseExited(MouseEvent pE) {
-					mIsEntered = false;
-					mColorCounter = COLOR_COUNTER_MAX;
-					repaint();
-				}
-	
-				public void mouseEntered(MouseEvent pE) {
-					mIsEntered = true;
-					startTimer();
-					repaint();
-				}
-	
-				public void mouseClicked(MouseEvent pE) {
-				}
-			});
-			int delay = TIMER_DELAY;
-			ActionListener taskPerformer = new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					if (mIsEntered && mColorCounter < COLOR_COUNTER_MAX) {
-						mColorCounter++;
-						repaint();
-					}
-					if (!mIsEntered && mColorCounter > 0) {
-						mColorCounter--;
-						if(mColorCounter == 0) {
-							stopTimer();
-						}
-						repaint();
-					}
-	
-				}
-			};
-			mTimer = new Timer(delay, taskPerformer);
-		}
-	}
+    init {
+        if (logger == null) {
+            logger = Resources.getInstance().getLogger(
+                    this.javaClass.name)
+        }
+        nodeView = view
+        setModel(DefaultButtonModel())
+        init(null, null)
+        border = BorderFactory.createEmptyBorder(1, 1, 1, 1)
+        background = Color.BLACK
+        isContentAreaFilled = false
+        isFocusPainted = false
+        isFocusable = false
+        alignmentY = TOP_ALIGNMENT
+        setUI(RoundImageButtonUI())
+        mIsEnabled = Resources.getInstance().getBoolProperty(
+                FreeMind.RESOURCES_DISPLAY_FOLDING_BUTTONS)
+        if (mIsEnabled) {
+            addMouseListener(object : MouseListener {
+                override fun mouseReleased(pE: MouseEvent) {}
+                override fun mousePressed(pE: MouseEvent) {}
+                override fun mouseExited(pE: MouseEvent) {
+                    mIsEntered = false
+                    mColorCounter = COLOR_COUNTER_MAX
+                    repaint()
+                }
 
-	public Dimension getPreferredSize() {
-		return getUI().getPreferredSize(this);
-	}
+                override fun mouseEntered(pE: MouseEvent) {
+                    mIsEntered = true
+                    startTimer()
+                    repaint()
+                }
 
-	/**
-	 * @return
-	 */
-	private int getZoomedCircleRadius() {
-		return nodeView.getZoomedFoldingSymbolHalfWidth();
-	}
+                override fun mouseClicked(pE: MouseEvent) {}
+            })
+            val delay = TIMER_DELAY
+            val taskPerformer = ActionListener {
+                if (mIsEntered && mColorCounter < COLOR_COUNTER_MAX) {
+                    mColorCounter++
+                    repaint()
+                }
+                if (!mIsEntered && mColorCounter > 0) {
+                    mColorCounter--
+                    if (mColorCounter == 0) {
+                        stopTimer()
+                    }
+                    repaint()
+                }
+            }
+            mTimer = Timer(delay, taskPerformer)
+        }
+    }
 
-	class RoundImageButtonUI extends BasicButtonUI {
-		protected Shape shape, base;
+    override fun getPreferredSize(): Dimension {
+        return getUI().getPreferredSize(this)
+    }
 
-		protected void installDefaults(AbstractButton b) {
-			super.installDefaults(b);
-			clearTextShiftOffset();
-			defaultTextShiftOffset = 0;
-			b.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-			b.setContentAreaFilled(false);
-			b.setFocusPainted(false);
-			b.setOpaque(false);
-			b.setBackground(Color.BLACK);
-			b.setAlignmentY(Component.TOP_ALIGNMENT);
-			initShape(b);
-		}
+    /**
+     * @return
+     */
+    private val zoomedCircleRadius: Int
+        private get() = nodeView.zoomedFoldingSymbolHalfWidth
 
-		/* Is called by a button class automatically.*/
-		protected void installListeners(AbstractButton b) {
-			BasicButtonListener listener = new BasicButtonListener(b) {
+    internal inner class RoundImageButtonUI : BasicButtonUI() {
+        protected var shape: Shape? = null
+        protected var base: Shape? = null
+        override fun installDefaults(b: AbstractButton) {
+            super.installDefaults(b)
+            clearTextShiftOffset()
+            defaultTextShiftOffset = 0
+            b.border = BorderFactory.createEmptyBorder(1, 1, 1, 1)
+            b.isContentAreaFilled = false
+            b.isFocusPainted = false
+            b.isOpaque = false
+            b.background = Color.BLACK
+            b.alignmentY = TOP_ALIGNMENT
+            initShape(b)
+        }
 
-				public void mousePressed(MouseEvent e) {
-					AbstractButton b = (AbstractButton) e.getSource();
-					initShape(b);
-					if (shape.contains(e.getX(), e.getY())) {
-						super.mousePressed(e);
-					}
-				}
+        /* Is called by a button class automatically.*/
+        override fun installListeners(b: AbstractButton) {
+            val listener: BasicButtonListener = object : BasicButtonListener(b) {
+                override fun mousePressed(e: MouseEvent) {
+                    val b = e.source as AbstractButton
+                    initShape(b)
+                    if (shape!!.contains(e.x.toDouble(), e.y.toDouble())) {
+                        super.mousePressed(e)
+                    }
+                }
 
-				public void mouseEntered(MouseEvent e) {
-					AbstractButton b = (AbstractButton) e.getSource();
-					initShape(b);
-					if (shape.contains(e.getX(), e.getY())) {
-						super.mouseEntered(e);
-					}
-				}
+                override fun mouseEntered(e: MouseEvent) {
+                    val b = e.source as AbstractButton
+                    initShape(b)
+                    if (shape!!.contains(e.x.toDouble(), e.y.toDouble())) {
+                        super.mouseEntered(e)
+                    }
+                }
 
-				public void mouseMoved(MouseEvent e) {
-					AbstractButton b = (AbstractButton) e.getSource();
-					initShape(b);
-					if (shape.contains(e.getX(), e.getY())) {
-						super.mouseEntered(e);
-					} else {
-						super.mouseExited(e);
-					}
-				}
-			};
-			b.addMouseListener(listener);
-			b.addMouseMotionListener(listener);
-			b.addFocusListener(listener);
-			b.addPropertyChangeListener(listener);
-			b.addChangeListener(listener);
-		}
+                override fun mouseMoved(e: MouseEvent) {
+                    val b = e.source as AbstractButton
+                    initShape(b)
+                    if (shape!!.contains(e.x.toDouble(), e.y.toDouble())) {
+                        super.mouseEntered(e)
+                    } else {
+                        super.mouseExited(e)
+                    }
+                }
+            }
+            b.addMouseListener(listener)
+            b.addMouseMotionListener(listener)
+            b.addFocusListener(listener)
+            b.addPropertyChangeListener(listener)
+            b.addChangeListener(listener)
+        }
 
-		public void paint(Graphics g, JComponent c) {
-			super.paint(g, c);
-			Graphics2D g2 = (Graphics2D) g;
-			initShape(c);
-			// Border
-			Object oldRenderingHint = nodeView.getMap()
-					.setEdgesRenderingHint(g2);
-			g2.setColor(c.getBackground());
-			g2.setStroke(BubbleMainView.DEF_STROKE);
-			NodeFoldingComponent b = (NodeFoldingComponent) c;
-			Rectangle bounds = shape.getBounds();
-			Color col = getColorForCounter();
-			Color lineColor = nodeView.getModel().getEdge().getColor();
-			if (b.mIsEntered) {
-				Color oldColor = g2.getColor();
-				g2.setColor(nodeView.getMap().getBackground());
-				g2.fillOval(bounds.x, bounds.y, bounds.width, bounds.height);
-				g2.setColor(lineColor);
-				int xmiddle = bounds.x + bounds.width / 2;
-				int ymiddle = bounds.y + bounds.height / 2;
-				g2.drawLine(bounds.x, ymiddle, bounds.x + bounds.width, ymiddle);
-				if (isFolded()) {
-					g2.drawLine(xmiddle, bounds.y, xmiddle, bounds.y
-							+ bounds.height);
-				}
-				g2.draw(shape);
-				g2.setColor(oldColor);
-			} else {
-				int xmiddle = bounds.x + bounds.width / 2;
-				int ymiddle = bounds.y + bounds.height / 2;
-				int foldingCircleDiameter = bounds.width
-						/ SIZE_FACTOR_ON_MOUSE_OVER;
-				Color oldColor = g2.getColor();
-				if (mColorCounter != 0) {
-					int diameter = bounds.width * mColorCounter
-							/ COLOR_COUNTER_MAX;
-					if (isFolded()) {
-						diameter = Math.max(diameter, foldingCircleDiameter);
-					}
-					int radius = diameter / 2;
-					g2.setColor(nodeView.getMap().getBackground());
-					g2.fillOval(xmiddle - radius, ymiddle - radius, diameter,
-							diameter);
-					g2.setColor(col);
-					if (isFolded()) {
-						g2.drawLine(xmiddle, ymiddle - radius, xmiddle, ymiddle
-								+ radius);
-					}
-					g2.drawLine(xmiddle - radius, ymiddle, xmiddle + radius,
-							ymiddle);
-					g2.setColor(lineColor);
-					g2.drawOval(xmiddle - radius, ymiddle - radius, diameter,
-							diameter);
-					g2.setColor(oldColor);
-				} else {
-					if (isFolded()) {
-						int radius = foldingCircleDiameter / 2;
-						g2.setColor(nodeView.getMap().getBackground());
-						g2.fillOval(xmiddle - radius, ymiddle - radius,
-								foldingCircleDiameter, foldingCircleDiameter);
-						g2.setColor(lineColor);
-						g2.drawOval(xmiddle - radius, ymiddle - radius,
-								foldingCircleDiameter, foldingCircleDiameter);
-						g2.setColor(oldColor);
-					}
-				}
-			}
-			Tools.restoreAntialiasing(g2, oldRenderingHint);
-		}
+        override fun paint(g: Graphics, c: JComponent) {
+            super.paint(g, c)
+            val g2 = g as Graphics2D
+            initShape(c)
+            // Border
+            val oldRenderingHint = nodeView.map
+                    .setEdgesRenderingHint(g2)
+            g2.color = c.background
+            g2.stroke = BubbleMainView.Companion.DEF_STROKE
+            val b = c as NodeFoldingComponent
+            val bounds = shape!!.bounds
+            val col = colorForCounter
+            val lineColor: Color = nodeView.getModel().edge.color
+            if (b.mIsEntered) {
+                val oldColor = g2.color
+                g2.color = nodeView.map.background
+                g2.fillOval(bounds.x, bounds.y, bounds.width, bounds.height)
+                g2.color = lineColor
+                val xmiddle = bounds.x + bounds.width / 2
+                val ymiddle = bounds.y + bounds.height / 2
+                g2.drawLine(bounds.x, ymiddle, bounds.x + bounds.width, ymiddle)
+                if (isFolded) {
+                    g2.drawLine(xmiddle, bounds.y, xmiddle, bounds.y
+                            + bounds.height)
+                }
+                g2.draw(shape)
+                g2.color = oldColor
+            } else {
+                val xmiddle = bounds.x + bounds.width / 2
+                val ymiddle = bounds.y + bounds.height / 2
+                val foldingCircleDiameter = (bounds.width
+                        / SIZE_FACTOR_ON_MOUSE_OVER)
+                val oldColor = g2.color
+                if (mColorCounter != 0) {
+                    var diameter = (bounds.width * mColorCounter
+                            / COLOR_COUNTER_MAX)
+                    if (isFolded) {
+                        diameter = Math.max(diameter, foldingCircleDiameter)
+                    }
+                    val radius = diameter / 2
+                    g2.color = nodeView.map.background
+                    g2.fillOval(xmiddle - radius, ymiddle - radius, diameter,
+                            diameter)
+                    g2.color = col
+                    if (isFolded) {
+                        g2.drawLine(xmiddle, ymiddle - radius, xmiddle, ymiddle
+                                + radius)
+                    }
+                    g2.drawLine(xmiddle - radius, ymiddle, xmiddle + radius,
+                            ymiddle)
+                    g2.color = lineColor
+                    g2.drawOval(xmiddle - radius, ymiddle - radius, diameter,
+                            diameter)
+                    g2.color = oldColor
+                } else {
+                    if (isFolded) {
+                        val radius = foldingCircleDiameter / 2
+                        g2.color = nodeView.map.background
+                        g2.fillOval(xmiddle - radius, ymiddle - radius,
+                                foldingCircleDiameter, foldingCircleDiameter)
+                        g2.color = lineColor
+                        g2.drawOval(xmiddle - radius, ymiddle - radius,
+                                foldingCircleDiameter, foldingCircleDiameter)
+                        g2.color = oldColor
+                    }
+                }
+            }
+            restoreAntialiasing(g2, oldRenderingHint)
+        }
 
-		/**
-		 * @return
-		 */
-		private Color getColorForCounter() {
-			Color color = nodeView.getModel().getEdge().getColor();
+        /**
+         * @return
+         */
+        private val colorForCounter: Color
+            private get() {
+                val color: Color = nodeView.getModel().edge.color
+                val col = 16 * mColorCounter
+                return Color(color.red, color.green,
+                        color.blue, col)
+            }
 
-			int col = 16 * mColorCounter;
-			return new Color((int) (color.getRed()), (int) (color.getGreen()),
-					(int) (color.getBlue()), col);
-		}
+        override fun getPreferredSize(c: JComponent): Dimension {
+            val b = c as JButton
+            val i = b.insets
+            val iw = (zoomedCircleRadius * 2f * SIZE_FACTOR_ON_MOUSE_OVER).toInt()
+            return Dimension(iw + i.right + i.left, iw + i.top + i.bottom)
+        }
 
-		public Dimension getPreferredSize(JComponent c) {
-			JButton b = (JButton) c;
-			Insets i = b.getInsets();
-			int iw = (int) (getZoomedCircleRadius() * 2f * SIZE_FACTOR_ON_MOUSE_OVER);
-			return new Dimension(iw + i.right + i.left, iw + i.top + i.bottom);
-		}
+        private fun initShape(c: JComponent) {
+            if (c.bounds != base) {
+                val s = c.preferredSize
+                base = c.bounds
+                shape = Ellipse2D.Float(0, 0, (s.width - 1).toFloat(), (s.height - 1).toFloat())
+            }
+        }
+    }
 
-		private void initShape(JComponent c) {
-			if (!c.getBounds().equals(base)) {
-				Dimension s = c.getPreferredSize();
-				base = c.getBounds();
-				shape = new Ellipse2D.Float(0, 0, s.width - 1, s.height - 1);
-			}
-		}
-	}
+    fun setCorrectedLocation(p: Point?) {
+        val zoomedCircleRadius = zoomedCircleRadius
+        val left = nodeView.getModel().isLeft
+        val xCorrection = (zoomedCircleRadius * (SIZE_FACTOR_ON_MOUSE_OVER + if (left) +1f else -1f)).toInt()
+        setLocation(p!!.x - xCorrection, (p.y - zoomedCircleRadius
+                * SIZE_FACTOR_ON_MOUSE_OVER))
+    }
 
-	public NodeView getNodeView() {
-		return nodeView;
-	}
+    fun dispose() {
+        if (mTimer != null) {
+            stopTimer()
+            mTimer = null
+        }
+    }
 
-	public void setCorrectedLocation(Point p) {
-		int zoomedCircleRadius = getZoomedCircleRadius();
-		boolean left = nodeView.getModel().isLeft();
-		int xCorrection = (int) (zoomedCircleRadius * (SIZE_FACTOR_ON_MOUSE_OVER + ((left) ? +1f
-				: -1f)));
-		setLocation(p.x - xCorrection, (int) (p.y - zoomedCircleRadius
-				* SIZE_FACTOR_ON_MOUSE_OVER));
-	}
+    protected val isFolded: Boolean
+        protected get() {
+            val model = nodeView.getModel()
+            return model!!.isFolded && model.isVisible
+        }
 
-	public void dispose() {
-		if (mTimer != null) {
-			stopTimer();
-			mTimer = null;
-		}
-	}
+    @Synchronized
+    protected fun startTimer() {
+        if (!mTimer!!.isRunning) {
+            mTimer!!.start()
+        }
+    }
 
-	protected boolean isFolded() {
-		MindMapNode model = nodeView.getModel();
-		return model.isFolded() && model.isVisible();
-	}
+    @Synchronized
+    protected fun stopTimer() {
+        if (mTimer!!.isRunning) {
+            mTimer!!.stop()
+        }
+    }
 
-	protected synchronized void startTimer() {
-		if (!mTimer.isRunning()) {
-			mTimer.start();
-		}
-	}
-
-	protected synchronized void stopTimer() {
-		if (mTimer.isRunning()) {
-			mTimer.stop();
-		}
-	}
-
+    companion object {
+        private const val TIMER_DELAY = 50
+        private const val COLOR_COUNTER_MAX = 15
+        private const val SIZE_FACTOR_ON_MOUSE_OVER = 4
+        protected var logger: Logger? = null
+    }
 }

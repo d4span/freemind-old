@@ -1,24 +1,23 @@
-/*
- * FreeMind - A Program for creating and viewing Mindmaps Copyright (C)
- * 2000-2004 Joerg Mueller, Daniel Polansky, Christian Foltin and others.
- * 
- * See COPYING for Details
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later
- * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place - Suite 330, Boston, MA 02111-1307, USA.
- * 
- * Created on 25.08.2004
+/*FreeMind - A Program for creating and viewing Mindmaps
+ *Copyright (C) 2000-2004  Joerg Mueller, Daniel Polansky, Christian Foltin and others.
+ *
+ *See COPYING for Details
+ *
+ *This program is free software; you can redistribute it and/or
+ *modify it under the terms of the GNU General Public License
+ *as published by the Free Software Foundation; either version 2
+ *of the License, or (at your option) any later version.
+ *
+ *This program is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ *
+ *You should have received a copy of the GNU General Public License
+ *along with this program; if not, write to the Free Software
+ *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * Created on 29.09.2004
  */
 package freemind.modes.mindmapmode.actions
 
@@ -481,6 +480,7 @@ import freemind.modes.filemode.FileController.CenterAction
 import freemind.modes.filemode.FileController.OpenPathAction
 import freemind.modes.filemode.FilePopupMenu
 import freemind.modes.filemode.FileMapModel
+import freemind.controller.StructuredMenuHolder
 import freemind.extensions.HookFactory
 import java.net.URISyntaxException
 import java.io.FileNotFoundException
@@ -509,6 +509,7 @@ import freemind.modes.browsemode.NodeNoteViewer
 import javax.swing.event.PopupMenuListener
 import javax.swing.event.PopupMenuEvent
 import freemind.modes.browsemode.BrowseController.FollowMapLink
+import freemind.controller.MenuItemEnabledListener
 import freemind.modes.browsemode.BrowseHookFactory
 import freemind.modes.browsemode.BrowsePopupMenu
 import freemind.modes.MindMapLink
@@ -558,6 +559,7 @@ import java.awt.datatransfer.UnsupportedFlavorException
 import java.awt.datatransfer.DataFlavor
 import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.DataFlavorHandler
 import freemind.modes.mindmapmode.MindMapNodeModel
+import freemind.controller.MindMapNodesSelection
 import freemind.main.Tools.StringReaderCreator
 import freemind.main.HtmlTools.NodeCreator
 import freemind.main.FreeMindCommon
@@ -673,6 +675,7 @@ import freemind.modes.mindmapmode.actions.xml.PrintActionHandler
 import freemind.common.OptionalDontShowMeAgainDialog
 import freemind.common.OptionalDontShowMeAgainDialog.StandardPropertyHandler
 import freemind.modes.mindmapmode.actions.NodeGeneralAction
+import freemind.controller.MenuItemSelectedListener
 import freemind.view.mindmapview.EditNodeBase
 import freemind.modes.mindmapmode.actions.MindMapActions
 import freemind.view.mindmapview.EditNodeWYSIWYG
@@ -717,7 +720,6 @@ import freemind.common.SeparatorProperty
 import freemind.modes.mindmapmode.dialogs.StylePatternFrame
 import freemind.modes.mindmapmode.dialogs.StylePatternFrame.StylePatternFrameType
 import freemind.common.NextLineProperty
-import freemind.controller.*
 import freemind.modes.mindmapmode.dialogs.IntegerComboProperty
 import freemind.modes.mindmapmode.dialogs.StylePatternFrame.EdgeWidthTransformer
 import freemind.modes.mindmapmode.dialogs.StylePatternFrame.ValueTransformator
@@ -751,6 +753,8 @@ import freemind.view.mindmapview.NodeMotionListenerView
 import java.awt.Robot
 import java.awt.AWTException
 import freemind.modes.mindmapmode.MindMapMode
+import freemind.controller.FreeMindToolBar
+import freemind.controller.ZoomListener
 import freemind.modes.mindmapmode.JAutoScrollBarPane
 import java.awt.event.ItemListener
 import freemind.controller.color.JColorCombo
@@ -768,6 +772,7 @@ import java.lang.UnsatisfiedLinkError
 import java.lang.NoClassDefFoundError
 import java.lang.InterruptedException
 import java.lang.reflect.InvocationTargetException
+import freemind.controller.FreeMindPopupMenu
 import freemind.modes.mindmapmode.MindMapPopupMenu
 import freemind.modes.MindMap.MapSourceChangedObserver
 import java.awt.datatransfer.Clipboard
@@ -875,12 +880,21 @@ import java.awt.Stroke
 import java.awt.BasicStroke
 import freemind.modes.ModesCreator
 import freemind.modes.StylePattern
+import freemind.controller.MapModuleManager
 import freemind.modes.ModeController.NodeLifetimeListener
 import freemind.modes.FreeMindFileDialog.DirectoryResultListener
+import freemind.controller.LastStateStorageManagement
 import freemind.controller.actions.generated.instance.MindmapLastStateStorage
 import freemind.view.mindmapview.IndependantMapViewCreator
 import freemind.modes.ControllerAdapter.FileOpener
 import java.awt.dnd.DropTarget
+import freemind.controller.NodeMouseMotionListener
+import freemind.controller.NodeMotionListener
+import freemind.controller.NodeKeyListener
+import freemind.controller.NodeDragListener
+import freemind.controller.NodeDropListener
+import freemind.controller.MapMouseMotionListener
+import freemind.controller.MapMouseWheelListener
 import java.awt.HeadlessException
 import freemind.modes.MapFeedbackAdapter.NodesDepthComparator
 import freemind.modes.MindMapLinkRegistry.SynchronousVector
@@ -896,14 +910,11 @@ import freemind.modes.NodeViewEvent
 import freemind.modes.ExtendedMapFeedbackAdapter
 import freemind.modes.ExtendedMapFeedbackAdapter.DummyTransferable
 
-class EdgeColorAction(private val controller: MindMapController) : MindmapAction("edge_color", controller) {
-    override fun actionPerformed(e: ActionEvent) {
-        val color = Controller.showCommonJColorChooserDialog(controller
-                .view.selected, controller
-                .getText("choose_edge_color"), controller.selected
-                .edge.color) ?: return
-        for (selected in controller.selecteds) {
-            controller.setEdgeColor(selected, color)
-        }
-    }
-}
+/**
+ * @author foltin
+ */
+class NodeColorBlendAction
+/**
+ *
+ */
+(modeController: MindMapController) : NodeGeneralAction(modeController, "blend_color", null, SingleNodeOperation { map, node -> modeController.blendNodeColor(node) })

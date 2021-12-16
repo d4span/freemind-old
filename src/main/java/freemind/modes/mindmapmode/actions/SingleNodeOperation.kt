@@ -23,14 +23,13 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package freemind.modes.mindmapmode.actions;
+package freemind.modes.mindmapmode.actions
 
-import freemind.modes.mindmapmode.MindMapMapModel;
-import freemind.modes.mindmapmode.MindMapNodeModel;
+import freemind.modes.mindmapmode.MindMapMapModel
+import freemind.modes.mindmapmode.MindMapNodeModel
 
 // NodeGeneralAction
 // __________________
-
-public interface SingleNodeOperation {
-	public void apply(MindMapMapModel map, MindMapNodeModel node);
+interface SingleNodeOperation {
+    fun apply(map: MindMapMapModel?, node: MindMapNodeModel)
 }

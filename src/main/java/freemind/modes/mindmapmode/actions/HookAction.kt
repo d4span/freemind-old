@@ -20,13 +20,11 @@
  * Created on 10.01.2008
  */
 /*$Id: HookAction.java,v 1.1.2.1 2008/01/13 20:55:35 christianfoltin Exp $*/
-
-package freemind.modes.mindmapmode.actions;
+package freemind.modes.mindmapmode.actions
 
 /**
  * @author foltin
- * 
  */
-public interface HookAction {
-	String getHookName();
+interface HookAction {
+    val hookName: String?
 }

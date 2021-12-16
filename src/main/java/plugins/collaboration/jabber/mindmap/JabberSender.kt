@@ -23,107 +23,80 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package plugins.collaboration.jabber.mindmap;
+package plugins.collaboration.jabber.mindmap
 
-import java.io.StringWriter;
-
-import com.echomine.common.ParseException;
-import com.echomine.common.SendMessageFailedException;
-import com.echomine.jabber.JID;
-import com.echomine.jabber.JabberChatService;
-import com.echomine.jabber.JabberSession;
-
-import freemind.controller.actions.generated.instance.CollaborationAction;
-import freemind.controller.actions.generated.instance.CompoundAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.main.Tools;
-import freemind.modes.mindmapmode.actions.xml.ActionFilter;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
+import com.echomine.common.ParseException
+import freemind.main.Resources
+import java.io.StringWriter
+import java.lang.Exception
+import java.util.logging.Logger
 
 /**
  * @author RReppel
- * 
+ *
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class JabberSender implements ActionFilter {
+class JabberSender(session: JabberSession?, // Freemind commands.
+                   private val controller: MapSharingController) : ActionFilter {
+    var chat: JabberChatService? = null
+    var session: JabberSession? = null
+    var sendToUser: String? = null
+    var mapShared //True = send FreeMind commands. False = do not send
+            = false
 
-    public final static String REQUEST_MAP_SHARING = "request_map_sharing";
-
-    public final static String ACCEPT_MAP_SHARING = "accept_map_sharing";
-
-    public final static String DECLINE_MAP_SHARING = "decline_map_sharing";
-
-    public final static String STOP_MAP_SHARING = "stop_map_sharing";
-
-    // Logging:
-    private static java.util.logging.Logger logger;
-
-    JabberChatService chat;
-
-    JabberSession session;
-
-    String sendToUser;
-
-    boolean mapShared; //True = send FreeMind commands. False = do not send
-
-    // Freemind commands.
-
-    private final MapSharingController controller;
-
-    public JabberSender(JabberSession session, MapSharingController controller) {
-        this.controller = controller;
+    init {
         if (logger == null) {
-            logger = controller.getController().getFrame().getLogger(
-                    this.getClass().getName());
+            logger = controller.controller.frame.getLogger(
+                    this.javaClass.name)
         }
         try {
-            this.session = session;
-            chat = this.session.getChatService();
-            mapShared = false;
-        } catch (Exception e) {
-            freemind.main.Resources.getInstance().logException(e);
+            this.session = session
+            chat = this.session.getChatService()
+            mapShared = false
+        } catch (e: Exception) {
+            Resources.getInstance().logException(e)
         }
     }
 
     /**
      * Sends a request to share a map. The receiving user can either accept or
      * decline the request.
-     * 
+     *
      * @param requestingUser
-     *            The user who requests the map to be shared.
+     * The user who requests the map to be shared.
      * @param requestReceiverUser
-     *            The user who is to receive the request to share a map.
+     * The user who is to receive the request to share a map.
      */
-    public void sendMapSharingRequest(String requestingUser,
-            String requestReceiverUser) {
+    fun sendMapSharingRequest(requestingUser: String,
+                              requestReceiverUser: String?) {
         try {
-            CollaborationAction action = createCollaborationAction(
-                    requestingUser, REQUEST_MAP_SHARING);
+            val action: CollaborationAction = createCollaborationAction(
+                    requestingUser, REQUEST_MAP_SHARING)
             // populate action with filename and map content
-            String mapName = controller.getController().getMap().getFile().getName();
-            action.setFilename(mapName);
-            StringWriter stringWriter = new StringWriter();
-            controller.getController().getMap().getXml(stringWriter);
-            action.setMap(stringWriter.getBuffer().toString());
-            sendMessage(requestReceiverUser, action);
-        } catch (Exception e) {
-            freemind.main.Resources.getInstance().logException(e);
+            val mapName: String = controller.controller.map.file.getName()
+            action.filename = mapName
+            val stringWriter = StringWriter()
+            controller.controller.map.getXml(stringWriter)
+            action.map = stringWriter.buffer.toString()
+            sendMessage(requestReceiverUser, action)
+        } catch (e: Exception) {
+            Resources.getInstance().logException(e)
         }
     }
 
     /**
      * Sends a request to stop sharing a map.
-     *  
+     *
      */
-    public void sendMapSharingStopRequest() {
+    fun sendMapSharingStopRequest() {
         try {
-            CollaborationAction action = createCollaborationAction(sendToUser,
-                    STOP_MAP_SHARING);
-            String message = marshal(action);
-            sendMessage(sendToUser, action);
-        } catch (Exception e) {
-            freemind.main.Resources.getInstance().logException(e);
+            val action: CollaborationAction = createCollaborationAction(sendToUser!!,
+                    STOP_MAP_SHARING)
+            val message = marshal(action)
+            sendMessage(sendToUser, action)
+        } catch (e: Exception) {
+            Resources.getInstance().logException(e)
         }
     }
 
@@ -132,52 +105,49 @@ public class JabberSender implements ActionFilter {
      * @param command
      * @throws JAXBException
      */
-    private CollaborationAction createCollaborationAction(
-            String requestingUser, String command) {
-    
-        CollaborationAction collaboration = new CollaborationAction();
-        collaboration.setCmd(command);
-        collaboration.setUser(requestingUser);
-        collaboration.setTimestamp(String.valueOf(System
-                .currentTimeMillis()));
-        return collaboration;
-         
+    private fun createCollaborationAction(
+            requestingUser: String, command: String): CollaborationAction {
+        val collaboration = CollaborationAction()
+        collaboration.cmd = command
+        collaboration.user = requestingUser
+        collaboration.timestamp = System
+                .currentTimeMillis().toString()
+        return collaboration
     }
 
     /**
      * Sends whether a map sharing invitation was accepted or declined.
-     * 
+     *
      * @param sentFromUser
-     *            The name of the user accepting or declining the invitation.
+     * The name of the user accepting or declining the invitation.
      * @param sendToUser
-     *            The user who had requested that his/her map be shared.
+     * The user who had requested that his/her map be shared.
      * @param accepted
-     *            true = accept, false = decline.
-     *  
+     * true = accept, false = decline.
      */
-    public void sendMapSharingInvitationResponse(String sentFromUser,
-            String sendToUser, boolean accepted) {
+    fun sendMapSharingInvitationResponse(sentFromUser: String,
+                                         sendToUser: String?, accepted: Boolean) {
         try {
-            this.sendToUser = sendToUser;
-            String message;
-            CollaborationAction action;
+            this.sendToUser = sendToUser
+            var message: String
+            val action: CollaborationAction
             if (accepted) {
                 action = createCollaborationAction(sentFromUser,
-                        ACCEPT_MAP_SHARING);
+                        ACCEPT_MAP_SHARING)
                 //                message = "<fmcmd cmd=\"" + ACCEPT_MAP_SHARING + "\" user=\""
                 //                        + sentFromUser + "\"/>";
-                mapShared = true;
+                mapShared = true
             } else {
                 action = createCollaborationAction(sentFromUser,
-                        DECLINE_MAP_SHARING);
+                        DECLINE_MAP_SHARING)
                 //                message = "<fmcmd cmd=\"" + DECLINE_MAP_SHARING + "\"
                 // user=\""
                 //                        + sentFromUser + "\"/>";
-                mapShared = false;
+                mapShared = false
             }
-            sendMessage(sendToUser, action);
-        } catch (Exception e) {
-            freemind.main.Resources.getInstance().logException(e);
+            sendMessage(sendToUser, action)
+        } catch (e: Exception) {
+            Resources.getInstance().logException(e)
         }
     }
 
@@ -185,8 +155,8 @@ public class JabberSender implements ActionFilter {
      * @param action
      * @return
      */
-    private String marshal(XmlAction action) {
-        return controller.getController().marshall(action);
+    private fun marshal(action: XmlAction): String {
+        return controller.controller.marshall(action)
     }
 
     /** Sends commands to the other user(s?).
@@ -195,66 +165,71 @@ public class JabberSender implements ActionFilter {
      * @throws SendMessageFailedException
      * @throws ParseException
      */
-    private void sendMessage(String requestReceiverUser, XmlAction action)
-            throws SendMessageFailedException, ParseException {
-        String message = marshal(action);
-        if (!controller.isSendingEnabled()) {
+    @Throws(SendMessageFailedException::class, ParseException::class)
+    private fun sendMessage(requestReceiverUser: String?, action: XmlAction) {
+        val message = marshal(action)
+        if (!controller.isSendingEnabled) {
             logger
                     .warning("JabberSender should not send messages. In particular the following messages is not sent:"
-                            + message);
-            return;
+                            + message)
+            return
         }
-        if (requestReceiverUser == null)
-            throw new IllegalArgumentException(
-                    "sendToUser is null. (Did you specify the user to share with by calling 'setMapShareUser'?)");
-        logger.info("Sending message:"
-                + ((message.length() < 100) ? message : (message
-                        .substring(0, 50)
-                        + "..." + message.substring(message.length() - 50))));
+        requireNotNull(requestReceiverUser) { "sendToUser is null. (Did you specify the user to share with by calling 'setMapShareUser'?)" }
+        logger!!.info("Sending message:"
+                + if (message.length < 100) message else message
+                .substring(0, 50)
+                + "..." + message.substring(message.length - 50))
         /*
          * Wait until there is a reply.
-         */
-        chat.sendPrivateMessage(new JID(requestReceiverUser), Tools.compress(message), false);
-
+         */chat.sendPrivateMessage(JID(requestReceiverUser), Tools.compress(message), false)
     }
 
     /**
      * True if there is a shared map at present, false otherwise. If this value
      * is false, the sender will ignore requests to send Freemind commands.
-     * 
+     *
      * @param shared
      */
-    public void isMapShared(boolean shared) {
-        mapShared = shared;
+    fun isMapShared(shared: Boolean) {
+        mapShared = shared
     }
 
     /**
      * Sets name of the user with whom the map is shared.
-     * 
+     *
      * @param username
      */
-    public void setShareMapUser(String username) {
-        this.sendToUser = username;
+    fun setShareMapUser(username: String?) {
+        sendToUser = username
     }
 
     /**
-     * The overloaded filter action. Each action comes here along and is sent to the other 
+     * The overloaded filter action. Each action comes here along and is sent to the other
      * participants.
      */
-    public ActionPair filterAction(ActionPair pair) {
-    	    try {
-            CompoundAction eAction = new CompoundAction();
-            eAction.getListChoiceList().add(
-                    pair.getDoAction());
-            eAction.getListChoiceList().add(
-                    pair.getUndoAction());
-            sendMessage(sendToUser, eAction);
-        } catch (SendMessageFailedException e) {
-            freemind.main.Resources.getInstance().logException(e);
-        } catch (ParseException e) {
-            freemind.main.Resources.getInstance().logException(e);
+    override fun filterAction(pair: ActionPair?): ActionPair? {
+        try {
+            val eAction = CompoundAction()
+            eAction.listChoiceList.add(
+                    pair.doAction)
+            eAction.listChoiceList.add(
+                    pair.undoAction)
+            sendMessage(sendToUser, eAction)
+        } catch (e: SendMessageFailedException) {
+            Resources.getInstance().logException(e)
+        } catch (e: ParseException) {
+            Resources.getInstance().logException(e)
         }
-        return pair;
+        return pair
     }
 
+    companion object {
+        const val REQUEST_MAP_SHARING = "request_map_sharing"
+        const val ACCEPT_MAP_SHARING = "accept_map_sharing"
+        const val DECLINE_MAP_SHARING = "decline_map_sharing"
+        const val STOP_MAP_SHARING = "stop_map_sharing"
+
+        // Logging:
+        private var logger: Logger? = null
+    }
 }

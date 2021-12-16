@@ -16,95 +16,73 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package plugins.collaboration.jabber.mindmap
 
-package plugins.collaboration.jabber.mindmap;
-
-import java.util.LinkedList;
-import java.util.logging.Level;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
-import com.echomine.jabber.Jabber;
-import com.echomine.jabber.JabberChatMessage;
-import com.echomine.jabber.JabberCode;
-import com.echomine.jabber.JabberContext;
-import com.echomine.jabber.JabberMessageEvent;
-import com.echomine.jabber.JabberMessageException;
-import com.echomine.jabber.JabberMessageListener;
-import com.echomine.jabber.JabberSession;
-
-import freemind.controller.actions.generated.instance.CollaborationAction;
-import freemind.controller.actions.generated.instance.CompoundAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.main.Tools;
-import freemind.modes.mindmapmode.MindMapController;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
+import com.echomine.jabber.Jabber
+import freemind.main.Resources
+import java.lang.Exception
+import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * @author RReppel - Connects to a jabber server. - Establishes a private chat
- *         with another user. - Listens to a limited number of FreeMind commands
- *         sent by the other user. - Performs the FreeMind actions corresponding
- *         to the commands sent.
- *  
+ * with another user. - Listens to a limited number of FreeMind commands
+ * sent by the other user. - Performs the FreeMind actions corresponding
+ * to the commands sent.
  */
-public class JabberListener {
-
-    // Logging:
-    private static java.util.logging.Logger logger;
-
-    MindMapController controller;
+class JabberListener(c: MindMapController?,
+                     sharingWizardController: MapSharingController, jabberServer: String?,
+                     port: Int, userName: String?, password: String?) {
+    var controller: MindMapController?
 
     //A queue ensuring FIFO processing of user commands.
-    LinkedList commandQueue;
+    var commandQueue: LinkedList<*>
+    var session: JabberSession
 
-    JabberSession session;
-
-    public JabberListener(MindMapController c,
-            MapSharingController sharingWizardController, String jabberServer,
-            int port, String userName, String password) {
-        controller = c;
+    init {
+        controller = c
         if (logger == null) {
-            logger = controller.getController().getFrame().getLogger(
-                    this.getClass().getName());
+            logger = controller.controller.frame.getLogger(
+                    this.javaClass.name)
         }
-        commandQueue = new LinkedList();
-        JabberContext context = new JabberContext(userName, password,
-                jabberServer);
-        Jabber jabber = new Jabber();
-        session = jabber.createSession(context);
+        commandQueue = LinkedList<Any?>()
+        val context = JabberContext(userName, password,
+                jabberServer)
+        val jabber = Jabber()
+        session = jabber.createSession(context)
         try {
-            session.connect(jabberServer, port);
-            session.getUserService().login();
-            logger.info("User logged in.\n");
+            session.connect(jabberServer, port)
+            session.getUserService().login()
+            logger!!.info("User logged in.\n")
             session.getPresenceService().setToAvailable("FreeMind Session",
-                    null, false);
+                    null, false)
 
             //Send a test message:
             //JabberChatService chat = session.getChatService();
             //chat.sendPrivateMessage(new JID("lucy@rreppel-linux"), "FreeMind
             // launched.", false);
-
-            session.addMessageListener(new FreeMindJabberMessageListener(
-                    sharingWizardController)); //end addMessageListener
+            session.addMessageListener(FreeMindJabberMessageListener(
+                    sharingWizardController)) //end addMessageListener
         } //end MindMapJabberController
-        catch (Exception ex) {
-            freemind.main.Resources.getInstance().logException(ex);
-            String message;
+        catch (ex: Exception) {
+            Resources.getInstance().logException(ex)
+            val message: String
             //TODO: Descriptive error message on Jabber server connection
             // failure.
-            if (ex.getClass().getName().compareTo(
-                    "com.echomine.jabber.JabberMessageException") == 0) {
-                JabberMessageException jabberMessageException = (JabberMessageException) ex;
-                message = jabberMessageException.getErrorMessage();
-
+            message = if (ex.javaClass.name.compareTo(
+                            "com.echomine.jabber.JabberMessageException") == 0) {
+                val jabberMessageException: JabberMessageException = ex as JabberMessageException
+                jabberMessageException.getErrorMessage()
             } else {
-                message = ex.getClass().getName() + "\n\n" + ex.getMessage();
+                """
+     ${ex.javaClass.name}
+     
+     ${ex.message}
+     """.trimIndent()
             } //endif
-            JFrame frame = new JFrame();
+            val frame = JFrame()
             JOptionPane.showMessageDialog(frame, message, "Error",
-                    JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.ERROR_MESSAGE)
             //TODO: Bug: Do not move to the next screen when a connection error
             // has occurred. Do not set status to "connected".
         }
@@ -113,128 +91,115 @@ public class JabberListener {
     /**
      * @return
      */
-    public JabberSession getSession() {
-        return session;
+    fun getSession(): JabberSession {
+        return session
     }
 
     /**
-     * 
+     *
      * @author RReppel
-     * 
+     *
      * Listens to received Jabber messages and initiates the appropriate
      * FreeMind actions.
-     *  
      */
-    private class FreeMindJabberMessageListener implements
-            JabberMessageListener {
-
-        MapSharingController sharingWizardController;
-
-        public FreeMindJabberMessageListener(
-                MapSharingController sharingWizardController) {
-            super();
-            this.sharingWizardController = sharingWizardController;
-        }
-
-        public void messageReceived(JabberMessageEvent event) {
-            if (event.getMessageType() != JabberCode.MSG_CHAT)
-                return;
-            JabberChatMessage latestMsg = (JabberChatMessage) event
-                    .getMessage();
+    private inner class FreeMindJabberMessageListener(
+            var sharingWizardController: MapSharingController) : JabberMessageListener {
+        fun messageReceived(event: JabberMessageEvent) {
+            if (event.getMessageType() !== JabberCode.MSG_CHAT) return
+            val latestMsg: JabberChatMessage = event
+                    .getMessage() as JabberChatMessage
             if (latestMsg.getType().equals(JabberChatMessage.TYPE_CHAT)
                     || latestMsg.getType()
                             .equals(JabberChatMessage.TYPE_NORMAL)) {
-                commandQueue.addLast(latestMsg); //Add the message to the end
+                commandQueue.addLast(latestMsg) //Add the message to the end
                 // of the list of commands to
                 // be applied.
-                logger.info("Queue has " + commandQueue.size() + " items.");
-
-                JabberChatMessage msg = (JabberChatMessage) commandQueue
-                        .removeFirst(); //Process the first command in the
-
-                String msgString = Tools.decompress(msg.getBody());
+                logger!!.info("Queue has " + commandQueue.size + " items.")
+                val msg: JabberChatMessage = commandQueue
+                        .removeFirst() as JabberChatMessage //Process the first command in the
+                val msgString: String = Tools.decompress(msg.getBody())
                 // list.
-                if(logger.isLoggable(Level.INFO)){
-                    String displayMessage = ("Sending message:" + ((msgString
-                            .length() < 100) ? msgString : (msgString
+                if (logger!!.isLoggable(Level.INFO)) {
+                    val displayMessage = "Sending message:" + if (msgString
+                                    .length < 100) msgString else msgString
                             .substring(0, 50)
-                            + "..." + msgString
-                            .substring(msgString.length() - 50))));
-
-                    logger.info("message " + displayMessage + " from "
+                    +"..." + msgString
+                            .substring(msgString.length - 50)
+                    logger!!.info("message " + displayMessage + " from "
                             + msg.getFrom().getUsername()
-                            + " is reply required:" + msg.isReplyRequired());
+                            + " is reply required:" + msg.isReplyRequired())
                 }
-                XmlAction action = controller.unMarshall(msgString);
-                if (action instanceof CollaborationAction) {
-                    CollaborationAction xml = (CollaborationAction) action;
-                    String cmd = xml.getCmd();
-                    String username = xml.getUser();
+                val action: XmlAction = controller.unMarshall(msgString)
+                if (action is CollaborationAction) {
+                    val xml: CollaborationAction = action as CollaborationAction
+                    val cmd: String = xml.cmd
+                    val username: String = xml.user
                     try {
-                        if (cmd.compareTo(JabberSender.REQUEST_MAP_SHARING) == 0) {
+                        if (cmd.compareTo(JabberSender.Companion.REQUEST_MAP_SHARING) == 0) {
                             sharingWizardController
-                                    .setMapSharingRequested(username, xml.getMap(), xml.getFilename());
+                                    .setMapSharingRequested(username, xml.map, xml.filename)
                         } else if (cmd
-                                .compareTo(JabberSender.ACCEPT_MAP_SHARING) == 0) {
+                                        .compareTo(JabberSender.Companion.ACCEPT_MAP_SHARING) == 0) {
                             sharingWizardController.setMapShareRequestAccepted(
-                                    username, true);
+                                    username, true)
                         } else if (cmd
-                                .compareTo(JabberSender.DECLINE_MAP_SHARING) == 0) {
+                                        .compareTo(JabberSender.Companion.DECLINE_MAP_SHARING) == 0) {
                             sharingWizardController.setMapShareRequestAccepted(
-                                    username, false);
-                        } else if (cmd.compareTo(JabberSender.STOP_MAP_SHARING) == 0) {
-                            sharingWizardController.setSharingStopped(username);
+                                    username, false)
+                        } else if (cmd.compareTo(JabberSender.Companion.STOP_MAP_SHARING) == 0) {
+                            sharingWizardController.setSharingStopped(username)
                         } else {
-                            logger.warning("Unknown command:" + cmd);
+                            logger!!.warning("Unknown command:$cmd")
                         }
-                    } catch (Exception e) {
-                        freemind.main.Resources.getInstance().logException(e);
+                    } catch (e: Exception) {
+                        Resources.getInstance().logException(e)
                     } //end catch
-                } else if (action instanceof CompoundAction) {
-                    CompoundAction pair = (CompoundAction) action;
+                } else if (action is CompoundAction) {
+                    val pair: CompoundAction = action as CompoundAction
                     if (pair
-                            .getListChoiceList()
-                            .size() != 2) {
+                                    .listChoiceList
+                                    .size != 2) {
                         //FIXME: Warn the user
-                        logger.warning("Cannot process the message "
-                                + msgString);
-                        return;
+                        logger!!.warning("Cannot process the message "
+                                + msgString)
+                        return
                     }
-                    executeRemoteCommand(pair);
+                    executeRemoteCommand(pair)
                 } else {
-                    logger.warning("Unknown collaboration message:"+msgString);
-                }//endif
+                    logger!!.warning("Unknown collaboration message:$msgString")
+                } //endif
             } //endif
         } //end messageReceived
 
         /** Executes a command that was received via the jabber channel.
          * @param pair
          */
-        private void executeRemoteCommand(CompoundAction pair) {
-            XmlAction doAction = (XmlAction) pair
-                    .getListChoiceList()
-                    .get(0);
-            XmlAction undoAction = (XmlAction) pair
-                    .getListChoiceList()
-                    .get(1);
-            final ActionPair ePair = new ActionPair(doAction,
-                    undoAction);
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    sharingWizardController.setSendingEnabled(false);
-                    try {
-                        sharingWizardController.getController()
-                                .getActionFactory()
-                                .executeAction(ePair);
-                    } catch (Exception e) {
-                        // TODO: handle exception
-                        freemind.main.Resources.getInstance().logException(e);
-                    }
-                    sharingWizardController.setSendingEnabled(true);
+        private fun executeRemoteCommand(pair: CompoundAction) {
+            val doAction: XmlAction = pair
+                    .listChoiceList
+                    .get(0) as XmlAction
+            val undoAction: XmlAction = pair
+                    .listChoiceList
+                    .get(1) as XmlAction
+            val ePair = ActionPair(doAction,
+                    undoAction)
+            SwingUtilities.invokeLater(Runnable {
+                sharingWizardController.isSendingEnabled = false
+                try {
+                    sharingWizardController.controller
+                            .getActionFactory()
+                            .executeAction(ePair)
+                } catch (e: Exception) {
+                    // TODO: handle exception
+                    Resources.getInstance().logException(e)
                 }
-            });
+                sharingWizardController.isSendingEnabled = true
+            })
         }
     }
 
+    companion object {
+        // Logging:
+        private var logger: Logger? = null
+    }
 }
-

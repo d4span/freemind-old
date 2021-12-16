@@ -17,320 +17,705 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package tests.freemind
 
-package tests.freemind;
-
-import java.awt.print.Paper;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Properties;
-import java.util.Vector;
-
-import freemind.main.FreeMindSecurityManager;
-import freemind.main.HtmlTools;
-import freemind.main.Tools;
-import freemind.modes.MapAdapter;
-import freemind.modes.mindmapmode.MindMapController;
+import freemind.modes.MindMapNode.isFolded
+import freemind.modes.MindMapNode.hasFoldedParents
+import freemind.main.Tools.arrayToUrls
+import freemind.main.Tools.urlStringToUrls
+import freemind.main.Tools.getUpdateReader
+import freemind.main.Tools.getFile
+import freemind.main.Tools.fileToUrl
+import freemind.main.Tools.urlToFile
+import freemind.main.Tools.isWindows
+import freemind.main.Tools.getPrefix
+import freemind.main.Tools.fileToRelativeUrlString
+import freemind.main.Tools.countOccurrences
+import freemind.main.Tools.getPageFormatAsString
+import freemind.main.Tools.setPageFormatFromString
+import freemind.main.Tools.copyChangedProperties
+import freemind.main.Tools.makeFileHidden
+import freemind.main.Base64Coding.encode64
+import freemind.main.Base64Coding.decode64
+import freemind.view.mindmapview.IndependantMapViewCreator.exportFileToPng
+import freemind.view.mindmapview.IndependantMapViewCreator.createMapViewForFile
+import freemind.view.mindmapview.MapView.innerBounds
+import freemind.controller.Controller.initialization
+import freemind.modes.mindmapmode.MindMapMode.init
+import freemind.modes.mindmapmode.MindMapMode.createModeController
+import freemind.modes.ControllerAdapter.setModel
+import freemind.modes.NodeAdapter.insert
+import freemind.modes.MapAdapter.root
+import freemind.modes.ControllerAdapter.view
+import freemind.main.Tools.waitForEventQueue
+import freemind.modes.NodeAdapter.shiftY
+import freemind.modes.MapAdapter.insertNodeInto
+import freemind.view.mindmapview.MapView.viewPosition
+import freemind.view.mindmapview.MapView.scrollBy
+import freemind.view.mindmapview.MapView.root
+import freemind.view.mindmapview.NodeView.getMainView
+import freemind.main.Tools.getVectorWithSingleElement
+import freemind.view.mindmapview.NodeView.childrenViews
+import freemind.view.mindmapview.NodeView.model
+import freemind.view.mindmapview.MapView.getViewers
+import freemind.main.Tools.convertPointToAncestor
+import freemind.main.IFreeMindSplash.setVisible
+import freemind.main.IFreeMindSplash.getFeedBack
+import freemind.main.FeedBack.setMaximumValue
+import freemind.main.FeedBack.increase
+import freemind.controller.actions.generated.instance.Plugin.listChoiceList
+import freemind.controller.actions.generated.instance.PluginAction.label
+import freemind.controller.actions.generated.instance.PluginAction.listChoiceList
+import freemind.controller.actions.generated.instance.PluginProperty.name
+import freemind.controller.actions.generated.instance.PluginProperty.value
+import freemind.main.Tools.copyStream
+import freemind.extensions.HookAdapter.setController
+import freemind.extensions.HookAdapter.setProperties
+import freemind.controller.LastOpenedList.add
+import freemind.controller.LastOpenedList.save
+import freemind.controller.actions.generated.instance.PatternPropertyBase.value
+import freemind.controller.actions.generated.instance.Pattern.patternChild
+import freemind.controller.actions.generated.instance.Pattern.name
+import freemind.controller.actions.generated.instance.Searchresults.sizePlaceList
+import freemind.controller.actions.generated.instance.Searchresults.listPlaceList
+import freemind.controller.actions.generated.instance.Place.lat
+import freemind.controller.actions.generated.instance.Reversegeocode.getResult
+import freemind.controller.actions.generated.instance.ResultBase.placeId
+import freemind.controller.actions.generated.instance.ResultBase.content
+import freemind.main.FreeMindStarter.readDefaultPreferences
+import freemind.common.FreeMindTask.isFinished
+import freemind.controller.actions.generated.instance.CollaborationGetOffers.userId
+import freemind.main.Tools.userName
+import freemind.controller.actions.generated.instance.CollaborationGetOffers.password
+import freemind.controller.actions.generated.instance.CollaborationOffers.listCollaborationMapOfferList
+import freemind.controller.actions.generated.instance.CollaborationMapOffer.map
+import freemind.controller.actions.generated.instance.CollaborationHello.map
+import freemind.controller.actions.generated.instance.CollaborationWelcome.map
+import freemind.controller.actions.generated.instance.CollaborationReceiveLock.id
+import freemind.controller.actions.generated.instance.CollaborationTransaction.doAction
+import freemind.modes.ExtendedMapFeedbackAdapter.actorFactory
+import freemind.modes.mindmapmode.actions.xml.actors.XmlActorFactory.changeNoteTextActor
+import freemind.modes.mindmapmode.actions.xml.actors.ChangeNoteTextActor.createEditNoteToNodeAction
+import freemind.modes.ExtendedMapFeedbackImpl.map
+import freemind.modes.MindMap.rootNode
+import freemind.main.Tools.marshall
+import freemind.controller.actions.generated.instance.CollaborationTransaction.id
+import freemind.controller.actions.generated.instance.CollaborationTransaction.undoAction
+import freemind.controller.actions.generated.instance.CollaborationPublishNewMap.userId
+import freemind.controller.actions.generated.instance.CollaborationPublishNewMap.password
+import freemind.modes.MapFeedback.map
+import freemind.controller.actions.generated.instance.CollaborationPublishNewMap.mapName
+import freemind.modes.MindMap.getXml
+import freemind.controller.actions.generated.instance.CollaborationPublishNewMap.map
+import freemind.modes.MapAdapter.loadTree
+import freemind.modes.mindmapmode.MindMapMapModel.getFilteredXml
+import freemind.modes.ExtendedMapFeedbackAdapter.setStrikethrough
+import freemind.modes.MindMapNode.isStrikethrough
+import freemind.modes.ExtendedMapFeedbackAdapter.setBold
+import freemind.modes.MindMapNode.isBold
+import freemind.modes.ExtendedMapFeedbackAdapter.setItalic
+import freemind.modes.MindMapNode.isItalic
+import freemind.modes.ExtendedMapFeedbackAdapter.setFontSize
+import freemind.modes.MindMapNode.getFontSize
+import freemind.modes.ExtendedMapFeedbackAdapter.addNewNode
+import freemind.modes.ExtendedMapFeedbackAdapter.deleteNode
+import freemind.modes.ExtendedMapFeedbackAdapter.paste
+import freemind.modes.MindMapNode.icons
+import freemind.modes.ExtendedMapFeedbackAdapter.addIcon
+import freemind.modes.ExtendedMapFeedbackAdapter.removeLastIcon
+import freemind.modes.ExtendedMapFeedbackAdapter.removeAllIcons
+import freemind.modes.ExtendedMapFeedbackAdapter.setCloud
+import freemind.modes.MindMapNode.cloud
+import freemind.modes.ExtendedMapFeedbackAdapter.setCloudColor
+import freemind.modes.MindMapLine.color
+import freemind.modes.ExtendedMapFeedbackAdapter.setEdgeStyle
+import freemind.modes.ExtendedMapFeedbackAdapter.setEdgeWidth
+import freemind.modes.ExtendedMapFeedbackAdapter.setEdgeColor
+import freemind.modes.ExtendedMapFeedbackAdapter.setFontFamily
+import freemind.modes.MindMapNode.fontFamilyName
+import freemind.modes.ExtendedMapFeedbackAdapter.moveNodePosition
+import freemind.modes.MindMapNode.vGap
+import freemind.modes.MindMapNode.hGap
+import freemind.modes.MindMapNode.shiftY
+import freemind.modes.ExtendedMapFeedbackAdapter.setNodeStyle
+import freemind.modes.MindMapNode.style
+import freemind.modes.MindMapNode.hasStyle
+import freemind.modes.ExtendedMapFeedbackAdapter.addLink
+import freemind.modes.MindMap.linkRegistry
+import freemind.modes.MindMapLinkRegistry.getAllLinksFromMe
+import freemind.modes.MindMapLink.target
+import freemind.modes.ExtendedMapFeedbackAdapter.setArrowLinkEndPoints
+import freemind.modes.MindMapArrowLink.startInclination
+import freemind.modes.MindMapArrowLink.endInclination
+import freemind.modes.ExtendedMapFeedbackAdapter.changeArrowsOfArrowLink
+import freemind.modes.MindMapArrowLink.startArrow
+import freemind.modes.MindMapArrowLink.endArrow
+import freemind.modes.ExtendedMapFeedbackAdapter.setArrowLinkColor
+import freemind.modes.ExtendedMapFeedbackAdapter.removeReference
+import freemind.modes.ExtendedMapFeedbackAdapter.setNodeText
+import freemind.modes.MindMapNode.text
+import freemind.modes.ExtendedMapFeedbackAdapter.setNodeBackgroundColor
+import freemind.modes.MindMapNode.backgroundColor
+import freemind.modes.ExtendedMapFeedbackAdapter.setNodeColor
+import freemind.modes.MindMapNode.color
+import freemind.modes.ExtendedMapFeedbackAdapter.moveNodes
+import freemind.modes.ExtendedMapFeedbackAdapter.setFolded
+import freemind.modes.ExtendedMapFeedbackAdapter.setLink
+import freemind.modes.MindMapNode.link
+import freemind.modes.ExtendedMapFeedbackAdapter.addAttribute
+import freemind.modes.MindMapNode.attributeTableLength
+import freemind.modes.MindMapNode.getAttribute
+import freemind.modes.ExtendedMapFeedbackAdapter.setAttribute
+import freemind.modes.ExtendedMapFeedbackAdapter.insertAttribute
+import freemind.modes.ExtendedMapFeedbackAdapter.removeAttribute
+import freemind.modes.ExtendedMapFeedbackAdapter.cut
+import freemind.modes.ExtendedMapFeedbackAdapter.setNoteText
+import freemind.modes.MindMapNode.noteText
+import freemind.modes.StylePatternFactory.createPatternFromNode
+import freemind.controller.actions.generated.instance.Pattern.patternNodeColor
+import freemind.main.Tools.colorToXml
+import freemind.modes.ExtendedMapFeedbackAdapter.applyPattern
+import freemind.modes.NodeAdapter.text
+import freemind.modes.NodeAdapter.getXmlText
+import freemind.modes.NodeAdapter.setXmlText
+import freemind.main.XMLElement.parseFromReader
+import freemind.main.XMLElement.content
+import freemind.main.Tools.isHeadless
+import freemind.main.Tools.replaceUtf8AndIllegalXmlChars
+import freemind.main.Tools.IntHolder.increase
+import freemind.main.HtmlTools.insertHtmlIntoNodes
+import freemind.main.Tools.IntHolder.value
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.determineAmountOfNewNodes
+import freemind.controller.actions.generated.instance.CalendarMarkings.sizeCalendarMarkingList
+import freemind.controller.actions.generated.instance.CalendarMarkings.getCalendarMarking
+import freemind.controller.actions.generated.instance.CalendarMarking.startDate
+import freemind.controller.actions.generated.instance.CalendarMarking.name
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage.height
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage.width
+import freemind.controller.actions.generated.instance.ScriptEditorWindowConfigurationStorage.leftRatio
+import freemind.controller.actions.generated.instance.ScriptEditorWindowConfigurationStorage.topRatio
+import freemind.controller.actions.generated.instance.CollaborationGoodbye.userId
+import freemind.modes.MapAdapter.createNodeTreeFromXml
+import freemind.modes.NodeAdapter.map
+import freemind.modes.MapFeedback.invokeHooksRecursively
+import freemind.common.OptionalDontShowMeAgainDialog.show
+import freemind.common.OptionalDontShowMeAgainDialog.result
+import freemind.controller.LastStateStorageManagement.xml
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.restorableName
+import freemind.controller.LastStateStorageManagement.changeOrAdd
+import freemind.controller.LastStateStorageManagement.getStorage
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.tabIndex
+import freemind.controller.LastStateStorageManagement.lastOpenList
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage.y
+import tests.freemind.FreeMindTestBase
+import kotlin.Throws
+import freemind.main.HtmlTools
+import javax.swing.table.AbstractTableModel
+import tests.freemind.findreplace.TestMindMapNode
+import accessories.plugins.time.TimeList
+import accessories.plugins.time.TimeList.NotesHolder
+import accessories.plugins.time.FlatNodeTableFilterModel
+import junit.framework.TestCase
+import freemind.main.HtmlTools.IndexPair
+import accessories.plugins.time.TimeList.IReplaceInputInformation
+import tests.freemind.findreplace.FindTextTests.TestReplaceInputInfo
+import freemind.modes.MindMapNode
+import freemind.modes.ModeController
+import freemind.modes.MindMapEdge
+import java.awt.Color
+import freemind.modes.MindIcon
+import freemind.modes.MindMapCloud
+import freemind.extensions.PermanentNodeHook
+import freemind.extensions.NodeHook
+import java.util.SortedMap
+import freemind.modes.MindMapLinkRegistry
+import freemind.main.XMLElement
+import javax.swing.ImageIcon
+import freemind.modes.HistoryInformation
+import freemind.modes.MapFeedback
+import javax.swing.event.TreeModelListener
+import javax.swing.tree.MutableTreeNode
+import java.util.Enumeration
+import freemind.modes.MindMap
+import kotlin.jvm.JvmStatic
+import junit.framework.TestResult
+import junit.framework.TestSuite
+import tests.freemind.ScriptEditorPanelTest
+import tests.freemind.Base64Tests
+import tests.freemind.findreplace.FindTextTests
+import tests.freemind.HtmlConversionTests
+import tests.freemind.TransformTest
+import tests.freemind.MarshallerTests
+import tests.freemind.SignedScriptTests
+import tests.freemind.LastStorageManagementTests
+import tests.freemind.ToolsTests
+import tests.freemind.ExportTests
+import tests.freemind.LayoutTests
+import tests.freemind.LastOpenedTests
+import tests.freemind.StandaloneMapTests
+import tests.freemind.CollaborationTests
+import tests.freemind.CalendarMarkingTests
+import freemind.main.Tools
+import freemind.modes.MapAdapter
+import freemind.main.FreeMindSecurityManager
+import java.awt.print.Paper
+import tests.freemind.ToolsTests.A
+import tests.freemind.ToolsTests.B
+import java.util.Properties
+import freemind.modes.mindmapmode.MindMapController
+import freemind.main.Base64Coding
+import freemind.view.mindmapview.IndependantMapViewCreator
+import tests.freemind.FreeMindMainMock
+import javax.swing.JDialog
+import java.awt.Rectangle
+import javax.swing.JPanel
+import java.awt.Graphics
+import java.awt.BorderLayout
+import freemind.view.mindmapview.MapView
+import javax.swing.WindowConstants
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import freemind.modes.mindmapmode.MindMapNodeModel
+import freemind.modes.mindmapmode.MindMapMapModel
+import freemind.modes.mindmapmode.MindMapMode
+import freemind.modes.MindMap.MapSourceChangedObserver
+import freemind.modes.MapFeedbackAdapter
+import freemind.controller.filter.util.SortedListModel
+import freemind.controller.filter.util.SortedMapListModel
+import freemind.main.Tools.ReaderCreator
+import freemind.modes.MindMap.AskUserBeforeUpdateCallback
+import freemind.modes.NodeAdapter
+import freemind.modes.EdgeAdapter
+import freemind.modes.CloudAdapter
+import freemind.modes.ArrowLinkAdapter
+import freemind.modes.ArrowLinkTarget
+import java.lang.InterruptedException
+import freemind.main.IFreeMindSplash
+import freemind.main.FreeMindSplashModern
+import java.awt.Graphics2D
+import java.awt.Shape
+import java.awt.geom.AffineTransform
+import java.awt.image.ImageObserver
+import java.awt.image.BufferedImage
+import java.awt.image.BufferedImageOp
+import java.awt.image.RenderedImage
+import java.awt.image.renderable.RenderableImage
+import java.text.AttributedCharacterIterator
+import java.awt.Polygon
+import java.awt.font.GlyphVector
+import java.awt.Paint
+import java.awt.Stroke
+import java.awt.RenderingHints
+import java.awt.font.FontRenderContext
+import org.jibx.runtime.IUnmarshallingContext
+import freemind.common.XmlBindingTools
+import freemind.controller.actions.generated.instance.PluginAction
+import freemind.controller.actions.generated.instance.PluginProperty
+import accessories.plugins.ExportWithXSLT
+import tests.freemind.MindMapControllerMock
+import accessories.plugins.ExportToOoWriter
+import freemind.controller.LastOpenedList
+import freemind.controller.actions.generated.instance.PatternChild
+import freemind.controller.actions.generated.instance.Searchresults
+import freemind.controller.actions.generated.instance.Place
+import freemind.controller.actions.generated.instance.Reversegeocode
+import freemind.main.FreeMindMain
+import freemind.main.FreeMindStarter
+import javax.swing.JFrame
+import java.util.ResourceBundle
+import java.lang.NumberFormatException
+import javax.swing.JLayeredPane
+import freemind.main.FreeMindMain.VersionInformation
+import javax.swing.JComponent
+import javax.swing.JSplitPane
+import javax.swing.JScrollPane
+import freemind.main.FreeMindMain.StartupDoneListener
+import freemind.common.FreeMindTask
+import freemind.common.FreeMindTask.ProgressDescription
+import java.lang.reflect.InvocationTargetException
+import javax.swing.JButton
+import java.awt.event.ActionListener
+import java.awt.event.ActionEvent
+import java.lang.Runnable
+import plugins.script.SignedScriptHandler
+import plugins.script.SignedScriptHandler.ScriptContents
+import plugins.collaboration.socket.StandaloneMindMapMaster
+import freemind.modes.ExtendedMapFeedback
+import tests.freemind.CollaborationTestClient
+import freemind.controller.actions.generated.instance.CollaborationTransaction
+import freemind.controller.actions.generated.instance.CollaborationWhoAreYou
+import freemind.controller.actions.generated.instance.CollaborationGetOffers
+import plugins.collaboration.socket.CommunicationBase
+import freemind.controller.actions.generated.instance.CollaborationOffers
+import freemind.controller.actions.generated.instance.CollaborationMapOffer
+import freemind.controller.actions.generated.instance.CollaborationHello
+import freemind.controller.actions.generated.instance.CollaborationWelcome
+import plugins.collaboration.socket.TerminateableThread
+import freemind.controller.actions.generated.instance.CollaborationReceiveLock
+import plugins.collaboration.socket.MindMapMaster
+import freemind.modes.ExtendedMapFeedbackImpl
+import tests.freemind.CollaborationTests.NormalTestClient
+import freemind.controller.actions.generated.instance.CollaborationRequireLock
+import freemind.controller.actions.generated.instance.EditNoteToNodeAction
+import tests.freemind.CollaborationTests.CreateNewMapClient
+import freemind.controller.actions.generated.instance.CollaborationPublishNewMap
+import freemind.main.Tools.StringReaderCreator
+import freemind.main.FreeMind
+import java.awt.datatransfer.StringSelection
+import java.awt.GraphicsEnvironment
+import freemind.modes.MindMapLink
+import freemind.modes.MindMapArrowLink
+import freemind.modes.StylePatternFactory
+import java.awt.datatransfer.Transferable
+import java.awt.datatransfer.DataFlavor
+import java.lang.ClassNotFoundException
+import java.awt.datatransfer.UnsupportedFlavorException
+import tests.freemind.MindMapMock
+import com.lightdev.app.shtm.SHTMLPanel
+import freemind.main.HtmlTools.NodeCreator
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor
+import tests.freemind.HtmlConversionTests.HtmlTransfer
+import freemind.controller.actions.generated.instance.CalendarMarkings
+import accessories.plugins.time.CalendarMarkingEvaluator
+import java.util.Calendar
+import java.text.DateFormat
+import freemind.controller.actions.generated.instance.CalendarMarking
+import freemind.controller.MapModuleManager
+import freemind.modes.ModeController.NodeSelectionListener
+import freemind.modes.ModeController.NodeLifetimeListener
+import javax.swing.JToolBar
+import freemind.controller.StructuredMenuHolder
+import javax.swing.JPopupMenu
+import freemind.view.MapModule
+import freemind.extensions.HookFactory
+import freemind.modes.FreeMindFileDialog
+import plugins.script.ScriptEditorPanel.ScriptModel
+import plugins.script.ScriptEditorPanel.ScriptHolder
+import plugins.script.ScriptingEngine
+import groovy.lang.GroovyShell
+import plugins.script.ScriptEditorPanel
+import freemind.controller.actions.generated.instance.ScriptEditorWindowConfigurationStorage
+import java.awt.Dimension
+import tests.freemind.ScriptEditorPanelTest.TestScriptModel
+import freemind.controller.actions.generated.instance.CollaborationGoodbye
+import freemind.controller.actions.generated.instance.CollaborationActionBase
+import freemind.controller.actions.generated.instance.CollaborationUserInformation
+import freemind.controller.actions.generated.instance.CollaborationWrongCredentials
+import freemind.controller.actions.generated.instance.CollaborationWrongMap
+import freemind.controller.actions.generated.instance.CollaborationUnableToLock
+import freemind.common.OptionalDontShowMeAgainDialog
+import freemind.common.TextTranslator
+import freemind.common.OptionalDontShowMeAgainDialog.DontShowPropertyHandler
+import freemind.controller.LastStateStorageManagement
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage
+import junit.textui.TestRunner
+import java.io.*
+import java.lang.Exception
+import java.net.*
 
 /**
  * @author foltin
  * @date 30.06.2011
  */
-public class ToolsTests extends FreeMindTestBase {
-
-	/**
-	 * 
-	 */
-	private static final String UNIX_PATH_WITH_SPEACIAL_CHAR = "/Users/foltin/downloads/Ja\u0308nstra\u00dfe 270c.pdf";
-	/**
-	 * 
-	 */
-	private static final String WINDOWS_PATH_WITH_SPECIAL_CHAR = "o:\\Users\\foltin\\downloads\\Ja\u0308nstra\u00dfe 270c.pdf";
-	/**
-	 * 
-	 */
-	private static final String WINDOWS_PATH_C_USERS_TMP_IM_MM = "c:\\Users\\foltin\\tmp\\im.mm";
-
-	/*
+class ToolsTests : FreeMindTestBase() {
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see tests.freemind.FreeMindTestBase#setUp()
 	 */
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
+    @Throws(Exception::class)
+    override fun setUp() {
+        super.setUp()
+    }
 
-	public void testArgsToUrlConversion() throws Exception {
-		String[] args = new String[] { "/home/bla", "--quiet", "c:\\test.mm" };
-		String arrayToUrls = Tools.arrayToUrls(args);
-		Vector<URL> urlVector = Tools.urlStringToUrls(arrayToUrls);
-		assertEquals(args.length, urlVector.size());
-		for (URL urli : urlVector) {
-			System.out.println(urli);
-		}
-	}
+    @Throws(Exception::class)
+    fun testArgsToUrlConversion() {
+        val args = arrayOf("/home/bla", "--quiet", "c:\\test.mm")
+        val arrayToUrls = arrayToUrls(args)
+        val urlVector = urlStringToUrls(arrayToUrls)
+        assertEquals(args.size, urlVector.size)
+        for (urli in urlVector) {
+            println(urli)
+        }
+    }
 
-	public void testRichContentConversion() throws Exception {
-		String input = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><map version=\"0.9.0\">"
-				+ "<!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->"
-				+ "<node CREATED=\"1320424144875\" ID=\"ID_984089046\" MODIFIED=\"1320424283250\" TEXT=\"GREEK LETTERS&#x391;&#x392;&#x393;&#x394;&#x395;&#x396;&#x397;&#x398;&#x399;&#x39a;&#x39b;&#x39c;&#x39d;&#x39e;&#x39f;&#x3a0;&#x3a1;&#x3a3;&#x3a4;&#x3a5;&#x3a6;&#x3a7;&#x3a8;&#x3a9; &#x3b1;&#x3b2;&#x3b3;&#x3b4;&#x3b5;&#x3b6;&#x3b7;&#x3b8;&#x3b9;&#x3ba;&#x3bb;&#x3bc;&#x3bd;&#x3be;&#x3bf;&#x3c0;&#x3c1;&#x3c3;&#x3c4;&#x3c5;&#x3c6;&#x3c7;&#x3c8;&#x3c9; &#x3ac;&#x3ad;&#x3ae;&#x3af;&#x3cc;&#x3cd;&#x3ce;\">"
-				+ "<node CREATED=\"1320424155937\" ID=\"ID_1884129484\" MODIFIED=\"1320424262562\" POSITION=\"right\">"
-				+ "<richcontent TYPE=\"NODE\"><html>"
-				+ "  <head>"
-				+ "    "
-				+ "  </head>"
-				+ "  <body>"
-				+ "    <p>"
-				+ "      &#x391;&#x392;&#x393;&#x394;&#x395;&#x396;&#x397;&#x398;&#x399;&#x39a;&#x39b;&#x39c;&#x39d;&#x39e;&#x39f;&#x3a0;&#x3a1;&#x3a3;&#x3a4;&#x3a5;&#x3a6;&#x3a7;&#x3a8;&#x3a9;"
-				+ "    </p>"
-				+ "    <p>"
-				+ "      &#x3b1;&#x3b2;&#x3b3;&#x3b4;&#x3b5;&#x3b6;&#x3b7;&#x3b8;&#x3b9;&#x3ba;&#x3bb;&#x3bc;&#x3bd;&#x3be;&#x3bf;&#x3c0;&#x3c1;&#x3c3;&#x3c4;&#x3c5;&#x3c6;&#x3c7;&#x3c8;&#x3c9; &#x3ac;&#x3ad;&#x3ae;&#x3af;&#x3cc;&#x3cd;&#x3ce;"
-				+ "    </p>"
-				+ "  </body>"
-				+ "</html>"
-				+ "</richcontent>"
-				+ "</node>" + "</node>" + "</map>";
-		Reader updateReader = Tools.getUpdateReader(new StringReader(input),
-				MapAdapter.FREEMIND_VERSION_UPDATER_XSLT);
-		String result = Tools.getFile(updateReader);
-		result = HtmlTools.unicodeToHTMLUnicodeEntity(result, true);
-		System.out.println(result);
-		assertEquals("Correct conversion", input,
-				result.replaceAll("&#xd;$", "").trim());
-	}
+    @Throws(Exception::class)
+    fun testRichContentConversion() {
+        val input = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?><map version=\"0.9.0\">"
+                + "<!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->"
+                + "<node CREATED=\"1320424144875\" ID=\"ID_984089046\" MODIFIED=\"1320424283250\" TEXT=\"GREEK LETTERS&#x391;&#x392;&#x393;&#x394;&#x395;&#x396;&#x397;&#x398;&#x399;&#x39a;&#x39b;&#x39c;&#x39d;&#x39e;&#x39f;&#x3a0;&#x3a1;&#x3a3;&#x3a4;&#x3a5;&#x3a6;&#x3a7;&#x3a8;&#x3a9; &#x3b1;&#x3b2;&#x3b3;&#x3b4;&#x3b5;&#x3b6;&#x3b7;&#x3b8;&#x3b9;&#x3ba;&#x3bb;&#x3bc;&#x3bd;&#x3be;&#x3bf;&#x3c0;&#x3c1;&#x3c3;&#x3c4;&#x3c5;&#x3c6;&#x3c7;&#x3c8;&#x3c9; &#x3ac;&#x3ad;&#x3ae;&#x3af;&#x3cc;&#x3cd;&#x3ce;\">"
+                + "<node CREATED=\"1320424155937\" ID=\"ID_1884129484\" MODIFIED=\"1320424262562\" POSITION=\"right\">"
+                + "<richcontent TYPE=\"NODE\"><html>"
+                + "  <head>"
+                + "    "
+                + "  </head>"
+                + "  <body>"
+                + "    <p>"
+                + "      &#x391;&#x392;&#x393;&#x394;&#x395;&#x396;&#x397;&#x398;&#x399;&#x39a;&#x39b;&#x39c;&#x39d;&#x39e;&#x39f;&#x3a0;&#x3a1;&#x3a3;&#x3a4;&#x3a5;&#x3a6;&#x3a7;&#x3a8;&#x3a9;"
+                + "    </p>"
+                + "    <p>"
+                + "      &#x3b1;&#x3b2;&#x3b3;&#x3b4;&#x3b5;&#x3b6;&#x3b7;&#x3b8;&#x3b9;&#x3ba;&#x3bb;&#x3bc;&#x3bd;&#x3be;&#x3bf;&#x3c0;&#x3c1;&#x3c3;&#x3c4;&#x3c5;&#x3c6;&#x3c7;&#x3c8;&#x3c9; &#x3ac;&#x3ad;&#x3ae;&#x3af;&#x3cc;&#x3cd;&#x3ce;"
+                + "    </p>"
+                + "  </body>"
+                + "</html>"
+                + "</richcontent>"
+                + "</node>" + "</node>" + "</map>")
+        val updateReader = getUpdateReader(StringReader(input),
+                MapAdapter.FREEMIND_VERSION_UPDATER_XSLT)
+        var result = getFile(updateReader)
+        result = HtmlTools.unicodeToHTMLUnicodeEntity(result!!, true)
+        println(result)
+        assertEquals("Correct conversion", input,
+                result.replace("&#xd;$".toRegex(), "").trim { it <= ' ' })
+    }
 
-	public void testUrlConversion() throws Exception {
-		File input = new File(
-				UNIX_PATH_WITH_SPEACIAL_CHAR);
-		System.out.println("input file " + input);
-		URL url = Tools.fileToUrl(input);
-		String externalForm = HtmlTools.unicodeToHTMLUnicodeEntity(
-				url.toExternalForm(), false);
-		System.out.println("External form: " + externalForm);
-		// convert back:
-		String unescapeHTMLUnicodeEntity = HtmlTools
-				.unescapeHTMLUnicodeEntity(externalForm);
-		File urlToFile = Tools.urlToFile(new URL(unescapeHTMLUnicodeEntity));
-		assertEquals("Forth and back should give the same",
-				input.getAbsolutePath(), urlToFile.getAbsolutePath());
+    @Throws(Exception::class)
+    fun testUrlConversion() {
+        val input = File(
+                UNIX_PATH_WITH_SPEACIAL_CHAR)
+        println("input file $input")
+        val url = fileToUrl(input)
+        val externalForm = HtmlTools.unicodeToHTMLUnicodeEntity(
+                url!!.toExternalForm(), false)
+        println("External form: $externalForm")
+        // convert back:
+        val unescapeHTMLUnicodeEntity = HtmlTools
+                .unescapeHTMLUnicodeEntity(externalForm)
+        val urlToFile = urlToFile(URL(unescapeHTMLUnicodeEntity))
+        assertEquals("Forth and back should give the same",
+                input.absolutePath, urlToFile.absolutePath)
+    }
 
-	}
+    /**
+     * To be tested under windows
+     */
+    @Throws(Exception::class)
+    fun testRelativeUrlsWindows() {
+        if (isWindows) {
+            val pathname = WINDOWS_PATH_WITH_SPECIAL_CHAR
+            val input = File(pathname)
+            val mapFile = File(WINDOWS_PATH_C_USERS_TMP_IM_MM)
+            testCorrectRelativism(input, pathname, mapFile)
+        }
+    }
 
-	/**
-	 * To be tested under windows
-	 */
-	public void testRelativeUrlsWindows() throws Exception {
-		if (Tools.isWindows()) {
-			String pathname = WINDOWS_PATH_WITH_SPECIAL_CHAR;
-			File input = new File(pathname);
-			String expected = pathname;
-			File mapFile = new File(WINDOWS_PATH_C_USERS_TMP_IM_MM);
-			testCorrectRelativism(input, expected, mapFile);
-		}
-	}
+    @Throws(Exception::class)
+    fun testGetPrefix() {
+        if (isWindows) {
+            assertEquals("c:\\",
+                    getPrefix(WINDOWS_PATH_C_USERS_TMP_IM_MM).toString())
+        } else {
+            assertEquals("/",
+                    getPrefix(UNIX_PATH_WITH_SPEACIAL_CHAR).toString())
+        }
+    }
 
-	public void testGetPrefix() throws Exception {
-		if (Tools.isWindows()) {
-			  assertEquals("c:\\", 
-					Tools.getPrefix(WINDOWS_PATH_C_USERS_TMP_IM_MM).toString());
-		} else {
-			assertEquals("/",
-					Tools.getPrefix(UNIX_PATH_WITH_SPEACIAL_CHAR).toString());
-			
-		}
-	}
-	
-	public void testRelativeUrls() throws Exception {
-		File input = new File(
-				UNIX_PATH_WITH_SPEACIAL_CHAR);
-		String expected = "../downloads/Ja\u0308nstra\u00dfe%20270c.pdf";
-		File mapFile = new File("/Users/foltin/tmp/im.mm");
-		testCorrectRelativism(input, expected, mapFile);
+    @Throws(Exception::class)
+    fun testRelativeUrls() {
+        val input = File(
+                UNIX_PATH_WITH_SPEACIAL_CHAR)
+        val expected = "../downloads/Ja\u0308nstra\u00dfe%20270c.pdf"
+        val mapFile = File("/Users/foltin/tmp/im.mm")
+        testCorrectRelativism(input, expected, mapFile)
+    }
 
-	}
+    @Throws(Exception::class)
+    fun testRelativeUrls2() {
+        val input = File(
+                "/Users/foltin/downloads/subdir1/subdir2/Ja\u0308nstra\u00dfe 270c.pdf")
+        val expected = "../downloads/subdir1/subdir2/Ja\u0308nstra\u00dfe%20270c.pdf"
+        val mapFile = File("/Users/foltin/tmp/im.mm")
+        testCorrectRelativism(input, expected, mapFile)
+    }
 
-	public void testRelativeUrls2() throws Exception {
-		File input = new File(
-				"/Users/foltin/downloads/subdir1/subdir2/Ja\u0308nstra\u00dfe 270c.pdf");
-		String expected = "../downloads/subdir1/subdir2/Ja\u0308nstra\u00dfe%20270c.pdf";
-		File mapFile = new File("/Users/foltin/tmp/im.mm");
-		testCorrectRelativism(input, expected, mapFile);
+    @Throws(Exception::class)
+    fun testRelativeUrls3() {
+        val input = File(
+                UNIX_PATH_WITH_SPEACIAL_CHAR)
+        val expected = "../../../downloads/Ja\u0308nstra\u00dfe%20270c.pdf"
+        val mapFile = File("/Users/foltin/tmp/subdir1/subdir2/im.mm")
+        testCorrectRelativism(input, expected, mapFile)
+    }
 
-	}
+    @Throws(Exception::class)
+    fun testRelativeUrls4() {
+        val input = File(
+                UNIX_PATH_WITH_SPEACIAL_CHAR)
+        val expected = "Ja\u0308nstra\u00dfe%20270c.pdf"
+        val mapFile = File("/Users/foltin/downloads/im.mm")
+        testCorrectRelativism(input, expected, mapFile)
+    }
 
-	public void testRelativeUrls3() throws Exception {
-		File input = new File(
-				UNIX_PATH_WITH_SPEACIAL_CHAR);
-		String expected = "../../../downloads/Ja\u0308nstra\u00dfe%20270c.pdf";
-		File mapFile = new File("/Users/foltin/tmp/subdir1/subdir2/im.mm");
-		testCorrectRelativism(input, expected, mapFile);
+    @Throws(Exception::class)
+    fun testRelativeUrlsSpaces() {
+        val input = File(
+                "/Users/foltin/downloads/subd ir1/subdi r2/Ja\u0308nstra\u00dfe 270c.pdf")
+        val expected = "../downloads/subd%20ir1/subdi%20r2/Ja\u0308nstra\u00dfe%20270c.pdf"
+        val mapFile = File("/Users/foltin/tmp/im.mm")
+        testCorrectRelativism(input, expected, mapFile)
+    }
 
-	}
+    @Throws(MalformedURLException::class)
+    protected fun testCorrectRelativism(input: File?, expected: String?,
+                                        mapFile: File?) {
+        val relative = fileToRelativeUrlString(input!!, mapFile)
+        assertEquals("Correct relative result", expected, relative)
+        val u = URL(fileToUrl(mapFile), relative)
+        val e = fileToUrl(input)
+        assertEquals("Correct absolute  result", e!!.toExternalForm(),
+                u.toExternalForm())
+    }
 
-	public void testRelativeUrls4() throws Exception {
-		File input = new File(
-				UNIX_PATH_WITH_SPEACIAL_CHAR);
-		String expected = "Ja\u0308nstra\u00dfe%20270c.pdf";
-		File mapFile = new File("/Users/foltin/downloads/im.mm");
-		testCorrectRelativism(input, expected, mapFile);
+    @Throws(Exception::class)
+    fun testOccurrences() {
+        assertEquals("Correct amount", 5,
+                countOccurrences("abababaa", "a"))
+        assertEquals("Correct amount", 3,
+                countOccurrences("abababaa", "ab"))
+    }
 
-	}
+    @Throws(FileNotFoundException::class, IOException::class)
+    fun testUpdate() {
+        doUpdate()
+    }
 
-	public void testRelativeUrlsSpaces() throws Exception {
-		File input = new File(
-				"/Users/foltin/downloads/subd ir1/subdi r2/Ja\u0308nstra\u00dfe 270c.pdf");
-		String expected = "../downloads/subd%20ir1/subdi%20r2/Ja\u0308nstra\u00dfe%20270c.pdf";
-		File mapFile = new File("/Users/foltin/tmp/im.mm");
-		testCorrectRelativism(input, expected, mapFile);
+    @Throws(FileNotFoundException::class, IOException::class)
+    fun testUpdateWithSecurityManager() {
+        /**
+         * Due to a java bug (in version 7 update 4), setting a security manager
+         * (this is normally done in FreeMind) breaks the update. This is tested
+         * here.
+         */
+        System.setSecurityManager(FreeMindSecurityManager())
+        doUpdate()
+    }
 
-	}
+    @Throws(IOException::class)
+    protected fun doUpdate() {
+        val input = ("<map version=\"0.9.0\">"
+                + "<!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->"
+                + "<node CREATED=\"1337970913625\" ID=\"ID_1753131052\" MODIFIED=\"1337970913625\" TEXT=\"Neue Mindmap\"/>"
+                + "</map>")
+        val updateReader = getUpdateReader(StringReader(input),
+                MapAdapter.FREEMIND_VERSION_UPDATER_XSLT)
+        val output = getFile(updateReader)
+        assertEquals("Correct output",
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>$input",
+                output!!.trim { it <= ' ' })
+    }
 
-	protected void testCorrectRelativism(File input, String expected,
-			File mapFile) throws MalformedURLException {
-		String relative = Tools.fileToRelativeUrlString(input, mapFile);
-		assertEquals("Correct relative result", expected, relative);
-		URL u = new URL(Tools.fileToUrl(mapFile), relative);
-		URL e = Tools.fileToUrl(input);
-		assertEquals("Correct absolute  result", e.toExternalForm(),
-				u.toExternalForm());
-	}
+    @Throws(Exception::class)
+    fun testPageFormatStorage() {
+        val paper = Paper()
+        paper.setImageableArea(1.0, 2.0, 3.0, 4.0)
+        paper.setSize(5.0, 6.0)
+        val pageFormatAsString = getPageFormatAsString(paper)
+        val paper2 = Paper()
+        setPageFormatFromString(paper2, pageFormatAsString)
+        assertEquals(paper.height, paper2.height, 0.0)
+        assertEquals(paper.width, paper2.width, 0.0)
+        assertEquals(paper.imageableHeight, paper2.imageableHeight,
+                0.0)
+        assertEquals(paper.imageableWidth, paper2.imageableWidth, 0.0)
+        assertEquals(paper.imageableX, paper2.imageableX, 0.0)
+        assertEquals(paper.imageableY, paper2.imageableY, 0.0)
+    }
 
-	public void testOccurrences() throws Exception {
-		assertEquals("Correct amount", 5,
-				Tools.countOccurrences("abababaa", "a"));
-		assertEquals("Correct amount", 3,
-				Tools.countOccurrences("abababaa", "ab"));
-	}
+    private open inner class A
+    private inner class B : A()
 
-	public void testUpdate() throws FileNotFoundException, IOException {
-		doUpdate();
-	}
+    private fun visit(pA: A): Boolean {
+        return true
+    }
 
-	public void testUpdateWithSecurityManager() throws FileNotFoundException,
-			IOException {
-		/**
-		 * Due to a java bug (in version 7 update 4), setting a security manager
-		 * (this is normally done in FreeMind) breaks the update. This is tested
-		 * here.
-		 */
-		System.setSecurityManager(new FreeMindSecurityManager());
-		doUpdate();
-	}
+    private fun visit(pA: B): Boolean {
+        return false
+    }
 
-	protected void doUpdate() throws IOException {
-		String input = "<map version=\"0.9.0\">"
-				+ "<!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->"
-				+ "<node CREATED=\"1337970913625\" ID=\"ID_1753131052\" MODIFIED=\"1337970913625\" TEXT=\"Neue Mindmap\"/>"
-				+ "</map>";
-		Reader updateReader = Tools.getUpdateReader(new StringReader(input),
-				MapAdapter.FREEMIND_VERSION_UPDATER_XSLT);
-		String output = Tools.getFile(updateReader);
-		assertEquals("Correct output",
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + input,
-				output.trim());
-	}
-
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(ToolsTests.class);
-	}
-
-	public void testPageFormatStorage() throws Exception {
-		Paper paper = new Paper();
-		paper.setImageableArea(1d, 2d, 3d, 4d);
-		paper.setSize(5d, 6d);
-		String pageFormatAsString = Tools.getPageFormatAsString(paper);
-		Paper paper2 = new Paper();
-		Tools.setPageFormatFromString(paper2, pageFormatAsString);
-		assertEquals(paper.getHeight(), paper2.getHeight(), 0d);
-		assertEquals(paper.getWidth(), paper2.getWidth(), 0d);
-		assertEquals(paper.getImageableHeight(), paper2.getImageableHeight(),
-				0d);
-		assertEquals(paper.getImageableWidth(), paper2.getImageableWidth(), 0d);
-		assertEquals(paper.getImageableX(), paper2.getImageableX(), 0d);
-		assertEquals(paper.getImageableY(), paper2.getImageableY(), 0d);
-	}
-
-	private class A {
-
-	}
-
-	private class B extends A {
-
-	}
-
-	private boolean visit(A pA) {
-		return true;
-	}
-
-	private boolean visit(B pA) {
-		return false;
-	}
-
-	/**
-	 * 
-	 */
-	public void testVisitor() {
-		A a = new A();
-		B b = new B();
-		A castedB = b;
-		assertTrue(visit(a));
-		assertFalse(visit(b));
-		/*
+    /**
+     *
+     */
+    fun testVisitor() {
+        val a = A()
+        val b = B()
+        val castedB: A = b
+        assertTrue(visit(a))
+        assertFalse(visit(b))
+        /*
 		 * I don't understand this: no polymorphism is applied to the call of
 		 * visit in this case, as the visit(a) method is called, although, a is
 		 * of class B! If anybody can explain this to me, please write an email
 		 * to me (chris).
-		 */
-		assertTrue(visit(castedB));
-	}
+		 */assertTrue(visit(castedB))
+    }
 
-	public void testKeyDocumentationPathConversion() throws Exception {
-		String file = "c:\\home\\java\\freemind\\0_9_0\\bin\\dist\\doc/FM_Key_Mappings_Quick_Guide.pdf";
-		System.out.println(Tools.urlToFile(Tools.fileToUrl(new File(file))));
-	}
-	
-	public void testChangedProperties() throws Exception {
-		Properties def = new Properties();
-		Properties changed = new Properties();
-		String key = "blabla";
-		String key2 = "notexistent";
-		String key3 = "notpresentindef";
-		String key4 = "equal";
-		def.put(key, "A");
-		changed.put(key, "B");
-		def.put(key4, "A");
-		changed.put(key4, "A");
-		def.put(key2, "default");
-		changed.put(key3, "new value");
-		Properties copy = Tools.copyChangedProperties(changed, def);
-		assertEquals(2, copy.keySet().size());
-	}
-	public void testNumberRegexp() throws Exception {
-		assertTrue("1,2345".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS));
-		assertFalse("a1,2345".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS));
-		assertFalse("1-,2345".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS));
-		assertFalse("1,23+45".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS));
-		assertTrue("+1,2345".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS));
-		assertTrue("-1,2345".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS));
-		assertFalse("+".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS));
-		assertFalse("-".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS));
-		
-	}
-	
-	public void testMakeFileHidden() throws Exception {
-		File tempFile = File.createTempFile("hidden", "now");
-		Tools.makeFileHidden(tempFile, true);
-	}
-	
-	public void testHiddenNonExistingFile() throws Exception {
-		File tempFile = File.createTempFile("hidden", "now");
-		File nonExisting = new File(tempFile.getAbsolutePath()+".notexisting");
-		Tools.makeFileHidden(nonExisting, true);
-		
-	}
+    @Throws(Exception::class)
+    fun testKeyDocumentationPathConversion() {
+        val file = "c:\\home\\java\\u000creemind\\0_9_0\\bin\\dist\\doc/FM_Key_Mappings_Quick_Guide.pdf"
+        println(urlToFile(fileToUrl(File(file))!!))
+    }
+
+    @Throws(Exception::class)
+    fun testChangedProperties() {
+        val def = Properties()
+        val changed = Properties()
+        val key = "blabla"
+        val key2 = "notexistent"
+        val key3 = "notpresentindef"
+        val key4 = "equal"
+        def[key] = "A"
+        changed[key] = "B"
+        def[key4] = "A"
+        changed[key4] = "A"
+        def[key2] = "default"
+        changed[key3] = "new value"
+        val copy = copyChangedProperties(changed, def)
+        assertEquals(2, copy.keys.size)
+    }
+
+    @Throws(Exception::class)
+    fun testNumberRegexp() {
+        assertTrue("1,2345".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS))
+        assertFalse("a1,2345".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS))
+        assertFalse("1-,2345".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS))
+        assertFalse("1,23+45".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS))
+        assertTrue("+1,2345".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS))
+        assertTrue("-1,2345".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS))
+        assertFalse("+".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS))
+        assertFalse("-".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS))
+    }
+
+    @Throws(Exception::class)
+    fun testMakeFileHidden() {
+        val tempFile = File.createTempFile("hidden", "now")
+        makeFileHidden(tempFile, true)
+    }
+
+    @Throws(Exception::class)
+    fun testHiddenNonExistingFile() {
+        val tempFile = File.createTempFile("hidden", "now")
+        val nonExisting = File(tempFile.absolutePath + ".notexisting")
+        makeFileHidden(nonExisting, true)
+    }
+
+    companion object {
+        /**
+         *
+         */
+        private const val UNIX_PATH_WITH_SPEACIAL_CHAR = "/Users/foltin/downloads/Ja\u0308nstra\u00dfe 270c.pdf"
+
+        /**
+         *
+         */
+        private const val WINDOWS_PATH_WITH_SPECIAL_CHAR = "o:\\Users\\u000coltin\\downloads\\Ja\u0308nstra\u00dfe 270c.pdf"
+
+        /**
+         *
+         */
+        private const val WINDOWS_PATH_C_USERS_TMP_IM_MM = "c:\\Users\\u000coltin\\tmp\\im.mm"
+        @JvmStatic
+        fun main(args: Array<String>) {
+            TestRunner.run(ToolsTests::class.java)
+        }
+    }
 }

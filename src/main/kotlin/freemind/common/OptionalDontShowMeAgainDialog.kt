@@ -22,63 +22,15 @@
 /*$Id: OptionalDontShowMeAgainDialog.java,v 1.1.2.6 2009/12/09 21:57:39 christianfoltin Exp $*/
 package freemind.common
 
-import freemind.common.TextTranslator
-import freemind.common.PropertyBean
-import freemind.common.PropertyControl
-import java.awt.event.ActionListener
-import java.awt.event.ActionEvent
-import com.jgoodies.forms.builder.DefaultFormBuilder
-import freemind.common.FreeMindProgressMonitor
-import freemind.common.FreeMindTask.ProgressDescription
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseMotionAdapter
-import java.awt.event.KeyAdapter
-import freemind.common.FreeMindTask
-import java.lang.Runnable
-import kotlin.Throws
-import freemind.modes.MindIcon
-import freemind.modes.IconInformation
-import freemind.modes.common.dialogs.IconSelectionPopupDialog
-import java.beans.PropertyChangeListener
-import java.beans.PropertyChangeEvent
-import java.util.Arrays
-import java.io.PushbackInputStream
-import java.io.IOException
-import javax.swing.event.ChangeListener
-import javax.swing.event.ChangeEvent
-import java.lang.NumberFormatException
-import java.awt.event.KeyEvent
-import freemind.common.BooleanProperty
-import java.awt.event.ItemListener
-import java.awt.event.ItemEvent
-import java.util.Locale
-import java.awt.event.ComponentListener
-import freemind.common.ScalableJButton
-import java.awt.event.ComponentEvent
-import org.jibx.runtime.IMarshallingContext
-import freemind.common.XmlBindingTools
-import org.jibx.runtime.JiBXException
-import org.jibx.runtime.IUnmarshallingContext
-import freemind.controller.actions.generated.instance.WindowConfigurationStorage
-import freemind.controller.actions.generated.instance.XmlAction
-import org.jibx.runtime.IBindingFactory
-import org.jibx.runtime.BindingDirectory
-import kotlin.jvm.JvmStatic
-import tests.freemind.FreeMindMainMock
-import freemind.common.JOptionalSplitPane
-import freemind.common.ThreeCheckBoxProperty
-import freemind.modes.mindmapmode.MindMapController
-import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin
-import freemind.common.ScriptEditorProperty
-import freemind.common.ScriptEditorProperty.ScriptEditorStarter
-import freemind.controller.BlindIcon
-import java.lang.InterruptedException
-import freemind.common.OptionalDontShowMeAgainDialog.DontShowPropertyHandler
-import freemind.common.OptionalDontShowMeAgainDialog
 import freemind.controller.Controller
-import freemind.main.*
+import freemind.main.Resources
+import freemind.main.Tools
 import freemind.view.ImageFactory
-import java.awt.*
+import java.awt.Component
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
+import java.awt.Insets
+import java.awt.event.ActionEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.util.logging.Logger
@@ -133,7 +85,7 @@ class OptionalDontShowMeAgainDialog(pFrame: JFrame, pComponent: Component?,
 
     init {
         if (logger == null) {
-            logger = Resources.getInstance().getLogger(
+            logger = Resources.instance?.getLogger(
                     this.javaClass.name)
         }
         mComponent = pComponent
@@ -182,8 +134,8 @@ class OptionalDontShowMeAgainDialog(pFrame: JFrame, pComponent: Component?,
                         GridBagConstraints.WEST, GridBagConstraints.BOTH,
                         Insets(5, 5, 0, 0), 0, 10))
         // TODO: Replace by usual java question mark.
-        val questionMark = ImageFactory.getInstance().createIcon(Resources.getInstance()
-                .getResource("images/icons/help.png"))
+        val questionMark = ImageFactory.instance?.createIcon(Resources.instance
+                ?.getResource("images/icons/help.png"))
         mDialog!!.contentPane.add(
                 JLabel(questionMark),
                 GridBagConstraints(0, 0, 1, 2, 1.0, 2.0,

@@ -665,7 +665,7 @@ object Tools {
         return toBase64(compressedData)
     }
 
-    fun decompress(compressedMessage: String): String {
+    fun decompress(compressedMessage: String?): String {
         val compressedData = fromBase64(compressedMessage)
         // Create the decompressor and give it the data to compress
         val decompressor = Inflater()
@@ -739,7 +739,7 @@ object Tools {
                 .value)
     }
 
-    fun setDialogLocationRelativeTo(dialog: JDialog, c: Component?) {
+    fun setDialogLocationRelativeTo(dialog: JDialog?, c: Component?) {
         var c = c
                 ?: // perhaps, the component is not yet existing.
                 return
@@ -1006,7 +1006,7 @@ object Tools {
         addEscapeActionToDialog(dialog, EscapeAction())
     }
 
-    fun addEscapeActionToDialog(dialog: JDialog, action: Action) {
+    fun addEscapeActionToDialog(dialog: JDialog?, action: Action) {
         addKeyActionToDialog(dialog, action, "ESCAPE", "end_dialog")
     }
 
@@ -1104,7 +1104,7 @@ object Tools {
      * character is a space. In "Find & Replace", ampersand does not label
      * mnemo, while in "&About", mnemo is "Alt + A".
      */
-    fun setLabelAndMnemonic(btn: AbstractButton, inLabel: String) {
+    fun setLabelAndMnemonic(btn: AbstractButton?, inLabel: String?) {
         setLabelAndMnemonic(ButtonHolder(btn), inLabel)
     }
 

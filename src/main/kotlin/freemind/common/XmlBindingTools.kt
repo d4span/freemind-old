@@ -22,85 +22,18 @@
 /*$Id: XmlBindingTools.java,v 1.1.2.2.2.5 2009/05/20 19:19:11 christianfoltin Exp $*/
 package freemind.common
 
-import freemind.common.TextTranslator
-import freemind.common.PropertyBean
-import freemind.common.PropertyControl
-import javax.swing.JComboBox
-import javax.swing.DefaultComboBoxModel
-import java.awt.event.ActionListener
-import java.awt.event.ActionEvent
-import com.jgoodies.forms.builder.DefaultFormBuilder
-import javax.swing.JLabel
-import javax.swing.RootPaneContainer
-import freemind.common.FreeMindProgressMonitor
-import freemind.common.FreeMindTask.ProgressDescription
-import javax.swing.JPanel
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseMotionAdapter
-import java.awt.event.KeyAdapter
-import freemind.common.FreeMindTask
-import java.lang.Runnable
-import kotlin.Throws
-import freemind.modes.MindIcon
-import javax.swing.JButton
-import freemind.modes.IconInformation
-import freemind.modes.common.dialogs.IconSelectionPopupDialog
-import java.beans.PropertyChangeListener
-import java.beans.PropertyChangeEvent
-import javax.swing.JPopupMenu
-import javax.swing.JMenuItem
-import java.util.Arrays
-import javax.swing.JSpinner
-import javax.swing.SpinnerNumberModel
-import javax.swing.event.ChangeListener
-import javax.swing.event.ChangeEvent
-import java.lang.NumberFormatException
-import javax.swing.JTable
-import javax.swing.JTextField
-import java.awt.event.KeyEvent
-import freemind.common.BooleanProperty
-import javax.swing.JCheckBox
-import java.awt.event.ItemListener
-import java.awt.event.ItemEvent
-import java.util.Locale
-import java.awt.event.ComponentListener
-import freemind.common.ScalableJButton
-import java.awt.event.ComponentEvent
-import org.jibx.runtime.IMarshallingContext
-import freemind.common.XmlBindingTools
-import org.jibx.runtime.JiBXException
-import org.jibx.runtime.IUnmarshallingContext
-import javax.swing.JDialog
-import freemind.controller.actions.generated.instance.WindowConfigurationStorage
-import javax.swing.JOptionPane
-import freemind.controller.actions.generated.instance.XmlAction
-import org.jibx.runtime.IBindingFactory
-import org.jibx.runtime.BindingDirectory
-import javax.swing.JPasswordField
-import javax.swing.JComponent
-import javax.swing.JSplitPane
-import kotlin.jvm.JvmStatic
-import tests.freemind.FreeMindMainMock
-import javax.swing.JFrame
-import freemind.common.JOptionalSplitPane
-import freemind.common.ThreeCheckBoxProperty
-import freemind.modes.mindmapmode.MindMapController
-import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin
-import freemind.common.ScriptEditorProperty
-import freemind.common.ScriptEditorProperty.ScriptEditorStarter
-import javax.swing.Icon
-import javax.swing.ImageIcon
-import freemind.controller.BlindIcon
-import javax.swing.JProgressBar
-import java.lang.InterruptedException
-import freemind.common.OptionalDontShowMeAgainDialog.DontShowPropertyHandler
-import freemind.common.OptionalDontShowMeAgainDialog
 import freemind.controller.Controller
-import freemind.main.*
-import java.awt.*
-import java.awt.event.WindowAdapter
-import java.awt.event.WindowEvent
-import java.io.*
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.main.Resources
+import org.jibx.runtime.*
+import java.awt.Dimension
+import java.awt.Toolkit
+import java.io.Reader
+import java.io.StringReader
+import java.io.StringWriter
+import javax.swing.JDialog
+import javax.swing.JOptionPane
 
 /**
  * @author foltin Singleton
@@ -110,7 +43,7 @@ class XmlBindingTools private constructor() {
         return try {
             mBindingFactory!!.createMarshallingContext()
         } catch (e: JiBXException) {
-            Resources.getInstance().logException(e)
+            Resources.instance?.logException(e)
             null
         }
     }
@@ -119,7 +52,7 @@ class XmlBindingTools private constructor() {
         return try {
             mBindingFactory!!.createUnmarshallingContext()
         } catch (e: JiBXException) {
-            Resources.getInstance().logException(e)
+            Resources.instance?.logException(e)
             null
         }
     }
@@ -156,8 +89,8 @@ class XmlBindingTools private constructor() {
             if (storage != null) {
                 // Check that location is on current screen.
                 val screenSize: Dimension
-                if (Resources.getInstance().getBoolProperty(
-                                "place_dialogs_on_first_screen")) {
+                if (Resources.instance?.getBoolProperty(
+                                "place_dialogs_on_first_screen") ?: false) {
                     val defaultToolkit = Toolkit.getDefaultToolkit()
                     screenSize = defaultToolkit.screenSize
                 } else {
@@ -188,12 +121,11 @@ class XmlBindingTools private constructor() {
         // marshall:
         // marshal to StringBuffer:
         val writer = StringWriter()
-        val m = instance
-                .createMarshaller()
+        val m = instance?.createMarshaller()
         try {
             m!!.marshalDocument(action, "UTF-8", null, writer)
         } catch (e: JiBXException) {
-            Resources.getInstance().logException(e)
+            Resources.instance?.logException(e)
             return null
         }
         return writer.toString()
@@ -208,11 +140,10 @@ class XmlBindingTools private constructor() {
     fun unMarshall(reader: Reader?): XmlAction? {
         return try {
             // unmarshall:
-            val u = instance
-                    .createUnmarshaller()
+            val u = instance?.createUnmarshaller()
             u!!.unmarshalDocument(reader, null) as XmlAction
         } catch (e: JiBXException) {
-            Resources.getInstance().logException(e)
+            Resources.instance?.logException(e)
             null
         }
     }
@@ -225,7 +156,7 @@ class XmlBindingTools private constructor() {
                     try {
                         mBindingFactory = BindingDirectory.getFactory(XmlAction::class.java)
                     } catch (e: JiBXException) {
-                        Resources.getInstance().logException(e)
+                        Resources.instance?.logException(e)
                     }
                 }
                 return field

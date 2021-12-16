@@ -22,99 +22,19 @@
  */
 package freemind.common
 
-import freemind.common.TextTranslator
-import freemind.common.PropertyBean
-import freemind.common.PropertyControl
-import javax.swing.JComboBox
-import java.awt.GraphicsEnvironment
-import javax.swing.DefaultComboBoxModel
-import java.awt.event.ActionListener
-import java.awt.event.ActionEvent
 import com.jgoodies.forms.builder.DefaultFormBuilder
-import javax.swing.JLabel
-import javax.swing.RootPaneContainer
-import freemind.common.FreeMindProgressMonitor
-import freemind.common.FreeMindTask.ProgressDescription
-import javax.swing.JPanel
-import java.awt.GridLayout
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseMotionAdapter
-import java.awt.event.KeyAdapter
-import freemind.common.FreeMindTask
-import java.lang.Runnable
-import kotlin.Throws
-import freemind.modes.MindIcon
-import javax.swing.JButton
-import freemind.modes.IconInformation
-import freemind.modes.common.dialogs.IconSelectionPopupDialog
-import java.beans.PropertyChangeListener
-import java.beans.PropertyChangeEvent
-import java.awt.Color
-import javax.swing.JPopupMenu
-import javax.swing.JMenuItem
-import java.util.Arrays
-import java.io.PushbackInputStream
-import java.io.IOException
-import javax.swing.JSpinner
-import javax.swing.SpinnerNumberModel
-import javax.swing.event.ChangeListener
-import javax.swing.event.ChangeEvent
-import java.lang.NumberFormatException
-import javax.swing.JTable
-import javax.swing.JTextField
-import java.awt.event.KeyEvent
-import freemind.common.BooleanProperty
-import javax.swing.JCheckBox
-import java.awt.event.ItemListener
-import java.awt.event.ItemEvent
-import java.util.Locale
-import java.awt.event.ComponentListener
-import freemind.common.ScalableJButton
-import java.awt.event.ComponentEvent
-import org.jibx.runtime.IMarshallingContext
-import freemind.common.XmlBindingTools
-import org.jibx.runtime.JiBXException
-import org.jibx.runtime.IUnmarshallingContext
-import javax.swing.JDialog
-import freemind.controller.actions.generated.instance.WindowConfigurationStorage
-import java.awt.Dimension
-import javax.swing.JOptionPane
-import freemind.controller.actions.generated.instance.XmlAction
-import org.jibx.runtime.IBindingFactory
-import org.jibx.runtime.BindingDirectory
-import javax.swing.JPasswordField
-import javax.swing.JComponent
-import java.awt.BorderLayout
-import javax.swing.JSplitPane
-import kotlin.jvm.JvmStatic
-import tests.freemind.FreeMindMainMock
-import javax.swing.JFrame
-import freemind.common.JOptionalSplitPane
-import freemind.common.ThreeCheckBoxProperty
-import freemind.modes.mindmapmode.MindMapController
-import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin
-import freemind.common.ScriptEditorProperty
-import freemind.common.ScriptEditorProperty.ScriptEditorStarter
-import javax.swing.Icon
-import javax.swing.ImageIcon
 import freemind.controller.BlindIcon
-import javax.swing.JProgressBar
-import java.awt.GridBagLayout
-import java.awt.GridBagConstraints
-import java.awt.Insets
-import java.lang.InterruptedException
-import freemind.common.OptionalDontShowMeAgainDialog.DontShowPropertyHandler
-import freemind.common.OptionalDontShowMeAgainDialog
-import freemind.main.*
+import freemind.main.Resources
 import freemind.view.ImageFactory
-import java.awt.event.WindowAdapter
-import java.awt.event.WindowEvent
+import java.util.*
+import javax.swing.Icon
+import javax.swing.JButton
 
 open class ThreeCheckBoxProperty(override var description: String?, override var label: String?) : PropertyBean(), PropertyControl {
     protected var mFalseValue = "false"
     protected var mTrueValue = "true"
     protected var mDontTouchValue = "don_t_touch"
-    var state = 0
+    private var state = 0
     var mButton = JButton()
 
     /**
@@ -191,13 +111,13 @@ open class ThreeCheckBoxProperty(override var description: String?, override var
         const val FALSE_VALUE = "false"
         const val TRUE_VALUE = "true"
         const val DON_T_TOUCH_VALUE = "don_t_touch"
-        protected const val DON_T_TOUCH_VALUE_INT = 2
-        protected const val TRUE_VALUE_INT = 0
-        protected const val FALSE_VALUE_INT = 1
-        private val PLUS_IMAGE = ImageFactory.getInstance().createIcon(Resources
-                .getInstance().getResource("images/edit_add.png"))
-        private val MINUS_IMAGE = ImageFactory.getInstance().createIcon(Resources
-                .getInstance().getResource("images/edit_remove.png"))
+        val DON_T_TOUCH_VALUE_INT = 2
+        val TRUE_VALUE_INT = 0
+        val FALSE_VALUE_INT = 1
+        private val PLUS_IMAGE = ImageFactory.instance?.createIcon(Resources
+                .instance?.getResource("images/edit_add.png"))
+        private val MINUS_IMAGE = ImageFactory.instance?.createIcon(Resources
+                .instance?.getResource("images/edit_remove.png"))
         private val NO_IMAGE: Icon = BlindIcon(15)
     }
 }

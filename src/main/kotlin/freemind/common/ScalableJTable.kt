@@ -29,7 +29,7 @@ import javax.swing.JTable
  */
 open class ScalableJTable : JTable() {
     init {
-        val scale = Resources.getInstance().getIntProperty(FreeMind.SCALING_FACTOR_PROPERTY, 100)
-        setRowHeight(getRowHeight() * scale / 100)
+        val scale = Resources.instance?.getIntProperty(FreeMind.SCALING_FACTOR_PROPERTY, 100)
+        if (scale != null) setRowHeight(getRowHeight() * scale / 100)
     }
 }

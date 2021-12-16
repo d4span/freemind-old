@@ -891,7 +891,7 @@ import java.util.*
  * branch.
  */
 class MindIcon : Comparable<MindIcon>, IconInformation {
-    private var name: String? = null
+    var name: String? = null
     private var number = UNKNOWN
         private get() {
             if (field == UNKNOWN) {

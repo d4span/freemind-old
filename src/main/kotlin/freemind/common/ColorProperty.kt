@@ -22,87 +22,16 @@
 /*$Id: ColorProperty.java,v 1.1.2.4.2.2 2008/07/24 03:10:36 christianfoltin Exp $*/
 package freemind.common
 
-import freemind.common.TextTranslator
-import freemind.common.PropertyBean
-import freemind.common.PropertyControl
-import javax.swing.JComboBox
-import java.awt.GraphicsEnvironment
-import javax.swing.DefaultComboBoxModel
 import com.jgoodies.forms.builder.DefaultFormBuilder
-import javax.swing.JLabel
-import javax.swing.RootPaneContainer
-import freemind.common.FreeMindProgressMonitor
-import freemind.common.FreeMindTask.ProgressDescription
-import javax.swing.JPanel
-import java.awt.GridLayout
-import freemind.common.FreeMindTask
-import java.lang.Runnable
-import kotlin.Throws
-import freemind.main.FreeMindMain
-import freemind.modes.MindIcon
-import javax.swing.JButton
-import freemind.modes.IconInformation
-import freemind.modes.common.dialogs.IconSelectionPopupDialog
-import java.beans.PropertyChangeListener
-import java.beans.PropertyChangeEvent
-import java.awt.Color
-import javax.swing.JPopupMenu
-import freemind.main.Tools
-import javax.swing.JMenuItem
-import java.util.Arrays
-import java.io.PushbackInputStream
-import java.io.IOException
-import javax.swing.JSpinner
-import javax.swing.SpinnerNumberModel
-import javax.swing.event.ChangeListener
-import javax.swing.event.ChangeEvent
-import java.lang.NumberFormatException
-import javax.swing.JTable
-import freemind.main.FreeMind
-import javax.swing.JTextField
-import freemind.common.BooleanProperty
-import javax.swing.JCheckBox
-import java.util.Locale
-import freemind.common.ScalableJButton
-import org.jibx.runtime.IMarshallingContext
-import freemind.common.XmlBindingTools
-import org.jibx.runtime.JiBXException
-import org.jibx.runtime.IUnmarshallingContext
-import javax.swing.JDialog
-import freemind.controller.actions.generated.instance.WindowConfigurationStorage
-import java.awt.Dimension
-import javax.swing.JOptionPane
-import freemind.controller.actions.generated.instance.XmlAction
-import org.jibx.runtime.IBindingFactory
-import org.jibx.runtime.BindingDirectory
-import javax.swing.JPasswordField
-import javax.swing.JComponent
-import java.awt.BorderLayout
-import javax.swing.JSplitPane
-import kotlin.jvm.JvmStatic
-import tests.freemind.FreeMindMainMock
-import javax.swing.JFrame
-import freemind.common.JOptionalSplitPane
-import freemind.common.ThreeCheckBoxProperty
-import freemind.modes.mindmapmode.MindMapController
-import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin
-import freemind.common.ScriptEditorProperty
-import freemind.main.HtmlTools
-import freemind.common.ScriptEditorProperty.ScriptEditorStarter
-import javax.swing.Icon
-import javax.swing.ImageIcon
-import freemind.controller.BlindIcon
-import javax.swing.JProgressBar
-import java.awt.GridBagLayout
-import java.awt.GridBagConstraints
-import java.awt.Insets
-import java.lang.InterruptedException
-import freemind.common.OptionalDontShowMeAgainDialog.DontShowPropertyHandler
-import freemind.common.OptionalDontShowMeAgainDialog
 import freemind.controller.Controller
+import freemind.main.Tools
+import java.awt.Color
 import java.awt.event.*
+import javax.swing.JButton
+import javax.swing.JMenuItem
+import javax.swing.JPopupMenu
 
-class ColorProperty(override var description: String, override var label: String, private val defaultColor: String,
+class ColorProperty(override var description: String?, override var label: String?, private val defaultColor: String,
                     private val mTranslator: TextTranslator) : PropertyBean(), PropertyControl, ActionListener {
     /**
      */
@@ -122,14 +51,6 @@ class ColorProperty(override var description: String, override var label: String
         colorValue = Color.BLACK
     }
 
-    override fun getDescription(): String? {
-        return description
-    }
-
-    override fun getLabel(): String? {
-        return label
-    }
-
     override var value: String?
         get() = Tools.colorToXml(colorValue)
         set(value) {
@@ -137,8 +58,8 @@ class ColorProperty(override var description: String, override var label: String
         }
 
     override fun layout(builder: DefaultFormBuilder, pTranslator: TextTranslator) {
-        val label = builder.append(pTranslator.getText(getLabel()), mButton)
-        label.toolTipText = pTranslator.getText(getDescription())
+        val label = builder.append(pTranslator.getText(label), mButton)
+        label.toolTipText = pTranslator.getText(description)
         // add "reset to standard" popup:
 
         // Create and add a menu item
@@ -165,7 +86,7 @@ class ColorProperty(override var description: String, override var label: String
 
     override fun actionPerformed(arg0: ActionEvent) {
         val result = Controller.showCommonJColorChooserDialog(
-                mButton.rootPane, mTranslator.getText(getLabel()),
+                mButton.rootPane, mTranslator.getText(label),
                 colorValue)
         if (result != null) {
             setColorValue(result)
@@ -175,7 +96,7 @@ class ColorProperty(override var description: String, override var label: String
 
     /**
      */
-    private fun setColorValue(result: Color) {
+    private fun setColorValue(result: Color?) {
         var result: Color? = result
         colorValue = result
         if (result == null) {

@@ -1,26 +1,9 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* MoveNodeXmlAction...*/
-public class MoveNodeXmlAction extends NodeAction {
-  /* constants from enums*/
-  protected int vGap;
-  protected int hGap;
-  protected int shiftY;
-  public int getVGap(){
-    return vGap;
-  }
-  public int getHGap(){
-    return hGap;
-  }
-  public int getShiftY(){
-    return shiftY;
-  }
-  public void setVGap(int value){
-    this.vGap = value;
-  }
-  public void setHGap(int value){
-    this.hGap = value;
-  }
-  public void setShiftY(int value){
-    this.shiftY = value;
-  }
+class MoveNodeXmlAction : NodeAction() {
+    /* constants from enums*/
+    var vGap = 0
+    var hGap = 0
+    var shiftY = 0
 } /* MoveNodeXmlAction*/

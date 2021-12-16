@@ -1,5 +1,4 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* PatternNodeFontItalic...*/
-public class PatternNodeFontItalic extends PatternPropertyBase {
-  /* constants from enums*/
-} /* PatternNodeFontItalic*/
+class PatternNodeFontItalic : PatternPropertyBase() { /* constants from enums*/ } /* PatternNodeFontItalic*/

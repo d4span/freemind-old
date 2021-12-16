@@ -1,5 +1,4 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* PatternNodeText...*/
-public class PatternNodeText extends PatternPropertyBase {
-  /* constants from enums*/
-} /* PatternNodeText*/
+class PatternNodeText : PatternPropertyBase() { /* constants from enums*/ } /* PatternNodeText*/

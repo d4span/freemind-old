@@ -1,5 +1,4 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* CollaborationRequireLock...*/
-public class CollaborationRequireLock extends CollaborationActionBase {
-  /* constants from enums*/
-} /* CollaborationRequireLock*/
+class CollaborationRequireLock : CollaborationActionBase() { /* constants from enums*/ } /* CollaborationRequireLock*/

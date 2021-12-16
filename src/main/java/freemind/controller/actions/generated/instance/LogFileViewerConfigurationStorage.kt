@@ -1,5 +1,4 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* LogFileViewerConfigurationStorage...*/
-public class LogFileViewerConfigurationStorage extends WindowConfigurationStorage {
-  /* constants from enums*/
-} /* LogFileViewerConfigurationStorage*/
+class LogFileViewerConfigurationStorage : WindowConfigurationStorage() { /* constants from enums*/ } /* LogFileViewerConfigurationStorage*/

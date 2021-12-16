@@ -1,19 +1,8 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* TableColumnSetting...*/
-public class TableColumnSetting {
-  /* constants from enums*/
-  protected int columnWidth;
-  protected int columnSorting;
-  public int getColumnWidth(){
-    return columnWidth;
-  }
-  public int getColumnSorting(){
-    return columnSorting;
-  }
-  public void setColumnWidth(int value){
-    this.columnWidth = value;
-  }
-  public void setColumnSorting(int value){
-    this.columnSorting = value;
-  }
+open class TableColumnSetting {
+    /* constants from enums*/
+    var columnWidth = 0
+    var columnSorting = 0
 } /* TableColumnSetting*/

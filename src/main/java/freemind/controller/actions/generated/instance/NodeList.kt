@@ -1,35 +1,34 @@
-package freemind.controller.actions.generated.instance;
-/* NodeList...*/
-import java.util.ArrayList;
-public class NodeList extends XmlAction {
-  /* constants from enums*/
-  public void addNodeListMember(NodeListMember nodeListMember) {
-    nodeListMemberList.add(nodeListMember);
-  }
+package freemind.controller.actions.generated.instance
 
-  public void addAtNodeListMember(int position, NodeListMember nodeListMember) {
-    nodeListMemberList.add(position, nodeListMember);
-  }
+import java.util.*
 
-  public NodeListMember getNodeListMember(int index) {
-    return (NodeListMember)nodeListMemberList.get( index );
-  }
+/* NodeList...*/   class NodeList : XmlAction() {
+    /* constants from enums*/
+    fun addNodeListMember(nodeListMember: NodeListMember?) {
+        nodeListMemberList.add(nodeListMember)
+    }
 
-  public void removeFromNodeListMemberElementAt(int index) {
-    nodeListMemberList.remove( index );
-  }
+    fun addAtNodeListMember(position: Int, nodeListMember: NodeListMember?) {
+        nodeListMemberList.add(position, nodeListMember)
+    }
 
-  public int sizeNodeListMemberList() {
-    return nodeListMemberList.size();
-  }
+    fun getNodeListMember(index: Int): NodeListMember {
+        return nodeListMemberList[index] as NodeListMember
+    }
 
-  public void clearNodeListMemberList() {
-    nodeListMemberList.clear();
-  }
+    fun removeFromNodeListMemberElementAt(index: Int) {
+        nodeListMemberList.removeAt(index)
+    }
 
-  public java.util.List getListNodeListMemberList() {
-    return java.util.Collections.unmodifiableList(nodeListMemberList);
-  }
-    protected ArrayList nodeListMemberList = new ArrayList();
+    fun sizeNodeListMemberList(): Int {
+        return nodeListMemberList.size
+    }
 
+    fun clearNodeListMemberList() {
+        nodeListMemberList.clear()
+    }
+
+    val listNodeListMemberList: List<*>
+        get() = Collections.unmodifiableList(nodeListMemberList)
+    protected var nodeListMemberList: ArrayList<*> = ArrayList<Any?>()
 } /* NodeList*/

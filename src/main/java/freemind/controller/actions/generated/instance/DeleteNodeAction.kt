@@ -1,5 +1,4 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* DeleteNodeAction...*/
-public class DeleteNodeAction extends NodeAction {
-  /* constants from enums*/
-} /* DeleteNodeAction*/
+class DeleteNodeAction : NodeAction() { /* constants from enums*/ } /* DeleteNodeAction*/

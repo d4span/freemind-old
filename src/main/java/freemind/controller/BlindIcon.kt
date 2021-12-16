@@ -20,51 +20,39 @@
  * Created on 26.05.2004
  */
 /*$Id: BlindIcon.java,v 1.1.4.1.16.1 2010/09/30 22:38:47 christianfoltin Exp $*/
+package freemind.controller
 
-package freemind.controller;
-
-import java.awt.Component;
-import java.awt.Graphics;
-
-import javax.swing.Icon;
+import java.awt.Component
+import java.awt.Graphics
+import javax.swing.Icon
 
 /**
  * @author foltin
- * 
  */
-public class BlindIcon implements Icon {
-
-	private int length;
-
-	public BlindIcon(int length) {
-		this.length = length;
-	}
-
-	/*
+class BlindIcon(private val length: Int) : Icon {
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see javax.swing.Icon#getIconHeight()
 	 */
-	public int getIconHeight() {
-		return length;
-	}
+    override fun getIconHeight(): Int {
+        return length
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see javax.swing.Icon#getIconWidth()
 	 */
-	public int getIconWidth() {
-		return length;
-	}
+    override fun getIconWidth(): Int {
+        return length
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see javax.swing.Icon#paintIcon(java.awt.Component, java.awt.Graphics,
 	 * int, int)
 	 */
-	public void paintIcon(Component arg0, Graphics arg1, int arg2, int arg3) {
-	}
-
+    override fun paintIcon(arg0: Component, arg1: Graphics, arg2: Int, arg3: Int) {}
 }

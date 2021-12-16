@@ -1,77 +1,40 @@
-package freemind.controller.actions.generated.instance;
-/* Searchresults...*/
-import java.util.ArrayList;
-public class Searchresults extends XmlAction {
-  /* constants from enums*/
-  protected String timestamp;
-  protected String attribution;
-  protected String querystring;
-  protected String polygon;
-  protected String excludePlaceIds;
-  protected String moreUrl;
-  public String getTimestamp(){
-    return timestamp;
-  }
-  public String getAttribution(){
-    return attribution;
-  }
-  public String getQuerystring(){
-    return querystring;
-  }
-  public String getPolygon(){
-    return polygon;
-  }
-  public String getExcludePlaceIds(){
-    return excludePlaceIds;
-  }
-  public String getMoreUrl(){
-    return moreUrl;
-  }
-  public void setTimestamp(String value){
-    this.timestamp = value;
-  }
-  public void setAttribution(String value){
-    this.attribution = value;
-  }
-  public void setQuerystring(String value){
-    this.querystring = value;
-  }
-  public void setPolygon(String value){
-    this.polygon = value;
-  }
-  public void setExcludePlaceIds(String value){
-    this.excludePlaceIds = value;
-  }
-  public void setMoreUrl(String value){
-    this.moreUrl = value;
-  }
-  public void addPlace(Place place) {
-    placeList.add(place);
-  }
+package freemind.controller.actions.generated.instance
 
-  public void addAtPlace(int position, Place place) {
-    placeList.add(position, place);
-  }
+import java.util.*
 
-  public Place getPlace(int index) {
-    return (Place)placeList.get( index );
-  }
+/* Searchresults...*/   class Searchresults : XmlAction() {
+    /* constants from enums*/
+    var timestamp: String? = null
+    var attribution: String? = null
+    var querystring: String? = null
+    var polygon: String? = null
+    var excludePlaceIds: String? = null
+    var moreUrl: String? = null
+    fun addPlace(place: Place?) {
+        placeList.add(place)
+    }
 
-  public void removeFromPlaceElementAt(int index) {
-    placeList.remove( index );
-  }
+    fun addAtPlace(position: Int, place: Place?) {
+        placeList.add(position, place)
+    }
 
-  public int sizePlaceList() {
-    return placeList.size();
-  }
+    fun getPlace(index: Int): Place {
+        return placeList[index] as Place
+    }
 
-  public void clearPlaceList() {
-    placeList.clear();
-  }
+    fun removeFromPlaceElementAt(index: Int) {
+        placeList.removeAt(index)
+    }
 
-  public java.util.List getListPlaceList() {
-    return java.util.Collections.unmodifiableList(placeList);
-  }
-    protected ArrayList placeList = new ArrayList();
+    fun sizePlaceList(): Int {
+        return placeList.size
+    }
 
+    fun clearPlaceList() {
+        placeList.clear()
+    }
+
+    val listPlaceList: List<*>
+        get() = Collections.unmodifiableList(placeList)
+    protected var placeList: ArrayList<*> = ArrayList<Any?>()
 } /* Searchresults*/

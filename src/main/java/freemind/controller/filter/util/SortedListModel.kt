@@ -22,33 +22,30 @@
  * Copyright (C) 2005 Dimitri Polivaev
  *
  */
-package freemind.controller.filter.util;
+package freemind.controller.filter.util
 
-import javax.swing.ListModel;
+import javax.swing.ListModel
 
 /**
  * @author Dimitri Polivaev 18.06.2005
  */
-public interface SortedListModel extends ListModel {
-
-	/**
-     * 
+interface SortedListModel : ListModel<Any?> {
+    /**
+     *
      */
-	void clear();
+    fun clear()
 
-	/**
+    /**
      */
-	boolean contains(Object o);
+    operator fun contains(o: Any?): Boolean
 
-	/**
+    /**
      */
-	void add(Object o);
+    fun add(o: Any?)
+    fun replace(oldO: Any, newO: Any)
+    fun remove(o: Any?)
 
-	void replace(Object oldO, Object newO);
-
-	void remove(Object o);
-
-	/**
+    /**
      */
-	int getIndexOf(Object o);
+    fun getIndexOf(o: Any): Int
 }

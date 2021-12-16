@@ -1,12 +1,7 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* PluginClasspath...*/
-public class PluginClasspath {
-  /* constants from enums*/
-  protected String jar;
-  public String getJar(){
-    return jar;
-  }
-  public void setJar(String value){
-    this.jar = value;
-  }
+class PluginClasspath {
+    /* constants from enums*/
+    var jar: String? = null
 } /* PluginClasspath*/

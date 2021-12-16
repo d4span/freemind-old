@@ -1,42 +1,35 @@
-package freemind.controller.actions.generated.instance;
-/* PluginStrings...*/
-import java.util.ArrayList;
-public class PluginStrings {
-  /* constants from enums*/
-  protected String language;
-  public String getLanguage(){
-    return language;
-  }
-  public void setLanguage(String value){
-    this.language = value;
-  }
-  public void addPluginString(PluginString pluginString) {
-    pluginStringList.add(pluginString);
-  }
+package freemind.controller.actions.generated.instance
 
-  public void addAtPluginString(int position, PluginString pluginString) {
-    pluginStringList.add(position, pluginString);
-  }
+import java.util.*
 
-  public PluginString getPluginString(int index) {
-    return (PluginString)pluginStringList.get( index );
-  }
+/* PluginStrings...*/   class PluginStrings {
+    /* constants from enums*/
+    var language: String? = null
+    fun addPluginString(pluginString: PluginString?) {
+        pluginStringList.add(pluginString)
+    }
 
-  public void removeFromPluginStringElementAt(int index) {
-    pluginStringList.remove( index );
-  }
+    fun addAtPluginString(position: Int, pluginString: PluginString?) {
+        pluginStringList.add(position, pluginString)
+    }
 
-  public int sizePluginStringList() {
-    return pluginStringList.size();
-  }
+    fun getPluginString(index: Int): PluginString {
+        return pluginStringList[index] as PluginString
+    }
 
-  public void clearPluginStringList() {
-    pluginStringList.clear();
-  }
+    fun removeFromPluginStringElementAt(index: Int) {
+        pluginStringList.removeAt(index)
+    }
 
-  public java.util.List getListPluginStringList() {
-    return java.util.Collections.unmodifiableList(pluginStringList);
-  }
-    protected ArrayList pluginStringList = new ArrayList();
+    fun sizePluginStringList(): Int {
+        return pluginStringList.size
+    }
 
+    fun clearPluginStringList() {
+        pluginStringList.clear()
+    }
+
+    val listPluginStringList: List<*>
+        get() = Collections.unmodifiableList(pluginStringList)
+    protected var pluginStringList: ArrayList<*> = ArrayList<Any?>()
 } /* PluginStrings*/

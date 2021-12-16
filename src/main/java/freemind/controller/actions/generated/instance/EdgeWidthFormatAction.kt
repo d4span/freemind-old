@@ -1,12 +1,7 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* EdgeWidthFormatAction...*/
-public class EdgeWidthFormatAction extends FormatNodeAction {
-  /* constants from enums*/
-  protected int width;
-  public int getWidth(){
-    return width;
-  }
-  public void setWidth(int value){
-    this.width = value;
-  }
+class EdgeWidthFormatAction : FormatNodeAction() {
+    /* constants from enums*/
+    var width = 0
 } /* EdgeWidthFormatAction*/

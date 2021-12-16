@@ -21,57 +21,51 @@
  * Created on 15.05.2005
  *
  */
-package freemind.controller.filter;
+package freemind.controller.filter
 
 /**
  * @author dimitri 15.05.2005
  */
-public class FilterInfo {
-	private int info = Filter.FILTER_INITIAL_VALUE;
+class FilterInfo
+/**
+ *
+ */
+{
+    private var info: Int = Filter.Companion.FILTER_INITIAL_VALUE
+    fun reset() {
+        info = Filter.Companion.FILTER_INITIAL_VALUE
+    }
 
-	/**
-     * 
+    fun setAncestor() {
+        add(Filter.Companion.FILTER_SHOW_ANCESTOR)
+    }
+
+    fun setDescendant() {
+        add(Filter.Companion.FILTER_SHOW_DESCENDANT)
+    }
+
+    fun setMatched() {
+        add(Filter.Companion.FILTER_SHOW_MATCHED)
+    }
+
+    fun add(flag: Int) {
+        if (flag and (Filter.Companion.FILTER_SHOW_MATCHED or Filter.Companion.FILTER_SHOW_HIDDEN) != 0) {
+            info = info and Filter.Companion.FILTER_INITIAL_VALUE.inv()
+        }
+        info = info or flag
+    }
+
+    fun get(): Int {
+        return info
+    }
+
+    /**
      */
-	public FilterInfo() {
-		super();
-	}
+    val isAncestor: Boolean
+        get() = info and Filter.Companion.FILTER_SHOW_ANCESTOR != 0
 
-	public void reset() {
-		info = Filter.FILTER_INITIAL_VALUE;
-	}
-
-	public void setAncestor() {
-		add(Filter.FILTER_SHOW_ANCESTOR);
-	}
-
-	public void setDescendant() {
-		add(Filter.FILTER_SHOW_DESCENDANT);
-	}
-
-	public void setMatched() {
-		add(Filter.FILTER_SHOW_MATCHED);
-	}
-
-	void add(int flag) {
-		if ((flag & (Filter.FILTER_SHOW_MATCHED | Filter.FILTER_SHOW_HIDDEN)) != 0) {
-			info &= ~Filter.FILTER_INITIAL_VALUE;
-		}
-		info |= flag;
-	}
-
-	int get() {
-		return info;
-	}
-
-	/**
+    /**
      */
-	public boolean isAncestor() {
-		return (info & Filter.FILTER_SHOW_ANCESTOR) != 0;
-	}
-
-	/**
-     */
-	public boolean isMatched() {
-		return (info & Filter.FILTER_SHOW_MATCHED) != 0;
-	}
+    val isMatched: Boolean
+        get() = info and Filter.Companion.FILTER_SHOW_MATCHED != 0
 }

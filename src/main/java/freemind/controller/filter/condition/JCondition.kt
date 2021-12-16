@@ -21,23 +21,19 @@
  * Created on 06.11.2005
  * Copyright (C) 2005 Dimitri Polivaev
  */
-package freemind.controller.filter.condition;
+package freemind.controller.filter.condition
 
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
+import javax.swing.BoxLayout
+import javax.swing.JPanel
 
 /**
  * @author Dimitri Polivaev 06.11.2005
  */
-@SuppressWarnings("serial")
-public class JCondition extends JPanel {
-
-	/**
+class JCondition : JPanel() {
+    /**
      */
-	public JCondition() {
-		super();
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		setOpaque(false);
-	}
-
+    init {
+        layout = BoxLayout(this, BoxLayout.X_AXIS)
+        isOpaque = false
+    }
 }

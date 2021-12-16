@@ -20,146 +20,184 @@
  * 
  * Created on 25.02.2006
  */
+package freemind.common
 
-package freemind.common;
+import freemind.common.TextTranslator
+import freemind.common.PropertyBean
+import freemind.common.PropertyControl
+import javax.swing.JComboBox
+import java.awt.GraphicsEnvironment
+import javax.swing.DefaultComboBoxModel
+import java.awt.event.ActionListener
+import java.awt.event.ActionEvent
+import com.jgoodies.forms.builder.DefaultFormBuilder
+import javax.swing.JLabel
+import javax.swing.RootPaneContainer
+import freemind.common.FreeMindProgressMonitor
+import freemind.common.FreeMindTask.ProgressDescription
+import javax.swing.JPanel
+import java.awt.GridLayout
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseMotionAdapter
+import java.awt.event.KeyAdapter
+import freemind.common.FreeMindTask
+import java.lang.Runnable
+import kotlin.Throws
+import freemind.modes.MindIcon
+import javax.swing.JButton
+import freemind.modes.IconInformation
+import freemind.modes.common.dialogs.IconSelectionPopupDialog
+import java.beans.PropertyChangeListener
+import java.beans.PropertyChangeEvent
+import java.awt.Color
+import javax.swing.JPopupMenu
+import javax.swing.JMenuItem
+import java.util.Arrays
+import java.io.PushbackInputStream
+import java.io.IOException
+import javax.swing.JSpinner
+import javax.swing.SpinnerNumberModel
+import javax.swing.event.ChangeListener
+import javax.swing.event.ChangeEvent
+import java.lang.NumberFormatException
+import javax.swing.JTable
+import javax.swing.JTextField
+import java.awt.event.KeyEvent
+import freemind.common.BooleanProperty
+import javax.swing.JCheckBox
+import java.awt.event.ItemListener
+import java.awt.event.ItemEvent
+import java.util.Locale
+import java.awt.event.ComponentListener
+import freemind.common.ScalableJButton
+import java.awt.event.ComponentEvent
+import org.jibx.runtime.IMarshallingContext
+import freemind.common.XmlBindingTools
+import org.jibx.runtime.JiBXException
+import org.jibx.runtime.IUnmarshallingContext
+import javax.swing.JDialog
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage
+import java.awt.Dimension
+import javax.swing.JOptionPane
+import freemind.controller.actions.generated.instance.XmlAction
+import org.jibx.runtime.IBindingFactory
+import org.jibx.runtime.BindingDirectory
+import javax.swing.JPasswordField
+import javax.swing.JComponent
+import java.awt.BorderLayout
+import javax.swing.JSplitPane
+import kotlin.jvm.JvmStatic
+import tests.freemind.FreeMindMainMock
+import javax.swing.JFrame
+import freemind.common.JOptionalSplitPane
+import freemind.common.ThreeCheckBoxProperty
+import freemind.modes.mindmapmode.MindMapController
+import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin
+import freemind.common.ScriptEditorProperty
+import freemind.common.ScriptEditorProperty.ScriptEditorStarter
+import javax.swing.Icon
+import javax.swing.ImageIcon
+import freemind.controller.BlindIcon
+import javax.swing.JProgressBar
+import java.awt.GridBagLayout
+import java.awt.GridBagConstraints
+import java.awt.Insets
+import java.lang.InterruptedException
+import freemind.common.OptionalDontShowMeAgainDialog.DontShowPropertyHandler
+import freemind.common.OptionalDontShowMeAgainDialog
+import freemind.main.*
+import freemind.view.ImageFactory
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+open class ThreeCheckBoxProperty(override var description: String?, override var label: String?) : PropertyBean(), PropertyControl {
+    protected var mFalseValue = "false"
+    protected var mTrueValue = "true"
+    protected var mDontTouchValue = "don_t_touch"
+    var state = 0
+    var mButton = JButton()
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-
-import freemind.controller.BlindIcon;
-import freemind.main.Resources;
-
-public class ThreeCheckBoxProperty extends PropertyBean implements
-		PropertyControl {
-	protected String mFalseValue = "false";
-
-	protected String mTrueValue = "true";
-
-	protected String mDontTouchValue = "don_t_touch";
-
-	static public final String FALSE_VALUE = "false";
-
-	static public final String TRUE_VALUE = "true";
-
-	public static final String DON_T_TOUCH_VALUE = "don_t_touch";
-
-	protected static final int DON_T_TOUCH_VALUE_INT = 2;
-
-	protected static final int TRUE_VALUE_INT = 0;
-
-	protected static final int FALSE_VALUE_INT = 1;
-
-	private static final ImageIcon PLUS_IMAGE = freemind.view.ImageFactory.getInstance().createIcon(Resources
-			.getInstance().getResource("images/edit_add.png"));
-
-	private static final ImageIcon MINUS_IMAGE = freemind.view.ImageFactory.getInstance().createIcon(Resources
-			.getInstance().getResource("images/edit_remove.png"));
-
-	private static final Icon NO_IMAGE = new BlindIcon(15);
-
-	String description;
-
-	String label;
-
-	int state = 0;
-
-	JButton mButton = new JButton();
-
-	/**
+    /**
      */
-	public ThreeCheckBoxProperty(String description, String label) {
-		super();
-		this.description = description;
-		this.label = label;
-		// setState(0);
-		mButton.addActionListener(new ActionListener() {
+    init {
+        // setState(0);
+        mButton.addActionListener {
+            setState((getState() + 1) % 3)
+            firePropertyChangeEvent()
+        }
+    }
 
-			public void actionPerformed(ActionEvent e) {
-				setState((getState() + 1) % 3);
-				firePropertyChangeEvent();
-			}
+    private fun getState(): Int {
+        return state
+    }
 
-		});
-	}
+    private fun transformString(string: String?): Int {
+        if (string == null) {
+            return DON_T_TOUCH_VALUE_INT
+        }
+        if (string.lowercase(Locale.getDefault()) == mTrueValue) {
+            return TRUE_VALUE_INT
+        }
+        return if (string.lowercase(Locale.getDefault()) == mFalseValue) {
+            FALSE_VALUE_INT
+        } else DON_T_TOUCH_VALUE_INT
+    }
 
-	private int getState() {
-		return state;
-	}
+    override var value: String?
+        get() {
+            when (state) {
+                TRUE_VALUE_INT -> return mTrueValue
+                FALSE_VALUE_INT -> return mFalseValue
+                DON_T_TOUCH_VALUE_INT -> return mDontTouchValue
+            }
+            return null
+        }
+        set(value) {
+            require(!(value == null
+                    || !(value.lowercase(Locale.getDefault()) == mTrueValue || value.lowercase(Locale.getDefault()) == mFalseValue || value
+                    .lowercase(Locale.getDefault()) == mDontTouchValue))) {
+                ("Cannot set a boolean to "
+                        + value)
+            }
+            setState(transformString(value))
+        }
 
-	public String getDescription() {
-		return description;
-	}
+    override fun layout(builder: DefaultFormBuilder, pTranslator: TextTranslator) {
+        val label = builder.append(pTranslator.getText(label), mButton)
+        val tooltiptext = pTranslator.getText(description)
+        label.toolTipText = tooltiptext
+        mButton.toolTipText = tooltiptext
+    }
 
-	public String getLabel() {
-		return label;
-	}
+    override fun setEnabled(pEnabled: Boolean) {
+        mButton.isEnabled = pEnabled
+    }
 
-	public void setValue(String value) {
-		if (value == null
-				|| !(value.toLowerCase().equals(mTrueValue)
-						|| value.toLowerCase().equals(mFalseValue) || value
-						.toLowerCase().equals(mDontTouchValue))) {
-			throw new IllegalArgumentException("Cannot set a boolean to "
-					+ value);
-		}
-		setState(transformString(value));
-	}
-
-	private int transformString(String string) {
-		if (string == null) {
-			return DON_T_TOUCH_VALUE_INT;
-		}
-		if (string.toLowerCase().equals(mTrueValue)) {
-			return TRUE_VALUE_INT;
-		}
-		if (string.toLowerCase().equals(mFalseValue)) {
-			return FALSE_VALUE_INT;
-		}
-		return DON_T_TOUCH_VALUE_INT;
-	}
-
-	public String getValue() {
-		switch (state) {
-		case TRUE_VALUE_INT:
-			return mTrueValue;
-		case FALSE_VALUE_INT:
-			return mFalseValue;
-		case DON_T_TOUCH_VALUE_INT:
-			return mDontTouchValue;
-		}
-		return null;
-	}
-
-	public void layout(DefaultFormBuilder builder, TextTranslator pTranslator) {
-		JLabel label = builder.append(pTranslator.getText(getLabel()), mButton);
-		String tooltiptext = pTranslator.getText(getDescription());
-		label.setToolTipText(tooltiptext);
-		mButton.setToolTipText(tooltiptext);
-	}
-
-	public void setEnabled(boolean pEnabled) {
-		mButton.setEnabled(pEnabled);
-	}
-
-	/**
-     * 
+    /**
+     *
      */
-	protected void setState(int newState) {
-		state = newState;
-		Icon[] icons;
-		icons = new Icon[3]; // {MINUS_IMAGE, PLUS_IMAGE, NO_IMAGE};
-		icons[TRUE_VALUE_INT] = PLUS_IMAGE;
-		icons[FALSE_VALUE_INT] = MINUS_IMAGE;
-		icons[DON_T_TOUCH_VALUE_INT] = NO_IMAGE;
-		// mButton.setText(DISPLAY_VALUES[state]);
-		mButton.setIcon(icons[state]);
-	}
+    protected open fun setState(newState: Int) {
+        state = newState
+        val icons: Array<Icon?>
+        icons = arrayOfNulls(3) // {MINUS_IMAGE, PLUS_IMAGE, NO_IMAGE};
+        icons[TRUE_VALUE_INT] = PLUS_IMAGE
+        icons[FALSE_VALUE_INT] = MINUS_IMAGE
+        icons[DON_T_TOUCH_VALUE_INT] = NO_IMAGE
+        // mButton.setText(DISPLAY_VALUES[state]);
+        mButton.icon = icons[state]
+    }
 
+    companion object {
+        const val FALSE_VALUE = "false"
+        const val TRUE_VALUE = "true"
+        const val DON_T_TOUCH_VALUE = "don_t_touch"
+        protected const val DON_T_TOUCH_VALUE_INT = 2
+        protected const val TRUE_VALUE_INT = 0
+        protected const val FALSE_VALUE_INT = 1
+        private val PLUS_IMAGE = ImageFactory.getInstance().createIcon(Resources
+                .getInstance().getResource("images/edit_add.png"))
+        private val MINUS_IMAGE = ImageFactory.getInstance().createIcon(Resources
+                .getInstance().getResource("images/edit_remove.png"))
+        private val NO_IMAGE: Icon = BlindIcon(15)
+    }
 }

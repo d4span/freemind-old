@@ -20,77 +20,142 @@
  * 
  * Created on 25.02.2006
  */
+package freemind.common
 
-package freemind.common;
+import freemind.common.TextTranslator
+import freemind.common.PropertyBean
+import freemind.common.PropertyControl
+import javax.swing.JComboBox
+import java.awt.GraphicsEnvironment
+import javax.swing.DefaultComboBoxModel
+import java.awt.event.ActionListener
+import java.awt.event.ActionEvent
+import com.jgoodies.forms.builder.DefaultFormBuilder
+import javax.swing.JLabel
+import javax.swing.RootPaneContainer
+import freemind.common.FreeMindProgressMonitor
+import freemind.common.FreeMindTask.ProgressDescription
+import javax.swing.JPanel
+import java.awt.GridLayout
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseMotionAdapter
+import java.awt.event.KeyAdapter
+import freemind.common.FreeMindTask
+import java.lang.Runnable
+import kotlin.Throws
+import freemind.main.FreeMindMain
+import freemind.modes.MindIcon
+import javax.swing.JButton
+import freemind.modes.IconInformation
+import freemind.modes.common.dialogs.IconSelectionPopupDialog
+import java.beans.PropertyChangeListener
+import java.beans.PropertyChangeEvent
+import java.awt.Color
+import javax.swing.JPopupMenu
+import freemind.main.Tools
+import javax.swing.JMenuItem
+import java.util.Arrays
+import java.io.PushbackInputStream
+import java.io.IOException
+import javax.swing.JSpinner
+import javax.swing.SpinnerNumberModel
+import javax.swing.event.ChangeListener
+import javax.swing.event.ChangeEvent
+import java.lang.NumberFormatException
+import javax.swing.JTable
+import freemind.main.FreeMind
+import javax.swing.JTextField
+import java.awt.event.KeyEvent
+import freemind.common.BooleanProperty
+import javax.swing.JCheckBox
+import java.awt.event.ItemListener
+import java.awt.event.ItemEvent
+import java.util.Locale
+import java.awt.event.ComponentListener
+import freemind.common.ScalableJButton
+import java.awt.event.ComponentEvent
+import org.jibx.runtime.IMarshallingContext
+import freemind.common.XmlBindingTools
+import org.jibx.runtime.JiBXException
+import org.jibx.runtime.IUnmarshallingContext
+import javax.swing.JDialog
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage
+import java.awt.Dimension
+import javax.swing.JOptionPane
+import freemind.controller.actions.generated.instance.XmlAction
+import org.jibx.runtime.IBindingFactory
+import org.jibx.runtime.BindingDirectory
+import javax.swing.JPasswordField
+import javax.swing.JComponent
+import java.awt.BorderLayout
+import javax.swing.JSplitPane
+import kotlin.jvm.JvmStatic
+import tests.freemind.FreeMindMainMock
+import javax.swing.JFrame
+import freemind.common.JOptionalSplitPane
+import freemind.common.ThreeCheckBoxProperty
+import freemind.modes.mindmapmode.MindMapController
+import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin
+import freemind.common.ScriptEditorProperty
+import freemind.main.HtmlTools
+import freemind.common.ScriptEditorProperty.ScriptEditorStarter
+import javax.swing.Icon
+import javax.swing.ImageIcon
+import freemind.controller.BlindIcon
+import javax.swing.JProgressBar
+import java.awt.GridBagLayout
+import java.awt.GridBagConstraints
+import java.awt.Insets
+import java.lang.InterruptedException
+import freemind.common.OptionalDontShowMeAgainDialog.DontShowPropertyHandler
+import freemind.common.OptionalDontShowMeAgainDialog
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
 
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+open class BooleanProperty(override var description: String, override var label: String) : PropertyBean(), PropertyControl {
+    protected var mFalseValue = FALSE_VALUE
+    protected var mTrueValue = TRUE_VALUE
+    var mCheckBox = JCheckBox()
 
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-
-public class BooleanProperty extends PropertyBean implements PropertyControl {
-	static public final String FALSE_VALUE = "false";
-
-	static public final String TRUE_VALUE = "true";
-
-	protected String mFalseValue = FALSE_VALUE;
-
-	protected String mTrueValue = TRUE_VALUE;
-
-	String description;
-
-	String label;
-
-	JCheckBox mCheckBox = new JCheckBox();
-
-	/**
+    /**
      */
-	public BooleanProperty(String description, String label) {
-		super();
-		this.description = description;
-		this.label = label;
-		mCheckBox.addItemListener(new ItemListener() {
+    init {
+        mCheckBox.addItemListener { firePropertyChangeEvent() }
+    }
 
-			public void itemStateChanged(ItemEvent pE) {
-				firePropertyChangeEvent();
-			}
-		});
-	}
+    override fun getDescription(): String? {
+        return description
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    override fun getLabel(): String? {
+        return label
+    }
 
-	public String getLabel() {
-		return label;
-	}
+    override var value: String?
+        get() = if (mCheckBox.isSelected) mTrueValue else mFalseValue
+        set(value) {
+            require(!(value == null
+                    || !(value.lowercase(Locale.getDefault()) == mTrueValue || value
+                    .lowercase(Locale.getDefault()) == mFalseValue))) {
+                ("Cannot set a boolean to '"
+                        + value + "', allowed are " + mTrueValue + " and "
+                        + mFalseValue + ".")
+            }
+            mCheckBox.isSelected = value.lowercase(Locale.getDefault()) == mTrueValue
+        }
 
-	public void setValue(String value) {
-		if (value == null
-				|| !(value.toLowerCase().equals(mTrueValue) || value
-						.toLowerCase().equals(mFalseValue))) {
-			throw new IllegalArgumentException("Cannot set a boolean to '"
-					+ value + "', allowed are " + mTrueValue + " and "
-					+ mFalseValue + ".");
-		}
-		mCheckBox.setSelected(value.toLowerCase().equals(mTrueValue));
-	}
+    override fun layout(builder: DefaultFormBuilder, pTranslator: TextTranslator) {
+        val label = builder.append(pTranslator.getText(getLabel()),
+                mCheckBox)
+        label.toolTipText = pTranslator.getText(getDescription())
+    }
 
-	public String getValue() {
-		return mCheckBox.isSelected() ? mTrueValue : mFalseValue;
-	}
+    override fun setEnabled(pEnabled: Boolean) {
+        mCheckBox.isEnabled = pEnabled
+    }
 
-	public void layout(DefaultFormBuilder builder, TextTranslator pTranslator) {
-		JLabel label = builder.append(pTranslator.getText(getLabel()),
-				mCheckBox);
-		label.setToolTipText(pTranslator.getText(getDescription()));
-	}
-
-	public void setEnabled(boolean pEnabled) {
-		mCheckBox.setEnabled(pEnabled);
-	}
-
+    companion object {
+        const val FALSE_VALUE = "false"
+        const val TRUE_VALUE = "true"
+    }
 }

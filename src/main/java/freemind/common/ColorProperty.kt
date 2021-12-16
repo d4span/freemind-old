@@ -20,134 +20,172 @@
  * Created on 25.02.2006
  */
 /*$Id: ColorProperty.java,v 1.1.2.4.2.2 2008/07/24 03:10:36 christianfoltin Exp $*/
-package freemind.common;
+package freemind.common
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import freemind.common.TextTranslator
+import freemind.common.PropertyBean
+import freemind.common.PropertyControl
+import javax.swing.JComboBox
+import java.awt.GraphicsEnvironment
+import javax.swing.DefaultComboBoxModel
+import com.jgoodies.forms.builder.DefaultFormBuilder
+import javax.swing.JLabel
+import javax.swing.RootPaneContainer
+import freemind.common.FreeMindProgressMonitor
+import freemind.common.FreeMindTask.ProgressDescription
+import javax.swing.JPanel
+import java.awt.GridLayout
+import freemind.common.FreeMindTask
+import java.lang.Runnable
+import kotlin.Throws
+import freemind.main.FreeMindMain
+import freemind.modes.MindIcon
+import javax.swing.JButton
+import freemind.modes.IconInformation
+import freemind.modes.common.dialogs.IconSelectionPopupDialog
+import java.beans.PropertyChangeListener
+import java.beans.PropertyChangeEvent
+import java.awt.Color
+import javax.swing.JPopupMenu
+import freemind.main.Tools
+import javax.swing.JMenuItem
+import java.util.Arrays
+import java.io.PushbackInputStream
+import java.io.IOException
+import javax.swing.JSpinner
+import javax.swing.SpinnerNumberModel
+import javax.swing.event.ChangeListener
+import javax.swing.event.ChangeEvent
+import java.lang.NumberFormatException
+import javax.swing.JTable
+import freemind.main.FreeMind
+import javax.swing.JTextField
+import freemind.common.BooleanProperty
+import javax.swing.JCheckBox
+import java.util.Locale
+import freemind.common.ScalableJButton
+import org.jibx.runtime.IMarshallingContext
+import freemind.common.XmlBindingTools
+import org.jibx.runtime.JiBXException
+import org.jibx.runtime.IUnmarshallingContext
+import javax.swing.JDialog
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage
+import java.awt.Dimension
+import javax.swing.JOptionPane
+import freemind.controller.actions.generated.instance.XmlAction
+import org.jibx.runtime.IBindingFactory
+import org.jibx.runtime.BindingDirectory
+import javax.swing.JPasswordField
+import javax.swing.JComponent
+import java.awt.BorderLayout
+import javax.swing.JSplitPane
+import kotlin.jvm.JvmStatic
+import tests.freemind.FreeMindMainMock
+import javax.swing.JFrame
+import freemind.common.JOptionalSplitPane
+import freemind.common.ThreeCheckBoxProperty
+import freemind.modes.mindmapmode.MindMapController
+import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin
+import freemind.common.ScriptEditorProperty
+import freemind.main.HtmlTools
+import freemind.common.ScriptEditorProperty.ScriptEditorStarter
+import javax.swing.Icon
+import javax.swing.ImageIcon
+import freemind.controller.BlindIcon
+import javax.swing.JProgressBar
+import java.awt.GridBagLayout
+import java.awt.GridBagConstraints
+import java.awt.Insets
+import java.lang.InterruptedException
+import freemind.common.OptionalDontShowMeAgainDialog.DontShowPropertyHandler
+import freemind.common.OptionalDontShowMeAgainDialog
+import freemind.controller.Controller
+import java.awt.event.*
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
+class ColorProperty(override var description: String, override var label: String, private val defaultColor: String,
+                    private val mTranslator: TextTranslator) : PropertyBean(), PropertyControl, ActionListener {
+    /**
+     */
+    private var colorValue: Color?
+    var mButton: JButton
+    val menu = JPopupMenu()
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
+    /**
+     * @param defaultColor
+     * TODO
+     * @param pTranslator
+     * TODO
+     */
+    init {
+        mButton = JButton()
+        mButton.addActionListener(this)
+        colorValue = Color.BLACK
+    }
 
-import freemind.controller.Controller;
-import freemind.main.Tools;
+    override fun getDescription(): String? {
+        return description
+    }
 
-public class ColorProperty extends PropertyBean implements PropertyControl,
-		ActionListener {
-	String description;
+    override fun getLabel(): String? {
+        return label
+    }
 
-	String label;
+    override var value: String?
+        get() = Tools.colorToXml(colorValue)
+        set(value) {
+            setColorValue(Tools.xmlToColor(value))
+        }
 
-	Color color;
+    override fun layout(builder: DefaultFormBuilder, pTranslator: TextTranslator) {
+        val label = builder.append(pTranslator.getText(getLabel()), mButton)
+        label.toolTipText = pTranslator.getText(getDescription())
+        // add "reset to standard" popup:
 
-	JButton mButton;
-	final JPopupMenu menu = new JPopupMenu();
+        // Create and add a menu item
+        val item = JMenuItem(
+                mTranslator.getText("ColorProperty.ResetColor"))
+        item.addActionListener { value = defaultColor }
+        menu.add(item)
 
-	private final String defaultColor;
+        // Set the component to show the popup menu
+        mButton.addMouseListener(object : MouseAdapter() {
+            override fun mousePressed(evt: MouseEvent) {
+                if (evt.isPopupTrigger) {
+                    menu.show(evt.component, evt.x, evt.y)
+                }
+            }
 
-	private final TextTranslator mTranslator;
+            override fun mouseReleased(evt: MouseEvent) {
+                if (evt.isPopupTrigger) {
+                    menu.show(evt.component, evt.x, evt.y)
+                }
+            }
+        })
+    }
 
-	/**
-	 * @param defaultColor
-	 *            TODO
-	 * @param pTranslator
-	 *            TODO
-	 */
-	public ColorProperty(String description, String label, String defaultColor,
-			TextTranslator pTranslator) {
-		super();
-		this.description = description;
-		this.label = label;
-		this.defaultColor = defaultColor;
-		mTranslator = pTranslator;
-		mButton = new JButton();
-		mButton.addActionListener(this);
-		color = Color.BLACK;
-	}
+    override fun actionPerformed(arg0: ActionEvent) {
+        val result = Controller.showCommonJColorChooserDialog(
+                mButton.rootPane, mTranslator.getText(getLabel()),
+                colorValue)
+        if (result != null) {
+            setColorValue(result)
+            firePropertyChangeEvent()
+        }
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    /**
+     */
+    private fun setColorValue(result: Color) {
+        var result: Color? = result
+        colorValue = result
+        if (result == null) {
+            result = Color.WHITE
+        }
+        mButton.background = result
+        mButton.text = Tools.colorToXml(result)
+    }
 
-	public String getLabel() {
-		return label;
-	}
-
-	public void setValue(String value) {
-		setColorValue(Tools.xmlToColor(value));
-	}
-
-	public String getValue() {
-		return Tools.colorToXml(getColorValue());
-	}
-
-	public void layout(DefaultFormBuilder builder, TextTranslator pTranslator) {
-		JLabel label = builder.append(pTranslator.getText(getLabel()), mButton);
-		label.setToolTipText(pTranslator.getText(getDescription()));
-		// add "reset to standard" popup:
-
-		// Create and add a menu item
-		JMenuItem item = new JMenuItem(
-				mTranslator.getText("ColorProperty.ResetColor"));
-		item.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				setValue(defaultColor);
-			}
-		});
-		menu.add(item);
-
-		// Set the component to show the popup menu
-		mButton.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent evt) {
-				if (evt.isPopupTrigger()) {
-					menu.show(evt.getComponent(), evt.getX(), evt.getY());
-				}
-			}
-
-			public void mouseReleased(MouseEvent evt) {
-				if (evt.isPopupTrigger()) {
-					menu.show(evt.getComponent(), evt.getX(), evt.getY());
-				}
-			}
-		});
-	}
-
-	public void actionPerformed(ActionEvent arg0) {
-		Color result = Controller.showCommonJColorChooserDialog(
-				mButton.getRootPane(), mTranslator.getText(getLabel()),
-				getColorValue());
-		if (result != null) {
-			setColorValue(result);
-			firePropertyChangeEvent();
-		}
-	}
-
-	/**
-	 */
-	private void setColorValue(Color result) {
-		color = result;
-		if (result == null) {
-			result = Color.WHITE;
-		}
-		mButton.setBackground(result);
-		mButton.setText(Tools.colorToXml(result));
-	}
-
-	/**
-	 */
-	private Color getColorValue() {
-		return color;
-	}
-
-	public void setEnabled(boolean pEnabled) {
-		mButton.setEnabled(pEnabled);
-	}
-
+    override fun setEnabled(pEnabled: Boolean) {
+        mButton.isEnabled = pEnabled
+    }
 }

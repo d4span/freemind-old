@@ -20,85 +20,139 @@
  * Created on 25.02.2006
  */
 /*$Id: FontProperty.java,v 1.1.2.4.2.2 2007/06/27 07:03:57 dpolivaev Exp $*/
-package freemind.common;
+package freemind.common
 
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import freemind.common.TextTranslator
+import freemind.common.PropertyBean
+import freemind.common.PropertyControl
+import javax.swing.JComboBox
+import javax.swing.DefaultComboBoxModel
+import java.awt.event.ActionListener
+import java.awt.event.ActionEvent
+import com.jgoodies.forms.builder.DefaultFormBuilder
+import javax.swing.JLabel
+import javax.swing.RootPaneContainer
+import freemind.common.FreeMindProgressMonitor
+import freemind.common.FreeMindTask.ProgressDescription
+import javax.swing.JPanel
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseMotionAdapter
+import java.awt.event.KeyAdapter
+import freemind.common.FreeMindTask
+import java.lang.Runnable
+import kotlin.Throws
+import freemind.main.FreeMindMain
+import freemind.modes.MindIcon
+import javax.swing.JButton
+import freemind.modes.IconInformation
+import freemind.modes.common.dialogs.IconSelectionPopupDialog
+import java.beans.PropertyChangeListener
+import java.beans.PropertyChangeEvent
+import javax.swing.JPopupMenu
+import freemind.main.Tools
+import javax.swing.JMenuItem
+import java.util.Arrays
+import java.io.PushbackInputStream
+import java.io.IOException
+import javax.swing.JSpinner
+import javax.swing.SpinnerNumberModel
+import javax.swing.event.ChangeListener
+import javax.swing.event.ChangeEvent
+import java.lang.NumberFormatException
+import javax.swing.JTable
+import freemind.main.FreeMind
+import javax.swing.JTextField
+import java.awt.event.KeyEvent
+import freemind.common.BooleanProperty
+import javax.swing.JCheckBox
+import java.awt.event.ItemListener
+import java.awt.event.ItemEvent
+import java.util.Locale
+import java.awt.event.ComponentListener
+import freemind.common.ScalableJButton
+import java.awt.event.ComponentEvent
+import org.jibx.runtime.IMarshallingContext
+import freemind.common.XmlBindingTools
+import org.jibx.runtime.JiBXException
+import org.jibx.runtime.IUnmarshallingContext
+import javax.swing.JDialog
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage
+import javax.swing.JOptionPane
+import freemind.controller.actions.generated.instance.XmlAction
+import org.jibx.runtime.IBindingFactory
+import org.jibx.runtime.BindingDirectory
+import javax.swing.JPasswordField
+import javax.swing.JComponent
+import javax.swing.JSplitPane
+import kotlin.jvm.JvmStatic
+import tests.freemind.FreeMindMainMock
+import javax.swing.JFrame
+import freemind.common.JOptionalSplitPane
+import freemind.common.ThreeCheckBoxProperty
+import freemind.modes.mindmapmode.MindMapController
+import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin
+import freemind.common.ScriptEditorProperty
+import freemind.main.HtmlTools
+import freemind.common.ScriptEditorProperty.ScriptEditorStarter
+import javax.swing.Icon
+import javax.swing.ImageIcon
+import freemind.controller.BlindIcon
+import javax.swing.JProgressBar
+import java.lang.InterruptedException
+import freemind.common.OptionalDontShowMeAgainDialog.DontShowPropertyHandler
+import freemind.common.OptionalDontShowMeAgainDialog
+import java.awt.*
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
+class FontProperty(override var description: String, override var label: String,
+                   pTranslator: TextTranslator?) : PropertyBean(), PropertyControl {
+    var font: Font? = null
+    var mFontComboBox = JComboBox<String>()
+    private val mAvailableFontFamilyNames: Array<String>
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
+    /**
+     * TODO TODO
+     */
+    init {
+        mAvailableFontFamilyNames = GraphicsEnvironment
+                .getLocalGraphicsEnvironment().availableFontFamilyNames
+        mFontComboBox.model = DefaultComboBoxModel(
+                mAvailableFontFamilyNames)
+        mFontComboBox.addActionListener { firePropertyChangeEvent() }
+    }
 
-public class FontProperty extends PropertyBean implements PropertyControl {
-	String description;
+    override fun getDescription(): String? {
+        return description
+    }
 
-	String label;
+    override fun getLabel(): String? {
+        return label
+    }
 
-	Font font = null;
+    override fun layout(builder: DefaultFormBuilder, pTranslator: TextTranslator) {
+        val label = builder.append(pTranslator.getText(getLabel()),
+                mFontComboBox)
+        label.toolTipText = pTranslator.getText(getDescription())
+    }
 
-	JComboBox<String> mFontComboBox = new JComboBox<>();
+    override var value: String?
+        get() = mAvailableFontFamilyNames[mFontComboBox.selectedIndex]
+        set(pValue) {
+            for (i in mAvailableFontFamilyNames.indices) {
+                val fontName = mAvailableFontFamilyNames[i]
+                if (fontName == pValue) {
+                    mFontComboBox.selectedIndex = i
+                    return
+                }
+            }
+            System.err.println("Unknown value:$pValue")
+            if (mFontComboBox.model.size > 0) {
+                mFontComboBox.selectedIndex = 0
+            }
+        }
 
-	private String[] mAvailableFontFamilyNames;
-
-	/**
-	 * TODO TODO
-	 */
-	public FontProperty(String description, String label,
-			TextTranslator pTranslator) {
-		super();
-		this.description = description;
-		this.label = label;
-		mAvailableFontFamilyNames = GraphicsEnvironment
-				.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-		mFontComboBox.setModel(new DefaultComboBoxModel<>(
-				mAvailableFontFamilyNames));
-		mFontComboBox.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent pE) {
-				firePropertyChangeEvent();
-			}
-		});
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public void layout(DefaultFormBuilder builder, TextTranslator pTranslator) {
-		JLabel label = builder.append(pTranslator.getText(getLabel()),
-				mFontComboBox);
-		label.setToolTipText(pTranslator.getText(getDescription()));
-
-	}
-
-	public void setValue(String pValue) {
-		for (int i = 0; i < mAvailableFontFamilyNames.length; i++) {
-			String fontName = mAvailableFontFamilyNames[i];
-			if (fontName.equals(pValue)) {
-				mFontComboBox.setSelectedIndex(i);
-				return;
-			}
-		}
-		System.err.println("Unknown value:" + pValue);
-		if (mFontComboBox.getModel().getSize() > 0) {
-			mFontComboBox.setSelectedIndex(0);
-		}
-	}
-
-	public String getValue() {
-		return mAvailableFontFamilyNames[mFontComboBox.getSelectedIndex()];
-	}
-
-	public void setEnabled(boolean pEnabled) {
-		mFontComboBox.setEnabled(pEnabled);
-	}
-
+    override fun setEnabled(pEnabled: Boolean) {
+        mFontComboBox.isEnabled = pEnabled
+    }
 }

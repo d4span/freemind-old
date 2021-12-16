@@ -20,113 +20,177 @@
  * Created on 25.02.2006
  */
 /*$Id: ScriptEditorProperty.java,v 1.1.2.6 2008/07/04 20:44:02 christianfoltin Exp $*/
-package freemind.common;
+package freemind.common
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPopupMenu;
+import freemind.common.TextTranslator
+import freemind.common.PropertyBean
+import freemind.common.PropertyControl
+import javax.swing.JComboBox
+import java.awt.GraphicsEnvironment
+import javax.swing.DefaultComboBoxModel
+import java.awt.event.ActionListener
+import java.awt.event.ActionEvent
+import com.jgoodies.forms.builder.DefaultFormBuilder
+import javax.swing.JLabel
+import javax.swing.RootPaneContainer
+import freemind.common.FreeMindProgressMonitor
+import freemind.common.FreeMindTask.ProgressDescription
+import javax.swing.JPanel
+import java.awt.GridLayout
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseMotionAdapter
+import java.awt.event.KeyAdapter
+import freemind.common.FreeMindTask
+import java.lang.Runnable
+import kotlin.Throws
+import freemind.main.FreeMindMain
+import freemind.modes.MindIcon
+import javax.swing.JButton
+import freemind.modes.IconInformation
+import freemind.modes.common.dialogs.IconSelectionPopupDialog
+import java.beans.PropertyChangeListener
+import java.beans.PropertyChangeEvent
+import java.awt.Color
+import javax.swing.JPopupMenu
+import freemind.main.Tools
+import javax.swing.JMenuItem
+import java.util.Arrays
+import java.io.PushbackInputStream
+import java.io.IOException
+import javax.swing.JSpinner
+import javax.swing.SpinnerNumberModel
+import javax.swing.event.ChangeListener
+import javax.swing.event.ChangeEvent
+import java.lang.NumberFormatException
+import javax.swing.JTable
+import freemind.main.FreeMind
+import javax.swing.JTextField
+import java.awt.event.KeyEvent
+import freemind.common.BooleanProperty
+import javax.swing.JCheckBox
+import java.awt.event.ItemListener
+import java.awt.event.ItemEvent
+import java.util.Locale
+import java.awt.event.ComponentListener
+import freemind.common.ScalableJButton
+import java.awt.event.ComponentEvent
+import org.jibx.runtime.IMarshallingContext
+import freemind.common.XmlBindingTools
+import org.jibx.runtime.JiBXException
+import org.jibx.runtime.IUnmarshallingContext
+import javax.swing.JDialog
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage
+import java.awt.Dimension
+import javax.swing.JOptionPane
+import freemind.controller.actions.generated.instance.XmlAction
+import org.jibx.runtime.IBindingFactory
+import org.jibx.runtime.BindingDirectory
+import javax.swing.JPasswordField
+import javax.swing.JComponent
+import java.awt.BorderLayout
+import javax.swing.JSplitPane
+import kotlin.jvm.JvmStatic
+import tests.freemind.FreeMindMainMock
+import javax.swing.JFrame
+import freemind.common.JOptionalSplitPane
+import freemind.common.ThreeCheckBoxProperty
+import freemind.modes.mindmapmode.MindMapController
+import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin
+import freemind.common.ScriptEditorProperty
+import freemind.main.HtmlTools
+import freemind.common.ScriptEditorProperty.ScriptEditorStarter
+import javax.swing.Icon
+import javax.swing.ImageIcon
+import freemind.controller.BlindIcon
+import javax.swing.JProgressBar
+import java.awt.GridBagLayout
+import java.awt.GridBagConstraints
+import java.awt.Insets
+import java.lang.InterruptedException
+import freemind.common.OptionalDontShowMeAgainDialog.DontShowPropertyHandler
+import freemind.common.OptionalDontShowMeAgainDialog
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import java.util.logging.Logger
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
+class ScriptEditorProperty(override var description: String, override var label: String,
+                           private val mMindMapController: MindMapController) : PropertyBean(), PropertyControl, ActionListener {
+    interface ScriptEditorStarter : MindMapControllerPlugin {
+        fun startEditor(scriptInput: String?): String?
+    }
 
-import freemind.main.HtmlTools;
-import freemind.modes.mindmapmode.MindMapController;
-import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin;
+    var script: String
+    var mButton: JButton
+    val menu = JPopupMenu()
 
-public class ScriptEditorProperty extends PropertyBean implements
-		PropertyControl, ActionListener {
+    /**
+     */
+    init {
+        if (logger == null) {
+            logger = mMindMapController.frame.getLogger(
+                    this.javaClass.name)
+        }
+        mButton = JButton()
+        mButton.addActionListener(this)
+        script = ""
+    }
 
-	public interface ScriptEditorStarter extends MindMapControllerPlugin {
-		String startEditor(String scriptInput);
-	}
+    override fun getDescription(): String? {
+        return description
+    }
 
-	String description;
+    override fun getLabel(): String? {
+        return label
+    }
 
-	String label;
+    override var value: String?
+        get() = HtmlTools.unicodeToHTMLUnicodeEntity(HtmlTools
+                .toXMLEscapedText(script), false)
+        set(value) {
+            setScriptValue(value)
+        }
 
-	String script;
+    override fun layout(builder: DefaultFormBuilder, pTranslator: TextTranslator) {
+        val label = builder.append(pTranslator.getText(getLabel()), mButton)
+        label.toolTipText = pTranslator.getText(getDescription())
+    }
 
-	JButton mButton;
-	final JPopupMenu menu = new JPopupMenu();
+    override fun actionPerformed(arg0: ActionEvent) {
+        // search for plugin that handles the script editor.
+        for (plugin in mMindMapController.plugins) {
+            if (plugin is ScriptEditorStarter) {
+                val resultScript = plugin.startEditor(script)
+                if (resultScript != null) {
+                    script = resultScript
+                    firePropertyChangeEvent()
+                }
+            }
+        }
+    }
 
-	private final MindMapController mMindMapController;
+    /**
+     */
+    private fun setScriptValue(result: String?) {
+        var result = result
+        if (result == null) {
+            result = ""
+        }
+        script = HtmlTools.toXMLUnescapedText(HtmlTools
+                .unescapeHTMLUnicodeEntity(result))
+        logger!!.fine("Setting script to $script")
+        mButton.text = script
+    }
 
-	private static java.util.logging.Logger logger = null;
+    // /**
+    // */
+    // private Color getColorValue() {
+    // return color;
+    // }
+    override fun setEnabled(pEnabled: Boolean) {
+        mButton.isEnabled = pEnabled
+    }
 
-	/**
-	 */
-	public ScriptEditorProperty(String description, String label,
-			MindMapController pMindMapController) {
-		super();
-		this.description = description;
-		this.label = label;
-		mMindMapController = pMindMapController;
-		if (logger == null) {
-			logger = mMindMapController.getFrame().getLogger(
-					this.getClass().getName());
-		}
-		mButton = new JButton();
-		mButton.addActionListener(this);
-		script = "";
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public void setValue(String value) {
-		setScriptValue(value);
-	}
-
-	public String getValue() {
-		return HtmlTools.unicodeToHTMLUnicodeEntity(HtmlTools
-				.toXMLEscapedText(script), false);
-	}
-
-	public void layout(DefaultFormBuilder builder, TextTranslator pTranslator) {
-		JLabel label = builder.append(pTranslator.getText(getLabel()), mButton);
-		label.setToolTipText(pTranslator.getText(getDescription()));
-	}
-
-	public void actionPerformed(ActionEvent arg0) {
-		// search for plugin that handles the script editor.
-		for (MindMapControllerPlugin plugin : mMindMapController.getPlugins()) {
-			if (plugin instanceof ScriptEditorStarter) {
-				ScriptEditorStarter starter = (ScriptEditorStarter) plugin;
-				String resultScript = starter.startEditor(script);
-				if (resultScript != null) {
-					script = resultScript;
-					firePropertyChangeEvent();
-				}
-			}
-		}
-	}
-
-	/**
-	 */
-	private void setScriptValue(String result) {
-		if (result == null) {
-			result = "";
-		}
-		script = HtmlTools.toXMLUnescapedText(HtmlTools
-				.unescapeHTMLUnicodeEntity(result));
-		logger.fine("Setting script to " + script);
-		mButton.setText(script);
-	}
-
-	// /**
-	// */
-	// private Color getColorValue() {
-	// return color;
-	// }
-
-	public void setEnabled(boolean pEnabled) {
-		mButton.setEnabled(pEnabled);
-	}
-
+    companion object {
+        private var logger: Logger? = null
+    }
 }

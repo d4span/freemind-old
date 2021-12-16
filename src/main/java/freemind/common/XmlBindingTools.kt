@@ -20,169 +20,217 @@
  * Created on 23.06.2004
  */
 /*$Id: XmlBindingTools.java,v 1.1.2.2.2.5 2009/05/20 19:19:11 christianfoltin Exp $*/
+package freemind.common
 
-package freemind.common;
-
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Toolkit;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-
-import org.jibx.runtime.BindingDirectory;
-import org.jibx.runtime.IBindingFactory;
-import org.jibx.runtime.IMarshallingContext;
-import org.jibx.runtime.IUnmarshallingContext;
-import org.jibx.runtime.JiBXException;
-
-import freemind.controller.Controller;
-import freemind.controller.actions.generated.instance.WindowConfigurationStorage;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.main.Resources;
+import freemind.common.TextTranslator
+import freemind.common.PropertyBean
+import freemind.common.PropertyControl
+import javax.swing.JComboBox
+import javax.swing.DefaultComboBoxModel
+import java.awt.event.ActionListener
+import java.awt.event.ActionEvent
+import com.jgoodies.forms.builder.DefaultFormBuilder
+import javax.swing.JLabel
+import javax.swing.RootPaneContainer
+import freemind.common.FreeMindProgressMonitor
+import freemind.common.FreeMindTask.ProgressDescription
+import javax.swing.JPanel
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseMotionAdapter
+import java.awt.event.KeyAdapter
+import freemind.common.FreeMindTask
+import java.lang.Runnable
+import kotlin.Throws
+import freemind.modes.MindIcon
+import javax.swing.JButton
+import freemind.modes.IconInformation
+import freemind.modes.common.dialogs.IconSelectionPopupDialog
+import java.beans.PropertyChangeListener
+import java.beans.PropertyChangeEvent
+import javax.swing.JPopupMenu
+import javax.swing.JMenuItem
+import java.util.Arrays
+import javax.swing.JSpinner
+import javax.swing.SpinnerNumberModel
+import javax.swing.event.ChangeListener
+import javax.swing.event.ChangeEvent
+import java.lang.NumberFormatException
+import javax.swing.JTable
+import javax.swing.JTextField
+import java.awt.event.KeyEvent
+import freemind.common.BooleanProperty
+import javax.swing.JCheckBox
+import java.awt.event.ItemListener
+import java.awt.event.ItemEvent
+import java.util.Locale
+import java.awt.event.ComponentListener
+import freemind.common.ScalableJButton
+import java.awt.event.ComponentEvent
+import org.jibx.runtime.IMarshallingContext
+import freemind.common.XmlBindingTools
+import org.jibx.runtime.JiBXException
+import org.jibx.runtime.IUnmarshallingContext
+import javax.swing.JDialog
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage
+import javax.swing.JOptionPane
+import freemind.controller.actions.generated.instance.XmlAction
+import org.jibx.runtime.IBindingFactory
+import org.jibx.runtime.BindingDirectory
+import javax.swing.JPasswordField
+import javax.swing.JComponent
+import javax.swing.JSplitPane
+import kotlin.jvm.JvmStatic
+import tests.freemind.FreeMindMainMock
+import javax.swing.JFrame
+import freemind.common.JOptionalSplitPane
+import freemind.common.ThreeCheckBoxProperty
+import freemind.modes.mindmapmode.MindMapController
+import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin
+import freemind.common.ScriptEditorProperty
+import freemind.common.ScriptEditorProperty.ScriptEditorStarter
+import javax.swing.Icon
+import javax.swing.ImageIcon
+import freemind.controller.BlindIcon
+import javax.swing.JProgressBar
+import java.lang.InterruptedException
+import freemind.common.OptionalDontShowMeAgainDialog.DontShowPropertyHandler
+import freemind.common.OptionalDontShowMeAgainDialog
+import freemind.controller.Controller
+import freemind.main.*
+import java.awt.*
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import java.io.*
 
 /**
  * @author foltin Singleton
  */
-public class XmlBindingTools {
+class XmlBindingTools private constructor() {
+    fun createMarshaller(): IMarshallingContext? {
+        return try {
+            mBindingFactory!!.createMarshallingContext()
+        } catch (e: JiBXException) {
+            Resources.getInstance().logException(e)
+            null
+        }
+    }
 
-	private static XmlBindingTools instance;
-	private static IBindingFactory mBindingFactory;
+    fun createUnmarshaller(): IUnmarshallingContext? {
+        return try {
+            mBindingFactory!!.createUnmarshallingContext()
+        } catch (e: JiBXException) {
+            Resources.getInstance().logException(e)
+            null
+        }
+    }
 
-	private XmlBindingTools() {
-	}
+    fun storeDialogPositions(controller: Controller, dialog: JDialog,
+                             storage: WindowConfigurationStorage,
+                             window_preference_storage_property: String?) {
+        val result = storeDialogPositions(storage, dialog)
+        controller.setProperty(window_preference_storage_property, result)
+    }
 
-	public static XmlBindingTools getInstance() {
-		if (instance == null) {
-			instance = new XmlBindingTools();
-			try {
-				mBindingFactory = BindingDirectory.getFactory(XmlAction.class);
-			} catch (JiBXException e) {
-				freemind.main.Resources.getInstance().logException(e);
-			}
+    fun storeDialogPositions(storage: WindowConfigurationStorage,
+                             dialog: JDialog): String? {
+        storage.x = dialog.x
+        storage.y = dialog.y
+        storage.width = dialog.width
+        storage.height = dialog.height
+        return marshall(storage)
+    }
 
-		}
-		return instance;
-	}
+    fun decorateDialog(controller: Controller,
+                       dialog: JDialog, window_preference_storage_property: String?): WindowConfigurationStorage? {
+        val marshalled = controller
+                .getProperty(window_preference_storage_property)
+        return decorateDialog(marshalled, dialog)
+    }
 
-	public IMarshallingContext createMarshaller() {
-		try {
-			return mBindingFactory.createMarshallingContext();
-		} catch (JiBXException e) {
-			freemind.main.Resources.getInstance().logException(e);
-			return null;
-		}
-	}
+    fun decorateDialog(marshalled: String?,
+                       dialog: JDialog): WindowConfigurationStorage? {
+        // String unmarshalled = controller.getProperty(
+        // propertyName);
+        if (marshalled != null) {
+            val storage = unMarshall(marshalled) as WindowConfigurationStorage?
+            if (storage != null) {
+                // Check that location is on current screen.
+                val screenSize: Dimension
+                if (Resources.getInstance().getBoolProperty(
+                                "place_dialogs_on_first_screen")) {
+                    val defaultToolkit = Toolkit.getDefaultToolkit()
+                    screenSize = defaultToolkit.screenSize
+                } else {
+                    screenSize = Dimension()
+                    screenSize.height = Int.MAX_VALUE
+                    screenSize.width = Int.MAX_VALUE
+                }
+                val delta = 20
+                dialog.setLocation(
+                        Math.min(storage.x, screenSize.width - delta),
+                        Math.min(storage.y, screenSize.height - delta))
+                dialog.size = Dimension(storage.width, storage
+                        .height)
+                return storage
+            }
+        }
 
-	public IUnmarshallingContext createUnmarshaller() {
-		try {
-			return mBindingFactory.createUnmarshallingContext();
-		} catch (JiBXException e) {
-			freemind.main.Resources.getInstance().logException(e);
-			return null;
-		}
-	}
+        // set standard dialog size of no size is stored
+        val rootFrame = JOptionPane.getFrameForComponent(dialog)
+        val prefSize = rootFrame.size
+        prefSize.width = prefSize.width * 3 / 4
+        prefSize.height = prefSize.height * 3 / 4
+        dialog.size = prefSize
+        return null
+    }
 
-	public void storeDialogPositions(Controller controller, JDialog dialog,
-			WindowConfigurationStorage storage,
-			String window_preference_storage_property) {
-		String result = storeDialogPositions(storage, dialog);
-		controller.setProperty(window_preference_storage_property, result);
-	}
+    fun marshall(action: XmlAction?): String? {
+        // marshall:
+        // marshal to StringBuffer:
+        val writer = StringWriter()
+        val m = instance
+                .createMarshaller()
+        try {
+            m!!.marshalDocument(action, "UTF-8", null, writer)
+        } catch (e: JiBXException) {
+            Resources.getInstance().logException(e)
+            return null
+        }
+        return writer.toString()
+    }
 
-	protected String storeDialogPositions(WindowConfigurationStorage storage,
-			JDialog dialog) {
-		storage.setX((dialog.getX()));
-		storage.setY((dialog.getY()));
-		storage.setWidth((dialog.getWidth()));
-		storage.setHeight((dialog.getHeight()));
-		String marshalled = marshall(storage);
-		String result = marshalled;
-		return result;
-	}
+    fun unMarshall(inputString: String?): XmlAction? {
+        return unMarshall(StringReader(inputString))
+    }
 
-	public WindowConfigurationStorage decorateDialog(Controller controller,
-			JDialog dialog, String window_preference_storage_property) {
-		String marshalled = controller
-				.getProperty(window_preference_storage_property);
-		WindowConfigurationStorage result = decorateDialog(marshalled, dialog);
-		return result;
-	}
-
-	public WindowConfigurationStorage decorateDialog(String marshalled,
-			JDialog dialog) {
-		// String unmarshalled = controller.getProperty(
-		// propertyName);
-		if (marshalled != null) {
-			WindowConfigurationStorage storage = (WindowConfigurationStorage) unMarshall(marshalled);
-			if (storage != null) {
-				// Check that location is on current screen.
-				Dimension screenSize;
-				if (Resources.getInstance().getBoolProperty(
-						"place_dialogs_on_first_screen")) {
-					Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
-					screenSize = defaultToolkit.getScreenSize();
-				} else {
-					screenSize = new Dimension();
-					screenSize.height = Integer.MAX_VALUE;
-					screenSize.width = Integer.MAX_VALUE;
-				}
-				int delta = 20;
-				dialog.setLocation(
-						Math.min(storage.getX(), screenSize.width - delta),
-						Math.min(storage.getY(), screenSize.height - delta));
-				dialog.setSize(new Dimension(storage.getWidth(), storage
-						.getHeight()));
-				return storage;
-			}
-		}
-
-		// set standard dialog size of no size is stored
-		final Frame rootFrame = JOptionPane.getFrameForComponent(dialog);
-		final Dimension prefSize = rootFrame.getSize();
-		prefSize.width = prefSize.width * 3 / 4;
-		prefSize.height = prefSize.height * 3 / 4;
-		dialog.setSize(prefSize);
-		return null;
-	}
-
-	public String marshall(XmlAction action) {
-		// marshall:
-		// marshal to StringBuffer:
-		StringWriter writer = new StringWriter();
-		IMarshallingContext m = XmlBindingTools.getInstance()
-				.createMarshaller();
-		try {
-			m.marshalDocument(action, "UTF-8", null, writer);
-		} catch (JiBXException e) {
-			freemind.main.Resources.getInstance().logException(e);
-			return null;
-		}
-		String result = writer.toString();
-		return result;
-
-	}
-
-	public XmlAction unMarshall(String inputString) {
-		return unMarshall(new StringReader(inputString));
-	}
-
-	/**
+    /**
      */
-	public XmlAction unMarshall(Reader reader) {
-		try {
-			// unmarshall:
-			IUnmarshallingContext u = XmlBindingTools.getInstance()
-					.createUnmarshaller();
-			XmlAction doAction = (XmlAction) u.unmarshalDocument(reader, null);
-			return doAction;
-		} catch (JiBXException e) {
-			freemind.main.Resources.getInstance().logException(e);
-			return null;
-		}
-	}
+    fun unMarshall(reader: Reader?): XmlAction? {
+        return try {
+            // unmarshall:
+            val u = instance
+                    .createUnmarshaller()
+            u!!.unmarshalDocument(reader, null) as XmlAction
+        } catch (e: JiBXException) {
+            Resources.getInstance().logException(e)
+            null
+        }
+    }
 
+    companion object {
+        var instance: XmlBindingTools? = null
+            get() {
+                if (field == null) {
+                    field = XmlBindingTools()
+                    try {
+                        mBindingFactory = BindingDirectory.getFactory(XmlAction::class.java)
+                    } catch (e: JiBXException) {
+                        Resources.getInstance().logException(e)
+                    }
+                }
+                return field
+            }
+            private set
+        private var mBindingFactory: IBindingFactory? = null
+    }
 }

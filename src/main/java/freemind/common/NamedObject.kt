@@ -21,52 +21,42 @@
  * Created on 08.05.2005
  *
  */
-package freemind.common;
+package freemind.common
 
 /**
  * Utility Class for displaying local object names in GUI components.
- * 
+ *
  * @author Dimitri Polivaev 18.01.2007
  */
-public class NamedObject {
-	private String name;
-	private Object object;
+class NamedObject {
+    var name: String? = null
+        private set
+    var `object`: Any? = null
+        private set
 
-	private NamedObject() {
-	}
+    private constructor() {}
+    constructor(`object`: Any?, name: String?) {
+        this.`object` = `object`
+        this.name = name
+    }
 
-	public NamedObject(Object object, String name) {
-		this.object = object;
-		this.name = name;
+    override fun equals(o: Any?): Boolean {
+        if (o is NamedObject) {
+            return `object` == o.`object`
+        }
+        return `object` == o
+    }
 
-	}
+    override fun toString(): String {
+        return name!!
+    }
 
-	static public NamedObject literal(String literal) {
-		NamedObject result = new NamedObject();
-		result.object = literal;
-		result.name = literal;
-		return result;
-	}
-
-	public boolean equals(Object o) {
-		if (o instanceof NamedObject) {
-			NamedObject ts = (NamedObject) o;
-			return object.equals(ts.object);
-		}
-		return object.equals(o);
-	}
-
-	public String toString() {
-		return name;
-	}
-
-	public Object getObject() {
-		return object;
-	}
-
-	public String getName() {
-		return name;
-	}
-	
-	
+    companion object {
+        fun literal(literal: String?): NamedObject {
+            val result = NamedObject()
+            result.`object` = literal
+            result.name = literal
+            return result
+        }
+    }
 }

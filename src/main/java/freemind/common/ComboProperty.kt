@@ -20,136 +20,201 @@
  * Created on 25.02.2006
  */
 /*$Id: ComboProperty.java,v 1.1.2.5.2.2 2006/07/25 20:28:19 christianfoltin Exp $*/
-package freemind.common;
+package freemind.common
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
+import freemind.common.TextTranslator
+import freemind.common.PropertyBean
+import freemind.common.PropertyControl
+import javax.swing.JComboBox
+import java.awt.GraphicsEnvironment
+import javax.swing.DefaultComboBoxModel
+import java.awt.event.ActionListener
+import java.awt.event.ActionEvent
+import com.jgoodies.forms.builder.DefaultFormBuilder
+import javax.swing.JLabel
+import javax.swing.RootPaneContainer
+import freemind.common.FreeMindProgressMonitor
+import freemind.common.FreeMindTask.ProgressDescription
+import javax.swing.JPanel
+import java.awt.GridLayout
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseMotionAdapter
+import java.awt.event.KeyAdapter
+import freemind.common.FreeMindTask
+import java.lang.Runnable
+import kotlin.Throws
+import freemind.main.FreeMindMain
+import freemind.modes.MindIcon
+import javax.swing.JButton
+import freemind.modes.IconInformation
+import freemind.modes.common.dialogs.IconSelectionPopupDialog
+import java.beans.PropertyChangeListener
+import java.beans.PropertyChangeEvent
+import java.awt.Color
+import javax.swing.JPopupMenu
+import freemind.main.Tools
+import javax.swing.JMenuItem
+import java.io.PushbackInputStream
+import java.io.IOException
+import javax.swing.JSpinner
+import javax.swing.SpinnerNumberModel
+import javax.swing.event.ChangeListener
+import javax.swing.event.ChangeEvent
+import java.lang.NumberFormatException
+import javax.swing.JTable
+import freemind.main.FreeMind
+import javax.swing.JTextField
+import java.awt.event.KeyEvent
+import freemind.common.BooleanProperty
+import javax.swing.JCheckBox
+import java.awt.event.ItemListener
+import java.awt.event.ItemEvent
+import java.awt.event.ComponentListener
+import freemind.common.ScalableJButton
+import java.awt.event.ComponentEvent
+import org.jibx.runtime.IMarshallingContext
+import freemind.common.XmlBindingTools
+import org.jibx.runtime.JiBXException
+import org.jibx.runtime.IUnmarshallingContext
+import javax.swing.JDialog
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage
+import java.awt.Dimension
+import javax.swing.JOptionPane
+import freemind.controller.actions.generated.instance.XmlAction
+import org.jibx.runtime.IBindingFactory
+import org.jibx.runtime.BindingDirectory
+import javax.swing.JPasswordField
+import javax.swing.JComponent
+import java.awt.BorderLayout
+import javax.swing.JSplitPane
+import kotlin.jvm.JvmStatic
+import tests.freemind.FreeMindMainMock
+import javax.swing.JFrame
+import freemind.common.JOptionalSplitPane
+import freemind.common.ThreeCheckBoxProperty
+import freemind.modes.mindmapmode.MindMapController
+import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin
+import freemind.common.ScriptEditorProperty
+import freemind.main.HtmlTools
+import freemind.common.ScriptEditorProperty.ScriptEditorStarter
+import javax.swing.Icon
+import javax.swing.ImageIcon
+import freemind.controller.BlindIcon
+import javax.swing.JProgressBar
+import java.awt.GridBagLayout
+import java.awt.GridBagConstraints
+import java.awt.Insets
+import java.lang.InterruptedException
+import freemind.common.OptionalDontShowMeAgainDialog.DontShowPropertyHandler
+import freemind.common.OptionalDontShowMeAgainDialog
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import java.util.*
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
+open class ComboProperty : PropertyBean, PropertyControl {
+    override var description: String
+    override var label: String
+    protected var mComboBox = JComboBox<String?>()
+    protected var possibleValues: Vector<String?>? = null
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
+    /**
+     * @param pTranslator
+     * TODO
+     */
+    constructor(description: String, label: String, possibles: Array<String>,
+                pTranslator: TextTranslator) : super() {
+        this.description = description
+        this.label = label
+        fillPossibleValues(possibles)
+        val possibleTranslations = Vector<String?>()
+        for (key in possibleValues!!) {
+            possibleTranslations.add(pTranslator.getText(key))
+        }
+        mComboBox.model = DefaultComboBoxModel(possibleTranslations)
+        addActionListener()
+    }
 
-public class ComboProperty extends PropertyBean implements PropertyControl {
-	String description;
+    protected fun addActionListener() {
+        mComboBox.addActionListener { firePropertyChangeEvent() }
+    }
 
-	String label;
+    constructor(description: String, label: String, possibles: Array<String>,
+                possibleTranslations: List<String?>?) {
+        this.description = description
+        this.label = label
+        fillPossibleValues(possibles)
+        mComboBox.model = DefaultComboBoxModel(Vector(
+                possibleTranslations))
+        addActionListener()
+    }
 
-	protected JComboBox<String> mComboBox = new JComboBox<>();
+    constructor(description: String, label: String, possibles: List<String?>,
+                possibleTranslations: List<String?>?) {
+        this.description = description
+        this.label = label
+        fillPossibleValues(possibles)
+        mComboBox.model = DefaultComboBoxModel(Vector(
+                possibleTranslations))
+    }
 
-	protected Vector<String> possibleValues;
+    /**
+     */
+    private fun fillPossibleValues(possibles: Array<String>) {
+        fillPossibleValues(Arrays.asList(*possibles))
+    }
 
-	/**
-	 * @param pTranslator
-	 *            TODO
-	 */
-	public ComboProperty(String description, String label, String[] possibles,
-			TextTranslator pTranslator) {
-		super();
-		this.description = description;
-		this.label = label;
-		fillPossibleValues(possibles);
-		Vector<String> possibleTranslations = new Vector<>();
-		for (String key : possibleValues) {
-			possibleTranslations.add(pTranslator.getText(key));
-		}
-		mComboBox.setModel(new DefaultComboBoxModel<>(possibleTranslations));
-		addActionListener();
-	}
+    /**
+     */
+    private fun fillPossibleValues(possibles: List<String?>) {
+        possibleValues = Vector()
+        possibleValues!!.addAll(possibles)
+    }
 
-	protected void addActionListener() {
-		mComboBox.addActionListener(new ActionListener() {
+    /**
+     * If your combo base changes, call this method to update the values. The
+     * old selected value is not selected, but the first in the list. Thus, you
+     * should call this method only shortly before setting the value with
+     * setValue.
+     */
+    fun updateComboBoxEntries(possibles: List<String?>, possibleTranslations: List<String?>?) {
+        mComboBox.model = DefaultComboBoxModel(Vector(
+                possibleTranslations))
+        fillPossibleValues(possibles)
+        if (possibles.size > 0) {
+            mComboBox.selectedIndex = 0
+        }
+    }
 
-			public void actionPerformed(ActionEvent pE) {
-				firePropertyChangeEvent();
-			}
-		});
-	}
+    override fun getDescription(): String? {
+        return description
+    }
 
-	public ComboProperty(String description, String label, String[] possibles,
-			List<String> possibleTranslations) {
-		this.description = description;
-		this.label = label;
-		fillPossibleValues(possibles);
-		mComboBox.setModel(new DefaultComboBoxModel<String>(new Vector<String>(
-				possibleTranslations)));
-		addActionListener();
-	}
+    override fun getLabel(): String? {
+        return label
+    }
 
-	public ComboProperty(String description, String label, List<String> possibles,
-			List<String> possibleTranslations) {
-		this.description = description;
-		this.label = label;
-		fillPossibleValues(possibles);
-		mComboBox.setModel(new DefaultComboBoxModel<String>(new Vector<String>(
-				possibleTranslations)));
-	}
+    override var value: String?
+        get() = possibleValues!![mComboBox.selectedIndex]
+        set(value) {
+            if (possibleValues!!.contains(value)) {
+                mComboBox.setSelectedIndex(possibleValues!!.indexOf(value))
+            } else {
+                System.err.println("Can't set the value:" + value
+                        + " into the combo box " + getLabel() + "/"
+                        + getDescription())
+                if (mComboBox.model.size > 0) {
+                    mComboBox.selectedIndex = 0
+                }
+            }
+        }
 
-	/**
-	 */
-	private void fillPossibleValues(String[] possibles) {
-		fillPossibleValues(Arrays.asList(possibles));
-	}
+    override fun layout(builder: DefaultFormBuilder, pTranslator: TextTranslator) {
+        val label = builder.append(pTranslator.getText(getLabel()),
+                mComboBox)
+        label.toolTipText = pTranslator.getText(getDescription())
+    }
 
-	/**
-	 */
-	private void fillPossibleValues(List<String> possibles) {
-		this.possibleValues = new Vector<>();
-		possibleValues.addAll(possibles);
-	}
-
-	/**
-	 * If your combo base changes, call this method to update the values. The
-	 * old selected value is not selected, but the first in the list. Thus, you
-	 * should call this method only shortly before setting the value with
-	 * setValue.
-	 */
-	public void updateComboBoxEntries(List<String> possibles, List<String> possibleTranslations) {
-		mComboBox.setModel(new DefaultComboBoxModel<String>(new Vector<String>(
-				possibleTranslations)));
-		fillPossibleValues(possibles);
-		if (possibles.size() > 0) {
-			mComboBox.setSelectedIndex(0);
-		}
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public void setValue(String value) {
-		if (possibleValues.contains(value)) {
-			mComboBox.setSelectedIndex(possibleValues.indexOf(value));
-		} else {
-			System.err.println("Can't set the value:" + value
-					+ " into the combo box " + getLabel() + "/"
-					+ getDescription());
-			if (mComboBox.getModel().getSize() > 0) {
-				mComboBox.setSelectedIndex(0);
-			}
-		}
-	}
-
-	public String getValue() {
-		return (String) possibleValues.get(mComboBox.getSelectedIndex());
-	}
-
-	public void layout(DefaultFormBuilder builder, TextTranslator pTranslator) {
-		JLabel label = builder.append(pTranslator.getText(getLabel()),
-				mComboBox);
-		label.setToolTipText(pTranslator.getText(getDescription()));
-	}
-
-	public void setEnabled(boolean pEnabled) {
-		mComboBox.setEnabled(pEnabled);
-	}
-
+    override fun setEnabled(pEnabled: Boolean) {
+        mComboBox.isEnabled = pEnabled
+    }
 }

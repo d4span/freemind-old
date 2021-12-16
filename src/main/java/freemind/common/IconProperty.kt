@@ -20,103 +20,160 @@
  * Created on 25.02.2006
  */
 /*$Id: IconProperty.java,v 1.1.2.1.2.4 2007/08/05 22:15:21 dpolivaev Exp $*/
-package freemind.common;
+package freemind.common
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Vector;
+import freemind.common.TextTranslator
+import freemind.common.PropertyBean
+import freemind.common.PropertyControl
+import javax.swing.JComboBox
+import java.awt.GraphicsEnvironment
+import javax.swing.DefaultComboBoxModel
+import java.awt.event.ActionListener
+import java.awt.event.ActionEvent
+import com.jgoodies.forms.builder.DefaultFormBuilder
+import javax.swing.JLabel
+import javax.swing.RootPaneContainer
+import freemind.common.FreeMindProgressMonitor
+import freemind.common.FreeMindTask.ProgressDescription
+import javax.swing.JPanel
+import java.awt.GridLayout
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseMotionAdapter
+import java.awt.event.KeyAdapter
+import freemind.common.FreeMindTask
+import java.lang.Runnable
+import kotlin.Throws
+import freemind.main.FreeMindMain
+import freemind.modes.MindIcon
+import javax.swing.JButton
+import freemind.modes.IconInformation
+import freemind.modes.common.dialogs.IconSelectionPopupDialog
+import java.beans.PropertyChangeListener
+import java.beans.PropertyChangeEvent
+import java.awt.Color
+import javax.swing.JPopupMenu
+import freemind.main.Tools
+import javax.swing.JMenuItem
+import java.io.PushbackInputStream
+import java.io.IOException
+import javax.swing.JSpinner
+import javax.swing.SpinnerNumberModel
+import javax.swing.event.ChangeListener
+import javax.swing.event.ChangeEvent
+import java.lang.NumberFormatException
+import javax.swing.JTable
+import freemind.main.FreeMind
+import javax.swing.JTextField
+import java.awt.event.KeyEvent
+import freemind.common.BooleanProperty
+import javax.swing.JCheckBox
+import java.awt.event.ItemListener
+import java.awt.event.ItemEvent
+import java.awt.event.ComponentListener
+import freemind.common.ScalableJButton
+import java.awt.event.ComponentEvent
+import org.jibx.runtime.IMarshallingContext
+import freemind.common.XmlBindingTools
+import org.jibx.runtime.JiBXException
+import org.jibx.runtime.IUnmarshallingContext
+import javax.swing.JDialog
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage
+import java.awt.Dimension
+import javax.swing.JOptionPane
+import freemind.controller.actions.generated.instance.XmlAction
+import org.jibx.runtime.IBindingFactory
+import org.jibx.runtime.BindingDirectory
+import javax.swing.JPasswordField
+import javax.swing.JComponent
+import java.awt.BorderLayout
+import javax.swing.JSplitPane
+import kotlin.jvm.JvmStatic
+import tests.freemind.FreeMindMainMock
+import javax.swing.JFrame
+import freemind.common.JOptionalSplitPane
+import freemind.common.ThreeCheckBoxProperty
+import freemind.modes.mindmapmode.MindMapController
+import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin
+import freemind.common.ScriptEditorProperty
+import freemind.main.HtmlTools
+import freemind.common.ScriptEditorProperty.ScriptEditorStarter
+import javax.swing.Icon
+import javax.swing.ImageIcon
+import freemind.controller.BlindIcon
+import javax.swing.JProgressBar
+import java.awt.GridBagLayout
+import java.awt.GridBagConstraints
+import java.awt.Insets
+import java.lang.InterruptedException
+import freemind.common.OptionalDontShowMeAgainDialog.DontShowPropertyHandler
+import freemind.common.OptionalDontShowMeAgainDialog
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import java.util.*
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
+class IconProperty(override var description: String, override var label: String, private val mFreeMindMain: FreeMindMain,
+                   /**
+                    * Of IconInformation s.
+                    */
+                   private val mIcons: Vector<MindIcon>) : PropertyBean(), PropertyControl, ActionListener {
+    var mButton: JButton
+    private var mActualIcon: MindIcon? = null
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
+    init {
+        mButton = JButton()
+        mButton.addActionListener(this)
+    }
 
-import freemind.main.FreeMindMain;
-import freemind.modes.IconInformation;
-import freemind.modes.MindIcon;
-import freemind.modes.common.dialogs.IconSelectionPopupDialog;
+    override fun getDescription(): String? {
+        return description
+    }
 
-public class IconProperty extends PropertyBean implements PropertyControl,
-		ActionListener {
-	String description;
+    override fun getLabel(): String? {
+        return label
+    }
 
-	String label;
+    private fun setIcon(actualIcon: MindIcon?) {
+        mButton.icon = actualIcon!!.icon
+        mButton.toolTipText = actualIcon.description
+    }
 
-	JButton mButton;
+    override var value: String?
+        get() = mActualIcon!!.name
+        set(value) {
+            for (icon in mIcons) {
+                if (icon.name == value) {
+                    mActualIcon = icon
+                    setIcon(mActualIcon)
+                }
+            }
+        }
 
-	private final FreeMindMain mFreeMindMain;
+    override fun layout(builder: DefaultFormBuilder, pTranslator: TextTranslator) {
+        val label = builder.append(pTranslator.getText(getLabel()), mButton)
+        label.toolTipText = pTranslator.getText(getDescription())
+    }
 
-	/**
-	 * Of IconInformation s.
-	 */
-	private final Vector<MindIcon> mIcons;
+    override fun actionPerformed(arg0: ActionEvent) {
+        val icons = Vector<IconInformation>()
+        val descriptions = Vector<String>()
+        for (icon in mIcons) {
+            icons.add(icon)
+            descriptions.add(icon.description)
+        }
+        val dialog = IconSelectionPopupDialog(
+                mFreeMindMain.jFrame, icons, mFreeMindMain)
+        dialog.setLocationRelativeTo(mFreeMindMain.jFrame)
+        dialog.isModal = true
+        dialog.isVisible = true
+        val result = dialog.result
+        if (result >= 0) {
+            val icon = mIcons[result] as MindIcon
+            value = icon.name
+            firePropertyChangeEvent()
+        }
+    }
 
-	private MindIcon mActualIcon = null;
-
-	public IconProperty(String description, String label, FreeMindMain frame,
-			Vector<MindIcon> icons) {
-		super();
-		this.description = description;
-		this.label = label;
-		this.mFreeMindMain = frame;
-		this.mIcons = icons;
-		mButton = new JButton();
-		mButton.addActionListener(this);
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public void setValue(String value) {
-		for (MindIcon icon : mIcons) {
-			if (icon.getName().equals(value)) {
-				mActualIcon = icon;
-				setIcon(mActualIcon);
-			}
-		}
-	}
-
-	private void setIcon(MindIcon actualIcon) {
-		mButton.setIcon(actualIcon.getIcon());
-		mButton.setToolTipText(actualIcon.getDescription());
-	}
-
-	public String getValue() {
-		return mActualIcon.getName();
-	}
-
-	public void layout(DefaultFormBuilder builder, TextTranslator pTranslator) {
-		JLabel label = builder.append(pTranslator.getText(getLabel()), mButton);
-		label.setToolTipText(pTranslator.getText(getDescription()));
-	}
-
-	public void actionPerformed(ActionEvent arg0) {
-		Vector<IconInformation> icons = new Vector<>();
-		Vector<String> descriptions = new Vector<>();
-		for (MindIcon icon : mIcons) {
-			icons.add(icon);
-			descriptions.add(icon.getDescription());
-		}
-		IconSelectionPopupDialog dialog = new IconSelectionPopupDialog(
-				mFreeMindMain.getJFrame(), icons, mFreeMindMain);
-		dialog.setLocationRelativeTo(mFreeMindMain.getJFrame());
-		dialog.setModal(true);
-		dialog.setVisible(true);
-		int result = dialog.getResult();
-		if (result >= 0) {
-			MindIcon icon = (MindIcon) mIcons.get(result);
-			setValue(icon.getName());
-			firePropertyChangeEvent();
-		}
-	}
-
-	public void setEnabled(boolean pEnabled) {
-		mButton.setEnabled(pEnabled);
-	}
-
+    override fun setEnabled(pEnabled: Boolean) {
+        mButton.isEnabled = pEnabled
+    }
 }

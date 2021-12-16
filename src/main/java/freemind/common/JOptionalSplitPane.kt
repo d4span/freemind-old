@@ -17,164 +17,218 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package freemind.common
 
-package freemind.common;
-
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.util.HashMap;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-
-import tests.freemind.FreeMindMainMock;
-import freemind.main.Resources;
+import freemind.common.TextTranslator
+import freemind.common.PropertyBean
+import freemind.common.PropertyControl
+import java.awt.GraphicsEnvironment
+import java.awt.event.ActionListener
+import java.awt.event.ActionEvent
+import com.jgoodies.forms.builder.DefaultFormBuilder
+import freemind.common.FreeMindProgressMonitor
+import freemind.common.FreeMindTask.ProgressDescription
+import java.awt.GridLayout
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseMotionAdapter
+import java.awt.event.KeyAdapter
+import freemind.common.FreeMindTask
+import java.lang.Runnable
+import kotlin.Throws
+import freemind.modes.MindIcon
+import freemind.modes.IconInformation
+import freemind.modes.common.dialogs.IconSelectionPopupDialog
+import java.beans.PropertyChangeListener
+import java.beans.PropertyChangeEvent
+import java.awt.Color
+import java.util.Arrays
+import java.io.PushbackInputStream
+import java.io.IOException
+import javax.swing.event.ChangeListener
+import javax.swing.event.ChangeEvent
+import java.lang.NumberFormatException
+import java.awt.event.KeyEvent
+import freemind.common.BooleanProperty
+import java.awt.event.ItemListener
+import java.awt.event.ItemEvent
+import java.util.Locale
+import java.awt.event.ComponentListener
+import freemind.common.ScalableJButton
+import java.awt.event.ComponentEvent
+import org.jibx.runtime.IMarshallingContext
+import freemind.common.XmlBindingTools
+import org.jibx.runtime.JiBXException
+import org.jibx.runtime.IUnmarshallingContext
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage
+import java.awt.Dimension
+import freemind.controller.actions.generated.instance.XmlAction
+import org.jibx.runtime.IBindingFactory
+import org.jibx.runtime.BindingDirectory
+import java.awt.BorderLayout
+import kotlin.jvm.JvmStatic
+import tests.freemind.FreeMindMainMock
+import freemind.common.JOptionalSplitPane
+import freemind.common.ThreeCheckBoxProperty
+import freemind.modes.mindmapmode.MindMapController
+import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin
+import freemind.common.ScriptEditorProperty
+import freemind.common.ScriptEditorProperty.ScriptEditorStarter
+import freemind.controller.BlindIcon
+import java.awt.GridBagLayout
+import java.awt.GridBagConstraints
+import java.awt.Insets
+import java.lang.InterruptedException
+import freemind.common.OptionalDontShowMeAgainDialog.DontShowPropertyHandler
+import freemind.common.OptionalDontShowMeAgainDialog
+import freemind.main.*
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import java.lang.IllegalArgumentException
+import java.util.HashMap
+import javax.swing.*
 
 /**
  * Should display one or two JComponents. If two, it should use a JSplitPane
  * internally. Future: if more than two, it can use a JTabbedPane.
- * 
+ *
  * @author foltin
  * @date 26.08.2014
  */
-@SuppressWarnings("serial")
-public class JOptionalSplitPane extends JPanel {
+class JOptionalSplitPane : JPanel() {
+    private val mComponentHash = HashMap<Int, JComponent>()
+    private var mBasicComponent: JComponent? = null
+    /**
+     * @return the lastDividerPosition
+     */
+    /**
+     * @param pLastDividerPosition the lastDividerPosition to set
+     */
+    var lastDividerPosition = -1
 
-	private HashMap<Integer, JComponent> mComponentHash = new HashMap<Integer, JComponent>();
-	private JComponent mBasicComponent = null;
-	private int mLastDividerPosition = -1; 
-	
-	
-	public JOptionalSplitPane() {
-		setLayout(new BorderLayout());
-	}
-	
-	public int getAmountOfComponents() {
-		return mComponentHash.size();
-	}
+    init {
+        layout = BorderLayout()
+    }
 
-	public void setComponent(JComponent pComponent, int index) {
-		checkIndex(index);
-		JComponent formerComponent = null;
-		if(mComponentHash.containsKey(index)) {
-			formerComponent = mComponentHash.get(index);
-			if (pComponent == formerComponent) {
-				// Already present.
-				return;
-			}
-		}
-		mComponentHash.put(index, pComponent);
-		// correct basic component?
-		switch(mComponentHash.size()) {
-		case 1:
-				if(!(mBasicComponent instanceof JPanel)) {
-					setSingleJPanel(pComponent);
-				} else {
-					// remove former:
-					mBasicComponent.remove(formerComponent);
-					mBasicComponent.add(pComponent, BorderLayout.CENTER);
-					revalidate();
-				}
-				break;
-		case 2:
-				if(!(mBasicComponent instanceof JSplitPane)) {
-					remove(mBasicComponent);
-					// TODO: Make configurable.
-					JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-					mBasicComponent = splitPane;
-					splitPane.setLeftComponent(mComponentHash.get(0));
-					splitPane.setRightComponent(mComponentHash.get(1));
-					if (getLastDividerPosition() >= 0) {
-						// Restore divider location
-						splitPane.setDividerLocation(getLastDividerPosition());
-					}
-					add(mBasicComponent, BorderLayout.CENTER);
-					revalidate();
-				} else {
-					// some component has changed:
-					JSplitPane splitPane = (JSplitPane) mBasicComponent;
-					setLastDividerPosition(splitPane.getDividerLocation());
-					splitPane.remove(formerComponent);
-					splitPane.setLeftComponent(mComponentHash.get(0));
-					splitPane.setRightComponent(mComponentHash.get(1));
-					splitPane.setDividerLocation(getLastDividerPosition());
-					revalidate();
-				}
-				break;
-		default:
-				throw new IllegalArgumentException("Too many indices: " + mComponentHash.size());
-		}
-	}
+    val amountOfComponents: Int
+        get() = mComponentHash.size
 
-	/**
-	 * @param pComponent
-	 */
-	private void setSingleJPanel(JComponent pComponent) {
-		if (mBasicComponent != null) {
-			if(mBasicComponent instanceof JSplitPane) {
-				setLastDividerPosition(((JSplitPane) mBasicComponent).getDividerLocation());
-			}
-			remove(mBasicComponent);
-		}
-		mBasicComponent = new JPanel();
-		mBasicComponent.setLayout(new BorderLayout());
-		mBasicComponent.add(pComponent, BorderLayout.CENTER);
-		add(mBasicComponent, BorderLayout.CENTER);
-		revalidate();
-	}
-	
-	public void removeComponent(int index) {
-		checkIndex(index);
-		if(!mComponentHash.containsKey(index)) {
-			return;
-		}
-//		JComponent formerComponent = mComponentHash.get(index);
-		mComponentHash.remove(index);
-		switch(mComponentHash.size()) {
-		case 0:
-			if (mBasicComponent != null) {
-				remove(mBasicComponent);
-			}
-			mBasicComponent = new JLabel();
-			add(mBasicComponent);
-			revalidate();
-			break;
-		case 1:
-			// TODO: Too complicated:
-			setSingleJPanel(mComponentHash.values().iterator().next());
-			break;
-		default:
-			throw new IllegalArgumentException("Wrong indices: " + mComponentHash.size());
-		}
-	}
+    fun setComponent(pComponent: JComponent, index: Int) {
+        checkIndex(index)
+        var formerComponent: JComponent? = null
+        if (mComponentHash.containsKey(index)) {
+            formerComponent = mComponentHash[index]
+            if (pComponent === formerComponent) {
+                // Already present.
+                return
+            }
+        }
+        mComponentHash[index] = pComponent
+        when (mComponentHash.size) {
+            1 -> if (mBasicComponent !is JPanel) {
+                setSingleJPanel(pComponent)
+            } else {
+                // remove former:
+                mBasicComponent.remove(formerComponent)
+                mBasicComponent.add(pComponent, BorderLayout.CENTER)
+                revalidate()
+            }
+            2 -> if (mBasicComponent !is JSplitPane) {
+                remove(mBasicComponent)
+                // TODO: Make configurable.
+                val splitPane = JSplitPane(JSplitPane.HORIZONTAL_SPLIT)
+                mBasicComponent = splitPane
+                splitPane.leftComponent = mComponentHash[0]
+                splitPane.rightComponent = mComponentHash[1]
+                if (lastDividerPosition >= 0) {
+                    // Restore divider location
+                    splitPane.dividerLocation = lastDividerPosition
+                }
+                add(mBasicComponent, BorderLayout.CENTER)
+                revalidate()
+            } else {
+                // some component has changed:
+                val splitPane = mBasicComponent as JSplitPane
+                lastDividerPosition = splitPane.dividerLocation
+                splitPane.remove(formerComponent)
+                splitPane.leftComponent = mComponentHash[0]
+                splitPane.rightComponent = mComponentHash[1]
+                splitPane.dividerLocation = lastDividerPosition
+                revalidate()
+            }
+            else -> throw IllegalArgumentException("Too many indices: " + mComponentHash.size)
+        }
+    }
 
-	/**
-	 * @param index
-	 */
-	private void checkIndex(int index) {
-		if(index < 0 || index > 1) {
-			throw new IllegalArgumentException("Wrong index: " + index);
-		}
-	}
+    /**
+     * @param pComponent
+     */
+    private fun setSingleJPanel(pComponent: JComponent) {
+        if (mBasicComponent != null) {
+            if (mBasicComponent is JSplitPane) {
+                lastDividerPosition = (mBasicComponent as JSplitPane).dividerLocation
+            }
+            remove(mBasicComponent)
+        }
+        mBasicComponent = JPanel()
+        mBasicComponent.setLayout(BorderLayout())
+        mBasicComponent.add(pComponent, BorderLayout.CENTER)
+        add(mBasicComponent, BorderLayout.CENTER)
+        revalidate()
+    }
 
+    fun removeComponent(index: Int) {
+        checkIndex(index)
+        if (!mComponentHash.containsKey(index)) {
+            return
+        }
+        //		JComponent formerComponent = mComponentHash.get(index);
+        mComponentHash.remove(index)
+        when (mComponentHash.size) {
+            0 -> {
+                if (mBasicComponent != null) {
+                    remove(mBasicComponent)
+                }
+                mBasicComponent = JLabel()
+                add(mBasicComponent)
+                revalidate()
+            }
+            1 ->            // TODO: Too complicated:
+                setSingleJPanel(mComponentHash.values.iterator().next())
+            else -> throw IllegalArgumentException("Wrong indices: " + mComponentHash.size)
+        }
+    }
 
-	public static void main(String[] args) {
-		Resources.createInstance(new FreeMindMainMock());
-		final JFrame frame = new JFrame("JOptionalSplitPane");
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		final JOptionalSplitPane panel = new JOptionalSplitPane();
-		Container contentPane = frame.getContentPane();
-		contentPane.setLayout(new GridLayout(5, 1));
-		frame.pack();
-		frame.setSize(800, 400);
-//		// focus fix after startup.
+    /**
+     * @param index
+     */
+    private fun checkIndex(index: Int) {
+        require(!(index < 0 || index > 1)) { "Wrong index: $index" }
+    }
+
+    /**
+     * @return the dividerPosition or last location is currently no split pane is visible
+     */
+    val dividerPosition: Int
+        get() {
+            if (mBasicComponent is JSplitPane) {
+                val pane = mBasicComponent as JSplitPane
+                return pane.dividerLocation
+            }
+            return lastDividerPosition
+        }
+
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            Resources.createInstance(FreeMindMainMock())
+            val frame = JFrame("JOptionalSplitPane")
+            frame.defaultCloseOperation = JFrame.DISPOSE_ON_CLOSE
+            val panel = JOptionalSplitPane()
+            val contentPane = frame.contentPane
+            contentPane.layout = GridLayout(5, 1)
+            frame.pack()
+            frame.setSize(800, 400)
+            //		// focus fix after startup.
 //		frame.addWindowFocusListener(new WindowAdapter() {
 //
 //			public void windowGainedFocus(WindowEvent e) {
@@ -182,63 +236,30 @@ public class JOptionalSplitPane extends JPanel {
 //				jcalendar.getDayChooser().getSelectedDay().requestFocus();
 //			}
 //		});
-		contentPane.add(new JButton(new AbstractAction("Add 0") {
-			private int index = 0;
-			@Override
-			public void actionPerformed(ActionEvent pE) {
-				panel.setComponent(new JLabel("links " + index++),0);
-				
-			}}));
-		contentPane.add(new JButton(new AbstractAction("Add 1") {
-			private int index = 0;
-			
-			@Override
-			public void actionPerformed(ActionEvent pE) {
-				panel.setComponent(new JLabel("rechts " + index++),1);
-				
-			}}));
-		contentPane.add(new JButton(new AbstractAction("Remove 0") {
-			
-			@Override
-			public void actionPerformed(ActionEvent pE) {
-				panel.removeComponent(0);
-				
-			}}));
-		contentPane.add(new JButton(new AbstractAction("Remove 1") {
-			
-			@Override
-			public void actionPerformed(ActionEvent pE) {
-				panel.removeComponent(1);
-				
-			}}));
-		contentPane.add(panel);
-		frame.setVisible(true);
-
-	}
-
-	/**
-	 * @return the lastDividerPosition
-	 */
-	public int getLastDividerPosition() {
-		return mLastDividerPosition;
-	}
-
-	/**
-	 * @return the dividerPosition or last location is currently no split pane is visible
-	 */
-	public int getDividerPosition() {
-		if (mBasicComponent instanceof JSplitPane) {
-			JSplitPane pane = (JSplitPane) mBasicComponent;
-			return pane.getDividerLocation();
-		}
-		return mLastDividerPosition;
-	}
-	
-	/**
-	 * @param pLastDividerPosition the lastDividerPosition to set
-	 */
-	public void setLastDividerPosition(int pLastDividerPosition) {
-		mLastDividerPosition = pLastDividerPosition;
-	}
-
+            contentPane.add(JButton(object : AbstractAction("Add 0") {
+                private var index = 0
+                override fun actionPerformed(pE: ActionEvent) {
+                    panel.setComponent(JLabel("links " + index++), 0)
+                }
+            }))
+            contentPane.add(JButton(object : AbstractAction("Add 1") {
+                private var index = 0
+                override fun actionPerformed(pE: ActionEvent) {
+                    panel.setComponent(JLabel("rechts " + index++), 1)
+                }
+            }))
+            contentPane.add(JButton(object : AbstractAction("Remove 0") {
+                override fun actionPerformed(pE: ActionEvent) {
+                    panel.removeComponent(0)
+                }
+            }))
+            contentPane.add(JButton(object : AbstractAction("Remove 1") {
+                override fun actionPerformed(pE: ActionEvent) {
+                    panel.removeComponent(1)
+                }
+            }))
+            contentPane.add(panel)
+            frame.isVisible = true
+        }
+    }
 }

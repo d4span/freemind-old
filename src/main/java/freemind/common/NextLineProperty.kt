@@ -20,30 +20,19 @@
  * Created on 25.02.2006
  */
 /*$Id: NextLineProperty.java,v 1.1.2.2 2006/03/14 21:56:27 christianfoltin Exp $*/
-package freemind.common;
+package freemind.common
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.builder.DefaultFormBuilder
 
-public class NextLineProperty implements PropertyControl {
+class NextLineProperty : PropertyControl {
+    override val description: String?
+        get() = null
+    override val label: String?
+        get() = null
 
-	public NextLineProperty() {
-		super();
-	}
+    override fun layout(builder: DefaultFormBuilder, pTranslator: TextTranslator) {
+        builder.nextLine()
+    }
 
-	public String getDescription() {
-		return null;
-	}
-
-	public String getLabel() {
-		return null;
-	}
-
-	public void layout(DefaultFormBuilder builder, TextTranslator pTranslator) {
-		builder.nextLine();
-	}
-
-	public void setEnabled(boolean pEnabled) {
-
-	}
-
+    override fun setEnabled(pEnabled: Boolean) {}
 }

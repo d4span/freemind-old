@@ -21,441 +21,888 @@
  * Created on 16.03.2004
  *
  */
-package accessories.plugins;
+package accessories.plugins
 
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import accessories.plugins.dialogs.ChooseFormatPopupDialog;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-
-import freemind.common.PropertyBean;
-import freemind.common.PropertyControl;
-import freemind.common.SeparatorProperty;
-import freemind.common.TextTranslator;
-import freemind.common.XmlBindingTools;
-import freemind.controller.Controller;
-import freemind.controller.actions.generated.instance.Pattern;
-import freemind.controller.actions.generated.instance.Patterns;
-import freemind.extensions.HookRegistration;
-import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
-import freemind.modes.ModeController;
-import freemind.modes.StylePatternFactory;
-import freemind.modes.mindmapmode.MindMapController;
-import freemind.modes.mindmapmode.hooks.PermanentMindMapNodeHookAdapter;
-import freemind.preferences.FreemindPropertyContributor;
-import freemind.preferences.FreemindPropertyListener;
-import freemind.preferences.layout.OptionPanel;
+import freemind.extensions.HookAdapter.startupMapHook
+import freemind.modes.mindmapmode.hooks.MindMapHookAdapter.mindMapController
+import freemind.modes.ControllerAdapter.controller
+import freemind.controller.Controller.mapModuleManager
+import freemind.controller.MapModuleManager.addListener
+import freemind.extensions.HookAdapter.getResourceString
+import freemind.main.Tools.xmlToBoolean
+import freemind.extensions.HookAdapter.getController
+import freemind.modes.ModeController.frame
+import freemind.main.Tools.addEscapeActionToDialog
+import freemind.controller.StructuredMenuHolder.addMenu
+import freemind.modes.mindmapmode.hooks.MindMapHookAdapter.addAccelerator
+import freemind.controller.StructuredMenuHolder.addAction
+import freemind.controller.StructuredMenuHolder.updateMenus
+import freemind.main.Tools.getNodeTextHierarchy
+import freemind.modes.mindmapmode.MindMapController.decorateDialog
+import freemind.controller.actions.generated.instance.TimeWindowConfigurationStorage.viewFoldedNodes
+import freemind.controller.actions.generated.instance.TimeWindowConfigurationStorage.listTimeWindowColumnSettingList
+import freemind.controller.actions.generated.instance.TableColumnSetting.columnWidth
+import freemind.controller.actions.generated.instance.TableColumnSetting.columnSorting
+import freemind.main.Tools.setLabelAndMnemonic
+import freemind.modes.ControllerAdapter.newMap
+import freemind.modes.MindMapNode.shallowCopy
+import freemind.modes.mindmapmode.MindMapController.insertNodeInto
+import freemind.modes.ControllerAdapter.rootNode
+import freemind.modes.MindMapNode.text
+import freemind.main.Tools.safeEquals
+import freemind.modes.mindmapmode.MindMapController.setNodeText
+import freemind.modes.ControllerAdapter.select
+import freemind.modes.ControllerAdapter.map
+import freemind.modes.MindMap.rootNode
+import freemind.modes.common.plugins.ReminderHookBase.remindUserAt
+import freemind.modes.MindMapNode.historyInformation
+import freemind.modes.MindMapNode.isFolded
+import freemind.modes.MindMapNode.childrenUnfolded
+import freemind.modes.mindmapmode.MindMapController.storeDialogPositions
+import freemind.controller.MapModuleManager.removeListener
+import freemind.controller.actions.generated.instance.TimeWindowConfigurationStorage.addTimeWindowColumnSetting
+import freemind.modes.MindMapNode.noteText
+import freemind.modes.MindMapNode.icons
+import freemind.modes.MindIcon.getName
+import freemind.view.mindmapview.MultipleImage.addImage
+import freemind.modes.MindIcon.icon
+import freemind.view.mindmapview.MultipleImage.imageCount
+import freemind.main.Tools.isWindows
+import freemind.main.Tools.isMacOsX
+import freemind.main.Tools.xmlToColor
+import freemind.controller.actions.generated.instance.CalendarMarking.color
+import freemind.controller.actions.generated.instance.CalendarMarking.name
+import freemind.modes.ControllerAdapter.nodeRefresh
+import freemind.modes.ControllerAdapter.setToolTip
+import freemind.modes.ControllerAdapter.getText
+import freemind.modes.ControllerAdapter.selecteds
+import freemind.modes.mindmapmode.MindMapController.addNewNode
+import freemind.modes.MindMapNode.isLeft
+import freemind.modes.MindMapNode.isRoot
+import freemind.modes.MindMapNode.parentNode
+import freemind.main.Resources.getProperty
+import freemind.common.XmlBindingTools.unMarshall
+import freemind.controller.actions.generated.instance.CalendarMarkings.addCalendarMarking
+import freemind.modes.ControllerAdapter.setProperty
+import freemind.common.XmlBindingTools.marshall
+import freemind.controller.actions.generated.instance.CalendarMarkings.sizeCalendarMarkingList
+import freemind.controller.actions.generated.instance.CalendarMarkings.getCalendarMarking
+import freemind.controller.actions.generated.instance.CalendarMarkings.removeFromCalendarMarkingElementAt
+import freemind.modes.ControllerAdapter.frame
+import freemind.main.FreeMindMain.jFrame
+import freemind.modes.MindMapNode.invokeHook
+import freemind.modes.mindmapmode.MindMapController.nodeChanged
+import freemind.modes.mindmapmode.actions.MindMapActions.addHook
+import freemind.main.Tools.getVectorWithSingleElement
+import freemind.extensions.NodeHookAdapter.invoke
+import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter.mindMapController
+import freemind.main.Tools.unMarshall
+import freemind.main.Tools.marshall
+import freemind.main.Tools.colorToXml
+import freemind.controller.actions.generated.instance.CalendarMarking.startDate
+import freemind.controller.actions.generated.instance.CalendarMarking.endDate
+import freemind.controller.actions.generated.instance.CalendarMarking.firstOccurence
+import freemind.controller.actions.generated.instance.CalendarMarking.repeatEachNOccurence
+import freemind.controller.actions.generated.instance.CalendarMarking.repeatType
+import freemind.modes.mindmapmode.actions.NodeHookAction.hookName
+import freemind.modes.ModeController.selecteds
+import freemind.modes.MindMapNode.activatedHooks
+import freemind.modes.ModeController.view
+import freemind.view.mindmapview.MapView.innerBounds
+import freemind.view.mindmapview.MapView.getNodeView
+import freemind.modes.MindMapNode.getShortText
+import freemind.modes.MindMapNode.getObjectId
+import freemind.modes.MindMapNode.link
+import freemind.view.mindmapview.MapView.getNodeContentLocation
+import freemind.view.mindmapview.NodeView.content
+import freemind.modes.ModeController.getFileChooser
+import freemind.modes.FreeMindFileDialog.setDialogTitle
+import freemind.modes.FreeMindFileDialog.showOpenDialog
+import freemind.modes.FreeMindFileDialog.showSaveDialog
+import freemind.modes.FreeMindFileDialog.selectedFile
+import freemind.swing.DefaultListModel.getSize
+import freemind.swing.DefaultListModel.addAll
+import freemind.swing.DefaultListModel.remove
+import freemind.controller.Controller.defaultFont
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.setPattern
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.addListeners
+import freemind.modes.MapAdapter.loadTree
+import freemind.modes.MapAdapter.root
+import freemind.view.mindmapview.MapView.centerNode
+import freemind.modes.StylePatternFactory.removeAllPattern
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.propertyChange
+import freemind.modes.ExtendedMapFeedbackAdapter.select
+import freemind.modes.ExtendedMapFeedbackAdapter.applyPattern
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.resultPattern
+import freemind.view.mindmapview.NodeView.updateAll
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.init
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.getResultPattern
+import freemind.swing.DefaultListModel.get
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.setPatternList
+import freemind.swing.DefaultListModel.unmodifiableList
+import freemind.main.FreeMindMain.getLogger
+import freemind.modes.StylePatternFactory.loadPatterns
+import freemind.modes.mindmapmode.MindMapController.patternReader
+import freemind.controller.actions.generated.instance.Pattern.name
+import freemind.controller.actions.generated.instance.ManageStyleEditorWindowConfigurationStorage.dividerPosition
+import freemind.controller.StructuredMenuHolder.addMenuItem
+import freemind.controller.StructuredMenuHolder.addSeparator
+import freemind.swing.DefaultListModel.add
+import freemind.main.Tools.deepCopy
+import freemind.modes.StylePatternFactory.createPatternFromSelected
+import freemind.modes.ControllerAdapter.selected
+import freemind.modes.mindmapmode.MindMapController.applyPattern
+import freemind.controller.actions.generated.instance.Pattern.patternChild
+import freemind.controller.actions.generated.instance.PatternPropertyBase.value
+import freemind.modes.ModeController.controller
+import freemind.controller.Controller.mapModule
+import freemind.controller.MapModuleManager.changeToMapModule
+import freemind.view.MapModule.toString
+import freemind.view.MapModule.modeController
+import freemind.modes.ModeController.save
+import freemind.modes.mindmapmode.MindMapController.obtainFocusForSelected
+import freemind.extensions.HookAdapter.getPluginBaseClass
+import freemind.view.mindmapview.MapView.scrollBy
+import freemind.modes.MindMapNode.plainTextContent
+import freemind.modes.MindMapNode.children
+import freemind.modes.mindmapmode.MindMapController.cut
+import freemind.modes.mindmapmode.MindMapController.paste
+import freemind.modes.ModeController.select
+import freemind.extensions.HookAdapter.obtainFocusForSelected
+import freemind.modes.MindMapNode.toString
+import freemind.modes.MindMapNode.getChildPosition
+import freemind.modes.MindMapNode.color
+import freemind.modes.MindMapNode.font
+import freemind.modes.ControllerAdapter.view
+import freemind.view.mindmapview.MapView.toggleSelected
+import freemind.extensions.HookAdapter.setController
+import freemind.extensions.NodeHookAdapter.setMap
+import freemind.modes.mindmapmode.MindMapController.registerMouseWheelEventHandler
+import freemind.modes.mindmapmode.MindMapController.deRegisterMouseWheelEventHandler
+import freemind.view.mindmapview.MapView.root
+import freemind.modes.MindMapNode.hasChildren
+import freemind.modes.mindmapmode.MindMapController.setFolded
+import freemind.modes.ControllerAdapter.selectedView
+import freemind.common.OptionalDontShowMeAgainDialog.show
+import freemind.common.OptionalDontShowMeAgainDialog.result
+import freemind.modes.mindmapmode.MindMapController.setNoteText
+import freemind.modes.mindmapmode.hooks.PermanentMindMapNodeHookAdapter.mindMapController
+import freemind.modes.ControllerAdapter.getNodeID
+import freemind.controller.Controller.errorMessage
+import freemind.extensions.NodeHookAdapter.getNode
+import freemind.extensions.PermanentNodeHookAdapter.save
+import freemind.extensions.PermanentNodeHookAdapter.saveNameValuePairs
+import freemind.extensions.PermanentNodeHookAdapter.loadFrom
+import freemind.extensions.PermanentNodeHookAdapter.loadNameValuePairs
+import freemind.extensions.PermanentNodeHookAdapter.shutdownMapHook
+import freemind.modes.MindMapNode.isDescendantOf
+import freemind.modes.ControllerAdapter.registerNodeLifetimeListener
+import freemind.modes.ControllerAdapter.deregisterNodeLifetimeListener
+import freemind.modes.MindMapNode.setStateIcon
+import freemind.extensions.HookAdapter.name
+import freemind.modes.ControllerAdapter.getNodeFromID
+import freemind.modes.MindMapNode.isDescendantOfOrEqual
+import freemind.extensions.NodeHookAdapter.nodeId
+import freemind.extensions.PermanentNodeHookAdapter.processUnfinishedLinks
+import freemind.modes.ModeController.selected
+import freemind.modes.mindmapmode.EncryptedMindMapNode.isAccessible
+import freemind.modes.ModeController.nodeRefresh
+import freemind.modes.ControllerAdapter.mode
+import freemind.modes.Mode.createModeController
+import freemind.modes.ModeController.setModel
+import freemind.modes.mindmapmode.EncryptedMindMapNode.setPassword
+import freemind.modes.mindmapmode.EncryptedMindMapNode.map
+import freemind.modes.mindmapmode.MindMapController.setNewNodeCreator
+import freemind.modes.common.dialogs.EnterPasswordDialog.result
+import freemind.modes.common.dialogs.EnterPasswordDialog.password
+import freemind.modes.mindmapmode.EncryptedMindMapNode.encrypt
+import freemind.modes.mindmapmode.EncryptedMindMapNode.setShuttingDown
+import freemind.modes.ControllerAdapter.nodeStructureChanged
+import freemind.view.mindmapview.MapView.selectAsTheOnlyOneSelected
+import freemind.main.FreeMindMain.contentPane
+import freemind.modes.mindmapmode.EncryptedMindMapNode.decrypt
+import freemind.modes.StylePatternFactory.createPatternFromNode
+import freemind.modes.ControllerAdapter.mapModule
+import freemind.modes.ModeController.getNodeFromID
+import freemind.controller.MapModuleManager.mapModules
+import freemind.modes.ControllerAdapter.registerNodeSelectionListener
+import freemind.modes.ControllerAdapter.deregisterNodeSelectionListener
+import freemind.view.mindmapview.NodeView.model
+import freemind.modes.ModeController.setFolded
+import freemind.modes.ModeController.getNodeView
+import freemind.extensions.ExportHook.createBufferedImage
+import freemind.extensions.ExportHook.chooseFile
+import freemind.modes.mindmapmode.MindMapController.actionRegistry
+import freemind.modes.mindmapmode.actions.xml.ActionRegistry.registerHandler
+import freemind.modes.mindmapmode.actions.xml.ActionRegistry.deregisterHandler
+import freemind.main.FreeMindMain.loggerList
+import freemind.main.FreeMindMain.freemindDirectory
+import freemind.main.Tools.getFile
+import freemind.main.LogFileLogHandler.setLogReceiver
+import freemind.modes.MapFeedbackAdapter.sortNodesByDepth
+import freemind.modes.ControllerAdapter.copySingle
+import freemind.modes.mindmapmode.MindMapController.clearNodeContents
+import freemind.main.FreeMindMain.repaint
+import freemind.extensions.NodeHookAdapter.nodeChanged
+import freemind.modes.mindmapmode.MindMapController.doTransaction
+import freemind.controller.actions.generated.instance.NodeAction.node
+import freemind.modes.mindmapmode.actions.xml.ActionRegistry.registerActor
+import freemind.modes.mindmapmode.actions.xml.ActionRegistry.deregisterActor
+import freemind.modes.MindMapNode.removeAllHooks
+import freemind.modes.MindMap.changeRoot
+import freemind.view.mindmapview.MapView.getViewers
+import freemind.view.mindmapview.MapView.removeViewer
+import freemind.view.mindmapview.MapView.initRoot
+import freemind.modes.ControllerAdapter.centerNode
+import freemind.extensions.HookAdapter.getProperties
+import freemind.extensions.ExportHook.getTranslatableResourceString
+import freemind.modes.ModeController.map
+import freemind.modes.MindMap.file
+import freemind.modes.MindMap.isReadOnly
+import freemind.main.Tools.fileToUrl
+import freemind.modes.MindMap.getFilteredXml
+import freemind.extensions.ExportHook.copyFromResource
+import freemind.modes.MindIcon.iconBaseFileName
+import freemind.extensions.ExportHook.copyFromFile
+import freemind.extensions.HookAdapter.getResource
+import freemind.main.Tools.fileToRelativeUrlString
+import freemind.modes.mindmapmode.actions.xml.ActionRegistry.registerFilter
+import freemind.modes.mindmapmode.actions.xml.ActionRegistry.deregisterFilter
+import freemind.controller.actions.generated.instance.CompoundAction.listChoiceList
+import freemind.modes.mindmapmode.actions.xml.ActionPair.doAction
+import freemind.controller.actions.generated.instance.CompoundAction.addChoice
+import freemind.controller.actions.generated.instance.NewNodeAction.newId
+import freemind.modes.mindmapmode.actions.xml.ActionPair.undoAction
+import freemind.main.FreeMind.jFrame
+import freemind.modes.StylePatternFactory.savePatterns
+import freemind.modes.mindmapmode.MindMapController.loadPatterns
+import freemind.main.FreeMindMain.freeMindMenuBar
+import freemind.controller.MenuBar.updateMenus
+import freemind.modes.NodeAdapter.backgroundColor
+import freemind.modes.StylePatternFactory.toString
+import freemind.common.TextTranslator.getText
+import freemind.common.PropertyBean.firePropertyChangeEvent
+import freemind.modes.StylePatternFactory.getPatternFromString
+import freemind.controller.actions.generated.instance.Patterns.listChoiceList
+import freemind.modes.StylePatternFactory.getPatternsFromString
+import freemind.controller.actions.generated.instance.Patterns.getChoice
+import freemind.controller.actions.generated.instance.Patterns.sizeChoiceList
+import freemind.extensions.PermanentNodeHookAdapter.onAddChild
+import freemind.extensions.PermanentNodeHookAdapter.onUpdateChildrenHook
+import freemind.extensions.PermanentNodeHookAdapter.onUpdateNodeHook
+import freemind.main.FreeMindMain.getProperty
+import freemind.modes.ModeController.isBlocked
+import freemind.view.mindmapview.NodeView.getMainView
+import freemind.main.Tools.listToString
+import freemind.modes.mindmapmode.MindMapController.copy
+import freemind.main.Tools.getMindMapNodesFromClipboard
+import freemind.modes.ControllerAdapter.getResource
+import freemind.main.Tools.generateID
+import freemind.controller.actions.generated.instance.CompoundAction.setAtChoice
+import freemind.controller.actions.generated.instance.MoveNodesAction.listNodeListMemberList
+import freemind.controller.actions.generated.instance.MoveNodesAction.getNodeListMember
+import freemind.controller.actions.generated.instance.HookNodeAction.listNodeListMemberList
+import freemind.controller.actions.generated.instance.HookNodeAction.getNodeListMember
+import freemind.modes.MindMap.linkRegistry
+import freemind.modes.MindMapLinkRegistry.generateUniqueID
+import freemind.main.Tools.MindMapNodePair.corresponding
+import freemind.controller.actions.generated.instance.CompoundAction.addAtChoice
+import freemind.controller.actions.generated.instance.NodeListMember.node
+import freemind.main.Tools.MindMapNodePair.cloneNode
+import freemind.controller.actions.generated.instance.PasteNodeAction.asSibling
+import freemind.controller.actions.generated.instance.UndoPasteNodeAction.asSibling
+import freemind.main.Tools.copyStream
+import freemind.extensions.PermanentNodeHookAdapter.onRemoveChildren
+import freemind.modes.ModeController.selectedView
+import freemind.view.mindmapview.MapView.scrollNodeToVisible
+import freemind.main.Tools.setDialogLocationRelativeTo
+import freemind.modes.common.dialogs.IconSelectionPopupDialog.result
+import freemind.modes.common.dialogs.IconSelectionPopupDialog.modifiers
+import freemind.controller.actions.generated.instance.HookNodeAction.hookName
+import freemind.modes.mindmapmode.MindMapController.marshall
+import freemind.modes.MindMap.isSaved
+import freemind.main.Tools.compareText
+import freemind.modes.ControllerAdapter.setSaved
+import freemind.modes.MindMapNode.map
+import freemind.modes.MindMapNode.xmlNoteText
+import freemind.modes.ControllerAdapter.getProperty
+import freemind.controller.Controller.obtainFocusForSelected
+import freemind.main.FreeMindMain.getAdjustableProperty
+import freemind.main.Tools.updateFontSize
+import freemind.view.mindmapview.MapView.getZoom
+import freemind.main.FreeMindMain.openDocument
+import freemind.controller.Controller.insertComponentIntoSplitPane
+import freemind.controller.Controller.removeSplitPane
+import freemind.extensions.NodeHookAdapter.getMap
+import freemind.modes.MindMapLinkRegistry.registerLocalHyperlinkId
+import freemind.modes.ModeController.load
+import freemind.extensions.PermanentNodeHookAdapter.setToolTip
+import freemind.modes.MindMapNode.childrenFolded
+import freemind.modes.MindMapNode.attributeTableLength
+import freemind.modes.MindMapNode.getAttribute
+import freemind.modes.mindmapmode.MindMapController.removeAttribute
+import freemind.modes.mindmapmode.MindMapController.addAttribute
+import freemind.modes.attributes.Attribute.name
+import freemind.modes.attributes.Attribute.value
+import freemind.controller.actions.generated.instance.AttributeTableProperties.listTableColumnOrderList
+import freemind.controller.actions.generated.instance.TableColumnOrder.columnIndex
+import freemind.controller.actions.generated.instance.TableColumnOrder.columnSorting
+import freemind.controller.actions.generated.instance.AttributeTableProperties.addTableColumnOrder
+import freemind.modes.mindmapmode.hooks.MindMapHookAdapter
+import freemind.controller.MapModuleManager.MapModuleChangeObserver
+import accessories.plugins.time.TimeList.NodeRenderer
+import accessories.plugins.time.TimeList.IconsRenderer
+import accessories.plugins.time.FlatNodeTableFilterModel
+import accessories.plugins.time.TimeList.NotesRenderer
+import freemind.modes.mindmapmode.MindMapController
+import accessories.plugins.time.TimeList
+import freemind.main.Tools
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import java.awt.event.ActionEvent
+import accessories.plugins.time.TimeList.FilterTextDocumentListener
+import java.awt.event.KeyAdapter
+import java.awt.event.KeyEvent
+import accessories.plugins.time.TimeList.FlatNodeTable
+import accessories.plugins.time.TimeList.FlatNodeTableKeyListener
+import accessories.plugins.time.TimeList.FlatNodeTableMouseAdapter
+import accessories.plugins.time.TimeList.NotesHolder
+import accessories.plugins.time.TimeList.IconsHolder
+import accessories.plugins.time.TimeList.ReplaceAllInfo
+import accessories.plugins.time.TimeList.ReplaceSelectedInfo
+import accessories.plugins.time.TimeList.ToggleViewFoldedNodesAction
+import freemind.controller.StructuredMenuHolder
+import javax.swing.event.ListSelectionListener
+import javax.swing.event.ListSelectionEvent
+import freemind.modes.MindMapNode
+import freemind.controller.MenuItemSelectedListener
+import accessories.plugins.time.TimeList.IReplaceInputInformation
+import javax.swing.text.BadLocationException
+import accessories.plugins.time.TimeList.MindmapTableModel
+import freemind.modes.common.plugins.ReminderHookBase
+import accessories.plugins.time.TimeManagementOrganizer
+import kotlin.Throws
+import javax.swing.event.DocumentListener
+import accessories.plugins.time.TimeList.FilterTextDocumentListener.DelayedTextEntry
+import java.lang.Runnable
+import java.awt.event.MouseAdapter
+import java.awt.event.KeyListener
+import freemind.common.ScalableJTable
+import javax.swing.table.TableCellRenderer
+import javax.swing.table.DefaultTableCellRenderer
+import java.text.DateFormat
+import freemind.main.HtmlTools
+import freemind.modes.MindIcon
+import freemind.modes.ModeController
+import freemind.view.mindmapview.MultipleImage
+import freemind.view.MapModule
+import kotlin.jvm.JvmOverloads
+import java.beans.PropertyChangeListener
+import accessories.plugins.time.JDayChooser
+import accessories.plugins.time.JMonthChooser
+import accessories.plugins.time.JYearChooser
+import java.beans.PropertyChangeEvent
+import accessories.plugins.time.JCalendar
+import kotlin.jvm.JvmStatic
+import javax.swing.event.ChangeListener
+import javax.swing.event.CaretListener
+import java.awt.event.ActionListener
+import java.awt.event.FocusListener
+import javax.swing.event.ChangeEvent
+import javax.swing.event.CaretEvent
+import java.lang.NumberFormatException
+import java.awt.event.FocusEvent
+import accessories.plugins.time.JSpinField
+import freemind.common.ScalableJButton
+import javax.swing.border.Border
+import accessories.plugins.time.ICalendarMarkingEvaluator
+import freemind.main.FreeMindCommon
+import freemind.common.XmlBindingTools
+import accessories.plugins.time.CalendarMarkingEvaluator
+import freemind.preferences.FreemindPropertyListener
+import accessories.plugins.time.JDayChooser.DecoratorButton
+import accessories.plugins.time.JDayChooser.ChangeAwareButton
+import java.text.DateFormatSymbols
+import freemind.main.FreeMind
+import java.awt.event.MouseListener
+import javax.swing.table.AbstractTableModel
+import javax.swing.table.TableModel
+import javax.swing.table.JTableHeader
+import javax.swing.event.TableModelListener
+import javax.swing.event.TableModelEvent
+import javax.swing.table.TableColumnModel
+import java.awt.event.ItemListener
+import java.awt.event.ItemEvent
+import accessories.plugins.time.TimeManagement.NodeFactory
+import accessories.plugins.time.TimeManagement.AppendDateAbstractAction
+import accessories.plugins.time.CalendarMarkingDialog
+import accessories.plugins.time.JTripleCalendar
+import accessories.plugins.time.TimeManagement
+import accessories.plugins.time.TimeManagement.AppendDateAction
+import accessories.plugins.time.TimeManagement.AppendDateToChildAction
+import accessories.plugins.time.TimeManagement.AppendDateToSiblingAction
+import accessories.plugins.time.TimeManagement.RemindAction
+import accessories.plugins.time.TimeManagement.RemoveReminders
+import accessories.plugins.time.TimeManagement.TodayAction
+import accessories.plugins.time.TimeManagement.AddMarkAction
+import accessories.plugins.time.TimeManagement.RemoveMarkAction
+import java.text.MessageFormat
+import accessories.plugins.time.JTripleCalendar.JSwitchableCalendar
+import javax.swing.border.LineBorder
+import tests.freemind.FreeMindMainMock
+import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter
+import freemind.modes.MindMap
+import freemind.extensions.HookRegistration
+import freemind.controller.MenuItemEnabledListener
+import freemind.modes.mindmapmode.actions.NodeHookAction
+import freemind.extensions.PermanentNodeHook
+import accessories.plugins.time.CalendarMarkingEvaluator.RepetitionHandler
+import accessories.plugins.time.CalendarMarkingEvaluator.BasicRepetitionHandler
+import accessories.plugins.time.CalendarMarkingEvaluator.DirektBeginnerHandler
+import accessories.plugins.time.CalendarMarkingEvaluator.NeverHandler
+import accessories.plugins.time.CalendarMarkingEvaluator.DailyHandler
+import accessories.plugins.time.CalendarMarkingEvaluator.WeeklyHandler
+import accessories.plugins.time.CalendarMarkingEvaluator.WeeklyEveryNthDayHandler
+import accessories.plugins.time.CalendarMarkingEvaluator.MonthlyHandler
+import accessories.plugins.time.CalendarMarkingEvaluator.MonthlyEveryNthDayHandler
+import accessories.plugins.time.CalendarMarkingEvaluator.MonthlyEveryNthWeekHandler
+import accessories.plugins.time.CalendarMarkingEvaluator.YearlyHandler
+import accessories.plugins.time.CalendarMarkingEvaluator.YearlyEveryNthDayHandler
+import accessories.plugins.time.CalendarMarkingEvaluator.YearlyEveryNthWeekHandler
+import accessories.plugins.time.CalendarMarkingEvaluator.YearlyEveryNthMonthHandler
+import accessories.plugins.util.html.ClickableImageCreator.AreaHolder
+import freemind.view.mindmapview.MapView
+import java.lang.StringBuffer
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
+import accessories.plugins.util.xslt.ExportDialog
+import accessories.plugins.util.xslt.XmlExporter
+import accessories.plugins.util.window.WindowClosingAdapter
+import accessories.plugins.util.xslt.ExportDialog.FileChooseListener
+import accessories.plugins.util.xslt.ExportDialog.ExportListener
+import freemind.modes.FreeMindFileDialog
+import java.awt.datatransfer.Transferable
+import java.awt.datatransfer.UnsupportedFlavorException
+import java.awt.datatransfer.DataFlavor
+import accessories.plugins.dialogs.ListTransferHandler.ListTransferable
+import java.lang.ClassNotFoundException
+import freemind.common.TextTranslator
+import freemind.modes.ExtendedMapFeedbackAdapter
+import accessories.plugins.dialogs.ChooseFormatPopupDialog
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame
+import accessories.plugins.dialogs.ChooseFormatPopupDialog.DemoMapFeedback
+import freemind.modes.mindmapmode.MindMapMapModel
+import freemind.main.Tools.StringReaderCreator
+import freemind.modes.MapAdapter
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.StylePatternFrameType
+import freemind.modes.StylePatternFactory
+import accessories.plugins.dialogs.ManagePatternsPopupDialog
+import accessories.plugins.dialogs.ManagePatternsPopupDialog.PatternListSelectionListener
+import java.awt.event.MouseMotionListener
+import com.jgoodies.forms.builder.ButtonBarBuilder
+import freemind.extensions.ModeControllerHookAdapter
+import accessories.plugins.NodeNoteRegistration
+import accessories.plugins.SortNodes.NodeTextComparator
+import javax.swing.text.html.HTMLEditorKit
+import freemind.main.FixedHTMLWriter
+import freemind.view.mindmapview.ViewFeedback.MouseWheelEventHandler
+import accessories.plugins.UnfoldAll
+import java.awt.event.MouseWheelEvent
+import java.awt.event.InputEvent
+import freemind.common.OptionalDontShowMeAgainDialog
+import freemind.common.OptionalDontShowMeAgainDialog.StandardPropertyHandler
+import freemind.modes.mindmapmode.hooks.PermanentMindMapNodeHookAdapter
+import freemind.modes.ModeController.NodeLifetimeListener
+import accessories.plugins.ClonePasteAction.ClonePropertiesObserver
+import accessories.plugins.ClonePasteAction.CloneProperties
+import accessories.plugins.ClonePlugin
+import freemind.main.XMLElement
+import freemind.modes.mindmapmode.EncryptedMindMapNode
+import freemind.modes.mindmapmode.MindMapController.NewNodeCreator
+import freemind.modes.common.dialogs.EnterPasswordDialog
+import accessories.plugins.FormatPaste
+import freemind.modes.ModeController.NodeSelectionListener
+import accessories.plugins.NodeHistory
+import accessories.plugins.NodeAttributeTableRegistration
+import accessories.plugins.NewLineTable
+import freemind.extensions.ExportHook
+import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
+import freemind.main.LogFileLogHandler.LogReceiver
+import freemind.modes.mindmapmode.actions.xml.PrintActionHandler
+import accessories.plugins.LogFileViewer.UpdateTextAreaThread
+import java.util.logging.SimpleFormatter
+import accessories.plugins.LogFileViewer
+import accessories.plugins.LogFileViewer.PrintOperationAction
+import accessories.plugins.LogFileViewer.SetLogLevelAction
+import freemind.main.LogFileLogHandler
+import java.lang.InterruptedException
+import accessories.plugins.ChangeRootNode
+import freemind.modes.mindmapmode.actions.xml.ActionPair
+import freemind.modes.mindmapmode.actions.xml.ActorXml
+import freemind.view.mindmapview.NodeMotionListenerView
+import accessories.plugins.ExportWithXSLT
+import java.io.BufferedWriter
+import java.io.OutputStreamWriter
+import java.io.FilenameFilter
+import accessories.plugins.util.html.ClickableImageCreator
+import freemind.modes.mindmapmode.actions.xml.ActionFilter
+import java.io.FileWriter
+import accessories.plugins.RevisionPlugin
+import freemind.modes.NodeAdapter
+import accessories.plugins.AutomaticLayout.AutomaticLayoutPropertyContributor
+import accessories.plugins.AutomaticLayout
+import accessories.plugins.AutomaticLayout.Registration.MyFreemindPropertyListener
+import freemind.preferences.layout.OptionPanel
+import freemind.common.PropertyBean
+import freemind.common.PropertyControl
+import accessories.plugins.AutomaticLayout.StylePropertyTranslator
+import com.jgoodies.forms.builder.DefaultFormBuilder
+import freemind.preferences.FreemindPropertyContributor
+import freemind.preferences.layout.OptionPanel.NewTabProperty
+import freemind.common.SeparatorProperty
+import accessories.plugins.AutomaticLayout.StylePatternListProperty
+import accessories.plugins.BlinkingNodeHook.TimerColorChanger
+import accessories.plugins.BlinkingNodeHook
+import freemind.view.mindmapview.NodeViewVisitor
+import freemind.main.Tools.MindMapNodePair
+import accessories.plugins.ExportToOoWriter
+import java.util.zip.ZipOutputStream
+import java.util.zip.ZipEntry
+import freemind.extensions.UndoEventReceiver
+import freemind.modes.IconInformation
+import freemind.modes.mindmapmode.actions.IconAction
+import freemind.modes.common.dialogs.IconSelectionPopupDialog
+import accessories.plugins.JumpLastEditLocation.JumpLastEditLocationRegistration
+import com.lightdev.app.shtm.TextResources
+import accessories.plugins.NodeNote
+import com.lightdev.app.shtm.SHTMLPanel
+import accessories.plugins.NodeNoteRegistration.NotesManager
+import accessories.plugins.NodeNoteRegistration.NoteDocumentListener
+import freemind.modes.common.plugins.NodeNoteBase
+import accessories.plugins.NodeNoteRegistration.SouthPanel
+import freemind.controller.Controller.SplitComponentType
+import accessories.plugins.NodeNoteRegistration.SimplyHtmlResources
+import com.inet.jortho.SpellChecker
+import java.util.zip.ZipInputStream
+import java.io.FileInputStream
+import accessories.plugins.NodeAttributeTableRegistration.AttributeManager
+import freemind.controller.Controller
+import freemind.controller.actions.generated.instance.*
+import java.awt.*
+import java.util.*
+import javax.swing.table.TableRowSorter
+import javax.swing.*
 
 /**
  * @author foltin
- * 
  */
-public class AutomaticLayout extends PermanentMindMapNodeHookAdapter {
-
-	private static final String AUTOMATIC_FORMAT_LEVEL = "automaticFormat_level";
-
-	/**
-	 * Registers the property pages.
-	 * 
-	 * @author foltin
-	 * 
-	 */
-	public static class Registration implements HookRegistration {
-		private AutomaticLayoutPropertyContributor mAutomaticLayoutPropertyContributor;
-
-		private final MindMapController modeController;
-
-		private static FreemindPropertyListener listener = null;
-
-		public Registration(ModeController controller, MindMap map) {
-			modeController = (MindMapController) controller;
-		}
-
-		static class MyFreemindPropertyListener implements
-				FreemindPropertyListener {
-			public void propertyChanged(String propertyName, String newValue,
-					String oldValue) {
-				if (propertyName.startsWith(AUTOMATIC_FORMAT_LEVEL)) {
-					patterns = null;
-				}
-			}
-		};
-
-		public void register() {
-			// add listener:
-			if (listener == null) {
-				listener = new MyFreemindPropertyListener();
-			}
-			Controller.addPropertyChangeListener(listener);
-
-			mAutomaticLayoutPropertyContributor = new AutomaticLayoutPropertyContributor(
-					modeController);
-			OptionPanel.addContributor(mAutomaticLayoutPropertyContributor);
-		}
-
-		public void deRegister() {
-			OptionPanel.removeContributor(mAutomaticLayoutPropertyContributor);
-			Controller.removePropertyChangeListener(listener);
-		}
-
-	}
-
-	/**
-	 * Translates style pattern properties into strings.
-	 * */
-	static class StylePropertyTranslator implements TextTranslator {
-		private final MindMapController controller;
-
-		StylePropertyTranslator(MindMapController controller) {
-			super();
-			this.controller = controller;
-		}
-
-		public String getText(String pKey) {
-			return controller.getText(pKey);
-		}
-	}
-
-	/**
-	 * Currently not used. Is useful if you want to make single patterns
-	 * changeable.
-	 * */
-	public static class StylePatternProperty extends PropertyBean implements
-			PropertyControl, ActionListener {
-
-		String description;
-
-		String label;
-
-		String pattern;
-
-		JButton mButton;
-
-		private final MindMapController mindMapController;
-
-		public StylePatternProperty(String description, String label,
-				TextTranslator pTranslator, MindMapController pController) {
-			super();
-			this.description = description;
-			this.label = label;
-			mindMapController = pController;
-			mButton = new JButton();
-			mButton.addActionListener(this);
-			pattern = null;
-		}
-
-		public String getDescription() {
-			return description;
-		}
-
-		public String getLabel() {
-			return label;
-		}
-
-		public void setValue(String value) {
-			pattern = value;
-			Pattern resultPattern = getPatternFromString();
-			String patternString = StylePatternFactory.toString(resultPattern,
-					new StylePropertyTranslator(mindMapController));
-			mButton.setText(patternString);
-			mButton.setToolTipText(patternString);
-		}
-
-		public String getValue() {
-			return pattern;
-		}
-
-		public void layout(DefaultFormBuilder builder,
-				TextTranslator pTranslator) {
-			JLabel label = builder.append(pTranslator.getText(getLabel()),
-					mButton);
-			label.setToolTipText(pTranslator.getText(getDescription()));
-			// add "reset to standard" popup:
-
-		}
-
-		public void actionPerformed(ActionEvent arg0) {
-			// construct pattern:
-			Pattern pat = getPatternFromString();
-			ChooseFormatPopupDialog formatDialog = new ChooseFormatPopupDialog(
-					mindMapController.getFrame().getJFrame(),
-					mindMapController,
-					"accessories/plugins/AutomaticLayout.properties_StyleDialogTitle",
-					pat, null);
-			formatDialog.setModal(true);
-			formatDialog.setVisible(true);
-			// process result:
-			if (formatDialog.getResult() == ChooseFormatPopupDialog.OK) {
-				Pattern resultPattern = formatDialog.getPattern();
-				resultPattern.setName("dummy");
-				pattern = XmlBindingTools.getInstance().marshall(resultPattern);
-				setValue(pattern);
-				firePropertyChangeEvent();
-			}
-		}
-
-		private Pattern getPatternFromString() {
-			return StylePatternFactory.getPatternFromString(pattern);
-		}
-
-		public void setEnabled(boolean pEnabled) {
-			mButton.setEnabled(pEnabled);
-		}
-
-	}
-
-	public static class StylePatternListProperty extends PropertyBean implements
-			PropertyControl, ListSelectionListener {
-
-		String description;
-
-		String label;
-
-		String patterns;
-
-		JList<String> mList;
-
-		boolean mDialogIsShown = false;
-
-		private final TextTranslator mTranslator;
-
-		private final MindMapController mindMapController;
-
-		private DefaultListModel<String> mDefaultListModel;
-
-		public StylePatternListProperty(String description, String label,
-				TextTranslator pTranslator, MindMapController pController) {
-			super();
-			this.description = description;
-			this.label = label;
-			mTranslator = pTranslator;
-			mindMapController = pController;
-			mList = new JList<>();
-			mList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			mDefaultListModel = new DefaultListModel<>();
-			mList.setModel(mDefaultListModel);
-			mList.addListSelectionListener(this);
-			patterns = null;
-		}
-
-		public String getDescription() {
-			return description;
-		}
-
-		public String getLabel() {
-			return label;
-		}
-
-		public void setValue(String value) {
-			patterns = value;
-			Patterns resultPatterns = getPatternsFromString();
-			mDefaultListModel.clear();
-			int j = 1;
-			StylePropertyTranslator stylePropertyTranslator = new StylePropertyTranslator(
-					mindMapController);
-			for (Iterator<Pattern> i = resultPatterns.getListChoiceList().iterator(); i.hasNext();) {
-				Pattern pattern = i.next();
-				mDefaultListModel.addElement(mTranslator.getText("level" + j)
-						+ ": "
-						+ StylePatternFactory.toString(pattern, stylePropertyTranslator));
-				j++;
-			}
-		}
-
-		public String getValue() {
-			return patterns;
-		}
-
-		public void layout(DefaultFormBuilder builder,
-				TextTranslator pTranslator) {
-			JLabel label = builder.append(pTranslator.getText(getLabel()));
-			builder.append(new JLabel());
-			label.setToolTipText(pTranslator.getText(getDescription()));
-			builder.appendSeparator();
-			builder.append(new JScrollPane(mList), 3);
-			// builder.append(mList);
-		}
-
-		private Patterns getPatternsFromString() {
-			return StylePatternFactory.getPatternsFromString(patterns);
-		}
-
-		public void setEnabled(boolean pEnabled) {
-			mList.setEnabled(pEnabled);
-		}
-
-		public void valueChanged(ListSelectionEvent e) {
-			// construct pattern:
-			final Patterns pat = getPatternsFromString();
-			JList<String> source = (JList<String>) e.getSource();
-			if (source.getSelectedIndex() < 0)
-				return;
-			final Pattern choice = (Pattern) pat.getChoice(source
-					.getSelectedIndex());
-			final ChooseFormatPopupDialog formatDialog = new ChooseFormatPopupDialog(
-					mindMapController.getFrame().getJFrame(),
-					mindMapController,
-					"accessories/plugins/AutomaticLayout.properties_StyleDialogTitle",
-					choice, null);
-			// FIXME: What's that? (fc, 8,4,2008).
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					if (mDialogIsShown)
-						return;
-					mDialogIsShown = true;
-					try {
-						formatDialog.setModal(true);
-						formatDialog.setVisible(true);
-						// process result:
-						if (formatDialog.getResult() == ChooseFormatPopupDialog.OK) {
-							formatDialog.getPattern(choice);
-							patterns = XmlBindingTools.getInstance().marshall(
-									pat);
-							setValue(patterns);
-							firePropertyChangeEvent();
-						}
-					} finally {
-						mDialogIsShown = false;
-					}
-				}
-
-			});
-		}
-
-	}
-
-	private static final class AutomaticLayoutPropertyContributor implements
-			FreemindPropertyContributor {
-
-		private final MindMapController modeController;
-
-		public AutomaticLayoutPropertyContributor(
-				MindMapController modeController) {
-			this.modeController = modeController;
-		}
-
-		public List<PropertyControl> getControls(TextTranslator pTextTranslator) {
-			Vector<PropertyControl> controls = new Vector<>();
-			controls.add(new OptionPanel.NewTabProperty(
-					"accessories/plugins/AutomaticLayout.properties_PatternTabName"));
-			controls.add(new SeparatorProperty(
-					"accessories/plugins/AutomaticLayout.properties_PatternSeparatorName"));
-			controls.add(new StylePatternListProperty("level",
-					AUTOMATIC_FORMAT_LEVEL, pTextTranslator, modeController));
-			return controls;
-		}
-	}
-
-	private static Patterns patterns = null;
-
-	/**
-     * 
+class AutomaticLayout
+/**
+ *
+ */
+    : PermanentMindMapNodeHookAdapter() {
+    /**
+     * Registers the property pages.
+     *
+     * @author foltin
      */
-	public AutomaticLayout() {
-		super();
+    class Registration(controller: ModeController, map: MindMap?) : HookRegistration {
+        private var mAutomaticLayoutPropertyContributor: AutomaticLayoutPropertyContributor? = null
+        private val modeController: MindMapController
 
-	}
+        init {
+            modeController = controller as MindMapController
+        }
 
-	private void setStyle(MindMapNode node) {
-		logger.finest("updating node id="
-				+ node.getObjectId(getMindMapController()) + " and text:"
-				+ node);
-		int depth = depth(node);
-		logger.finest("COLOR, depth=" + (depth));
-		reloadPatterns();
-		int myIndex = patterns.sizeChoiceList() - 1;
-		if (depth < patterns.sizeChoiceList())
-			myIndex = depth;
-		Pattern p = (Pattern) patterns.getChoice(myIndex);
-		getMindMapController().applyPattern(node, p);
-	}
+        internal class MyFreemindPropertyListener : FreemindPropertyListener {
+            override fun propertyChanged(propertyName: String?, newValue: String?,
+                                         oldValue: String?) {
+                if (propertyName!!.startsWith(AUTOMATIC_FORMAT_LEVEL)) {
+                    patterns = null
+                }
+            }
+        }
 
-	private int depth(MindMapNode node) {
-		if (node.isRoot())
-			return 0;
-		return depth(node.getParentNode()) + 1;
-	}
+        override fun register() {
+            // add listener:
+            if (listener == null) {
+                listener = MyFreemindPropertyListener()
+            }
+            Controller.addPropertyChangeListener(listener!!)
+            mAutomaticLayoutPropertyContributor = AutomaticLayoutPropertyContributor(
+                    modeController)
+            OptionPanel.addContributor(mAutomaticLayoutPropertyContributor!!)
+        }
 
-	/*
+        override fun deRegister() {
+            OptionPanel.removeContributor(mAutomaticLayoutPropertyContributor!!)
+            Controller.removePropertyChangeListener(listener!!)
+        }
+
+        companion object {
+            private var listener: FreemindPropertyListener? = null
+        }
+    }
+
+    /**
+     * Translates style pattern properties into strings.
+     */
+    internal class StylePropertyTranslator(private val controller: MindMapController) : TextTranslator {
+        override fun getText(pKey: String?): String {
+            return controller.getText(pKey)
+        }
+    }
+
+    /**
+     * Currently not used. Is useful if you want to make single patterns
+     * changeable.
+     */
+    class StylePatternProperty(override var description: String, override var label: String,
+                               pTranslator: TextTranslator?, private val mindMapController: MindMapController) : PropertyBean(), PropertyControl, ActionListener {
+        var pattern: String?
+        var mButton: JButton
+
+        init {
+            mButton = JButton()
+            mButton.addActionListener(this)
+            pattern = null
+        }
+
+        override var value: String?
+            get() = pattern
+            set(value) {
+                pattern = value
+                val resultPattern = patternFromString
+                val patternString = toString(resultPattern,
+                        StylePropertyTranslator(mindMapController))
+                mButton.text = patternString
+                mButton.toolTipText = patternString
+            }
+
+        override fun layout(builder: DefaultFormBuilder,
+                            pTranslator: TextTranslator) {
+            val label = builder.append(pTranslator.getText(label),
+                    mButton)
+            label.toolTipText = pTranslator.getText(description)
+            // add "reset to standard" popup:
+        }
+
+        override fun actionPerformed(arg0: ActionEvent) {
+            // construct pattern:
+            val pat = patternFromString
+            val formatDialog = ChooseFormatPopupDialog(
+                    mindMapController.frame.jFrame,
+                    mindMapController,
+                    "accessories/plugins/AutomaticLayout.properties_StyleDialogTitle",
+                    pat, null)
+            formatDialog.isModal = true
+            formatDialog.isVisible = true
+            // process result:
+            if (formatDialog.result == ChooseFormatPopupDialog.Companion.OK) {
+                val resultPattern = formatDialog.pattern
+                resultPattern!!.name = "dummy"
+                pattern = XmlBindingTools.getInstance().marshall(resultPattern)
+                value = pattern
+                firePropertyChangeEvent()
+            }
+        }
+
+        private val patternFromString: Pattern
+            private get() = getPatternFromString(pattern)
+
+        override fun setEnabled(pEnabled: Boolean) {
+            mButton.isEnabled = pEnabled
+        }
+    }
+
+    class StylePatternListProperty(override var description: String, override var label: String,
+                                   private val mTranslator: TextTranslator?, private val mindMapController: MindMapController) : PropertyBean(), PropertyControl, ListSelectionListener {
+        var patterns: String?
+        var mList: JList<String>
+        var mDialogIsShown = false
+        private val mDefaultListModel: DefaultListModel<String>
+
+        init {
+            mList = JList()
+            mList.selectionMode = ListSelectionModel.SINGLE_SELECTION
+            mDefaultListModel = DefaultListModel()
+            mList.model = mDefaultListModel
+            mList.addListSelectionListener(this)
+            patterns = null
+        }
+
+        override var value: String?
+            get() = patterns
+            set(value) {
+                patterns = value
+                val resultPatterns = patternsFromString
+                mDefaultListModel.clear()
+                var j = 1
+                val stylePropertyTranslator = StylePropertyTranslator(
+                        mindMapController)
+                val i: Iterator<Pattern> = resultPatterns.listChoiceList.iterator()
+                while (i.hasNext()) {
+                    val pattern = i.next()
+                    mDefaultListModel.addElement(mTranslator!!.getText("level$j")
+                            + ": "
+                            + toString(pattern, stylePropertyTranslator))
+                    j++
+                }
+            }
+
+        override fun layout(builder: DefaultFormBuilder,
+                            pTranslator: TextTranslator) {
+            val label = builder.append(pTranslator.getText(label))
+            builder.append(JLabel())
+            label.toolTipText = pTranslator.getText(description)
+            builder.appendSeparator()
+            builder.append(JScrollPane(mList), 3)
+            // builder.append(mList);
+        }
+
+        private val patternsFromString: Patterns
+            private get() = getPatternsFromString(patterns)
+
+        override fun setEnabled(pEnabled: Boolean) {
+            mList.isEnabled = pEnabled
+        }
+
+        override fun valueChanged(e: ListSelectionEvent) {
+            // construct pattern:
+            val pat = patternsFromString
+            val source = e.source as JList<String>
+            if (source.selectedIndex < 0) return
+            val choice = pat.getChoice(source
+                    .selectedIndex) as Pattern
+            val formatDialog = ChooseFormatPopupDialog(
+                    mindMapController.frame.jFrame,
+                    mindMapController,
+                    "accessories/plugins/AutomaticLayout.properties_StyleDialogTitle",
+                    choice, null)
+            // FIXME: What's that? (fc, 8,4,2008).
+            EventQueue.invokeLater(Runnable {
+                if (mDialogIsShown) return@Runnable
+                mDialogIsShown = true
+                try {
+                    formatDialog.isModal = true
+                    formatDialog.isVisible = true
+                    // process result:
+                    if (formatDialog.result == ChooseFormatPopupDialog.Companion.OK) {
+                        formatDialog.getPattern(choice)
+                        patterns = XmlBindingTools.getInstance().marshall(
+                                pat)
+                        value = patterns
+                        firePropertyChangeEvent()
+                    }
+                } finally {
+                    mDialogIsShown = false
+                }
+            })
+        }
+    }
+
+    private class AutomaticLayoutPropertyContributor(
+            private val modeController: MindMapController) : FreemindPropertyContributor {
+        override fun getControls(pTextTranslator: TextTranslator?): List<PropertyControl?>? {
+            val controls = Vector<PropertyControl?>()
+            controls.add(NewTabProperty(
+                    "accessories/plugins/AutomaticLayout.properties_PatternTabName"))
+            controls.add(SeparatorProperty(
+                    "accessories/plugins/AutomaticLayout.properties_PatternSeparatorName"))
+            controls.add(StylePatternListProperty("level",
+                    AUTOMATIC_FORMAT_LEVEL, pTextTranslator, modeController))
+            return controls
+        }
+    }
+
+    private fun setStyle(node: MindMapNode?) {
+        logger!!.finest("updating node id="
+                + node!!.getObjectId(mindMapController) + " and text:"
+                + node)
+        val depth = depth(node)
+        logger!!.finest("COLOR, depth=$depth")
+        reloadPatterns()
+        var myIndex = patterns!!.sizeChoiceList() - 1
+        if (depth < patterns!!.sizeChoiceList()) myIndex = depth
+        val p = patterns!!.getChoice(myIndex) as Pattern
+        mindMapController!!.applyPattern(node, p)
+    }
+
+    private fun depth(node: MindMapNode?): Int {
+        return if (node!!.isRoot) 0 else depth(node.parentNode) + 1
+    }
+
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * freemind.extensions.PermanentNodeHook#onAddChild(freemind.modes.MindMapNode
 	 * )
 	 */
-	public void onAddChildren(MindMapNode newChildNode) {
-		logger.finest("onAddChildren " + newChildNode);
-		super.onAddChild(newChildNode);
-		setStyleRecursive(newChildNode);
-	}
+    override fun onAddChildren(newChildNode: MindMapNode?) {
+        logger!!.finest("onAddChildren $newChildNode")
+        super.onAddChild(newChildNode)
+        setStyleRecursive(newChildNode)
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * freemind.extensions.PermanentNodeHook#onUpdateChildrenHook(freemind.modes
 	 * .MindMapNode)
 	 */
-	public void onUpdateChildrenHook(MindMapNode updatedNode) {
-		super.onUpdateChildrenHook(updatedNode);
-		setStyleRecursive(updatedNode);
-	}
+    override fun onUpdateChildrenHook(updatedNode: MindMapNode?) {
+        super.onUpdateChildrenHook(updatedNode)
+        setStyleRecursive(updatedNode)
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.extensions.PermanentNodeHook#onUpdateNodeHook()
 	 */
-	public void onUpdateNodeHook() {
-		super.onUpdateNodeHook();
-		setStyle(getNode());
-	}
+    override fun onUpdateNodeHook() {
+        super.onUpdateNodeHook()
+        setStyle(getNode())
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.extensions.NodeHook#invoke(freemind.modes.MindMapNode)
 	 */
-	public void invoke(MindMapNode node) {
-		super.invoke(node);
-		setStyleRecursive(node);
-	}
+    override fun invoke(node: MindMapNode?) {
+        super.invoke(node)
+        setStyleRecursive(node)
+    }
 
-	/** get styles from preferences: */
-	private void reloadPatterns() {
-		if (patterns == null) {
-			String property = getMindMapController().getFrame().getProperty(
-					AUTOMATIC_FORMAT_LEVEL);
-			patterns = StylePatternFactory.getPatternsFromString(property);
-		}
-	}
+    /** get styles from preferences:  */
+    private fun reloadPatterns() {
+        if (patterns == null) {
+            val property = mindMapController!!.frame.getProperty(
+                    AUTOMATIC_FORMAT_LEVEL)
+            patterns = getPatternsFromString(property)
+        }
+    }
 
-	/**
+    /**
      */
-	private void setStyleRecursive(MindMapNode node) {
-		logger.finest("setStyle " + node);
-		setStyle(node);
-		// recurse:
-		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = i.next();
-			invoke(child);
-		}
-	}
+    private fun setStyleRecursive(node: MindMapNode?) {
+        logger!!.finest("setStyle $node")
+        setStyle(node)
+        // recurse:
+        val i: Iterator<MindMapNode?>? = node!!.childrenUnfolded()
+        while (i!!.hasNext()) {
+            val child = i.next()
+            invoke(child)
+        }
+    }
 
+    companion object {
+        private const val AUTOMATIC_FORMAT_LEVEL = "automaticFormat_level"
+        private var patterns: Patterns? = null
+    }
 }

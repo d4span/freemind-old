@@ -1205,11 +1205,14 @@ open class StylePatternFrame
             transformator[EDGE_WIDTHS[5]] = 8
             return transformator
         }
-    val resultPattern: Pattern
+    val pattern: Pattern
         get() {
             val pattern = Pattern()
             return getResultPattern(pattern)
         }
+get() {
+        return mStylePatternFrame.resultPattern
+    }
 
     fun getResultPattern(pattern: Pattern): Pattern {
         pattern.patternNodeColor = getPatternResult(

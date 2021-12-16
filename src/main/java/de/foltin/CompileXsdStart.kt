@@ -20,746 +20,655 @@
  * Created on 16.06.2009
  */
 /*$Id: CompileXsdStart.java,v 1.1.2.1 2009/07/17 19:17:41 christianfoltin Exp $*/
+package de.foltin
 
-package de.foltin;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
+import java.lang.StringBuilder
+import de.foltin.CompileXsdStart.XsdHandler
+import java.util.TreeSet
+import java.lang.StringBuffer
+import de.foltin.CompileXsdStart.ElementTypes
+import kotlin.Throws
+import de.foltin.CompileXsdStart
+import de.foltin.CompileXsdStart.ComplexTypeHandler
+import de.foltin.CompileXsdStart.ComplexContentHandler
+import de.foltin.CompileXsdStart.SchemaHandler
+import de.foltin.CompileXsdStart.SequenceHandler
+import de.foltin.CompileXsdStart.ChoiceHandler
+import de.foltin.CompileXsdStart.AttributeHandler
+import de.foltin.CompileXsdStart.EnumerationHandler
+import de.foltin.CompileXsdStart.ChoiceElementHandler
+import java.util.Locale
+import de.foltin.CompileXsdStart.SequenceElementHandler
+import org.xml.sax.Attributes
+import org.xml.sax.SAXException
+import org.xml.sax.helpers.DefaultHandler
+import java.io.*
+import java.lang.Exception
+import java.lang.IllegalArgumentException
+import java.util.HashMap
+import java.util.StringTokenizer
+import javax.xml.parsers.ParserConfigurationException
+import javax.xml.parsers.SAXParserFactory
+import kotlin.jvm.JvmStatic
 
 /**
  * @author foltin
- * 
  */
-public class CompileXsdStart extends DefaultHandler {
-	public static final String FREEMIND_PACKAGE = "freemind.controller.actions.generated.instance";
-	private static final String DESTINATION_DIR = "binding/src/"
-			+ FREEMIND_PACKAGE.replace('.', File.separatorChar);
-	private static final String FREEMIND_ACTIONS_XSD = "freemind_actions.xsd";
-	private static final String KEY_PACKAGE = "000_KEY_PACKAGE";
-	private static final String FILE_START = "010_start";
-	private static final String KEY_IMPORT_ARRAY_LIST = "020_import_array_list";
-	private static final String KEY_CLASS_START = "030_CLASS_START";
-	private static final String KEY_CLASS_EXTENSION = "040_CLASS_EXTENSION";
-	private static final String KEY_CLASS_START2 = "050_CLASS_START2";
-	private static final String KEY_CLASS_CONSTANTS = "051_CONSTANTS";
-	private static final String KEY_CLASS_MIXED = "055_CLASS_MIXED";
-	private static final String KEY_CLASS_PRIVATE_MEMBERS = "060_PRIVATE_MEMBERS";
-	private static final String KEY_CLASS_GETTERS = "070_Getters";
-	private static final String KEY_CLASS_SETTERS = "080_setters";
-	private static final String KEY_CLASS_SINGLE_CHOICE = "090_single_choice";
-	private static final String KEY_CLASS_MULTIPLE_CHOICES_MEMBERS = "100_choice_members";
-	private static final String KEY_CLASS_MULTIPLE_CHOICES_SETGET = "110_choice_setget";
-	private static final String KEY_CLASS_SEQUENCE = "120_sequence";
-	private static final String KEY_CLASS_END = "500_CLASS_END";
-
-	private final InputStream mInputStream;
-	private XsdHandler mCurrentHandler;
-	private TreeSet<String> mKeyOrder = new TreeSet<String>();
-	private HashMap<String, HashMap<String, String> > mClassMap = new HashMap<>();
-	private StringBuffer mBindingXml = new StringBuffer();
-
-	private HashMap<String, ElementTypes> mElementMap = new HashMap<>();
-	private HashMap<String, String> mTypeMap = new HashMap<>();
-
-	private class ElementTypes {
-
-		private final int mEnumerationId;
-
-		public ElementTypes(int pEnumerationId) {
-			mEnumerationId = pEnumerationId;
-		}
-
-		public int getId() {
-			return mEnumerationId;
-		}
-	};
-
-	public final int Schema_Id = 0;
-	public final int ComplexType_Id = 1;
-	public final int Sequence_Id = 2;
-	public final int Choice_Id = 3;
-	public final int Attribute_Id = 4;
-	public final int ComplexContent_Id = 5;
-	public final int Element_Id = 6;
-	public final int Extension_Id = 7;
-	public final int SimpleType_Id = 8;
-	public final int Restriction_Id = 9;
-	public final int Enumeration_Id = 10;
-	public final int Group_Id = 11;
-	ElementTypes Schema = new ElementTypes(Schema_Id);
-	ElementTypes ComplexType = new ElementTypes(ComplexType_Id);
-	ElementTypes Sequence = new ElementTypes(Sequence_Id);
-	ElementTypes Choice = new ElementTypes(Choice_Id);
-	ElementTypes Attribute = new ElementTypes(Attribute_Id);
-	ElementTypes ComplexContent = new ElementTypes(ComplexContent_Id);
-	ElementTypes Element = new ElementTypes(Element_Id);
-	ElementTypes Extension = new ElementTypes(Extension_Id);
-	ElementTypes SimpleType = new ElementTypes(SimpleType_Id);
-	ElementTypes Restriction = new ElementTypes(Restriction_Id);
-	ElementTypes Enumeration = new ElementTypes(Enumeration_Id);
-	ElementTypes Group = new ElementTypes(Group_Id);
-
-	public CompileXsdStart(InputStream pInputStream) {
-		mInputStream = pInputStream;
-		mElementMap.put("xs:schema", /* ElementTypes. */Schema);
-		mElementMap.put("xs:complexType", /* ElementTypes. */ComplexType);
-		mElementMap.put("xs:complexContent", /* ElementTypes. */ComplexContent);
-		mElementMap.put("xs:element", /* ElementTypes. */Element);
-		mElementMap.put("xs:extension", /* ElementTypes. */Extension);
-		mElementMap.put("xs:choice", /* ElementTypes. */Choice);
-		mElementMap.put("xs:sequence", /* ElementTypes. */Sequence);
-		mElementMap.put("xs:attribute", /* ElementTypes. */Attribute);
-		mElementMap.put("xs:simpleType", /* ElementTypes. */SimpleType);
-		mElementMap.put("xs:restriction", /* ElementTypes. */Restriction);
-		mElementMap.put("xs:enumeration", /* ElementTypes. */Enumeration);
-		mElementMap.put("xs:group", /* ElementTypes. */Group);
-
-		mTypeMap.put("xs:long", "long");
-		mTypeMap.put("xs:int", "int");
-		mTypeMap.put("xs:string", "String");
-		mTypeMap.put("xs:boolean", "boolean");
-		mTypeMap.put("xs:float", "float");
-		mTypeMap.put("xs:double", "double");
-	}
-
-	public static void main(String[] args) throws Exception {
-		CompileXsdStart cXS = new CompileXsdStart(new BufferedInputStream(
-				new FileInputStream(FREEMIND_ACTIONS_XSD)));
-		cXS.generate();
-		cXS.print();
-	}
-
-	private void print() throws Exception {
-		File dir = new File(DESTINATION_DIR);
-		dir.mkdirs();
-		for (String className : mClassMap.keySet()) {
-
-			// special handling for strange group tag.
-			if (className == null)
-				continue;
-			HashMap<String, String> classMap = mClassMap.get(className);
-			// System.out.println("\nClass:" + keys);
-			FileOutputStream fs = new FileOutputStream(DESTINATION_DIR + "/" + className + ".java");
-			for (String orderString : mKeyOrder) {
-				if (classMap.containsKey(orderString)) {
-					String string = (String) classMap.get(orderString);
-					fs.write(string.getBytes());
-					// System.out.print(string);
-				}
-			}
-			fs.close();
-		}
-		// write binding to disk
-		if (true) {
-			FileOutputStream fs = new FileOutputStream(DESTINATION_DIR + "/binding.xml");
-			fs.write(mBindingXml.toString().getBytes());
-			fs.close();
-		}
-	}
-
-	public void generate() throws ParserConfigurationException, SAXException,
-			IOException {
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser saxParser = factory.newSAXParser();
-		mCurrentHandler = new XsdHandler(null);
-		mBindingXml.setLength(0);
-		mBindingXml
-				.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><binding>\n");
-		// introduce correct marshaling for newlines in strings:
-		mBindingXml
-				.append("<format type=\"java.lang.String\" serializer=\"de.foltin.StringEncoder.encode\" deserializer=\"de.foltin.StringEncoder.decode\"/>\n");
-		saxParser.parse(mInputStream, this);
-		mBindingXml.append("</binding>\n");
-		// System.out.println(mBindingXml.toString());
-	}
-
-	private class XsdHandler extends DefaultHandler {
-		XsdHandler mParent;
-		String mClassName = null;
-		String mExtendsClassName = null;
-
-		public XsdHandler(XsdHandler pParent) {
-			mParent = pParent;
-		}
-
-		String getClassName() {
-			if (mClassName != null) {
-				return mClassName;
-			}
-			if (mParent != null)
-				return mParent.getClassName();
-			else
-				return null;
-		}
-
-		HashMap<String, String> getClassMap() {
-			String className = getClassName();
-			return createClass(className);
-		}
-
-		protected void appendToClassMap(String key, String value) {
-			mKeyOrder.add(key);
-			HashMap<String, String> classMap = getClassMap();
-
-			if (classMap.containsKey(key)) {
-				classMap.put(key, classMap.get(key) + value);
-			} else {
-				classMap.put(key, value);
-			}
-		}
-
-		protected void addArrayListImport() {
-			appendToClassMap(KEY_IMPORT_ARRAY_LIST,
-					"import java.util.ArrayList;\n");
-		}
-
-		String getExtendsClassName() {
-			if (mExtendsClassName != null) {
-				return mExtendsClassName;
-			}
-			if (mParent == null) {
-				return null;
-			}
-			return mParent.getExtendsClassName();
-		}
-
-		public void startElement(String pName, Attributes pAttributes) {
-
-		}
-
-		public void startElement(String pUri, String pLocalName, String pName,
-				Attributes pAttributes) throws SAXException {
-			super.startElement(pUri, pLocalName, pName, pAttributes);
-			// System.out.print("[ " + pName + ", ");
-			// for (int i = 0; i < pAttributes.getLength(); ++i) {
-			// System.out.print(pAttributes.getLocalName(i) + "="
-			// + pAttributes.getValue(i));
-			// }
-			// System.out.println("]");
-			ElementTypes defaultHandlerType;
-			if (mElementMap.containsKey(pName)) {
-				defaultHandlerType = (ElementTypes) mElementMap.get(pName);
-			} else {
-				throw new IllegalArgumentException("Element " + pName
-						+ " is not matched.");
-			}
-			XsdHandler nextHandler = null;
-			switch (defaultHandlerType.getId()) {
-			case Element_Id:
-				nextHandler = createElementHandler();
-				break;
-			case ComplexType_Id:
-				nextHandler = new ComplexTypeHandler(this);
-				break;
-			case ComplexContent_Id:
-				nextHandler = new ComplexContentHandler(this);
-				break;
-			case Schema_Id:
-				nextHandler = new SchemaHandler(this);
-				break;
-
-			case Sequence_Id:
-				nextHandler = new SequenceHandler(this);
-				break;
-			case Choice_Id:
-				nextHandler = new ChoiceHandler(this);
-				break;
-			case Extension_Id:
-				nextHandler = new ExtensionHandler(this);
-				break;
-			case Attribute_Id:
-				nextHandler = new AttributeHandler(this);
-				break;
-			case Enumeration_Id:
-				nextHandler = new EnumerationHandler(this);
-				break;
-			case Group_Id:
-				nextHandler = new GroupHandler(this);
-				break;
-			default:
-				nextHandler = new XsdHandler(this);
-				// throw new IllegalArgumentException("Wrong type " + pName);
-			}
-			mCurrentHandler = nextHandler;
-			nextHandler.startElement(pName, pAttributes);
-		}
-
-		protected XsdHandler createElementHandler() {
-			return new ComplexTypeHandler(this);
-		}
-
-		public void endElement(String pUri, String pLocalName, String pName)
-				throws SAXException {
-			super.endElement(pUri, pLocalName, pName);
-			mCurrentHandler = mParent;
-		}
-
-	}
-
-	private class ExtensionHandler extends XsdHandler {
-
-		public ExtensionHandler(XsdHandler pParent) {
-			super(pParent);
-		}
-
-		public void startElement(String arg0, Attributes arg1) {
-			super.startElement(arg0, arg1);
-			String base = arg1.getValue("base");
-			mExtendsClassName = getNameFromXml(base);
-			mKeyOrder.add(KEY_CLASS_EXTENSION);
-			getClassMap().put(KEY_CLASS_EXTENSION,
-					" extends " + mExtendsClassName);
-			mBindingXml.append("    <structure map-as=\"" + base
-					+ "_type\"/>\n");
-			// inform parents:
-			XsdHandler xsdHandlerHierarchy = this;
-			do {
-				if (xsdHandlerHierarchy instanceof ComplexTypeHandler) {
-					ComplexTypeHandler complexHandler = (ComplexTypeHandler) xsdHandlerHierarchy;
-					complexHandler.mExtendsClassName = mExtendsClassName;
-				}
-				xsdHandlerHierarchy = xsdHandlerHierarchy.mParent;
-			} while (xsdHandlerHierarchy != null);
-
-		}
-	}
-
-	private class SchemaHandler extends XsdHandler {
-
-		public SchemaHandler(XsdHandler pParent) {
-			super(pParent);
-		}
-
-	}
-
-	private class ChoiceHandler extends XsdHandler {
-		private boolean isSingleChoice = false;
-
-		public ChoiceHandler(XsdHandler pParent) {
-			super(pParent);
-		}
-
-		protected XsdHandler createElementHandler() {
-			return new ChoiceElementHandler(this);
-		}
-
-		protected boolean isSingleChoice() {
-			return isSingleChoice;
-		}
-
-		public void startElement(String arg0, Attributes arg1) {
-			super.startElement(arg0, arg1);
-			if (arg1.getValue("maxOccurs") != null) {
-				// single array list:
-				isSingleChoice = true;
-				appendToClassMap(
-						KEY_CLASS_SINGLE_CHOICE,
-						"  public void addChoice(Object choice) {\n"
-								+ "    choiceList.add(choice);\n"
-								+ "  }\n"
-								+ "\n"
-								+ "  public void addAtChoice(int position, Object choice) {\n"
-								+ "    choiceList.add(position, choice);\n"
-								+ "  }\n"
-								+ "\n"
-								+ "  public void setAtChoice(int position, Object choice) {\n"
-								+ "    choiceList.set(position, choice);\n"
-								+ "  }\n"
-								+ "  public Object getChoice(int index) {\n"
-								+ "    return (Object)choiceList.get( index );\n"
-								+ "  }\n"
-								+ "\n"
-								+ "  public int sizeChoiceList() {\n"
-								+ "    return choiceList.size();\n"
-								+ "  }\n"
-								+ "\n"
-								+ "  public void clearChoiceList() {\n"
-								+ "    choiceList.clear();\n"
-								+ "  }\n"
-								+ "\n"
-								+ "  public java.util.List getListChoiceList() {\n"
-								+ "    return java.util.Collections.unmodifiableList(choiceList);\n"
-								+ "  }\n"
-								+ "\n"
-								+ "  protected ArrayList choiceList = new ArrayList();\n"
-								+ "\n" + "");
-				addArrayListImport();
-				mBindingXml
-						.append("    <collection field='choiceList' ordered='false'>\n");
-			}
-		}
-
-		public void endElement(String arg0, String arg1, String arg2)
-				throws SAXException {
-			if (isSingleChoice) {
-				mBindingXml.append("    </collection>\n");
-			}
-			super.endElement(arg0, arg1, arg2);
-		}
-	}
-
-	private class ChoiceElementHandler extends XsdHandler {
-		private boolean mIsSingle;
-
-		public ChoiceElementHandler(XsdHandler pParent) {
-			super(pParent);
-			if (pParent instanceof ChoiceHandler) {
-				ChoiceHandler choiceParent = (ChoiceHandler) pParent;
-				mIsSingle = choiceParent.isSingleChoice();
-
-			} else {
-				throw new IllegalArgumentException(
-						"Hmm, parent is not a choice.");
-			}
-		}
-
-		public void startElement(String arg0, Attributes arg1) {
-			super.startElement(arg0, arg1);
-			String rawName = arg1.getValue("ref");
-			String name = getNameFromXml(rawName);
-			String memberName = name.substring(0, 1).toLowerCase()
-					+ name.substring(1);
-			if (mIsSingle) {
-				mBindingXml
-						.append("      <structure usage=\"optional\" map-as=\""
-								+ FREEMIND_PACKAGE + "." + name + "\"/>\n");
-				return;
-			}
-			// do multiple choices.
-			appendToClassMap(KEY_CLASS_MULTIPLE_CHOICES_MEMBERS, "  protected "
-					+ name + " " + memberName + ";\n\n");
-			appendToClassMap(KEY_CLASS_MULTIPLE_CHOICES_SETGET, "  public "
-					+ name + " get" + name + "() {\n    return this."
-					+ memberName + ";\n" + "  }\n\n");
-			appendToClassMap(KEY_CLASS_MULTIPLE_CHOICES_SETGET,
-					"  public void set" + name + "(" + name + " value){\n"
-							+ "    this." + memberName + " = value;\n"
-							+ "  }\n\n");
-			mBindingXml.append("    <structure field=\"" + memberName
-					+ "\" usage=\"" + "optional" + "\" map-as=\""
-					+ FREEMIND_PACKAGE + "." + name + "\"/>\n");
-		}
-
-	}
-
-	private class GroupHandler extends XsdHandler {
-
-		public GroupHandler(XsdHandler pParent) {
-			super(pParent);
-		}
-
-		public void startElement(String arg0, String arg1, String arg2,
-				Attributes arg3) throws SAXException {
-			// super.startElement(arg0, arg1, arg2, arg3);
-			// omit the output.
-			mCurrentHandler = new GroupHandler(this);
-		}
-	}
-
-	private class SequenceHandler extends XsdHandler {
-
-		public SequenceHandler(XsdHandler pParent) {
-			super(pParent);
-		}
-
-		protected XsdHandler createElementHandler() {
-			return new SequenceElementHandler(this);
-		}
-
-	}
-
-	private class SequenceElementHandler extends XsdHandler {
-
-		public SequenceElementHandler(XsdHandler pParent) {
-			super(pParent);
-		}
-
-		public void startElement(String arg0, Attributes arg1) {
-			super.startElement(arg0, arg1);
-			String rawName = arg1.getValue("name");
-			String type = arg1.getValue("type");
-			boolean isRef = false;
-			if (rawName == null) {
-				rawName = arg1.getValue("ref");
-				isRef = true;
-			}
-			String name = getNameFromXml(rawName);
-			String memberName = name.substring(0, 1).toLowerCase()
-					+ name.substring(1);
-			if (isRef) {
-				type = name;
-			} else {
-				type = getType(type);
-			}
-			String maxOccurs = arg1.getValue("maxOccurs");
-			String minOccurs = arg1.getValue("minOccurs");
-			if (maxOccurs != null && maxOccurs.trim().equals("1")) {
-				// single ref:
-				appendToClassMap(KEY_CLASS_MULTIPLE_CHOICES_MEMBERS,
-						"  protected " + type + " " + memberName + ";\n\n");
-				appendToClassMap(KEY_CLASS_MULTIPLE_CHOICES_SETGET, "  public "
-						+ type + " get" + name + "() {\n    return this."
-						+ memberName + ";\n" + "  }\n\n");
-				appendToClassMap(KEY_CLASS_MULTIPLE_CHOICES_SETGET,
-						"  public void set" + name + "(" + type + " value){\n"
-								+ "    this." + memberName + " = value;\n"
-								+ "  }\n\n");
-				String optReq = "optional";
-				if (minOccurs != null && minOccurs.trim().equals("1")) {
-					optReq = "required";
-				}
-				if (isRef) {
-					mBindingXml.append("      <structure field=\"" + memberName
-							+ "\" usage=\"" + optReq + "\" map-as=\""
-							+ FREEMIND_PACKAGE + "." + type + "\"/>\n");
-				} else {
-					mBindingXml.append("      <value name=\"" + rawName
-							+ "\" field=\"" + memberName + "\" usage=\""
-							+ optReq + "\"/>\n");
-					// whitespace='preserve' doesn't work
-				}
-			} else {
-				// list ref:
-				appendToClassMap(KEY_CLASS_SEQUENCE, "  public void add" + name
-						+ "(" + name + " " + memberName + ") {\n" + "    "
-						+ memberName + "List.add(" + memberName + ");\n"
-						+ "  }\n" + "\n" + "  public void addAt" + name
-						+ "(int position, " + name + " " + memberName + ") {\n"
-						+ "    " + memberName + "List.add(position, "
-						+ memberName + ");\n" + "  }\n" + "\n" + "  public "
-						+ name + " get" + name + "(int index) {\n"
-						+ "    return (" + name + ")" + memberName
-						+ "List.get( index );\n" + "  }\n" + "\n"
-						+ "  public void removeFrom" + name
-						+ "ElementAt(int index) {\n" + "    " + memberName
-						+ "List.remove( index );\n" + "  }\n" + "\n"
-						+ "  public int size" + name + "List() {\n"
-						+ "    return " + memberName + "List.size();\n"
-						+ "  }\n" + "\n" + "  public void clear" + name
-						+ "List() {\n" + "    " + memberName
-						+ "List.clear();\n" + "  }\n" + "\n"
-						+ "  public java.util.List getList" + name
-						+ "List() {\n"
-						+ "    return java.util.Collections.unmodifiableList("
-						+ memberName + "List);\n" + "  }\n"
-						+ "    protected ArrayList " + memberName
-						+ "List = new ArrayList();\n\n");
-				addArrayListImport();
-				mBindingXml.append("    <collection field=\"" + memberName
-						+ "List\">\n" + "      <structure map-as=\""
-						+ FREEMIND_PACKAGE + "." + name + "\"/>\n"
-						+ "    </collection>\n");
-			}
-		}
-
-	}
-
-	private class ComplexTypeHandler extends XsdHandler {
-
-		private boolean mIsClassDefinedHere = false;
-		private String mRawName;
-		private boolean mMixed = false;
-
-		public ComplexTypeHandler(XsdHandler pParent) {
-			super(pParent);
-		}
-
-		public void startElement(String arg0, Attributes arg1) {
-			super.startElement(arg0, arg1);
-
-			String mixed = arg1.getValue("mixed");
-			if ("true".equals(mixed)) {
-				// in case of mixed content (those with additional cdata
-				// content), we add a "content" field to the class
-				mMixed = true;
-			}
-			if (getClassName() == null) {
-				mRawName = startClass(arg1);
-				// make binding:
-				mBindingXml.append("  <mapping class='" + FREEMIND_PACKAGE
-						+ "." + mClassName + "' type-name='" + mRawName
-						+ "_type' abstract='true'>\n");
-				mIsClassDefinedHere = true;
-			}
-		}
-
-		/**
-		 * @param arg1
-		 * @return the class name
-		 */
-		protected String startClass(Attributes arg1) {
-			mKeyOrder.add(FILE_START);
-			mKeyOrder.add(KEY_PACKAGE);
-			mKeyOrder.add(KEY_CLASS_START);
-			mKeyOrder.add(KEY_CLASS_END);
-			String rawName = arg1.getValue("name");
-			String name = getNameFromXml(rawName);
-			HashMap<String, String> class1 = createClass(name);
-			mClassName = name;
-			class1.put(FILE_START, "/* " + name + "...*/\n");
-			class1.put(KEY_PACKAGE, "package " + FREEMIND_PACKAGE + ";\n");
-			class1.put(KEY_CLASS_START, "public class " + name);
-			mKeyOrder.add(KEY_CLASS_START2);
-			class1.put(KEY_CLASS_START2, " {\n");
-			mKeyOrder.add(KEY_CLASS_CONSTANTS);
-			class1.put(KEY_CLASS_CONSTANTS, "  /* constants from enums*/\n");
-			if (mMixed) {
-				mKeyOrder.add(KEY_CLASS_MIXED);
-				class1.put(
-						KEY_CLASS_MIXED,
-						" public String content; public String getContent(){return content;} public void setContent(String content){this.content = content;}\n");
-			}
-			class1.put(KEY_CLASS_END, "} /* " + name + "*/\n");
-			return rawName;
-		}
-
-		public void endElement(String arg0, String arg1, String arg2)
-				throws SAXException {
-			if (mIsClassDefinedHere) {
-				String extendString = "";
-				if (getExtendsClassName() != null) {
-					extendString = " extends=\"" + FREEMIND_PACKAGE + "."
-							+ getExtendsClassName() + "\"";
-				}
-				if (mMixed) {
-					mBindingXml
-							.append("     <value field='content' style='text'/>\n");
-				}
-				mBindingXml.append("  </mapping>\n" + "  <mapping name=\""
-						+ mRawName + "\"" + extendString + " class=\""
-						+ FREEMIND_PACKAGE + "." + mClassName
-						+ "\"><structure map-as=\"" + mRawName
-						+ "_type\"/></mapping>\n" + "\n");
-			}
-			super.endElement(arg0, arg1, arg2);
-		}
-	}
-
-	private class ComplexContentHandler extends XsdHandler {
-
-		public ComplexContentHandler(XsdHandler pParent) {
-			super(pParent);
-		}
-
-	}
-
-	private class AttributeHandler extends XsdHandler {
-
-		public AttributeHandler(XsdHandler pParent) {
-			super(pParent);
-		}
-
-		public void startElement(String arg0, Attributes arg1) {
-			super.startElement(arg0, arg1);
-			String type = arg1.getValue("type");
-			type = getType(type);
-			String rawName = arg1.getValue("name");
-			String usage = arg1.getValue("use");
-			String minOccurs = arg1.getValue("minOccurs");
-			String name = arg1.getValue("id");
-			if (name == null) {
-				name = getNameFromXml(rawName);
-			}
-			String memberName = decapitalizeFirstLetter(name);
-			appendToClassMap(KEY_CLASS_PRIVATE_MEMBERS, "  protected " + type
-					+ " " + memberName + ";\n");
-			appendToClassMap(KEY_CLASS_GETTERS, "  public " + type + " get"
-					+ name + "(){\n" + "    return " + memberName + ";\n"
-					+ "  }\n");
-			appendToClassMap(KEY_CLASS_SETTERS, "  public void set" + name
-					+ "(" + type + " value){\n" + "    this." + memberName
-					+ " = value;\n" + "  }\n");
-			mBindingXml.append("    <value name='" + rawName + "' field='"
-					+ memberName + "' " + "usage='"
-					+ (("required".equals(usage)) ? "required" : "optional")
-					+ "' "
-					+ (("0".equals(minOccurs)) ? "" : "style='attribute'")
-					+ "/>\n");
-			// whitespace='preserve' doesn't work
-		}
-
-		public String decapitalizeFirstLetter(String name) {
-			return name.substring(0, 1).toLowerCase() + name.substring(1);
-		}
-
-	}
-
-	private class EnumerationHandler extends XsdHandler {
-		
-		public EnumerationHandler(XsdHandler pParent) {
-			super(pParent);
-		}
-		
-		public void startElement(String arg0, Attributes arg1) {
-			super.startElement(arg0, arg1);
-			String val = arg1.getValue("value");
-			appendToClassMap(KEY_CLASS_CONSTANTS, "  public static final String " + val.toUpperCase()
-					+ " = \"" + val + "\";\n");
-		}
-		
-		
-	}
-	
-	public void endElement(String pUri, String pLocalName, String pName)
-			throws SAXException {
-		mCurrentHandler.endElement(pUri, pLocalName, pName);
-	}
-
-	public HashMap<String, String> createClass(String pName) {
-		if (mClassMap.containsKey(pName)) {
-			return mClassMap.get(pName);
-		}
-		HashMap<String, String> newValue = new HashMap<>();
-		mClassMap.put(pName, newValue);
-		return newValue;
-	}
-
-	public void startElement(String pUri, String pLocalName, String pName,
-			Attributes pAttributes) throws SAXException {
-		mCurrentHandler.startElement(pUri, pLocalName, pName, pAttributes);
-	}
-
-	public String firstLetterCapitalized(String text) {
-		if (text == null || text.length() == 0) {
-			return text;
-		}
-		return text.substring(0, 1).toUpperCase()
-				+ text.substring(1, text.length());
-	}
-
-	private String getNameFromXml(String pXmlString) {
-		StringTokenizer st = new StringTokenizer(pXmlString, "_");
-		String result = "";
-		while (st.hasMoreTokens()) {
-			result += firstLetterCapitalized(st.nextToken());
-		}
-		return result;
-	}
-
-	private String getType(String type) {
-		if (mTypeMap.containsKey(type)) {
-			type = (String) mTypeMap.get(type);
-		} else {
-			// FIXME: Bad hack for tokens:
-			type = "String";
-			// throw new IllegalArgumentException("Unknown type " + type);
-		}
-		return type;
-	}
-
+class CompileXsdStart(private val mInputStream: InputStream) : DefaultHandler() {
+    private var mCurrentHandler: XsdHandler? = null
+    private val mKeyOrder = TreeSet<String>()
+    private val mClassMap = HashMap<String?, HashMap<String, String>>()
+    private val mBindingXml = StringBuffer()
+    private val mElementMap = HashMap<String, ElementTypes>()
+    private val mTypeMap = HashMap<String?, String>()
+
+    inner class ElementTypes(pEnumerationId: Int) {
+        val id: Int
+
+        init {
+            mEnumerationId = pEnumerationId
+        }
+    }
+
+    val Schema_Id = 0
+    val ComplexType_Id = 1
+    val Sequence_Id = 2
+    val Choice_Id = 3
+    val Attribute_Id = 4
+    val ComplexContent_Id = 5
+    val Element_Id = 6
+    val Extension_Id = 7
+    val SimpleType_Id = 8
+    val Restriction_Id = 9
+    val Enumeration_Id = 10
+    val Group_Id = 11
+    var Schema = ElementTypes(Schema_Id)
+    var ComplexType = ElementTypes(ComplexType_Id)
+    var Sequence = ElementTypes(Sequence_Id)
+    var Choice = ElementTypes(Choice_Id)
+    var Attribute = ElementTypes(Attribute_Id)
+    var ComplexContent = ElementTypes(ComplexContent_Id)
+    var Element = ElementTypes(Element_Id)
+    var Extension = ElementTypes(Extension_Id)
+    var SimpleType = ElementTypes(SimpleType_Id)
+    var Restriction = ElementTypes(Restriction_Id)
+    var Enumeration = ElementTypes(Enumeration_Id)
+    var Group = ElementTypes(Group_Id)
+
+    init {
+        mElementMap["xs:schema"] = Schema
+        mElementMap["xs:complexType"] = ComplexType
+        mElementMap["xs:complexContent"] = ComplexContent
+        mElementMap["xs:element"] = Element
+        mElementMap["xs:extension"] = Extension
+        mElementMap["xs:choice"] = Choice
+        mElementMap["xs:sequence"] = Sequence
+        mElementMap["xs:attribute"] = Attribute
+        mElementMap["xs:simpleType"] = SimpleType
+        mElementMap["xs:restriction"] = Restriction
+        mElementMap["xs:enumeration"] = Enumeration
+        mElementMap["xs:group"] = Group
+        mTypeMap["xs:long"] = "long"
+        mTypeMap["xs:int"] = "int"
+        mTypeMap["xs:string"] = "String"
+        mTypeMap["xs:boolean"] = "boolean"
+        mTypeMap["xs:float"] = "float"
+        mTypeMap["xs:double"] = "double"
+    }
+
+    @Throws(Exception::class)
+    private fun print() {
+        val dir = File(DESTINATION_DIR)
+        dir.mkdirs()
+        for (className in mClassMap.keys) {
+
+            // special handling for strange group tag.
+            if (className == null) continue
+            val classMap = mClassMap[className]!!
+            // System.out.println("\nClass:" + keys);
+            val fs = FileOutputStream(DESTINATION_DIR + "/" + className + ".java")
+            for (orderString in mKeyOrder) {
+                if (classMap.containsKey(orderString)) {
+                    fs.write(classMap[orderString]!!.toByteArray())
+                    // System.out.print(string);
+                }
+            }
+            fs.close()
+        }
+        // write binding to disk
+        if (true) {
+            val fs = FileOutputStream(DESTINATION_DIR + "/binding.xml")
+            fs.write(mBindingXml.toString().toByteArray())
+            fs.close()
+        }
+    }
+
+    @Throws(ParserConfigurationException::class, SAXException::class, IOException::class)
+    fun generate() {
+        val factory = SAXParserFactory.newInstance()
+        val saxParser = factory.newSAXParser()
+        mCurrentHandler = XsdHandler(null)
+        mBindingXml.setLength(0)
+        mBindingXml
+                .append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><binding>\n")
+        // introduce correct marshaling for newlines in strings:
+        mBindingXml
+                .append("<format type=\"java.lang.String\" serializer=\"de.foltin.StringEncoder.encode\" deserializer=\"de.foltin.StringEncoder.decode\"/>\n")
+        saxParser.parse(mInputStream, this)
+        mBindingXml.append("</binding>\n")
+        // System.out.println(mBindingXml.toString());
+    }
+
+    private open inner class XsdHandler(var mParent: XsdHandler?) : DefaultHandler() {
+        var mClassName: String? = null
+        var mExtendsClassName: String? = null
+        val className: String?
+            get() {
+                if (mClassName != null) {
+                    return mClassName
+                }
+                return if (mParent != null) mParent.getClassName() else null
+            }
+        val classMap: HashMap<String, String>
+            get() {
+                val className: String = getClassName()
+                return createClass(className)
+            }
+
+        protected fun appendToClassMap(key: String, value: String) {
+            mKeyOrder.add(key)
+            val classMap: HashMap<String, String> = getClassMap()
+            if (classMap.containsKey(key)) {
+                classMap[key] = classMap[key] + value
+            } else {
+                classMap[key] = value
+            }
+        }
+
+        protected fun addArrayListImport() {
+            appendToClassMap(KEY_IMPORT_ARRAY_LIST,
+                    "import java.util.ArrayList;\n")
+        }
+
+        val extendsClassName: String?
+            get() {
+                if (mExtendsClassName != null) {
+                    return mExtendsClassName
+                }
+                return if (mParent == null) {
+                    null
+                } else mParent.getExtendsClassName()
+            }
+
+        open fun startElement(pName: String?, pAttributes: Attributes) {}
+        @Throws(SAXException::class)
+        override fun startElement(pUri: String, pLocalName: String, pName: String,
+                                  pAttributes: Attributes) {
+            super.startElement(pUri, pLocalName, pName, pAttributes)
+            // System.out.print("[ " + pName + ", ");
+            // for (int i = 0; i < pAttributes.getLength(); ++i) {
+            // System.out.print(pAttributes.getLocalName(i) + "="
+            // + pAttributes.getValue(i));
+            // }
+            // System.out.println("]");
+            val defaultHandlerType: ElementTypes?
+            defaultHandlerType = if (mElementMap.containsKey(pName)) {
+                mElementMap[pName]
+            } else {
+                throw IllegalArgumentException("Element " + pName
+                        + " is not matched.")
+            }
+            var nextHandler: XsdHandler? = null
+            when (defaultHandlerType.getId()) {
+                Element_Id -> nextHandler = createElementHandler()
+                ComplexType_Id -> nextHandler = ComplexTypeHandler(this)
+                ComplexContent_Id -> nextHandler = ComplexContentHandler(this)
+                Schema_Id -> nextHandler = SchemaHandler(this)
+                Sequence_Id -> nextHandler = SequenceHandler(this)
+                Choice_Id -> nextHandler = ChoiceHandler(this)
+                Extension_Id -> nextHandler = ExtensionHandler(this)
+                Attribute_Id -> nextHandler = AttributeHandler(this)
+                Enumeration_Id -> nextHandler = EnumerationHandler(this)
+                Group_Id -> nextHandler = GroupHandler(this)
+                else -> nextHandler = XsdHandler(this)
+            }
+            mCurrentHandler = nextHandler
+            nextHandler!!.startElement(pName, pAttributes)
+        }
+
+        protected open fun createElementHandler(): XsdHandler? {
+            return ComplexTypeHandler(this)
+        }
+
+        @Throws(SAXException::class)
+        override fun endElement(pUri: String, pLocalName: String, pName: String) {
+            super.endElement(pUri, pLocalName, pName)
+            mCurrentHandler = mParent
+        }
+    }
+
+    private inner class ExtensionHandler(pParent: XsdHandler?) : XsdHandler(pParent) {
+        override fun startElement(arg0: String?, arg1: Attributes) {
+            super.startElement(arg0, arg1)
+            val base = arg1.getValue("base")
+            mExtendsClassName = getNameFromXml(base)
+            mKeyOrder.add(KEY_CLASS_EXTENSION)
+            getClassMap().put(KEY_CLASS_EXTENSION,
+                    " extends $mExtendsClassName")
+            mBindingXml.append("""    <structure map-as="${base}_type"/>
+""")
+            // inform parents:
+            var xsdHandlerHierarchy: XsdHandler? = this
+            do {
+                if (xsdHandlerHierarchy is ComplexTypeHandler) {
+                    xsdHandlerHierarchy.mExtendsClassName = mExtendsClassName
+                }
+                xsdHandlerHierarchy = xsdHandlerHierarchy!!.mParent
+            } while (xsdHandlerHierarchy != null)
+        }
+    }
+
+    private inner class SchemaHandler(pParent: XsdHandler?) : XsdHandler(pParent)
+    private inner class ChoiceHandler(pParent: XsdHandler?) : XsdHandler(pParent) {
+        var isSingleChoice = false
+            private set
+
+        override fun createElementHandler(): XsdHandler? {
+            return ChoiceElementHandler(this)
+        }
+
+        override fun startElement(arg0: String?, arg1: Attributes) {
+            super.startElement(arg0, arg1)
+            if (arg1.getValue("maxOccurs") != null) {
+                // single array list:
+                isSingleChoice = true
+                appendToClassMap(
+                        KEY_CLASS_SINGLE_CHOICE,
+                        """  public void addChoice(Object choice) {
+    choiceList.add(choice);
+  }
+
+  public void addAtChoice(int position, Object choice) {
+    choiceList.add(position, choice);
+  }
+
+  public void setAtChoice(int position, Object choice) {
+    choiceList.set(position, choice);
+  }
+  public Object getChoice(int index) {
+    return (Object)choiceList.get( index );
+  }
+
+  public int sizeChoiceList() {
+    return choiceList.size();
+  }
+
+  public void clearChoiceList() {
+    choiceList.clear();
+  }
+
+  public java.util.List getListChoiceList() {
+    return java.util.Collections.unmodifiableList(choiceList);
+  }
+
+  protected ArrayList choiceList = new ArrayList();
+
+""")
+                addArrayListImport()
+                mBindingXml
+                        .append("    <collection field='choiceList' ordered='false'>\n")
+            }
+        }
+
+        @Throws(SAXException::class)
+        override fun endElement(arg0: String, arg1: String, arg2: String) {
+            if (isSingleChoice) {
+                mBindingXml.append("    </collection>\n")
+            }
+            super.endElement(arg0, arg1, arg2)
+        }
+    }
+
+    private inner class ChoiceElementHandler(pParent: XsdHandler?) : XsdHandler(pParent) {
+        private var mIsSingle = false
+
+        init {
+            if (pParent is ChoiceHandler) {
+                mIsSingle = pParent.isSingleChoice()
+            } else {
+                throw IllegalArgumentException(
+                        "Hmm, parent is not a choice.")
+            }
+        }
+
+        override fun startElement(arg0: String?, arg1: Attributes) {
+            super.startElement(arg0, arg1)
+            val rawName = arg1.getValue("ref")
+            val name = getNameFromXml(rawName)
+            val memberName = (name!!.substring(0, 1).lowercase(Locale.getDefault())
+                    + name.substring(1))
+            if (mIsSingle) {
+                mBindingXml
+                        .append("""      <structure usage="optional" map-as="$FREEMIND_PACKAGE.$name"/>
+""")
+                return
+            }
+            // do multiple choices.
+            appendToClassMap(KEY_CLASS_MULTIPLE_CHOICES_MEMBERS, """  protected $name $memberName;
+
+""")
+            appendToClassMap(KEY_CLASS_MULTIPLE_CHOICES_SETGET, """  public $name get$name() {
+    return this.$memberName;
+  }
+
+""")
+            appendToClassMap(KEY_CLASS_MULTIPLE_CHOICES_SETGET,
+                    """  public void set$name($name value){
+    this.$memberName = value;
+  }
+
+""")
+            mBindingXml.append("""    <structure field="$memberName" usage="optional" map-as="$FREEMIND_PACKAGE.$name"/>
+""")
+        }
+    }
+
+    private inner class GroupHandler(pParent: XsdHandler?) : XsdHandler(pParent) {
+        @Throws(SAXException::class)
+        override fun startElement(arg0: String, arg1: String, arg2: String,
+                                  arg3: Attributes) {
+            // super.startElement(arg0, arg1, arg2, arg3);
+            // omit the output.
+            mCurrentHandler = GroupHandler(this)
+        }
+    }
+
+    private inner class SequenceHandler(pParent: XsdHandler?) : XsdHandler(pParent) {
+        override fun createElementHandler(): XsdHandler? {
+            return SequenceElementHandler(this)
+        }
+    }
+
+    private inner class SequenceElementHandler(pParent: XsdHandler?) : XsdHandler(pParent) {
+        override fun startElement(arg0: String?, arg1: Attributes) {
+            super.startElement(arg0, arg1)
+            var rawName = arg1.getValue("name")
+            var type = arg1.getValue("type")
+            var isRef = false
+            if (rawName == null) {
+                rawName = arg1.getValue("ref")
+                isRef = true
+            }
+            val name = getNameFromXml(rawName)
+            val memberName = (name!!.substring(0, 1).lowercase(Locale.getDefault())
+                    + name.substring(1))
+            type = if (isRef) {
+                name
+            } else {
+                getType(type)
+            }
+            val maxOccurs = arg1.getValue("maxOccurs")
+            val minOccurs = arg1.getValue("minOccurs")
+            if (maxOccurs != null && maxOccurs.trim { it <= ' ' } == "1") {
+                // single ref:
+                appendToClassMap(KEY_CLASS_MULTIPLE_CHOICES_MEMBERS,
+                        "  protected $type $memberName;\n\n")
+                appendToClassMap(KEY_CLASS_MULTIPLE_CHOICES_SETGET, """  public $type get$name() {
+    return this.$memberName;
+  }
+
+""")
+                appendToClassMap(KEY_CLASS_MULTIPLE_CHOICES_SETGET,
+                        """  public void set$name($type value){
+    this.$memberName = value;
+  }
+
+""")
+                var optReq = "optional"
+                if (minOccurs != null && minOccurs.trim { it <= ' ' } == "1") {
+                    optReq = "required"
+                }
+                if (isRef) {
+                    mBindingXml.append("""      <structure field="$memberName" usage="$optReq" map-as="$FREEMIND_PACKAGE.$type"/>
+""")
+                } else {
+                    mBindingXml.append("""      <value name="$rawName" field="$memberName" usage="$optReq"/>
+""")
+                    // whitespace='preserve' doesn't work
+                }
+            } else {
+                // list ref:
+                appendToClassMap(KEY_CLASS_SEQUENCE, """  public void add$name($name $memberName) {
+    ${memberName}List.add($memberName);
+  }
+
+  public void addAt$name(int position, $name $memberName) {
+    ${memberName}List.add(position, $memberName);
+  }
+
+  public $name get$name(int index) {
+    return ($name)${memberName}List.get( index );
+  }
+
+  public void removeFrom${name}ElementAt(int index) {
+    ${memberName}List.remove( index );
+  }
+
+  public int size${name}List() {
+    return ${memberName}List.size();
+  }
+
+  public void clear${name}List() {
+    ${memberName}List.clear();
+  }
+
+  public java.util.List getList${name}List() {
+    return java.util.Collections.unmodifiableList(${memberName}List);
+  }
+    protected ArrayList ${memberName}List = new ArrayList();
+
+""")
+                addArrayListImport()
+                mBindingXml.append("""    <collection field="${memberName}List">
+      <structure map-as="$FREEMIND_PACKAGE.$name"/>
+    </collection>
+""")
+            }
+        }
+    }
+
+    private inner class ComplexTypeHandler(pParent: XsdHandler?) : XsdHandler(pParent) {
+        private var mIsClassDefinedHere = false
+        private var mRawName: String? = null
+        private var mMixed = false
+        override fun startElement(arg0: String?, arg1: Attributes) {
+            super.startElement(arg0, arg1)
+            val mixed = arg1.getValue("mixed")
+            if ("true" == mixed) {
+                // in case of mixed content (those with additional cdata
+                // content), we add a "content" field to the class
+                mMixed = true
+            }
+            if (getClassName() == null) {
+                mRawName = startClass(arg1)
+                // make binding:
+                mBindingXml.append("""  <mapping class='$FREEMIND_PACKAGE.$mClassName' type-name='${mRawName}_type' abstract='true'>
+""")
+                mIsClassDefinedHere = true
+            }
+        }
+
+        /**
+         * @param arg1
+         * @return the class name
+         */
+        protected fun startClass(arg1: Attributes): String {
+            mKeyOrder.add(FILE_START)
+            mKeyOrder.add(KEY_PACKAGE)
+            mKeyOrder.add(KEY_CLASS_START)
+            mKeyOrder.add(KEY_CLASS_END)
+            val rawName = arg1.getValue("name")
+            val name = getNameFromXml(rawName)
+            val class1 = createClass(name)
+            mClassName = name
+            class1[FILE_START] = "/* $name...*/\n"
+            class1[KEY_PACKAGE] = """
+                 package $FREEMIND_PACKAGE;
+                 
+                 """.trimIndent()
+            class1[KEY_CLASS_START] = "public class $name"
+            mKeyOrder.add(KEY_CLASS_START2)
+            class1[KEY_CLASS_START2] = " {\n"
+            mKeyOrder.add(KEY_CLASS_CONSTANTS)
+            class1[KEY_CLASS_CONSTANTS] = "  /* constants from enums*/\n"
+            if (mMixed) {
+                mKeyOrder.add(KEY_CLASS_MIXED)
+                class1[KEY_CLASS_MIXED] = " public String content; public String getContent(){return content;} public void setContent(String content){this.content = content;}\n"
+            }
+            class1[KEY_CLASS_END] = "} /* $name*/\n"
+            return rawName
+        }
+
+        @Throws(SAXException::class)
+        override fun endElement(arg0: String, arg1: String, arg2: String) {
+            if (mIsClassDefinedHere) {
+                var extendString = ""
+                if (getExtendsClassName() != null) {
+                    extendString = (" extends=\"" + FREEMIND_PACKAGE + "."
+                            + getExtendsClassName() + "\"")
+                }
+                if (mMixed) {
+                    mBindingXml
+                            .append("     <value field='content' style='text'/>\n")
+                }
+                mBindingXml.append("""  </mapping>
+  <mapping name="$mRawName"$extendString class="$FREEMIND_PACKAGE.$mClassName"><structure map-as="${mRawName}_type"/></mapping>
+
+""")
+            }
+            super.endElement(arg0, arg1, arg2)
+        }
+    }
+
+    private inner class ComplexContentHandler(pParent: XsdHandler?) : XsdHandler(pParent)
+    private inner class AttributeHandler(pParent: XsdHandler?) : XsdHandler(pParent) {
+        override fun startElement(arg0: String?, arg1: Attributes) {
+            super.startElement(arg0, arg1)
+            var type = arg1.getValue("type")
+            type = getType(type)
+            val rawName = arg1.getValue("name")
+            val usage = arg1.getValue("use")
+            val minOccurs = arg1.getValue("minOccurs")
+            var name = arg1.getValue("id")
+            if (name == null) {
+                name = getNameFromXml(rawName)
+            }
+            val memberName = decapitalizeFirstLetter(name)
+            appendToClassMap(KEY_CLASS_PRIVATE_MEMBERS, """  protected $type $memberName;
+""")
+            appendToClassMap(KEY_CLASS_GETTERS, """  public $type get$name(){
+    return $memberName;
+  }
+""")
+            appendToClassMap(KEY_CLASS_SETTERS, """  public void set$name($type value){
+    this.$memberName = value;
+  }
+""")
+            mBindingXml.append("""    <value name='$rawName' field='$memberName' usage='${if ("required" == usage) "required" else "optional"}' ${if ("0" == minOccurs) "" else "style='attribute'"}/>
+""")
+            // whitespace='preserve' doesn't work
+        }
+
+        fun decapitalizeFirstLetter(name: String?): String {
+            return name!!.substring(0, 1).lowercase(Locale.getDefault()) + name.substring(1)
+        }
+    }
+
+    private inner class EnumerationHandler(pParent: XsdHandler?) : XsdHandler(pParent) {
+        override fun startElement(arg0: String?, arg1: Attributes) {
+            super.startElement(arg0, arg1)
+            val `val` = arg1.getValue("value")
+            appendToClassMap(KEY_CLASS_CONSTANTS, """  public static final String ${`val`.uppercase(Locale.getDefault())} = "$`val`";
+""")
+        }
+    }
+
+    @Throws(SAXException::class)
+    override fun endElement(pUri: String, pLocalName: String, pName: String) {
+        mCurrentHandler!!.endElement(pUri, pLocalName, pName)
+    }
+
+    fun createClass(pName: String?): HashMap<String, String> {
+        if (mClassMap.containsKey(pName)) {
+            return mClassMap[pName]!!
+        }
+        val newValue = HashMap<String, String>()
+        mClassMap[pName] = newValue
+        return newValue
+    }
+
+    @Throws(SAXException::class)
+    override fun startElement(pUri: String, pLocalName: String, pName: String,
+                              pAttributes: Attributes) {
+        mCurrentHandler!!.startElement(pUri, pLocalName, pName, pAttributes)
+    }
+
+    fun firstLetterCapitalized(text: String?): String? {
+        return if (text == null || text.length == 0) {
+            text
+        } else text.substring(0, 1).uppercase(Locale.getDefault())
+                + text.substring(1, text.length)
+    }
+
+    private fun getNameFromXml(pXmlString: String?): String? {
+        val st = StringTokenizer(pXmlString, "_")
+        var result: String? = ""
+        while (st.hasMoreTokens()) {
+            result += firstLetterCapitalized(st.nextToken())
+        }
+        return result
+    }
+
+    private fun getType(type: String?): String? {
+        var type = type
+        type = if (mTypeMap.containsKey(type)) {
+            mTypeMap[type]
+        } else {
+            // FIXME: Bad hack for tokens:
+            "String"
+            // throw new IllegalArgumentException("Unknown type " + type);
+        }
+        return type
+    }
+
+    companion object {
+        const val FREEMIND_PACKAGE = "freemind.controller.actions.generated.instance"
+        private val DESTINATION_DIR = ("binding/src/"
+                + FREEMIND_PACKAGE.replace('.', File.separatorChar))
+        private const val FREEMIND_ACTIONS_XSD = "freemind_actions.xsd"
+        private const val KEY_PACKAGE = "000_KEY_PACKAGE"
+        private const val FILE_START = "010_start"
+        private const val KEY_IMPORT_ARRAY_LIST = "020_import_array_list"
+        private const val KEY_CLASS_START = "030_CLASS_START"
+        private const val KEY_CLASS_EXTENSION = "040_CLASS_EXTENSION"
+        private const val KEY_CLASS_START2 = "050_CLASS_START2"
+        private const val KEY_CLASS_CONSTANTS = "051_CONSTANTS"
+        private const val KEY_CLASS_MIXED = "055_CLASS_MIXED"
+        private const val KEY_CLASS_PRIVATE_MEMBERS = "060_PRIVATE_MEMBERS"
+        private const val KEY_CLASS_GETTERS = "070_Getters"
+        private const val KEY_CLASS_SETTERS = "080_setters"
+        private const val KEY_CLASS_SINGLE_CHOICE = "090_single_choice"
+        private const val KEY_CLASS_MULTIPLE_CHOICES_MEMBERS = "100_choice_members"
+        private const val KEY_CLASS_MULTIPLE_CHOICES_SETGET = "110_choice_setget"
+        private const val KEY_CLASS_SEQUENCE = "120_sequence"
+        private const val KEY_CLASS_END = "500_CLASS_END"
+        @Throws(Exception::class)
+        @JvmStatic
+        fun main(args: Array<String>) {
+            val cXS = CompileXsdStart(BufferedInputStream(
+                    FileInputStream(FREEMIND_ACTIONS_XSD)))
+            cXS.generate()
+            cXS.print()
+        }
+    }
 }

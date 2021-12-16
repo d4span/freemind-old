@@ -19,26 +19,21 @@
  *
  * Created on 24.04.2004
  */
+package freemind.modes.mindmapmode.actions.xml
 
-
-package freemind.modes.mindmapmode.actions.xml;
-
-import freemind.controller.actions.generated.instance.XmlAction;
+import freemind.controller.actions.generated.instance.XmlAction
 
 /**
  * @author foltin
- * 
  */
-public interface ActionHandler {
+interface ActionHandler {
+    fun executeAction(action: XmlAction?)
 
-	void executeAction(XmlAction action);
+    /**
+     */
+    fun startTransaction(name: String?)
 
-	/**
-	 */
-	void startTransaction(String name);
-
-	/**
-	 */
-	void endTransaction(String name);
-
+    /**
+     */
+    fun endTransaction(name: String?)
 }

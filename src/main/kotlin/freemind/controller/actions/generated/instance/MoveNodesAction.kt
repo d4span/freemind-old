@@ -31,5 +31,5 @@ import java.util.*
 
     val listNodeListMemberList: List<*>
         get() = Collections.unmodifiableList(nodeListMemberList)
-    protected var nodeListMemberList: ArrayList<*> = ArrayList<Any?>()
+    protected var nodeListMemberList: MutableList<NodeListMember?> = mutableListOf()
 } /* MoveNodesAction*/

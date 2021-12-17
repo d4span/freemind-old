@@ -33,5 +33,5 @@ import java.util.*
 
     val listResultList: List<*>
         get() = Collections.unmodifiableList(resultList)
-    protected var resultList: ArrayList<*> = ArrayList<Any?>()
+    protected var resultList: MutableList<Result?> = mutableListOf()
 } /* Reversegeocode*/

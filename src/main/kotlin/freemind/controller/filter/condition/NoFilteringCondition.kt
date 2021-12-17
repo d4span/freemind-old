@@ -33,7 +33,7 @@ import javax.swing.JLabel
 class NoFilteringCondition private constructor() : Condition {
     override fun toString(): String {
         if (description == null) {
-            description = Resources.getInstance().getResourceString(
+            description = Resources.instance?.getResourceString(
                     "filter_no_filtering")
         }
         return description!!

@@ -271,7 +271,7 @@ object Tools {
         return if (col) "true" else "false"
     }
 
-    fun xmlToBoolean(string: String): Boolean {
+    fun xmlToBoolean(string: String?): Boolean {
         return if ("true" == string) true else false
     }
 
@@ -1113,7 +1113,7 @@ object Tools {
      * character is a space. In "Find & Replace", ampersand does not label
      * mnemo, while in "&About", mnemo is "Alt + A".
      */
-    fun setLabelAndMnemonic(action: Action, inLabel: String) {
+    fun setLabelAndMnemonic(action: Action, inLabel: String?) {
         setLabelAndMnemonic(ActionHolder(action), inLabel)
     }
 
@@ -1156,8 +1156,8 @@ object Tools {
             return underLinux
         }
 
-    fun removeMnemonic(rawLabel: String): String {
-        return rawLabel.replaceFirst("&([^ ])".toRegex(), "$1")
+    fun removeMnemonic(rawLabel: String?): String? {
+        return rawLabel?.replaceFirst("&([^ ])".toRegex(), "$1")
     }
 
     fun getKeyStroke(keyStrokeDescription: String?): KeyStroke? {
@@ -1735,7 +1735,7 @@ object Tools {
         } else Integer.valueOf(value).toInt()
     }
 
-    fun iconFirstIndex(node: MindMapNode, iconName: String): Int {
+    fun iconFirstIndex(node: MindMapNode, iconName: String?): Int {
         val icons = node.icons
         val i: ListIterator<MindIcon> = icons.listIterator()
         while (i.hasNext()) {

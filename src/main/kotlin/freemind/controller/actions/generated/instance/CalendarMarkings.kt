@@ -30,5 +30,5 @@ import java.util.*
 
     val listCalendarMarkingList: List<*>
         get() = Collections.unmodifiableList(calendarMarkingList)
-    protected var calendarMarkingList: ArrayList<*> = ArrayList<Any?>()
+    protected var calendarMarkingList: MutableList<CalendarMarking?> = mutableListOf()
 } /* CalendarMarkings*/

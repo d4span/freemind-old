@@ -36,5 +36,5 @@ import java.util.*
 
     val listPlaceList: List<*>
         get() = Collections.unmodifiableList(placeList)
-    protected var placeList: ArrayList<*> = ArrayList<Any?>()
+    protected var placeList: MutableList<Place?> = mutableListOf()
 } /* Searchresults*/

@@ -242,8 +242,8 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
 		 * )
 		 */
         init {
-            Tools.setLabelAndMnemonic(this, Resources.getInstance()
-                    .getResourceString("filter_add"))
+            Tools.setLabelAndMnemonic(this, Resources.instance
+                    ?.getResourceString("filter_add"))
         }
 
         override fun actionPerformed(e: ActionEvent) {
@@ -259,22 +259,22 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
             val ignoreCase = caseInsensitive.isSelected
             val selectedItem = attributes.selectedItem
             newCond = if (selectedItem is NamedObject) {
-                FilterController.Companion.getConditionFactory().createCondition(selectedItem,
+                FilterController.Companion.conditionFactory?.createCondition(selectedItem,
                         simpleCond, value, ignoreCase)
             } else {
                 val attribute = selectedItem.toString()
-                FilterController.Companion.getConditionFactory().createAttributeCondition(
+                FilterController.Companion.conditionFactory?.createAttributeCondition(
                         attribute, simpleCond, value, ignoreCase)
             }
             val model = conditionList.model as DefaultComboBoxModel<Condition>
             if (newCond != null) model.addElement(newCond)
-            if (values!!.isEditable) {
-                val item = values.selectedItem
+            if (values?.isEditable ?: false) {
+                val item = values?.selectedItem
                 if (item != null && item != "") {
-                    values.removeItem(item)
-                    values.insertItemAt(item, 0)
-                    values.selectedIndex = 0
-                    if (values.itemCount >= 10) values.removeItemAt(9)
+                    values?.removeItem(item)
+                    values?.insertItemAt(item, 0)
+                    values?.selectedIndex = 0
+                    if (values?.itemCount ?: 0 >= 10) values?.removeItemAt(9)
                 }
             }
             validate()
@@ -290,8 +290,8 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
 		 * )
 		 */
         init {
-            Tools.setLabelAndMnemonic(this, Resources.getInstance()
-                    .getResourceString("filter_delete"))
+            Tools.setLabelAndMnemonic(this, Resources.instance
+                    ?.getResourceString("filter_delete"))
         }
 
         override fun actionPerformed(e: ActionEvent) {
@@ -319,8 +319,8 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
 		 * )
 		 */
         init {
-            Tools.setLabelAndMnemonic(this, Resources.getInstance()
-                    .getResourceString("filter_not"))
+            Tools.setLabelAndMnemonic(this, Resources.instance
+                    ?.getResourceString("filter_not"))
         }
 
         override fun actionPerformed(e: ActionEvent) {
@@ -349,8 +349,8 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
 		 * )
 		 */
         init {
-            Tools.setLabelAndMnemonic(this, Resources.getInstance()
-                    .getResourceString("filter_and"))
+            Tools.setLabelAndMnemonic(this, Resources.instance
+                    ?.getResourceString("filter_and"))
         }
 
         override fun actionPerformed(e: ActionEvent) {
@@ -372,8 +372,8 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
 		 * )
 		 */
         init {
-            Tools.setLabelAndMnemonic(this, Resources.getInstance()
-                    .getResourceString("filter_or"))
+            Tools.setLabelAndMnemonic(this, Resources.instance
+                    ?.getResourceString("filter_or"))
         }
 
         override fun actionPerformed(e: ActionEvent) {
@@ -458,8 +458,8 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
             } else false
         }
 
-        override fun getDescription(): String {
-            return Resources.getInstance().getResourceString(
+        override fun getDescription(): String? {
+            return Resources.instance?.getResourceString(
                     "mindmaps_filter_desc")
         }
 
@@ -468,15 +468,15 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
         }
     }
 
-    protected val fileChooser: FreeMindFileDialog
-        protected get() = Resources.getInstance().getStandardFileChooser(MindMapFilterFileFilter.filter)
+    protected val fileChooser: FreeMindFileDialog?
+        protected get() = Resources.instance?.getStandardFileChooser(MindMapFilterFileFilter.filter)
 
     private inner class SaveAction : ActionListener {
         override fun actionPerformed(e: ActionEvent) {
             val chooser = fileChooser
-            chooser.setDialogTitle(Resources.getInstance().getResourceString(
+            chooser?.setDialogTitle(Resources.instance?.getResourceString(
                     "save_as"))
-            val returnVal = chooser.showSaveDialog(this@FilterComposerDialog)
+            val returnVal = chooser?.showSaveDialog(this@FilterComposerDialog)
             if (returnVal != JFileChooser.APPROVE_OPTION) { // not ok pressed
                 return
             }
@@ -489,7 +489,7 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
                 if (!canonicalPath.endsWith(suffix)) {
                     canonicalPath = canonicalPath + suffix
                 }
-                mFilterController!!.saveConditions(internalConditionsModel, canonicalPath)
+                mFilterController?.saveConditions(internalConditionsModel, canonicalPath)
             } catch (ex: Exception) {
                 handleSavingException(ex)
             }
@@ -503,11 +503,11 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
     private inner class LoadAction : ActionListener {
         override fun actionPerformed(e: ActionEvent) {
             val chooser = fileChooser
-            val returnVal = chooser.showOpenDialog(this@FilterComposerDialog)
+            val returnVal = chooser?.showOpenDialog(this@FilterComposerDialog)
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 try {
                     val theFile = chooser.selectedFile
-                    mFilterController!!.loadConditions(internalConditionsModel,
+                    mFilterController?.loadConditions(internalConditionsModel,
                             theFile.canonicalPath)
                 } catch (ex: Exception) {
                     handleLoadingException(ex)
@@ -596,8 +596,8 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
     private val mFilterController: FilterController?
     private val conditionList: JList<Condition>
     private val simpleCondition: JComboBox<Condition?>
-    private val values: JComboBox<*>? = null
-    private val attributes: JComboBox<*>
+    private val values: JComboBox<Any?>? = null
+    private val attributes: JComboBox<Any?>
     private val btnAdd: JButton
     private val btnNot: JButton
     private val btnAnd: JButton
@@ -609,50 +609,50 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
     private val simpleNodeConditionComboBoxModel: DefaultComboBoxModel<Condition?>
     private val simpleIconConditionComboBoxModel: DefaultComboBoxModel<Condition?>
     private val filteredAttributeComboBoxModel: ExtendedComboBoxModel
-    private var internalConditionsModel: DefaultComboBoxModel<*>? = null
-    private var externalConditionsModel: ComboBoxModel<*>? = null
+    private var internalConditionsModel: DefaultComboBoxModel<Condition?>? = null
+    private var externalConditionsModel: ComboBoxModel<Condition?>? = null
     private val btnOK: JButton
     private val btnApply: JButton
     private val btnCancel: JButton
     private var btnSave: JButton? = null
     private var btnLoad: JButton? = null
     private val conditionListListener: ConditionListSelectionListener
-    private val simpleAttributeConditionComboBoxModel: DefaultComboBoxModel<*>
+    private val simpleAttributeConditionComboBoxModel: DefaultComboBoxModel<Condition?>
 
     init {
         mFilterController = mController.filterController
         val simpleConditionBox = Box.createHorizontalBox()
         simpleConditionBox.border = EmptyBorder(5, 0, 5, 0)
         contentPane.add(simpleConditionBox, BorderLayout.NORTH)
-        attributes = JComboBox<Any>()
-        filteredAttributeComboBoxModel = ExtendedComboBoxModel(FilterController.Companion.getConditionFactory().getAttributeConditionNames())
+        attributes = JComboBox<Any?>()
+        filteredAttributeComboBoxModel = ExtendedComboBoxModel(FilterController.Companion.conditionFactory?.attributeConditionNames)
         getAttributesFromMap(mController.map)
         attributes.setModel(filteredAttributeComboBoxModel)
         attributes.addItemListener(SelectedAttributeChangeListener())
         simpleConditionBox.add(Box.createHorizontalGlue())
         simpleConditionBox.add(attributes)
-        attributes.setRenderer(mFilterController.conditionRenderer)
-        simpleNodeConditionComboBoxModel = DefaultComboBoxModel<Any?>(FilterController.Companion.getConditionFactory().getNodeConditionNames())
-        simpleIconConditionComboBoxModel = DefaultComboBoxModel<Any?>(FilterController.Companion.getConditionFactory().getIconConditionNames())
+        attributes.setRenderer(mFilterController?.conditionRenderer)
+        simpleNodeConditionComboBoxModel = DefaultComboBoxModel<Condition?>(FilterController.Companion.conditionFactory?.nodeConditionNames)
+        simpleIconConditionComboBoxModel = DefaultComboBoxModel<Condition?>(FilterController.Companion.conditionFactory?.nodeConditionNames)
         simpleCondition = JComboBox()
         simpleCondition.setModel(simpleNodeConditionComboBoxModel)
         simpleCondition.addItemListener(SimpleConditionChangeListener())
         simpleConditionBox.add(Box.createHorizontalGlue())
         simpleConditionBox.add(simpleCondition)
-        simpleCondition.setRenderer(mFilterController.conditionRenderer)
-        simpleAttributeConditionComboBoxModel = DefaultComboBoxModel<Any?>(FilterController.Companion.getConditionFactory().getAttributeConditionNames())
+        simpleCondition.setRenderer(mFilterController?.conditionRenderer)
+        simpleAttributeConditionComboBoxModel = DefaultComboBoxModel<Condition?>(FilterController.Companion.conditionFactory?.attributeConditionNames)
         nodes = ExtendedComboBoxModel()
         values!!.setModel(nodes)
         simpleConditionBox.add(Box.createHorizontalGlue())
         simpleConditionBox.add(values)
-        values.setRenderer(mFilterController.conditionRenderer)
+        values.setRenderer(mFilterController?.conditionRenderer)
         values.isEditable = true
         icons = ExtendedComboBoxModel()
         icons.setExtensionList(mController.map.icons)
         caseInsensitive = JCheckBox()
         simpleConditionBox.add(Box.createHorizontalGlue())
         simpleConditionBox.add(caseInsensitive)
-        caseInsensitive.text = Resources.getInstance().getResourceString(
+        caseInsensitive.text = Resources.instance?.getResourceString(
                 "filter_ignore_case")
         val conditionButtonBox = Box.createVerticalBox()
         conditionButtonBox.border = EmptyBorder(0, 10, 0, 10)
@@ -687,18 +687,15 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
         contentPane.add(controllerBox, BorderLayout.SOUTH)
         val closeAction: CloseAction = CloseAction()
         btnOK = JButton()
-        Tools.setLabelAndMnemonic(btnOK, Resources.getInstance()
-                .getResourceString("ok"))
+        Tools.setLabelAndMnemonic(btnOK, Resources.instance?.getResourceString("ok"))
         btnOK.addActionListener(closeAction)
         btnOK.maximumSize = maxButtonDimension
         btnApply = JButton()
-        Tools.setLabelAndMnemonic(btnApply, Resources.getInstance()
-                .getResourceString("apply"))
+        Tools.setLabelAndMnemonic(btnApply, Resources.instance?.getResourceString("apply"))
         btnApply.addActionListener(closeAction)
         btnApply.maximumSize = maxButtonDimension
         btnCancel = JButton()
-        Tools.setLabelAndMnemonic(btnCancel, Resources.getInstance()
-                .getResourceString("cancel"))
+        Tools.setLabelAndMnemonic(btnCancel, Resources.instance?.getResourceString("cancel"))
         btnCancel.addActionListener(closeAction)
         btnCancel.maximumSize = maxButtonDimension
         controllerBox.add(Box.createHorizontalGlue())
@@ -711,16 +708,14 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
         if (!mController.frame.isApplet) {
             val saveAction: ActionListener = SaveAction()
             btnSave = JButton()
-            Tools.setLabelAndMnemonic(btnSave, Resources.getInstance()
-                    .getResourceString("save"))
-            btnSave.addActionListener(saveAction)
-            btnSave.setMaximumSize(maxButtonDimension)
+            Tools.setLabelAndMnemonic(btnSave, Resources.instance?.getResourceString("save"))
+            btnSave?.addActionListener(saveAction)
+            btnSave?.setMaximumSize(maxButtonDimension)
             val loadAction: ActionListener = LoadAction()
             btnLoad = JButton()
-            Tools.setLabelAndMnemonic(btnLoad, Resources.getInstance()
-                    .getResourceString("load"))
-            btnLoad.addActionListener(loadAction)
-            btnLoad.setMaximumSize(maxButtonDimension)
+            Tools.setLabelAndMnemonic(btnLoad, Resources.instance?.getResourceString("load"))
+            btnLoad?.addActionListener(loadAction)
+            btnLoad?.setMaximumSize(maxButtonDimension)
             controllerBox.add(btnSave)
             controllerBox.add(Box.createHorizontalGlue())
             controllerBox.add(btnLoad)
@@ -728,15 +723,14 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
         }
         conditionList = JList()
         conditionList.selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
-        conditionList.setCellRenderer(mFilterController.conditionRenderer)
+        conditionList.setCellRenderer(mFilterController?.conditionRenderer)
         conditionList.layoutOrientation = JList.VERTICAL
         conditionList.alignmentX = LEFT_ALIGNMENT
         conditionListListener = ConditionListSelectionListener()
         conditionList.addListSelectionListener(conditionListListener)
         conditionList.addMouseListener(ConditionListMouseListener())
         val conditionScrollPane = JScrollPane(conditionList)
-        val conditionColumnHeader = JLabel(Resources.getInstance()
-                .getResourceString("filter_conditions"))
+        val conditionColumnHeader = JLabel(Resources.instance?.getResourceString("filter_conditions"))
         conditionColumnHeader.horizontalAlignment = JLabel.CENTER
         conditionScrollPane.setColumnHeaderView(conditionColumnHeader)
         conditionScrollPane.preferredSize = Dimension(500, 200)
@@ -780,7 +774,7 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
         }
     }
 
-    private val attributeValue: String
+    private val attributeValue: String?
         private get() {
             if (attributes.selectedIndex == ICON_POSITION) {
                 val mi = values!!.selectedItem as MindIcon
@@ -837,10 +831,10 @@ class FilterComposerDialog(private val mController: Controller, pFilterToolbar: 
     }
 
     private fun initInternalConditionModel() {
-        externalConditionsModel = mFilterController!!.filterConditionModel
+        externalConditionsModel = mFilterController?.getFilterConditionModel()
         if (internalConditionsModel == null) {
-            internalConditionsModel = DefaultComboBoxModel<Any>()
-            internalConditionsModel.addListDataListener(conditionListListener)
+            internalConditionsModel = DefaultComboBoxModel<Condition?>()
+            internalConditionsModel?.addListDataListener(conditionListListener)
             conditionList.setModel(internalConditionsModel)
         } else {
             internalConditionsModel!!.removeAllElements()

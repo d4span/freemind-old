@@ -30,5 +30,5 @@ import java.util.*
 
     val listChoiceList: List<*>
         get() = Collections.unmodifiableList(choiceList)
-    protected var choiceList: ArrayList<*> = ArrayList<Any?>()
+    protected var choiceList: MutableList<Any?> = mutableListOf()
 } /* Patterns*/

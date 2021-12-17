@@ -31,5 +31,5 @@ import java.util.*
 
     val listPluginStringList: List<*>
         get() = Collections.unmodifiableList(pluginStringList)
-    protected var pluginStringList: ArrayList<*> = ArrayList<Any?>()
+    protected var pluginStringList: MutableList<PluginString?> = mutableListOf()
 } /* PluginStrings*/

@@ -1090,7 +1090,7 @@ class MindIcon : Comparable<MindIcon>, IconInformation {
 
         /**
          */
-        fun factory(iconName: String?, icon: ImageIcon): MindIcon? {
+        fun factory(iconName: String?, icon: ImageIcon?): MindIcon? {
             if (createdIcons.containsKey(iconName)) {
                 return createdIcons[iconName]
             }

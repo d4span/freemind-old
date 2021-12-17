@@ -27,7 +27,7 @@ class ColorPair {
     constructor(pColor: Color, pString: String) {
         color = pColor
         name = pString
-        displayName = Resources.getInstance().getText("font_color_$name")
+        displayName = Resources.instance?.getText("font_color_$name")
     }
 
     constructor(pColor: Color, pName: String, pDisplayName: String) {
@@ -38,5 +38,5 @@ class ColorPair {
 
     var color: Color
     var name: String
-    var displayName: String
+    var displayName: String?
 }

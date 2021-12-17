@@ -320,7 +320,7 @@ class LastStateStorageManagement(pXml: String?) {
 
     init {
         if (logger == null) {
-            logger = Resources.getInstance().getLogger(
+            logger = Resources.instance?.getLogger(
                     this.javaClass.name)
         }
         try {
@@ -331,7 +331,7 @@ class LastStateStorageManagement(pXml: String?) {
                 }
             }
         } catch (e: Exception) {
-            Resources.getInstance().logException(e)
+            Resources.instance?.logException(e)
         }
         if (mLastStatesMap == null) {
             logger!!.warning("Creating a new last state map storage as there was no old one or it was corrupt.")
@@ -343,10 +343,10 @@ class LastStateStorageManagement(pXml: String?) {
         get() = Tools.marshall(mLastStatesMap)
 
     fun clearTabIndices() {
-        val it: Iterator<MindmapLastStateStorage?> = mLastStatesMap.getListMindmapLastStateStorageList().iterator()
-        while (it.hasNext()) {
-            val store = it.next()
-            store.setTabIndex(-1)
+        val it = mLastStatesMap?.listMindmapLastStateStorageList?.iterator()
+        while (it?.hasNext() ?: false) {
+            val store = it?.next()
+            store?.tabIndex = -1
         }
     }
 
@@ -358,10 +358,10 @@ class LastStateStorageManagement(pXml: String?) {
             if (Tools.safeEquals(pStore.restorableName,
                             store.getRestorableName())) {
                 // deep copy
-                store.setLastZoom(pStore.lastZoom)
-                store.setLastSelected(pStore.lastSelected)
-                store.setX(pStore.x)
-                store.setY(pStore.y)
+                store?.lastZoom = pStore.lastZoom
+                store?.lastSelected = pStore.lastSelected
+                store?.x = pStore.x
+                store?.y = pStore.y
                 val listCopy: Vector<NodeListMember?> = Vector<Any?>(pStore.listNodeListMemberList)
                 store!!.clearNodeListMemberList()
                 for (member in listCopy) {
@@ -383,7 +383,7 @@ class LastStateStorageManagement(pXml: String?) {
             val it: Iterator<MindmapLastStateStorage?> = mLastStatesMap.getListMindmapLastStateStorageList().iterator()
             while (it.hasNext()) {
                 val store = it.next()
-                dateToStoreMap[java.lang.Long.valueOf(-store.getLastChanged())] = store
+                dateToStoreMap[java.lang.Long.valueOf(-store?.lastChanged)] = store
             }
             // clear list
             mLastStatesMap!!.clearMindmapLastStateStorageList()

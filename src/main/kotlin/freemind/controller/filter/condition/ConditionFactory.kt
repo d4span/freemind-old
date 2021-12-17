@@ -61,7 +61,7 @@ class ConditionFactory
     }
 
     fun createAttributeCondition(attribute: String,
-                                 simpleCondition: NamedObject, value: String, ignoreCase: Boolean): Condition? {
+                                 simpleCondition: NamedObject, value: String?, ignoreCase: Boolean): Condition? {
         if (simpleCondition.equals(FILTER_EXIST)) return AttributeExistsCondition(attribute)
         if (simpleCondition.equals(FILTER_DOES_NOT_EXIST)) return AttributeNotExistsCondition(attribute)
         if (ignoreCase) {
@@ -95,7 +95,7 @@ class ConditionFactory
     }
 
     fun createCondition(attribute: NamedObject,
-                        simpleCondition: NamedObject, value: String, ignoreCase: Boolean): Condition? {
+                        simpleCondition: NamedObject, value: String?, ignoreCase: Boolean): Condition? {
         if (attribute.equals(FILTER_ICON)
                 && simpleCondition.equals(FILTER_CONTAINS)) return IconContainedCondition(value)
         if (attribute.equals(FILTER_ICON)
@@ -117,7 +117,7 @@ class ConditionFactory
                 FILTER_IS_NOT_EQUAL_TO, FILTER_GT, FILTER_GE, FILTER_LE, FILTER_LT)
 
     protected fun createNodeCondition(simpleCondition: NamedObject,
-                                      value: String, ignoreCase: Boolean): Condition? {
+                                      value: String?, ignoreCase: Boolean): Condition? {
         if (ignoreCase) {
             if (simpleCondition.equals(FILTER_CONTAINS)) {
                 return if (value == "") null else IgnoreCaseNodeContainsCondition(value)

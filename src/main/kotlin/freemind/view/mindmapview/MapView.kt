@@ -1325,7 +1325,7 @@ open class MapView(//
         }
     }
 
-    override fun print(graphics: Graphics, pageFormat: PageFormat, pageIndex: Int): Int {
+    override fun print(graphics: Graphics?, pageFormat: PageFormat?, pageIndex: Int): Int {
         // TODO:
         // ask user for :
         // - center in page (in page format ?)

@@ -573,7 +573,7 @@ class MapModuleManager internal constructor(c: Controller?) {
         } else urlToCheck.sameFile(moduleUrl)
     }
 
-    fun changeToMapModule(mapModuleDisplayName: String): Boolean {
+    fun changeToMapModule(mapModuleDisplayName: String?): Boolean {
         var mapModuleCandidate: MapModule? = null
         for (mapMod in mapModuleVector) {
             if (Tools.safeEquals(mapModuleDisplayName, mapMod!!.displayName)) {

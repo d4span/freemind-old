@@ -320,7 +320,7 @@ object Tools {
             return sEnvFonts
         }
 
-    fun isAvailableFontFamily(name: String): Boolean {
+    fun isAvailableFontFamily(name: String?): Boolean {
         for (s in availableFonts!!) {
             if (s == name) return true
         }
@@ -1345,7 +1345,7 @@ object Tools {
         return nodes
     }
 
-    fun <T> swapVectorPositions(pVector: Vector<T>, src: Int, dst: Int) {
+    fun <T> swapVectorPositions(pVector: Vector<T?>?, src: Int, dst: Int) {
         require(!(src >= pVector.size || dst >= pVector.size || src < 0 || dst < 0)) {
             ("One index is out of bounds "
                     + src + ", " + dst + ", size= " + pVector.size)
@@ -1548,7 +1548,7 @@ object Tools {
      * @param pPageFormatProperty
      */
     fun setPageFormatFromString(pPaper: Paper,
-                                pPageFormatProperty: String) {
+                                pPageFormatProperty: String?) {
         try {
             // parse string:
             val tokenizer = StringTokenizer(

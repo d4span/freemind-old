@@ -893,7 +893,7 @@ abstract class Mode {
     abstract override fun toString(): String
     abstract fun activate()
     @Throws(FileNotFoundException::class, XMLParseException::class, MalformedURLException::class, IOException::class, URISyntaxException::class)
-    abstract fun restore(restorable: String)
+    abstract fun restore(restorable: String?)
 
     /**
      * Creates a new mode controller and returns it.

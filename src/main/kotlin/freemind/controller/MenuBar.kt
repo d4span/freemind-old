@@ -347,7 +347,7 @@ class MenuBar(var c: Controller) : JMenuBar() {
      *
      * @param newModeController
      */
-    fun updateMenus(newModeController: ModeController) {
+    fun updateMenus(newModeController: ModeController?) {
         this.removeAll()
         menuHolder = StructuredMenuHolder()
 

@@ -19,243 +19,30 @@
 /*$Id: Controller.java,v 1.40.14.21.2.64 2010/02/22 21:18:53 christianfoltin Exp $*/
 package freemind.controller
 
-import freemind.common.NamedObject.equals
-import freemind.common.NamedObject.name
-import freemind.common.JOptionalSplitPane.lastDividerPosition
-import freemind.common.JOptionalSplitPane.setComponent
-import freemind.common.JOptionalSplitPane.removeComponent
-import freemind.common.JOptionalSplitPane.amountOfComponents
-import freemind.common.JOptionalSplitPane.dividerPosition
-import freemind.controller.color.ColorPair
-import java.awt.image.BufferedImage
-import freemind.controller.color.JColorCombo.ColorIcon
-import freemind.controller.color.JColorCombo
-import freemind.controller.color.JColorCombo.ComboBoxRenderer
-import kotlin.jvm.JvmStatic
-import freemind.controller.filter.util.SortedMapVector.MapElement
-import freemind.controller.filter.util.SortedMapVector
-import freemind.controller.filter.util.SortedListModel
-import freemind.controller.filter.util.SortedMapListModel
-import javax.swing.event.ListDataListener
-import javax.swing.event.ListDataEvent
-import freemind.controller.filter.util.ExtendedComboBoxModel.ExtensionDataListener
-import freemind.controller.filter.util.ExtendedComboBoxModel
-import freemind.controller.filter.condition.NodeContainsCondition
-import freemind.controller.filter.condition.IgnoreCaseNodeContainsCondition
-import freemind.controller.filter.condition.NodeCompareCondition
-import freemind.controller.filter.condition.IconContainedCondition
-import freemind.controller.filter.condition.IconNotContainedCondition
-import freemind.controller.filter.condition.AttributeCompareCondition
-import freemind.controller.filter.condition.AttributeExistsCondition
-import freemind.controller.filter.condition.AttributeNotExistsCondition
-import freemind.controller.filter.condition.ConditionNotSatisfiedDecorator
-import freemind.controller.filter.condition.ConjunctConditions
-import freemind.controller.filter.condition.DisjunctConditions
-import freemind.controller.filter.condition.JCondition
-import freemind.controller.filter.condition.ConditionRenderer
-import freemind.controller.filter.FilterController
-import freemind.controller.filter.condition.CompareConditionAdapter
-import java.lang.NumberFormatException
-import freemind.controller.filter.condition.NoFilteringCondition
-import freemind.controller.filter.condition.NodeCondition
-import freemind.controller.filter.condition.SelectedViewCondition
-import kotlin.Throws
-import freemind.view.mindmapview.MapView
-import freemind.controller.FreeMindToolBar
-import freemind.controller.filter.FilterComposerDialog
-import freemind.controller.filter.FilterToolbar.FilterChangeListener
-import java.awt.event.ItemListener
-import java.beans.PropertyChangeListener
-import java.awt.event.ActionEvent
-import java.awt.event.ItemEvent
-import java.beans.PropertyChangeEvent
-import freemind.controller.filter.FilterToolbar.EditFilterAction
-import freemind.controller.filter.FilterToolbar.UnfoldAncestorsAction
-import freemind.controller.MapModuleManager.MapModuleChangeObserver
-import freemind.controller.filter.FilterToolbar
-import freemind.modes.common.plugins.NodeNoteBase
-import freemind.view.MapModule
-import java.lang.NullPointerException
-import javax.swing.event.ListSelectionListener
-import javax.swing.event.ListSelectionEvent
-import java.awt.event.MouseAdapter
-import java.lang.Runnable
-import java.awt.event.ActionListener
-import freemind.controller.filter.FilterComposerDialog.MindMapFilterFileFilter
-import freemind.controller.filter.util.SortedComboBoxModel
-import freemind.controller.filter.FilterComposerDialog.ConditionListSelectionListener
-import freemind.controller.filter.FilterComposerDialog.SelectedAttributeChangeListener
-import freemind.controller.filter.FilterComposerDialog.SimpleConditionChangeListener
-import freemind.controller.filter.FilterComposerDialog.AddConditionAction
-import freemind.controller.filter.FilterComposerDialog.CreateNotSatisfiedConditionAction
-import freemind.controller.filter.FilterComposerDialog.CreateConjunctConditionAction
-import freemind.controller.filter.FilterComposerDialog.CreateDisjunctConditionAction
-import freemind.controller.filter.FilterComposerDialog.DeleteConditionAction
-import freemind.controller.filter.FilterComposerDialog.LoadAction
-import freemind.controller.filter.FilterComposerDialog.ConditionListMouseListener
-import freemind.controller.actions.generated.instance.XmlAction
-import freemind.controller.actions.generated.instance.ResultBase
-import freemind.controller.actions.generated.instance.PatternNodeBackgroundColor
-import freemind.controller.actions.generated.instance.PatternNodeColor
-import freemind.controller.actions.generated.instance.PatternNodeStyle
-import freemind.controller.actions.generated.instance.PatternNodeText
-import freemind.controller.actions.generated.instance.PatternNodeFontName
-import freemind.controller.actions.generated.instance.PatternNodeFontBold
-import freemind.controller.actions.generated.instance.PatternNodeFontStrikethrough
-import freemind.controller.actions.generated.instance.PatternNodeFontItalic
-import freemind.controller.actions.generated.instance.PatternNodeFontSize
-import freemind.controller.actions.generated.instance.PatternIcon
-import freemind.controller.actions.generated.instance.PatternEdgeColor
-import freemind.controller.actions.generated.instance.PatternEdgeStyle
-import freemind.controller.actions.generated.instance.PatternEdgeWidth
-import freemind.controller.actions.generated.instance.PatternChild
-import freemind.controller.actions.generated.instance.PatternScript
-import freemind.controller.actions.generated.instance.NodeListMember
-import freemind.controller.actions.generated.instance.NodeAction
-import freemind.controller.actions.generated.instance.MenuActionBase
-import freemind.controller.actions.generated.instance.MenuCategoryBase
-import freemind.controller.actions.generated.instance.PatternPropertyBase
-import freemind.controller.actions.generated.instance.PluginString
-import freemind.controller.actions.generated.instance.Place
-import freemind.controller.actions.generated.instance.FormatNodeAction
-import freemind.controller.actions.generated.instance.TextNodeAction
-import freemind.controller.actions.generated.instance.NodeChildParameter
-import freemind.controller.actions.generated.instance.TransferableContent
-import freemind.controller.actions.generated.instance.CalendarMarking
-import freemind.controller.actions.generated.instance.CollaborationActionBase
-import freemind.controller.actions.generated.instance.PluginMode
-import freemind.controller.actions.generated.instance.CollaborationMapOffer
-import freemind.controller.actions.generated.instance.TransferableFile
-import freemind.controller.actions.generated.instance.TableColumnSetting
-import freemind.controller.actions.generated.instance.TableColumnOrder
-import freemind.controller.actions.generated.instance.MindmapLastStateStorage
-import freemind.controller.actions.generated.instance.WindowConfigurationStorage
-import freemind.controller.actions.generated.instance.MapLocationStorage
-import freemind.controller.actions.generated.instance.TimeWindowColumnSetting
-import freemind.controller.StructuredMenuHolder
-import freemind.controller.MenuBar.MapsMenuActionListener
-import freemind.controller.FreeMindPopupMenu
-import freemind.controller.MenuBar.ModesMenuActionListener
-import freemind.controller.MapModuleManager
-import freemind.controller.LastOpenedList
-import freemind.controller.MenuBar.LastOpenedActionListener
-import java.awt.event.KeyEvent
-import java.awt.print.PageFormat
-import java.awt.print.Printable
-import freemind.controller.printpreview.BrowseAction
-import freemind.controller.MapModuleManager.MapTitleChangeListener
-import freemind.controller.ZoomListener
-import freemind.controller.MapModuleManager.MapTitleContributor
-import freemind.controller.MainToolBar
-import freemind.controller.NodeMouseMotionListener
-import freemind.controller.NodeMotionListener
-import freemind.controller.NodeKeyListener
-import freemind.controller.NodeDragListener
-import freemind.controller.NodeDropListener
-import freemind.controller.MapMouseMotionListener
-import freemind.controller.MapMouseWheelListener
-import java.awt.print.PrinterJob
-import freemind.controller.Controller.OptionAntialiasAction
-import freemind.controller.Controller.PropertyAction
-import freemind.controller.Controller.OpenURLAction
-import freemind.controller.Controller.PrintPreviewAction
-import freemind.controller.Controller.QuitAction
-import freemind.controller.Controller.KeyDocumentationAction
-import freemind.controller.Controller.DocumentationAction
-import freemind.controller.Controller.LicenseAction
-import freemind.controller.Controller.NavigationPreviousMapAction
-import freemind.controller.Controller.NavigationNextMapAction
-import freemind.controller.Controller.NavigationMoveMapLeftAction
-import freemind.controller.Controller.NavigationMoveMapRightAction
-import freemind.controller.Controller.ShowFilterToolbarAction
-import freemind.controller.Controller.ToggleMenubarAction
-import freemind.controller.Controller.ToggleToolbarAction
-import freemind.controller.Controller.ToggleLeftToolbarAction
-import freemind.controller.Controller.OptionHTMLExportFoldingAction
-import freemind.controller.Controller.OptionSelectionMechanismAction
-import freemind.controller.Controller.ZoomInAction
-import freemind.controller.Controller.ZoomOutAction
-import freemind.controller.Controller.ShowSelectionAsRectangleAction
-import freemind.controller.Controller.MoveToRootAction
-import freemind.controller.Controller.DefaultLocalLinkConverter
-import freemind.preferences.FreemindPropertyListener
-import java.awt.event.WindowAdapter
-import java.awt.event.WindowEvent
-import java.awt.event.ComponentAdapter
-import java.awt.event.ComponentEvent
-import java.text.MessageFormat
-import java.lang.StringBuffer
-import freemind.controller.LastStateStorageManagement
-import java.lang.SecurityException
-import java.awt.print.Paper
-import java.net.MalformedURLException
-import freemind.controller.Controller.LocalLinkConverter
-import freemind.modes.browsemode.BrowseMode
-import freemind.controller.MenuItemSelectedListener
 import freemind.common.BooleanProperty
-import freemind.preferences.layout.OptionPanel
-import freemind.preferences.layout.OptionPanel.OptionPanelFeedback
-import javax.swing.event.ChangeListener
-import javax.swing.event.ChangeEvent
 import freemind.common.JOptionalSplitPane
-import freemind.controller.Controller.SplitComponentType
-import java.net.URISyntaxException
-import kotlin.jvm.JvmOverloads
-import java.awt.event.KeyListener
-import freemind.controller.MapModuleManager.MapModuleChangeObserverCompound
-import java.awt.dnd.DragGestureListener
-import java.awt.dnd.DnDConstants
-import java.awt.dnd.DragSource
-import java.awt.dnd.DragGestureEvent
-import freemind.view.mindmapview.MainView
-import java.awt.event.InputEvent
-import java.awt.datatransfer.Transferable
-import freemind.controller.MindMapNodesSelection
-import java.awt.dnd.DragSourceListener
-import java.awt.dnd.DragSourceDropEvent
-import java.awt.dnd.DragSourceDragEvent
-import java.awt.dnd.DragSourceEvent
-import java.awt.dnd.DropTargetListener
-import java.awt.dnd.DropTargetDragEvent
-import java.awt.dnd.DropTargetEvent
-import java.awt.dnd.DropTargetDropEvent
-import freemind.controller.StructuredMenuHolder.MenuEventSupplier
-import javax.swing.event.MenuListener
-import java.awt.event.MouseMotionListener
-import java.awt.event.MouseListener
-import freemind.controller.NodeMotionListener.NodeMotionAdapter
-import freemind.controller.StructuredMenuItemHolder
-import freemind.controller.StructuredMenuHolder.MapTokenPair
-import freemind.controller.StructuredMenuHolder.SeparatorHolder
-import freemind.controller.StructuredMenuHolder.MenuAdder
-import java.lang.NoSuchMethodError
-import freemind.controller.StructuredMenuHolder.DefaultMenuAdderCreator
-import freemind.controller.StructuredMenuHolder.StructuredMenuListener
-import freemind.controller.StructuredMenuHolder.MenuAdderCreator
-import freemind.controller.StructuredMenuHolder.MenuItemAdder
-import freemind.controller.StructuredMenuHolder.PrintMenuAdder
-import freemind.controller.StructuredMenuHolder.PrintMenuAdderCreator
-import javax.swing.event.MenuEvent
-import freemind.controller.BlindIcon
-import java.awt.event.MouseWheelListener
-import java.awt.event.MouseWheelEvent
-import java.awt.datatransfer.ClipboardOwner
-import java.awt.datatransfer.UnsupportedFlavorException
-import java.awt.datatransfer.DataFlavor
-import java.awt.datatransfer.Clipboard
-import freemind.controller.MapMouseMotionListener.MapMouseMotionReceiver
-import freemind.controller.NodeMouseMotionListener.NodeMouseMotionObserver
-import freemind.controller.MenuItemEnabledListener
-import freemind.controller.actions.generated.instance.MindmapLastStateMapStorage
+import freemind.controller.MapModuleManager.*
+import freemind.controller.filter.FilterController
 import freemind.controller.printpreview.PreviewDialog
 import freemind.main.*
 import freemind.modes.*
+import freemind.modes.browsemode.BrowseMode
+import freemind.preferences.FreemindPropertyListener
+import freemind.preferences.layout.OptionPanel
+import freemind.preferences.layout.OptionPanel.OptionPanelFeedback
 import freemind.view.ImageFactory
+import freemind.view.MapModule
+import freemind.view.mindmapview.MapView
 import java.awt.*
+import java.awt.event.*
 import java.awt.font.TextAttribute
+import java.awt.print.PageFormat
+import java.awt.print.Paper
+import java.awt.print.PrinterJob
 import java.io.*
-import java.lang.Exception
+import java.net.MalformedURLException
 import java.net.URL
+import java.text.MessageFormat
 import java.util.*
 import java.util.logging.Logger
 import javax.swing.*
@@ -305,9 +92,9 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     var filterController: FilterController? = null
         private set
     var isPrintingAllowed = true
-    var menubarVisible = true
-    var toolbarVisible = true
-    var leftToolbarVisible = true
+    private var menubarVisible = true
+    private var toolbarVisible = true
+    private var leftToolbarVisible = true
     var close: CloseAction? = null
     var print: Action? = null
     var printDirect: Action? = null
@@ -337,7 +124,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     var showSelectionAsRectangle: Action? = null
     var propertyAction: PropertyAction? = null
     var freemindUrl: OpenURLAction? = null
-    private var mTabbedPaneMapModules: Vector<MapModule>? = null
+    private var mTabbedPaneMapModules: Vector<MapModule?>? = null
     private var mTabbedPane: JTabbedPane? = null
     private var mTabbedPaneSelectionUpdate = true
     fun init() {
@@ -387,8 +174,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         northToolbarPanel = JPanel(BorderLayout())
         toolbar = MainToolBar(this)
         filterController = FilterController(this)
-        filterToolbar = filterController!!.filterToolbar
-        frame.contentPane.add(northToolbarPanel, BorderLayout.NORTH)
+        filterToolbar = filterController!!.getFilterToolbar()
+        frame.contentPane?.add(northToolbarPanel, BorderLayout.NORTH)
         northToolbarPanel!!.add(toolbar, BorderLayout.NORTH)
         northToolbarPanel!!.add(filterToolbar, BorderLayout.SOUTH)
         setAllActions(false)
@@ -425,7 +212,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         }
     }
 
-    fun getProperty(property: String?): String {
+    fun getProperty(property: String?): String? {
         return frame.getProperty(property)
     }
 
@@ -454,11 +241,11 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
             return if (f is JFrame) f else null
         }
 
-    fun getResource(resource: String?): URL {
+    fun getResource(resource: String?): URL? {
         return frame.getResource(resource)
     }
 
-    fun getResourceString(resource: String?): String {
+    fun getResourceString(resource: String?): String? {
         return frame.getResourceString(resource)
     }// no map present: we take the default:
 
@@ -505,7 +292,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
     //
     val mapModule: MapModule?
-        get() = mapModuleManager.getMapModule()
+        get() = mapModuleManager?.mapModule
     private val toolBar: JToolBar?
         private get() = toolbar
 
@@ -535,7 +322,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
     /**
      */
-    val defaultFontFamilyName: String
+    val defaultFontFamilyName: String?
         get() = getProperty("defaultfont")
 
     /**
@@ -579,7 +366,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     override fun afterMapClose(pOldMapModule: MapModule?, pOldMode: Mode?) {}
     override fun beforeMapModuleChange(oldMapModule: MapModule?, oldMode: Mode?,
                                        newMapModule: MapModule?, newMode: Mode?) {
-        val oldModeController: ModeController
+        val oldModeController: ModeController?
         mode = newMode
         if (oldMapModule != null) {
             // shut down screens of old view + frame
@@ -593,30 +380,30 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
                 return
             }
         }
-        if (oldModeController.modeToolBar != null) {
-            toolbar!!.remove(oldModeController.modeToolBar)
+        if (oldModeController?.modeToolBar != null) {
+            toolbar!!.remove(oldModeController?.modeToolBar)
             toolbar!!.activate(true)
             // northToolbarPanel.remove(oldModeController.getModeToolBar());
             // northToolbarPanel.add(toolbar, BorderLayout.NORTH);
         }
-        /* other toolbars are to be removed too. */if (oldModeController.leftToolBar != null) {
-            frame.contentPane.remove(
-                    oldModeController.leftToolBar)
+        /* other toolbars are to be removed too. */if (oldModeController?.leftToolBar != null) {
+            frame.contentPane?.remove(
+                    oldModeController?.leftToolBar)
         }
     }
 
     override fun afterMapModuleChange(oldMapModule: MapModule?, oldMode: Mode?,
                                       newMapModule: MapModule?, newMode: Mode) {
-        val newModeController: ModeController
+        val newModeController: ModeController?
         if (newMapModule != null) {
             frame.view = newMapModule.view
             setAllActions(true)
-            if (view!!.selected == null) {
+            if (view!!.getSelected() == null) {
                 // moveToRoot();
                 view!!.selectAsTheOnlyOneSelected(view!!.root)
             }
             lastOpenedList!!.mapOpened(newMapModule)
-            changeZoomValueProperty(newMapModule.view.zoom)
+            changeZoomValueProperty(newMapModule.view.getZoom())
             // ((MainToolBar) getToolbar()).setZoomComboBox(zoomValue);
             // old
             // obtainFocusForSelected();
@@ -631,7 +418,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
             setAllActions(false)
         }
         setTitle()
-        val newToolBar = newModeController.modeToolBar
+        val newToolBar = newModeController?.modeToolBar
         if (newToolBar != null) {
             toolbar!!.activate(false)
             toolbar!!.add(newToolBar, 0)
@@ -640,9 +427,9 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
             newToolBar.repaint()
         }
         /* new left toolbar. */
-        val newLeftToolBar = newModeController.leftToolBar
+        val newLeftToolBar = newModeController?.leftToolBar
         if (newLeftToolBar != null) {
-            frame.contentPane.add(newLeftToolBar, BorderLayout.WEST)
+            frame.contentPane?.add(newLeftToolBar, BorderLayout.WEST)
             if (leftToolbarVisible) {
                 newLeftToolBar.isVisible = true
                 newLeftToolBar.repaint()
@@ -653,9 +440,9 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         toolbar!!.validate()
         toolbar!!.repaint()
         val menuBar = frame.freeMindMenuBar
-        menuBar.updateMenus(newModeController)
-        menuBar.revalidate()
-        menuBar.repaint()
+        menuBar?.updateMenus(newModeController)
+        menuBar?.revalidate()
+        menuBar?.repaint()
         // new
         obtainFocusForSelected()
     }
@@ -682,7 +469,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
      *
      * @return false if the change was not successful.
      */
-    fun createNewMode(mode: String): Boolean {
+    fun createNewMode(mode: String?): Boolean {
         if (mode != null && mode == mode) {
             return true
         }
@@ -697,8 +484,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         // change the map module to get changed toolbars etc.:
         mapModuleManager!!.setMapModule(null, newMode)
         setTitle()
-        mode.activate()
-        val messageArguments = arrayOf<Any>(mode.toLocalizedString())
+        newMode.activate()
+        val messageArguments = arrayOf(mode)
         val formatter = MessageFormat(
                 getResourceString("mode_status"))
         frame.out(formatter.format(messageArguments))
@@ -707,7 +494,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
     fun setMenubarVisible(visible: Boolean) {
         menubarVisible = visible
-        frame.freeMindMenuBar.isVisible = menubarVisible
+        frame.freeMindMenuBar?.isVisible = menubarVisible
     }
 
     fun setToolbarVisible(visible: Boolean) {
@@ -785,7 +572,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     }
 
     fun errorMessage(message: Any?) {
-        var myMessage = ""
+        var myMessage : String? = ""
         if (message != null) {
             myMessage = message.toString()
         } else {
@@ -818,7 +605,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
             // to be all right!!
             // but I cannot avoid thinking of this change to be a bad hack ....
             logger!!.info("No view present. No focus!")
-            frame.freeMindMenuBar.requestFocus()
+            frame.freeMindMenuBar?.requestFocus()
         }
     }
 
@@ -829,12 +616,12 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     // other
     //
     fun setZoom(zoom: Float) {
-        view!!.zoom = zoom
+        view!!.setZoom(zoom)
         changeZoomValueProperty(zoom)
         // ((MainToolBar) toolbar).setZoomComboBox(zoom);
         // show text in status bar:
-        val messageArguments = arrayOf<Any>((zoom * 100f).toString())
-        val stringResult = Resources.getInstance().format(
+        val messageArguments = arrayOf<Any?>((zoom * 100f).toString())
+        val stringResult = Resources.instance?.format(
                 "user_defined_zoom_status_bar", messageArguments)
         frame.out(stringResult)
     }
@@ -940,7 +727,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         // collect all maps:
         val restorables = Vector<String>()
         // move to first map in the window.
-        val mapModuleVector = mapModuleManager!!.mapModuleVector
+        val mapModuleVector = mapModuleManager!!.getMapModuleVector()
         if (mapModuleVector!!.size > 0) {
             val displayName = (mapModuleVector[0] as MapModule)
                     .displayName
@@ -1032,7 +819,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
             pageFormat!!.orientation = PageFormat.REVERSE_LANDSCAPE
         }
         val pageFormatProperty = getProperty(PAGE_FORMAT_PROPERTY)
-        if (!pageFormatProperty.isEmpty()) {
+        if (!(pageFormatProperty?.isEmpty() ?: false)) {
             logger!!.info("Page format (stored): $pageFormatProperty")
             val storedPaper = Paper()
             Tools.setPageFormatFromString(storedPaper, pageFormatProperty)
@@ -1071,7 +858,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         }
     }
 
-    private inner class PrintAction internal constructor(controller: Controller, isDlg: Boolean) : AbstractAction(if (isDlg) controller.getResourceString("print_dialog") else controller.getResourceString("print"), ImageFactory.getInstance().createIcon(
+    private inner class PrintAction internal constructor(controller: Controller, isDlg: Boolean) : AbstractAction(if (isDlg) controller.getResourceString("print_dialog") else controller.getResourceString("print"), ImageFactory.instance?.createIcon(
             getResource("images/fileprint.png"))) {
         var isDlg: Boolean
 
@@ -1091,7 +878,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
                     printerJob!!.print()
                     storePageFormat()
                 } catch (ex: Exception) {
-                    Resources.getInstance().logException(ex)
+                    Resources.instance?.logException(ex)
                 } finally {
                     frame.setWaitingCursor(false)
                 }
@@ -1129,8 +916,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
             val dialog = JDialog(frame as JFrame,
                     getResourceString("printing_settings"),  /* modal= */true)
             val fitToPage = JCheckBox(
-                    getResourceString("fit_to_page"), Resources.getInstance()
-                    .getBoolProperty("fit_to_page"))
+                    getResourceString("fit_to_page"), Resources.instance
+                    ?.getBoolProperty("fit_to_page") ?: false)
             val userZoomL = JLabel(getResourceString("user_zoom"))
             val userZoom = JTextField(
                     getProperty("user_zoom"), 3)
@@ -1233,13 +1020,12 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
                         createNewMode(BrowseMode.MODENAME)
                         controller.modeController!!.load(endUrl)
                     } catch (e1: Exception) {
-                        Resources.getInstance().logException(
-                                e1)
+                        Resources.instance?.logException(e1)
                     }
                 }
             } catch (e1: MalformedURLException) {
                 // TODO Auto-generated catch block
-                Resources.getInstance().logException(e1)
+                Resources.instance?.logException(e1)
             }
         }
     }
@@ -1254,15 +1040,14 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
             try {
                 var url: URL? = null
                 url = if (urlText != null && urlText.startsWith(".")) {
-                    localDocumentationLinkConverter
-                            .convertLocalLink(urlText)
+                    localDocumentationLinkConverter?.convertLocalLink(urlText)
                 } else {
                     Tools.fileToUrl(File(urlText))
                 }
                 logger!!.info("Opening key docs under $url")
                 controller.frame.openDocument(url)
             } catch (e2: Exception) {
-                Resources.getInstance().logException(e2)
+                Resources.instance?.logException(e2)
                 return
             }
         }
@@ -1289,7 +1074,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     //
     // Map navigation
     //
-    private inner class NavigationPreviousMapAction internal constructor(controller: Controller) : AbstractAction(controller.getResourceString("previous_map"), ImageFactory.getInstance().createIcon(
+    private inner class NavigationPreviousMapAction internal constructor(controller: Controller) : AbstractAction(controller.getResourceString("previous_map"), ImageFactory.instance?.createIcon(
             getResource("images/1leftarrow.png"))) {
         init {
             isEnabled = false
@@ -1300,7 +1085,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         }
     }
 
-    private inner class ShowFilterToolbarAction internal constructor(controller: Controller?) : AbstractAction(getResourceString("filter_toolbar"), ImageFactory.getInstance().createIcon(
+    private inner class ShowFilterToolbarAction internal constructor(controller: Controller?) : AbstractAction(getResourceString("filter_toolbar"), ImageFactory.instance?.createIcon(
             getResource("images/filter.gif"))) {
         override fun actionPerformed(event: ActionEvent) {
             if (!filterController!!.isVisible) {
@@ -1311,7 +1096,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         }
     }
 
-    private inner class NavigationNextMapAction internal constructor(controller: Controller) : AbstractAction(controller.getResourceString("next_map"), ImageFactory.getInstance().createIcon(
+    private inner class NavigationNextMapAction internal constructor(controller: Controller) : AbstractAction(controller.getResourceString("next_map"), ImageFactory.instance?.createIcon(
             getResource("images/1rightarrow.png"))) {
         init {
             isEnabled = false
@@ -1322,7 +1107,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         }
     }
 
-    private inner class NavigationMoveMapLeftAction internal constructor(controller: Controller) : AbstractAction(controller.getResourceString("move_map_left"), ImageFactory.getInstance().createIcon(
+    private inner class NavigationMoveMapLeftAction internal constructor(controller: Controller) : AbstractAction(controller.getResourceString("move_map_left"), ImageFactory.instance?.createIcon(
             getResource("images/draw-arrow-back.png"))) {
         init {
             isEnabled = false
@@ -1338,7 +1123,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     }
 
     private inner class NavigationMoveMapRightAction internal constructor(controller: Controller) : AbstractAction(controller.getResourceString("move_map_right"),
-            ImageFactory.getInstance().createIcon(getResource("images/draw-arrow-forward.png"))) {
+            ImageFactory.instance?.createIcon(getResource("images/draw-arrow-forward.png"))) {
         init {
             isEnabled = false
         }
@@ -1447,7 +1232,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     protected inner class ZoomInAction(controller: Controller) : AbstractAction(controller.getResourceString("zoom_in")) {
         override fun actionPerformed(e: ActionEvent) {
             // logger.info("ZoomInAction actionPerformed");
-            val currentZoom = view!!.zoom
+            val currentZoom = view!!.getZoom()
             for (i in zoomValues.indices) {
                 val `val` = zoomValues[i]
                 if (`val` > currentZoom) {
@@ -1461,7 +1246,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
     protected inner class ZoomOutAction(controller: Controller) : AbstractAction(controller.getResourceString("zoom_out")) {
         override fun actionPerformed(e: ActionEvent) {
-            val currentZoom = view!!.zoom
+            val currentZoom = view!!.getZoom()
             var lastZoom = zoomValues[0]
             for (i in zoomValues.indices) {
                 val `val` = zoomValues[i]
@@ -1516,28 +1301,31 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
             val dialog = JDialog(frame.jFrame, true /* modal */)
             dialog.isResizable = true
             dialog.isUndecorated = false
-            val options = OptionPanel(frame as FreeMind,
-                    dialog) { props ->
-                val sortedKeys = Vector<String>()
-                sortedKeys.addAll(props.stringPropertyNames())
-                Collections.sort(sortedKeys)
-                var propertiesChanged = false
-                val i: Iterator<String> = sortedKeys.iterator()
-                while (i.hasNext()) {
-                    val key = i.next()
-                    // save only changed keys:
-                    val newProperty = props.getProperty(key)
-                    propertiesChanged = (propertiesChanged
-                            || newProperty != controller
+
+            val feedback : OptionPanelFeedback = object : OptionPanelFeedback {
+                override fun writeProperties(props: Properties?) {
+                    val sortedKeys = Vector<String>()
+                    sortedKeys.addAll(props?.stringPropertyNames() ?: emptyList())
+                    Collections.sort(sortedKeys)
+                    var propertiesChanged = false
+                    val i = sortedKeys.iterator()
+                    while (i.hasNext()) {
+                        val key = i.next()
+                        // save only changed keys:
+                        val newProperty = props?.getProperty(key)
+                        propertiesChanged = (propertiesChanged
+                                || newProperty != controller
                             .getProperty(key))
-                    controller.setProperty(key, newProperty)
-                }
-                if (propertiesChanged) {
-                    JOptionPane.showMessageDialog(null,
+                        controller.setProperty(key, newProperty)
+                    }
+                    if (propertiesChanged) {
+                        JOptionPane.showMessageDialog(null,
                             getResourceString("option_changes_may_require_restart"))
-                    controller.frame.saveProperties(false)
+                        controller.frame.saveProperties(false)
+                    }
                 }
             }
+            val options = OptionPanel(frame as FreeMind, dialog, feedback)
             options.buildPanel()
             options.setProperties()
             dialog.title = "Freemind Properties"
@@ -1593,7 +1381,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
         /**
          */
-        private fun changeSelection(command: String) {
+        private fun changeSelection(command: String?) {
             setProperty("selection_method", command)
             // and update the selection method in the NodeMouseMotionListener
             c.nodeMouseMotionListener!!.updateSelectionMethod()
@@ -1602,8 +1390,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
                 c.frame.out(statusBarString)
         }
 
-        override fun propertyChanged(propertyName: String, newValue: String,
-                                     oldValue: String) {
+        override fun propertyChanged(propertyName: String?, newValue: String?,
+                                     oldValue: String?) {
             if (propertyName == FreeMind.RESOURCES_SELECTION_METHOD) {
                 changeSelection(newValue)
             }
@@ -1611,8 +1399,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     }
 
     // open faq url from freeminds page:
-    inner class OpenURLAction internal constructor(var c: Controller, description: String?, private val url: String) : AbstractAction(description, ImageFactory.getInstance().createIcon(
-            controller.getResource("images/Link.png"))) {
+    inner class OpenURLAction internal constructor(var c: Controller, description: String?, private val url: String?) : AbstractAction(description, ImageFactory.instance?.createIcon(
+            getResource("images/Link.png"))) {
         override fun actionPerformed(e: ActionEvent) {
             try {
                 c.frame.openDocument(URL(url))
@@ -1678,14 +1466,19 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
                 }
             }
         })
-        registerMapTitleChangeListener { pNewMapTitle, pMapModule, pModel ->
-            for (i in mTabbedPaneMapModules!!.indices) {
-                if (mTabbedPaneMapModules!![i] === pMapModule) {
-                    mTabbedPane!!.setTitleAt(i,
+
+        val listener = object : MapTitleChangeListener {
+            override fun setMapTitle(pNewMapTitle: String, pMapModule: MapModule?, pModel: MindMap?) {
+                for (i in mTabbedPaneMapModules!!.indices) {
+                    if (mTabbedPaneMapModules!![i] === pMapModule) {
+                        mTabbedPane!!.setTitleAt(i,
                             pNewMapTitle + if (pModel!!.isSaved) "" else "*")
+                    }
                 }
             }
         }
+
+        registerMapTitleChangeListener(listener)
     }
 
     private fun tabSelectionChanged() {
@@ -1707,7 +1500,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
             mapModuleManager!!.changeToMapModule(module.toString())
         }
         // mScrollPane could be set invisible by JTabbedPane
-        frame.scrollPane.isVisible = true
+        frame.scrollPane?.isVisible = true
         mTabbedPane!!.setComponentAt(selectedIndex, frame.contentComponent)
         // double call, due to mac strangeness.
         obtainFocusForSelected()
@@ -1823,7 +1616,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
             dialog.addComponentListener(DisposeOnClose())
             dialog.isVisible = true
             // blocks until user brings dialog down...
-            return ok.getColor()
+            return ok.color
         }
 
         //
@@ -1846,9 +1639,9 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
          */
         fun addPropertyChangeListenerAndPropagate(listener: FreemindPropertyListener) {
             addPropertyChangeListener(listener)
-            val properties = Resources.getInstance().properties
-            for (key in properties.keys) {
-                listener.propertyChanged(key as String, properties.getProperty(key), null)
+            val properties = Resources.instance?.properties
+            for (key in (properties?.keys ?: emptySet())) {
+                listener.propertyChanged(key as String, properties?.getProperty(key), null)
             }
         }
 

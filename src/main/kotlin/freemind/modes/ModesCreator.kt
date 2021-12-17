@@ -929,7 +929,7 @@ class ModesCreator(private val c: Controller) {
      * Creates a new ModeController.
      *
      */
-    fun getMode(modeAlias: String): Mode? {
+    fun getMode(modeAlias: String?): Mode? {
         allModes
         require(modesTranslation!!.containsKey(modeAlias)) { "Unknown mode $modeAlias" }
         val modeName = modesTranslation!![modeAlias]

@@ -1079,7 +1079,7 @@ interface ModeController : TextTranslator, MapFeedback, ViewFeedback {
      * NodeView getNeighbour(int directionCode)), we make this exception here
      * (fc, 6.11.2005).
      */
-    override fun setFolded(node: MindMapNode, folded: Boolean)
+    override fun setFolded(node: MindMapNode?, folded: Boolean)
 
     /**
      * Unfolds a node if necessary.

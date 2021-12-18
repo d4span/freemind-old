@@ -35,7 +35,7 @@ import java.util.*
         nodeListMemberList.clear()
     }
 
-    val listNodeListMemberList: List<*>
+    val listNodeListMemberList: List<NodeListMember?>
         get() = Collections.unmodifiableList(nodeListMemberList)
     protected var nodeListMemberList: MutableList<NodeListMember?> = mutableListOf()
 } /* MindmapLastStateStorage*/

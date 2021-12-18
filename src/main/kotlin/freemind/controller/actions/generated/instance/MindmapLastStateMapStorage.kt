@@ -4,7 +4,7 @@ import java.util.*
 
 /* MindmapLastStateMapStorage...*/   class MindmapLastStateMapStorage : XmlAction() {
     /* constants from enums*/
-    var lastFocusedTab = 0
+    var lastFocusedTab : Int? = 0
     fun addMindmapLastStateStorage(mindmapLastStateStorage: MindmapLastStateStorage?) {
         mindmapLastStateStorageList.add(mindmapLastStateStorage)
     }
@@ -29,7 +29,7 @@ import java.util.*
         mindmapLastStateStorageList.clear()
     }
 
-    val listMindmapLastStateStorageList: List<*>
+    val listMindmapLastStateStorageList: List<MindmapLastStateStorage?>
         get() = Collections.unmodifiableList(mindmapLastStateStorageList)
     protected var mindmapLastStateStorageList: MutableList<MindmapLastStateStorage?> = mutableListOf()
 } /* MindmapLastStateMapStorage*/

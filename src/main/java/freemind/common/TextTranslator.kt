@@ -20,9 +20,8 @@
  * Created on 31.07.2007
  */
 /*$Id: TextTranslator.java,v 1.1.2.1 2007/08/05 20:33:14 christianfoltin Exp $*/
+package freemind.common
 
-package freemind.common;
-
-public interface TextTranslator {
-	String getText(String pKey);
+interface TextTranslator {
+    fun getText(pKey: String?): String?
 }

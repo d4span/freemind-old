@@ -29,7 +29,8 @@ import javax.swing.DefaultComboBoxModel
 import javax.swing.JComboBox
 
 class FontProperty(
-    override var description: String, override var label: String
+    override var description: String,
+    override var label: String
 ) : PropertyBean(), PropertyControl {
     var font: Font? = null
     var mFontComboBox = JComboBox<String>()

@@ -48,9 +48,13 @@ import javax.swing.JOptionPane
  * @author foltin
  */
 class OptionalDontShowMeAgainDialog(
-    pFrame: JFrame, pComponent: Component?,
-    pMessageId: String, pTitleId: String, pTextTranslator: TextTranslator,
-    pDontShowPropertyHandler: DontShowPropertyHandler, pMessageType: Int
+    pFrame: JFrame,
+    pComponent: Component?,
+    pMessageId: String,
+    pTitleId: String,
+    pTextTranslator: TextTranslator,
+    pDontShowPropertyHandler: DontShowPropertyHandler,
+    pMessageType: Int
 ) {
     private val mTitleId: String
     private val mMessageId: String

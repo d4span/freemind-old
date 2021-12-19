@@ -31,7 +31,7 @@ class PasswordProperty
  * @param pDescription
  * @param pLabel
  */
-    (pDescription: String?, pLabel: String?) : StringProperty(pDescription, pLabel) {
+(pDescription: String?, pLabel: String?) : StringProperty(pDescription, pLabel) {
     override fun initializeTextfield() {
         mTextField = JPasswordField()
     }

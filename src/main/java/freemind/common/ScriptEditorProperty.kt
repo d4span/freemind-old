@@ -33,7 +33,8 @@ import javax.swing.JButton
 import javax.swing.JPopupMenu
 
 class ScriptEditorProperty(
-    override var description: String, override var label: String,
+    override var description: String,
+    override var label: String,
     private val mMindMapController: MindMapController
 ) : PropertyBean(), PropertyControl, ActionListener {
     interface ScriptEditorStarter : MindMapControllerPlugin {
@@ -60,7 +61,8 @@ class ScriptEditorProperty(
     override var value: String?
         get() = HtmlTools.unicodeToHTMLUnicodeEntity(
             HtmlTools
-                .toXMLEscapedText(script), false
+                .toXMLEscapedText(script),
+            false
         )
         set(value) {
             setScriptValue(value)

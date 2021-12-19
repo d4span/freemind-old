@@ -26,7 +26,8 @@ package freemind.common
  * @author foltin
  */
 class RemindValueProperty(
-    pDescription: String?, pLabel: String?,
+    pDescription: String?,
+    pLabel: String?,
     private val mTextTranslator: TextTranslator
 ) : ThreeCheckBoxProperty(pDescription, pLabel) {
     init {

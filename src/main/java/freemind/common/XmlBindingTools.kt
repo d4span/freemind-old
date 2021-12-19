@@ -62,7 +62,8 @@ class XmlBindingTools private constructor() {
     }
 
     fun storeDialogPositions(
-        controller: Controller, dialog: JDialog,
+        controller: Controller,
+        dialog: JDialog,
         storage: WindowConfigurationStorage,
         window_preference_storage_property: String?
     ) {
@@ -83,7 +84,8 @@ class XmlBindingTools private constructor() {
 
     fun decorateDialog(
         controller: Controller,
-        dialog: JDialog, window_preference_storage_property: String?
+        dialog: JDialog,
+        window_preference_storage_property: String?
     ): WindowConfigurationStorage? {
         val marshalled = controller
             .getProperty(window_preference_storage_property)
@@ -118,7 +120,8 @@ class XmlBindingTools private constructor() {
                     Math.min(storage.y, screenSize.height - delta)
                 )
                 dialog.size = Dimension(
-                    storage.width, storage
+                    storage.width,
+                    storage
                         .height
                 )
                 return storage

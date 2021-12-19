@@ -20,14 +20,13 @@
  * 
  * Created on 25.02.2006
  */
+package freemind.common
 
-package freemind.common;
-
-public class DontShowNotificationProperty extends BooleanProperty {
-	public DontShowNotificationProperty(String description, String label) {
-		super(description, label);
-		mTrueValue = "true";
-		mFalseValue = "";
-	}
-
+class DontShowNotificationProperty(description: String?, label: String?) : BooleanProperty(
+    description!!, label!!
+) {
+    init {
+        mTrueValue = "true"
+        mFalseValue = ""
+    }
 }

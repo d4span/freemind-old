@@ -74,7 +74,7 @@ class FreeMindProgressMonitor(pTitle: String?) : JDialog() {
             PROGRESS_MONITOR_WINDOW_CONFIGURATION_STORAGE
         )
         if (marshaled != null) {
-            XmlBindingTools.getInstance().decorateDialog(marshaled, this)
+            XmlBindingTools.instance?.decorateDialog(marshaled, this)
         }
     }
 
@@ -115,7 +115,7 @@ class FreeMindProgressMonitor(pTitle: String?) : JDialog() {
 
     fun dismiss() {
         val storage = WindowConfigurationStorage()
-        val marshalled = XmlBindingTools.getInstance().storeDialogPositions(
+        val marshalled = XmlBindingTools.instance?.storeDialogPositions(
             storage, this
         )
         Resources

@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* MindmapLastStateStorage...*/   class MindmapLastStateStorage {
+/* MindmapLastStateStorage...*/ class MindmapLastStateStorage {
     /* constants from enums*/
     var lastChanged: Long = 0
     var tabIndex = 0

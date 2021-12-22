@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* HookNodeAction...*/   class HookNodeAction : NodeAction() {
+/* HookNodeAction...*/ class HookNodeAction : NodeAction() {
     /* constants from enums*/
     var hookName: String? = null
     fun addNodeListMember(nodeListMember: NodeListMember?) {

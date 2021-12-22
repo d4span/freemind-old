@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* Reversegeocode...*/   class Reversegeocode : XmlAction() {
+/* Reversegeocode...*/ class Reversegeocode : XmlAction() {
     /* constants from enums*/
     var attribution: String? = null
     var querystring: String? = null

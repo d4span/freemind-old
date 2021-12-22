@@ -1,7 +1,5 @@
 package freemind.controller.actions.generated.instance
 
-import freemind.controller.actions.generated.instance.NodeAction
-
 /* AddAttributeAction...*/
 class AddAttributeAction : NodeAction() {
     /* constants from enums*/

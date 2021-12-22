@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* TransferableContent...*/   class TransferableContent {
+/* TransferableContent...*/ class TransferableContent {
     /* constants from enums*/
     var transferable: String? = null
     var transferableAsPlainText: String? = null

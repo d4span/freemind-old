@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* MindmapLastStateMapStorage...*/   class MindmapLastStateMapStorage : XmlAction() {
+/* MindmapLastStateMapStorage...*/ class MindmapLastStateMapStorage : XmlAction() {
     /* constants from enums*/
     var lastFocusedTab = 0
     fun addMindmapLastStateStorage(mindmapLastStateStorage: MindmapLastStateStorage?) {

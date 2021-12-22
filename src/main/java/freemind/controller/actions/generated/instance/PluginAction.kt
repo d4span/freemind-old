@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* PluginAction...*/   class PluginAction {
+/* PluginAction...*/ class PluginAction {
     var label: String? = null
     var name: String? = null
     var base: String? = null

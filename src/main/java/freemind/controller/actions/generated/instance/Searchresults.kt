@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* Searchresults...*/   class Searchresults : XmlAction() {
+/* Searchresults...*/ class Searchresults : XmlAction() {
     /* constants from enums*/
     var timestamp: String? = null
     var attribution: String? = null

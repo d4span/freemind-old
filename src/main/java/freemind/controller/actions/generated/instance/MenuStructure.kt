@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* MenuStructure...*/   class MenuStructure {
+/* MenuStructure...*/ class MenuStructure {
     /* constants from enums*/
     fun addChoice(choice: Any?) {
         choiceList.add(choice)

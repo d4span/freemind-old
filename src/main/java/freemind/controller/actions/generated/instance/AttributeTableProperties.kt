@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* AttributeTableProperties...*/   class AttributeTableProperties : XmlAction() {
+/* AttributeTableProperties...*/ class AttributeTableProperties : XmlAction() {
     /* constants from enums*/
     fun addTableColumnOrder(tableColumnOrder: TableColumnOrder?) {
         tableColumnOrderList.add(tableColumnOrder)

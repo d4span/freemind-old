@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* CompoundAction...*/   class CompoundAction : XmlAction() {
+/* CompoundAction...*/ class CompoundAction : XmlAction() {
     /* constants from enums*/
     fun addChoice(choice: XmlAction?) {
         choiceList.add(choice)

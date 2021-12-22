@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* MapWindowConfigurationStorage...*/   class MapWindowConfigurationStorage : WindowConfigurationStorage() {
+/* MapWindowConfigurationStorage...*/ class MapWindowConfigurationStorage : WindowConfigurationStorage() {
     /* constants from enums*/
     var mapCenterLongitude = 0.0
     var mapCenterLatitude = 0.0

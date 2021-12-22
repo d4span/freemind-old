@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* Plugin...*/   class Plugin {
+/* Plugin...*/ class Plugin {
     /* constants from enums*/
     var label: String? = null
     fun addChoice(choice: Any?) {

@@ -1,103 +1,51 @@
-package freemind.controller.actions.generated.instance;
-/* PluginAction...*/
-import java.util.ArrayList;
-public class PluginAction {
-  /* constants from enums*/
-  public static final String ONCE = "Once";
-  public static final String ONCEFORROOT = "OnceForRoot";
-  public static final String ONCEFORALLNODES = "OnceForAllNodes";
-  public static final String OTHER = "Other";
-  public static final String APPLYTOROOT = "ApplyToRoot";
-  protected String label;
-  protected String name;
-  protected String base;
-  protected String className;
-  protected String documentation;
-  protected String iconPath;
-  protected String keyStroke;
-  protected String instanciation;
-  protected boolean isSelectable;
-  public String getLabel(){
-    return label;
-  }
-  public String getName(){
-    return name;
-  }
-  public String getBase(){
-    return base;
-  }
-  public String getClassName(){
-    return className;
-  }
-  public String getDocumentation(){
-    return documentation;
-  }
-  public String getIconPath(){
-    return iconPath;
-  }
-  public String getKeyStroke(){
-    return keyStroke;
-  }
-  public String getInstanciation(){
-    return instanciation;
-  }
-  public boolean getIsSelectable(){
-    return isSelectable;
-  }
-  public void setLabel(String value){
-    this.label = value;
-  }
-  public void setName(String value){
-    this.name = value;
-  }
-  public void setBase(String value){
-    this.base = value;
-  }
-  public void setClassName(String value){
-    this.className = value;
-  }
-  public void setDocumentation(String value){
-    this.documentation = value;
-  }
-  public void setIconPath(String value){
-    this.iconPath = value;
-  }
-  public void setKeyStroke(String value){
-    this.keyStroke = value;
-  }
-  public void setInstanciation(String value){
-    this.instanciation = value;
-  }
-  public void setIsSelectable(boolean value){
-    this.isSelectable = value;
-  }
-  public void addChoice(Object choice) {
-    choiceList.add(choice);
-  }
+package freemind.controller.actions.generated.instance
 
-  public void addAtChoice(int position, Object choice) {
-    choiceList.add(position, choice);
-  }
+import java.util.Collections
 
-  public void setAtChoice(int position, Object choice) {
-    choiceList.set(position, choice);
-  }
-  public Object getChoice(int index) {
-    return (Object)choiceList.get( index );
-  }
+/* PluginAction...*/   class PluginAction {
+    var label: String? = null
+    var name: String? = null
+    var base: String? = null
+    var className: String? = null
+    var documentation: String? = null
+    var iconPath: String? = null
+    var keyStroke: String? = null
+    var instanciation: String? = null
+    var isSelectable = false
+    fun addChoice(choice: Any?) {
+        choiceList.add(choice)
+    }
 
-  public int sizeChoiceList() {
-    return choiceList.size();
-  }
+    fun addAtChoice(position: Int, choice: Any?) {
+        choiceList.add(position, choice)
+    }
 
-  public void clearChoiceList() {
-    choiceList.clear();
-  }
+    fun setAtChoice(position: Int, choice: Any?) {
+        choiceList.set(position, choice)
+    }
 
-  public java.util.List getListChoiceList() {
-    return java.util.Collections.unmodifiableList(choiceList);
-  }
+    fun getChoice(index: Int): Any {
+        return choiceList[index] as Any
+    }
 
-  protected ArrayList choiceList = new ArrayList();
+    fun sizeChoiceList(): Int {
+        return choiceList.size
+    }
 
+    fun clearChoiceList() {
+        choiceList.clear()
+    }
+
+    val listChoiceList: List<*>
+        get() = Collections.unmodifiableList(choiceList)
+    protected var choiceList: ArrayList<Any?> = ArrayList<Any?>()
+
+    companion object {
+        /* constants from enums*/
+        const val ONCE = "Once"
+        const val ONCEFORROOT = "OnceForRoot"
+        const val ONCEFORALLNODES = "OnceForAllNodes"
+        const val OTHER = "Other"
+        const val APPLYTOROOT = "ApplyToRoot"
+    }
 } /* PluginAction*/

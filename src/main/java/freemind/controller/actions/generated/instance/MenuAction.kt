@@ -1,5 +1,4 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* MenuAction...*/
-public class MenuAction extends MenuActionBase {
-  /* constants from enums*/
-} /* MenuAction*/
+class MenuAction : MenuActionBase() { /* constants from enums*/ } /* MenuAction*/

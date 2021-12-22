@@ -1,35 +1,34 @@
-package freemind.controller.actions.generated.instance;
-/* AttributeTableProperties...*/
-import java.util.ArrayList;
-public class AttributeTableProperties extends XmlAction {
-  /* constants from enums*/
-  public void addTableColumnOrder(TableColumnOrder tableColumnOrder) {
-    tableColumnOrderList.add(tableColumnOrder);
-  }
+package freemind.controller.actions.generated.instance
 
-  public void addAtTableColumnOrder(int position, TableColumnOrder tableColumnOrder) {
-    tableColumnOrderList.add(position, tableColumnOrder);
-  }
+import java.util.Collections
 
-  public TableColumnOrder getTableColumnOrder(int index) {
-    return (TableColumnOrder)tableColumnOrderList.get( index );
-  }
+/* AttributeTableProperties...*/   class AttributeTableProperties : XmlAction() {
+    /* constants from enums*/
+    fun addTableColumnOrder(tableColumnOrder: TableColumnOrder?) {
+        tableColumnOrderList.add(tableColumnOrder)
+    }
 
-  public void removeFromTableColumnOrderElementAt(int index) {
-    tableColumnOrderList.remove( index );
-  }
+    fun addAtTableColumnOrder(position: Int, tableColumnOrder: TableColumnOrder?) {
+        tableColumnOrderList.add(position, tableColumnOrder)
+    }
 
-  public int sizeTableColumnOrderList() {
-    return tableColumnOrderList.size();
-  }
+    fun getTableColumnOrder(index: Int): TableColumnOrder {
+        return tableColumnOrderList[index] as TableColumnOrder
+    }
 
-  public void clearTableColumnOrderList() {
-    tableColumnOrderList.clear();
-  }
+    fun removeFromTableColumnOrderElementAt(index: Int) {
+        tableColumnOrderList.removeAt(index)
+    }
 
-  public java.util.List getListTableColumnOrderList() {
-    return java.util.Collections.unmodifiableList(tableColumnOrderList);
-  }
-    protected ArrayList tableColumnOrderList = new ArrayList();
+    fun sizeTableColumnOrderList(): Int {
+        return tableColumnOrderList.size
+    }
 
+    fun clearTableColumnOrderList() {
+        tableColumnOrderList.clear()
+    }
+
+    val listTableColumnOrderList: List<TableColumnOrder?>
+        get() = Collections.unmodifiableList(tableColumnOrderList)
+    protected var tableColumnOrderList: ArrayList<TableColumnOrder?> = ArrayList()
 } /* AttributeTableProperties*/

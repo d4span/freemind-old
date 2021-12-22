@@ -22,14 +22,6 @@
 
 package plugins.collaboration.socket;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.net.Socket;
-
-import plugins.collaboration.socket.SocketBasics.UnableToGetLockException;
 import freemind.controller.actions.generated.instance.CollaborationActionBase;
 import freemind.controller.actions.generated.instance.CollaborationGetOffers;
 import freemind.controller.actions.generated.instance.CollaborationGoodbye;
@@ -47,6 +39,14 @@ import freemind.controller.actions.generated.instance.CollaborationWrongCredenti
 import freemind.controller.actions.generated.instance.CollaborationWrongMap;
 import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
+import plugins.collaboration.socket.SocketBasics.UnableToGetLockException;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.Socket;
 
 /**
  * This class handles the communication from the master to a single client. It
@@ -93,7 +93,7 @@ public class ServerCommunication extends CommunicationBase {
 				if (mMindMapMaster.getPassword().equals(
 						commandGetOffers.getPassword())) {
 					CollaborationOffers commandOffers = new CollaborationOffers();
-					commandOffers.setIsSingleOffer(mIsSingleMapServer);
+					commandOffers.setSingleOffer(mIsSingleMapServer);
 					for (String fileName : mMindMapMaster.getFileMap().keySet()) {
 						CollaborationMapOffer offer = new CollaborationMapOffer();
 						offer.setMap(fileName);

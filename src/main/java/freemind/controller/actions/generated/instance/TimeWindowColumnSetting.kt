@@ -1,5 +1,4 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* TimeWindowColumnSetting...*/
-public class TimeWindowColumnSetting extends TableColumnSetting {
-  /* constants from enums*/
-} /* TimeWindowColumnSetting*/
+class TimeWindowColumnSetting : TableColumnSetting() { /* constants from enums*/ } /* TimeWindowColumnSetting*/

@@ -22,15 +22,15 @@
 /*$Id: HookDescriptorPluginAction.java,v 1.1.2.2 2008/01/13 20:55:34 christianfoltin Exp $*/
 package freemind.extensions;
 
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.Vector;
-
 import freemind.controller.actions.generated.instance.Plugin;
 import freemind.controller.actions.generated.instance.PluginAction;
 import freemind.controller.actions.generated.instance.PluginMenu;
 import freemind.controller.actions.generated.instance.PluginMode;
 import freemind.controller.actions.generated.instance.PluginProperty;
+
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.Vector;
 /**
  * This is an information class that holds all outer properties of a hook, i.e.
  * all contents of the XML description file.
@@ -131,7 +131,7 @@ public class HookDescriptorPluginAction extends HookDescriptorBase {
 	 *         displayed in the menus.
 	 */
 	public boolean isSelectable() {
-		return pluginAction.getIsSelectable();
+		return pluginAction.isSelectable();
 	}
 
 }

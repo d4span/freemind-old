@@ -1,5 +1,5 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* PatternNodeFontStrikethrough...*/
-public class PatternNodeFontStrikethrough extends PatternPropertyBase {
-  /* constants from enums*/
-} /* PatternNodeFontStrikethrough*/
+class PatternNodeFontStrikethrough :
+    PatternPropertyBase() { /* constants from enums*/ } /* PatternNodeFontStrikethrough*/

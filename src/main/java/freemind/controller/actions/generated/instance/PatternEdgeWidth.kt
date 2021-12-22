@@ -1,5 +1,4 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* PatternEdgeWidth...*/
-public class PatternEdgeWidth extends PatternPropertyBase {
-  /* constants from enums*/
-} /* PatternEdgeWidth*/
+class PatternEdgeWidth : PatternPropertyBase() { /* constants from enums*/ } /* PatternEdgeWidth*/

@@ -1,163 +1,75 @@
-package freemind.controller.actions.generated.instance;
-/* MapWindowConfigurationStorage...*/
-import java.util.ArrayList;
-import java.util.ArrayList;
-public class MapWindowConfigurationStorage extends WindowConfigurationStorage {
-  /* constants from enums*/
-  protected double mapCenterLongitude;
-  protected double mapCenterLatitude;
-  protected double cursorLongitude;
-  protected double cursorLatitude;
-  protected int zoom;
-  protected int lastDividerPosition;
-  protected String tileSource;
-  protected boolean showMapMarker;
-  protected boolean tileGridVisible;
-  protected boolean zoomControlsVisible;
-  protected boolean searchControlVisible;
-  protected boolean hideFoldedNodes;
-  protected boolean limitSearchToVisibleArea;
-  protected int mapLocationStorageIndex;
-  public double getMapCenterLongitude(){
-    return mapCenterLongitude;
-  }
-  public double getMapCenterLatitude(){
-    return mapCenterLatitude;
-  }
-  public double getCursorLongitude(){
-    return cursorLongitude;
-  }
-  public double getCursorLatitude(){
-    return cursorLatitude;
-  }
-  public int getZoom(){
-    return zoom;
-  }
-  public int getLastDividerPosition(){
-    return lastDividerPosition;
-  }
-  public String getTileSource(){
-    return tileSource;
-  }
-  public boolean getShowMapMarker(){
-    return showMapMarker;
-  }
-  public boolean getTileGridVisible(){
-    return tileGridVisible;
-  }
-  public boolean getZoomControlsVisible(){
-    return zoomControlsVisible;
-  }
-  public boolean getSearchControlVisible(){
-    return searchControlVisible;
-  }
-  public boolean getHideFoldedNodes(){
-    return hideFoldedNodes;
-  }
-  public boolean getLimitSearchToVisibleArea(){
-    return limitSearchToVisibleArea;
-  }
-  public int getMapLocationStorageIndex(){
-    return mapLocationStorageIndex;
-  }
-  public void setMapCenterLongitude(double value){
-    this.mapCenterLongitude = value;
-  }
-  public void setMapCenterLatitude(double value){
-    this.mapCenterLatitude = value;
-  }
-  public void setCursorLongitude(double value){
-    this.cursorLongitude = value;
-  }
-  public void setCursorLatitude(double value){
-    this.cursorLatitude = value;
-  }
-  public void setZoom(int value){
-    this.zoom = value;
-  }
-  public void setLastDividerPosition(int value){
-    this.lastDividerPosition = value;
-  }
-  public void setTileSource(String value){
-    this.tileSource = value;
-  }
-  public void setShowMapMarker(boolean value){
-    this.showMapMarker = value;
-  }
-  public void setTileGridVisible(boolean value){
-    this.tileGridVisible = value;
-  }
-  public void setZoomControlsVisible(boolean value){
-    this.zoomControlsVisible = value;
-  }
-  public void setSearchControlVisible(boolean value){
-    this.searchControlVisible = value;
-  }
-  public void setHideFoldedNodes(boolean value){
-    this.hideFoldedNodes = value;
-  }
-  public void setLimitSearchToVisibleArea(boolean value){
-    this.limitSearchToVisibleArea = value;
-  }
-  public void setMapLocationStorageIndex(int value){
-    this.mapLocationStorageIndex = value;
-  }
-  public void addTableColumnSetting(TableColumnSetting tableColumnSetting) {
-    tableColumnSettingList.add(tableColumnSetting);
-  }
+package freemind.controller.actions.generated.instance
 
-  public void addAtTableColumnSetting(int position, TableColumnSetting tableColumnSetting) {
-    tableColumnSettingList.add(position, tableColumnSetting);
-  }
+import java.util.Collections
 
-  public TableColumnSetting getTableColumnSetting(int index) {
-    return (TableColumnSetting)tableColumnSettingList.get( index );
-  }
+/* MapWindowConfigurationStorage...*/   class MapWindowConfigurationStorage : WindowConfigurationStorage() {
+    /* constants from enums*/
+    var mapCenterLongitude = 0.0
+    var mapCenterLatitude = 0.0
+    var cursorLongitude = 0.0
+    var cursorLatitude = 0.0
+    var zoom = 0
+    var lastDividerPosition = 0
+    var tileSource: String? = null
+    var showMapMarker = false
+    var tileGridVisible = false
+    var zoomControlsVisible = false
+    var searchControlVisible = false
+    var hideFoldedNodes = false
+    var limitSearchToVisibleArea = false
+    var mapLocationStorageIndex = 0
+    fun addTableColumnSetting(tableColumnSetting: TableColumnSetting?) {
+        tableColumnSettingList.add(tableColumnSetting)
+    }
 
-  public void removeFromTableColumnSettingElementAt(int index) {
-    tableColumnSettingList.remove( index );
-  }
+    fun addAtTableColumnSetting(position: Int, tableColumnSetting: TableColumnSetting?) {
+        tableColumnSettingList.add(position, tableColumnSetting)
+    }
 
-  public int sizeTableColumnSettingList() {
-    return tableColumnSettingList.size();
-  }
+    fun getTableColumnSetting(index: Int): TableColumnSetting {
+        return tableColumnSettingList[index] as TableColumnSetting
+    }
 
-  public void clearTableColumnSettingList() {
-    tableColumnSettingList.clear();
-  }
+    fun removeFromTableColumnSettingElementAt(index: Int) {
+        tableColumnSettingList.removeAt(index)
+    }
 
-  public java.util.List getListTableColumnSettingList() {
-    return java.util.Collections.unmodifiableList(tableColumnSettingList);
-  }
-    protected ArrayList tableColumnSettingList = new ArrayList();
+    fun sizeTableColumnSettingList(): Int {
+        return tableColumnSettingList.size
+    }
 
-  public void addMapLocationStorage(MapLocationStorage mapLocationStorage) {
-    mapLocationStorageList.add(mapLocationStorage);
-  }
+    fun clearTableColumnSettingList() {
+        tableColumnSettingList.clear()
+    }
 
-  public void addAtMapLocationStorage(int position, MapLocationStorage mapLocationStorage) {
-    mapLocationStorageList.add(position, mapLocationStorage);
-  }
+    val listTableColumnSettingList: List<TableColumnSetting?>
+        get() = Collections.unmodifiableList(tableColumnSettingList)
+    protected var tableColumnSettingList: ArrayList<TableColumnSetting?> = ArrayList()
+    fun addMapLocationStorage(mapLocationStorage: MapLocationStorage?) {
+        mapLocationStorageList.add(mapLocationStorage)
+    }
 
-  public MapLocationStorage getMapLocationStorage(int index) {
-    return (MapLocationStorage)mapLocationStorageList.get( index );
-  }
+    fun addAtMapLocationStorage(position: Int, mapLocationStorage: MapLocationStorage?) {
+        mapLocationStorageList.add(position, mapLocationStorage)
+    }
 
-  public void removeFromMapLocationStorageElementAt(int index) {
-    mapLocationStorageList.remove( index );
-  }
+    fun getMapLocationStorage(index: Int): MapLocationStorage {
+        return mapLocationStorageList[index] as MapLocationStorage
+    }
 
-  public int sizeMapLocationStorageList() {
-    return mapLocationStorageList.size();
-  }
+    fun removeFromMapLocationStorageElementAt(index: Int) {
+        mapLocationStorageList.removeAt(index)
+    }
 
-  public void clearMapLocationStorageList() {
-    mapLocationStorageList.clear();
-  }
+    fun sizeMapLocationStorageList(): Int {
+        return mapLocationStorageList.size
+    }
 
-  public java.util.List getListMapLocationStorageList() {
-    return java.util.Collections.unmodifiableList(mapLocationStorageList);
-  }
-    protected ArrayList mapLocationStorageList = new ArrayList();
+    fun clearMapLocationStorageList() {
+        mapLocationStorageList.clear()
+    }
 
+    val listMapLocationStorageList: List<MapLocationStorage?>
+        get() = Collections.unmodifiableList(mapLocationStorageList)
+    protected var mapLocationStorageList: ArrayList<MapLocationStorage?> = ArrayList()
 } /* MapWindowConfigurationStorage*/

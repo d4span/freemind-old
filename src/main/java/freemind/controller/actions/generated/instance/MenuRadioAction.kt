@@ -1,12 +1,7 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* MenuRadioAction...*/
-public class MenuRadioAction extends MenuActionBase {
-  /* constants from enums*/
-  protected boolean selected;
-  public boolean getSelected(){
-    return selected;
-  }
-  public void setSelected(boolean value){
-    this.selected = value;
-  }
+class MenuRadioAction : MenuActionBase() {
+    /* constants from enums*/
+    var selected = false
 } /* MenuRadioAction*/

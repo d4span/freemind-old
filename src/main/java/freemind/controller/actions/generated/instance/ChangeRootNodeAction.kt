@@ -1,5 +1,4 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* ChangeRootNodeAction...*/
-public class ChangeRootNodeAction extends NodeAction {
-  /* constants from enums*/
-} /* ChangeRootNodeAction*/
+class ChangeRootNodeAction : NodeAction() { /* constants from enums*/ } /* ChangeRootNodeAction*/

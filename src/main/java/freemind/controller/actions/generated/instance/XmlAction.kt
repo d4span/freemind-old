@@ -1,5 +1,4 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* XmlAction...*/
-public class XmlAction {
-  /* constants from enums*/
-} /* XmlAction*/
+open class XmlAction { /* constants from enums*/ } /* XmlAction*/

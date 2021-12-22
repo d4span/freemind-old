@@ -1,5 +1,4 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* MenuCategory...*/
-public class MenuCategory extends MenuCategoryBase {
-  /* constants from enums*/
-} /* MenuCategory*/
+class MenuCategory : MenuCategoryBase() { /* constants from enums*/ } /* MenuCategory*/

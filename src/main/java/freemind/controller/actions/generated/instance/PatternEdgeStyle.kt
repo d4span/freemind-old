@@ -1,5 +1,4 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* PatternEdgeStyle...*/
-public class PatternEdgeStyle extends PatternPropertyBase {
-  /* constants from enums*/
-} /* PatternEdgeStyle*/
+class PatternEdgeStyle : PatternPropertyBase() { /* constants from enums*/ } /* PatternEdgeStyle*/

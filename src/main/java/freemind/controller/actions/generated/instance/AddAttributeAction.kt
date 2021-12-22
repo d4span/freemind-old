@@ -1,19 +1,10 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
+import freemind.controller.actions.generated.instance.NodeAction
+
 /* AddAttributeAction...*/
-public class AddAttributeAction extends NodeAction {
-  /* constants from enums*/
-  protected String name;
-  protected String value;
-  public String getName(){
-    return name;
-  }
-  public String getValue(){
-    return value;
-  }
-  public void setName(String value){
-    this.name = value;
-  }
-  public void setValue(String value){
-    this.value = value;
-  }
+class AddAttributeAction : NodeAction() {
+    /* constants from enums*/
+    var name: String? = null
+    var value: String? = null
 } /* AddAttributeAction*/

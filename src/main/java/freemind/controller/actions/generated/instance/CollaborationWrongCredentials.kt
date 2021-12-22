@@ -1,5 +1,5 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* CollaborationWrongCredentials...*/
-public class CollaborationWrongCredentials extends CollaborationActionBase {
-  /* constants from enums*/
-} /* CollaborationWrongCredentials*/
+class CollaborationWrongCredentials :
+    CollaborationActionBase() { /* constants from enums*/ } /* CollaborationWrongCredentials*/

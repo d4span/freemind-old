@@ -1,49 +1,36 @@
-package freemind.controller.actions.generated.instance;
-/* PluginRegistration...*/
-import java.util.ArrayList;
-public class PluginRegistration {
-  /* constants from enums*/
-  protected String className;
-  protected boolean isPluginBase;
-  public String getClassName(){
-    return className;
-  }
-  public boolean getIsPluginBase(){
-    return isPluginBase;
-  }
-  public void setClassName(String value){
-    this.className = value;
-  }
-  public void setIsPluginBase(boolean value){
-    this.isPluginBase = value;
-  }
-  public void addPluginMode(PluginMode pluginMode) {
-    pluginModeList.add(pluginMode);
-  }
+package freemind.controller.actions.generated.instance
 
-  public void addAtPluginMode(int position, PluginMode pluginMode) {
-    pluginModeList.add(position, pluginMode);
-  }
+import java.util.Collections
 
-  public PluginMode getPluginMode(int index) {
-    return (PluginMode)pluginModeList.get( index );
-  }
+/* PluginRegistration...*/   class PluginRegistration {
+    /* constants from enums*/
+    var className: String? = null
+    var isPluginBase = false
+    fun addPluginMode(pluginMode: PluginMode?) {
+        pluginModeList.add(pluginMode)
+    }
 
-  public void removeFromPluginModeElementAt(int index) {
-    pluginModeList.remove( index );
-  }
+    fun addAtPluginMode(position: Int, pluginMode: PluginMode?) {
+        pluginModeList.add(position, pluginMode)
+    }
 
-  public int sizePluginModeList() {
-    return pluginModeList.size();
-  }
+    fun getPluginMode(index: Int): PluginMode {
+        return pluginModeList[index] as PluginMode
+    }
 
-  public void clearPluginModeList() {
-    pluginModeList.clear();
-  }
+    fun removeFromPluginModeElementAt(index: Int) {
+        pluginModeList.removeAt(index)
+    }
 
-  public java.util.List getListPluginModeList() {
-    return java.util.Collections.unmodifiableList(pluginModeList);
-  }
-    protected ArrayList pluginModeList = new ArrayList();
+    fun sizePluginModeList(): Int {
+        return pluginModeList.size
+    }
 
+    fun clearPluginModeList() {
+        pluginModeList.clear()
+    }
+
+    val listPluginModeList: List<PluginMode?>
+        get() = Collections.unmodifiableList(pluginModeList)
+    protected var pluginModeList: ArrayList<PluginMode?> = ArrayList()
 } /* PluginRegistration*/

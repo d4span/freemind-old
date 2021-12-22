@@ -1,35 +1,34 @@
-package freemind.controller.actions.generated.instance;
-/* Patterns...*/
-import java.util.ArrayList;
-public class Patterns extends XmlAction {
-  /* constants from enums*/
-  public void addChoice(Object choice) {
-    choiceList.add(choice);
-  }
+package freemind.controller.actions.generated.instance
 
-  public void addAtChoice(int position, Object choice) {
-    choiceList.add(position, choice);
-  }
+import java.util.Collections
 
-  public void setAtChoice(int position, Object choice) {
-    choiceList.set(position, choice);
-  }
-  public Object getChoice(int index) {
-    return (Object)choiceList.get( index );
-  }
+/* Patterns...*/   class Patterns : XmlAction() {
+    /* constants from enums*/
+    fun addChoice(choice: Pattern?) {
+        choiceList.add(choice)
+    }
 
-  public int sizeChoiceList() {
-    return choiceList.size();
-  }
+    fun addAtChoice(position: Int, choice: Pattern?) {
+        choiceList.add(position, choice)
+    }
 
-  public void clearChoiceList() {
-    choiceList.clear();
-  }
+    fun setAtChoice(position: Int, choice: Pattern?) {
+        choiceList.set(position, choice)
+    }
 
-  public java.util.List getListChoiceList() {
-    return java.util.Collections.unmodifiableList(choiceList);
-  }
+    fun getChoice(index: Int): Any {
+        return choiceList[index] as Any
+    }
 
-  protected ArrayList choiceList = new ArrayList();
+    fun sizeChoiceList(): Int {
+        return choiceList.size
+    }
 
+    fun clearChoiceList() {
+        choiceList.clear()
+    }
+
+    val listChoiceList: List<Pattern?>
+        get() = Collections.unmodifiableList(choiceList)
+    protected var choiceList: ArrayList<Pattern?> = ArrayList()
 } /* Patterns*/

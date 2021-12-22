@@ -51,7 +51,7 @@ public class HookDescriptorRegistration extends HookDescriptorBase {
 	}
 
 	public boolean getIsPluginBase() {
-		return mRegistration.getIsPluginBase();
+		return mRegistration.isPluginBase();
 	}
 
 	public List<PluginMode> getListPluginModeList() {

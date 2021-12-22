@@ -1,42 +1,35 @@
-package freemind.controller.actions.generated.instance;
-/* CollaborationOffers...*/
-import java.util.ArrayList;
-public class CollaborationOffers extends CollaborationActionBase {
-  /* constants from enums*/
-  protected boolean isSingleOffer;
-  public boolean getIsSingleOffer(){
-    return isSingleOffer;
-  }
-  public void setIsSingleOffer(boolean value){
-    this.isSingleOffer = value;
-  }
-  public void addCollaborationMapOffer(CollaborationMapOffer collaborationMapOffer) {
-    collaborationMapOfferList.add(collaborationMapOffer);
-  }
+package freemind.controller.actions.generated.instance
 
-  public void addAtCollaborationMapOffer(int position, CollaborationMapOffer collaborationMapOffer) {
-    collaborationMapOfferList.add(position, collaborationMapOffer);
-  }
+import java.util.Collections
 
-  public CollaborationMapOffer getCollaborationMapOffer(int index) {
-    return (CollaborationMapOffer)collaborationMapOfferList.get( index );
-  }
+/* CollaborationOffers...*/   class CollaborationOffers(var isSingleOffer: Boolean = false) : CollaborationActionBase() {
+    /* constants from enums*/
+    // var isSingleOffer = false
+    fun addCollaborationMapOffer(collaborationMapOffer: CollaborationMapOffer?) {
+        collaborationMapOfferList.add(collaborationMapOffer)
+    }
 
-  public void removeFromCollaborationMapOfferElementAt(int index) {
-    collaborationMapOfferList.remove( index );
-  }
+    fun addAtCollaborationMapOffer(position: Int, collaborationMapOffer: CollaborationMapOffer?) {
+        collaborationMapOfferList.add(position, collaborationMapOffer)
+    }
 
-  public int sizeCollaborationMapOfferList() {
-    return collaborationMapOfferList.size();
-  }
+    fun getCollaborationMapOffer(index: Int): CollaborationMapOffer {
+        return collaborationMapOfferList[index] as CollaborationMapOffer
+    }
 
-  public void clearCollaborationMapOfferList() {
-    collaborationMapOfferList.clear();
-  }
+    fun removeFromCollaborationMapOfferElementAt(index: Int) {
+        collaborationMapOfferList.removeAt(index)
+    }
 
-  public java.util.List getListCollaborationMapOfferList() {
-    return java.util.Collections.unmodifiableList(collaborationMapOfferList);
-  }
-    protected ArrayList collaborationMapOfferList = new ArrayList();
+    fun sizeCollaborationMapOfferList(): Int {
+        return collaborationMapOfferList.size
+    }
 
+    fun clearCollaborationMapOfferList() {
+        collaborationMapOfferList.clear()
+    }
+
+    val listCollaborationMapOfferList: List<CollaborationMapOffer?>
+        get() = Collections.unmodifiableList(collaborationMapOfferList)
+    protected var collaborationMapOfferList: ArrayList<CollaborationMapOffer?> = ArrayList()
 } /* CollaborationOffers*/

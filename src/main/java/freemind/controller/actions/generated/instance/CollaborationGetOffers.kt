@@ -1,19 +1,8 @@
-package freemind.controller.actions.generated.instance;
+package freemind.controller.actions.generated.instance
+
 /* CollaborationGetOffers...*/
-public class CollaborationGetOffers extends CollaborationActionBase {
-  /* constants from enums*/
-  protected String userId;
-  protected String password;
-  public String getUserId(){
-    return userId;
-  }
-  public String getPassword(){
-    return password;
-  }
-  public void setUserId(String value){
-    this.userId = value;
-  }
-  public void setPassword(String value){
-    this.password = value;
-  }
+class CollaborationGetOffers : CollaborationActionBase() {
+    /* constants from enums*/
+    var userId: String? = null
+    var password: String? = null
 } /* CollaborationGetOffers*/

@@ -38,14 +38,17 @@ import javax.swing.ListCellRenderer
 class ConditionRenderer : ListCellRenderer<Any?> {
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing
 	 * .JList, java.lang.Object, int, boolean, boolean)
 	 */
     override fun getListCellRendererComponent(
-        list: JList<*>?, value: Any?,
-        index: Int, isSelected: Boolean, cellHasFocus: Boolean
+        list: JList<*>?,
+        value: Any?,
+        index: Int,
+        isSelected: Boolean,
+        cellHasFocus: Boolean
     ): Component {
         if (value == null) return JLabel(
             Resources.getInstance().getResourceString(

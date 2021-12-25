@@ -36,8 +36,7 @@ import javax.swing.JLabel
 class ConditionFactory
 /**
  *
- */
-{
+ */ {
     fun loadCondition(element: XMLElement): Condition? {
         if (element.name.equals(NodeContainsCondition.NAME, ignoreCase = true)) return NodeContainsCondition.load(
             element
@@ -64,7 +63,7 @@ class ConditionFactory
             element
         )
         if (element.name
-                .equals(AttributeNotExistsCondition.NAME, ignoreCase = true)
+            .equals(AttributeNotExistsCondition.NAME, ignoreCase = true)
         ) return AttributeNotExistsCondition.load(element)
         if (element.name.equals(
                 ConditionNotSatisfiedDecorator.NAME, ignoreCase = true
@@ -82,7 +81,9 @@ class ConditionFactory
 
     fun createAttributeCondition(
         attribute: String?,
-        simpleCondition: NamedObject, value: String?, ignoreCase: Boolean
+        simpleCondition: NamedObject,
+        value: String?,
+        ignoreCase: Boolean
     ): Condition? {
         if (simpleCondition.equals(FILTER_EXIST)) return AttributeExistsCondition(
             attribute!!
@@ -146,13 +147,15 @@ class ConditionFactory
 
     fun createCondition(
         attribute: NamedObject,
-        simpleCondition: NamedObject, value: String, ignoreCase: Boolean
+        simpleCondition: NamedObject,
+        value: String,
+        ignoreCase: Boolean
     ): Condition? {
-        if (attribute.equals(FILTER_ICON)
-            && simpleCondition.equals(FILTER_CONTAINS)
+        if (attribute.equals(FILTER_ICON) &&
+            simpleCondition.equals(FILTER_CONTAINS)
         ) return IconContainedCondition(value)
-        if (attribute.equals(FILTER_ICON)
-            && simpleCondition.equals(FILTER_NOT_CONTAINS)
+        if (attribute.equals(FILTER_ICON) &&
+            simpleCondition.equals(FILTER_NOT_CONTAINS)
         ) return IconNotContainedCondition(value)
         return if (attribute.equals(FILTER_NODE)) {
             createNodeCondition(simpleCondition, value, ignoreCase)
@@ -175,7 +178,8 @@ class ConditionFactory
 
     protected fun createNodeCondition(
         simpleCondition: NamedObject,
-        value: String, ignoreCase: Boolean
+        value: String,
+        ignoreCase: Boolean
     ): Condition? {
         if (ignoreCase) {
             if (simpleCondition.equals(FILTER_CONTAINS)) {
@@ -219,17 +223,21 @@ class ConditionFactory
         const val FILTER_IGNORE_CASE = "filter_ignore_case"
         @JvmStatic
         fun createDescription(
-            attribute: String?, simpleCondition: String?,
-            value: String?, ignoreCase: Boolean
+            attribute: String?,
+            simpleCondition: String?,
+            value: String?,
+            ignoreCase: Boolean
         ): String {
-            return (attribute
-                    + " "
-                    + simpleCondition
-                    + (if (value != null) " \"$value\"" else "")
-                    + if (ignoreCase && value != null) ", "
-                    + Resources.getInstance().getResourceString(
-                FILTER_IGNORE_CASE
-            ) else "")
+            return (
+                attribute +
+                    " " +
+                    simpleCondition +
+                    (if (value != null) " \"$value\"" else "") +
+                    if (ignoreCase && value != null) ", " +
+                        Resources.getInstance().getResourceString(
+                            FILTER_IGNORE_CASE
+                        ) else ""
+                )
         }
 
         @JvmStatic

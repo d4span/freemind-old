@@ -56,7 +56,8 @@ abstract class CompareConditionAdapter(private val conditionValue: String, priva
     }
 
     fun createDescription(
-        attribute: String?, comparationResult: Int,
+        attribute: String?,
+        comparationResult: Int,
         succeed: Boolean
     ): String {
         val simpleCondition: NamedObject

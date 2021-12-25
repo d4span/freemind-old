@@ -36,7 +36,7 @@ class AttributeExistsCondition
  */(private val attribute: String) : NodeCondition() {
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * freemind.controller.filter.condition.Condition#checkNode(freemind.modes
 	 * .MindMapNode)

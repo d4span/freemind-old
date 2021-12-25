@@ -31,15 +31,16 @@ import freemind.modes.MindMapNode
 /**
  * @author Dimitri Polivaev 12.07.2005
  */
-class AttributeCompareCondition
-/**
- */(
-    private val attribute: String, value: String,
-    ignoreCase: Boolean, private val comparationResult: Int, private val succeed: Boolean
+class AttributeCompareCondition(
+    private val attribute: String,
+    value: String,
+    ignoreCase: Boolean,
+    private val comparationResult: Int,
+    private val succeed: Boolean
 ) : CompareConditionAdapter(value, ignoreCase) {
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * freemind.controller.filter.condition.Condition#checkNode(freemind.modes
 	 * .MindMapNode)
@@ -48,10 +49,12 @@ class AttributeCompareCondition
         for (i in 0 until (node?.attributeTableLength ?: 0)) {
             try {
                 val attribute2 = node?.getAttribute(i)
-                if (attribute2?.name == attribute && succeed == (compareTo(
-                        attribute2.value
-                            .toString()
-                    ) == comparationResult)
+                if (attribute2?.name == attribute && succeed == (
+                    compareTo(
+                            attribute2.value
+                                .toString()
+                        ) == comparationResult
+                    )
                 ) return true
             } catch (fne: NumberFormatException) {
             }
@@ -87,7 +90,8 @@ class AttributeCompareCondition
                     element
                         .getStringAttribute(IGNORE_CASE)
                 ),
-                element.getIntAttribute(COMPARATION_RESULT), Tools
+                element.getIntAttribute(COMPARATION_RESULT),
+                Tools
                     .xmlToBoolean(element.getStringAttribute(SUCCEED))
             )
         }

@@ -43,10 +43,12 @@ class IconNotContainedCondition(private val iconName: String) : Condition {
     override val listCellRendererComponent: JComponent
         get() {
             val component = JCondition()
-            val text = (Resources.getInstance().getResourceString("filter_icon")
-                    + ' '
-                    + Resources.getInstance().getResourceString("filter_not_contains")
-                    + ' ')
+            val text = (
+                Resources.getInstance().getResourceString("filter_icon") +
+                    ' ' +
+                    Resources.getInstance().getResourceString("filter_not_contains") +
+                    ' '
+                )
             component.add(JLabel(text))
             component.add(MindIcon.factory(iconName).rendererComponent)
             return component

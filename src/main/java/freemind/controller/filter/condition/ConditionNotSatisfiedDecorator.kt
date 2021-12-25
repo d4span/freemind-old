@@ -41,7 +41,7 @@ class ConditionNotSatisfiedDecorator
  */(private val originalCondition: Condition?) : Condition {
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * freemind.controller.filter.condition.Condition#checkNode(freemind.modes
 	 * .MindMapNode)
@@ -52,7 +52,7 @@ class ConditionNotSatisfiedDecorator
 
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * freemind.controller.filter.condition.Condition#getListCellRendererComponent
 	 * ()

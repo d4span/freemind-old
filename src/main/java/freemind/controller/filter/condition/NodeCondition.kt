@@ -21,39 +21,32 @@
  * Created on 15.05.2005
  *
  */
-package freemind.controller.filter.condition;
+package freemind.controller.filter.condition
 
-import javax.swing.JComponent;
-
-import freemind.main.XMLElement;
+import freemind.main.XMLElement
+import javax.swing.JComponent
 
 /**
  * @author dimitri 15.05.2005
  */
-public abstract class NodeCondition implements Condition {
-	private JComponent renderer;
-	private String description;
+abstract class NodeCondition protected constructor() : Condition {
+    private var renderer: JComponent? = null
+    private var description: String? = null
+    override val listCellRendererComponent: JComponent?
+        get() {
+            if (renderer == null) {
+                renderer = ConditionFactory.createCellRendererComponent(toString())
+            }
+            return renderer
+        }
 
-	protected NodeCondition() {
-	}
+    override fun toString(): String {
+        if (description == null) {
+            description = createDesctiption()
+        }
+        return description!!
+    }
 
-	public JComponent getListCellRendererComponent() {
-		if (renderer == null) {
-			renderer = ConditionFactory.createCellRendererComponent(toString());
-		}
-		return renderer;
-	}
-
-	public String toString() {
-		if (description == null) {
-			description = createDesctiption();
-		}
-		return description;
-	}
-
-	abstract protected String createDesctiption();
-
-	public void saveAttributes(XMLElement child) {
-	}
-
+    protected abstract fun createDesctiption(): String?
+    open fun saveAttributes(child: XMLElement?) {}
 }

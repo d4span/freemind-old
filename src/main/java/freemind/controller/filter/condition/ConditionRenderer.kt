@@ -21,57 +21,56 @@
  * Created on 06.05.2005
  *
  */
-package freemind.controller.filter.condition;
+package freemind.controller.filter.condition
 
-import java.awt.Color;
-import java.awt.Component;
-
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
-
-import freemind.main.Resources;
-import freemind.modes.MindIcon;
-
-;
+import freemind.main.Resources
+import freemind.modes.MindIcon
+import java.awt.Color
+import java.awt.Component
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JList
+import javax.swing.ListCellRenderer
 
 /**
  * @author dimitri 06.05.2005
  */
-public class ConditionRenderer implements ListCellRenderer<Object> {
-
-	final public static Color SELECTED_BACKGROUND = new Color(207, 247, 202);
-
-	/*
+class ConditionRenderer : ListCellRenderer<Any?> {
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing
 	 * .JList, java.lang.Object, int, boolean, boolean)
 	 */
-	public Component getListCellRendererComponent(JList list, Object value,
-			int index, boolean isSelected, boolean cellHasFocus) {
-		if (value == null)
-			return new JLabel(Resources.getInstance().getResourceString(
-					"filter_no_filtering"));
-		JComponent component;
-		if (value instanceof MindIcon) {
-			component = new JLabel(((MindIcon) value).getIcon());
-		} else if (value instanceof Condition) {
-			Condition cond = (Condition) value;
-			component = cond.getListCellRendererComponent();
-		} else {
-			component = new JLabel(value.toString());
-		}
-		component.setOpaque(true);
-		if (isSelected) {
-			component.setBackground(SELECTED_BACKGROUND);
-		} else {
-			component.setBackground(Color.WHITE);
-		}
-		component.setAlignmentX(Component.LEFT_ALIGNMENT);
-		return component;
-	}
+    override fun getListCellRendererComponent(
+        list: JList<*>?, value: Any?,
+        index: Int, isSelected: Boolean, cellHasFocus: Boolean
+    ): Component {
+        if (value == null) return JLabel(
+            Resources.getInstance().getResourceString(
+                "filter_no_filtering"
+            )
+        )
+        val component: JComponent
+        component = if (value is MindIcon) {
+            JLabel(value.icon)
+        } else if (value is Condition) {
+            value.listCellRendererComponent!!
+        } else {
+            JLabel(value.toString())
+        }
+        component.isOpaque = true
+        if (isSelected) {
+            component.background = SELECTED_BACKGROUND
+        } else {
+            component.background = Color.WHITE
+        }
+        component.alignmentX = Component.LEFT_ALIGNMENT
+        return component
+    }
 
+    companion object {
+        val SELECTED_BACKGROUND = Color(207, 247, 202)
+    }
 }

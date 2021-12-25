@@ -18,26 +18,27 @@
  * this program; if not, write to the Free SoftwareFoundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package freemind.controller.color;
-import java.awt.Color;
+package freemind.controller.color
 
-import freemind.main.Resources;
+import freemind.main.Resources
+import java.awt.Color
 
+class ColorPair {
+    constructor(pColor: Color, pString: String) {
+        color = pColor
+        name = pString
+        displayName = Resources.getInstance().getText("font_color_$name")
+    }
 
-public class ColorPair {
-	public ColorPair(Color pColor, String pString) {
-		color = pColor;
-		name = pString;
-		displayName = Resources.getInstance().getText("font_color_"+name);
-	}
+    constructor(pColor: Color, pName: String, pDisplayName: String?) {
+        color = pColor
+        name = pName
+        displayName = pDisplayName
+    }
 
-	public ColorPair(Color pColor, String pName, String pDisplayName) {
-		color = pColor;
-		name = pName;
-		displayName = pDisplayName;
-	}
-
-	public Color color;
-	public String name;
-	public String displayName;
+    @JvmField
+	var color: Color
+    var name: String
+    @JvmField
+	var displayName: String?
 }

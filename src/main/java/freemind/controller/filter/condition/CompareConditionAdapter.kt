@@ -21,70 +21,59 @@
  * Created on 17.05.2005
  *
  */
-package freemind.controller.filter.condition;
+package freemind.controller.filter.condition
 
-import freemind.common.NamedObject;
-import freemind.main.Tools;
-import freemind.main.XMLElement;
+import freemind.common.NamedObject
+import freemind.main.Tools
+import freemind.main.XMLElement
 
-abstract class CompareConditionAdapter extends NodeCondition {
+abstract class CompareConditionAdapter(private val conditionValue: String, private val ignoreCase: Boolean) :
+    NodeCondition() {
+    @Throws(NumberFormatException::class)
+    protected operator fun compareTo(nodeValue: String): Int {
+        try {
+            val i2 = conditionValue.toInt()
+            val i1 = nodeValue.toInt()
+            return if (i1 < i2) -1 else if (i1 == i2) 0 else 1
+        } catch (fne: NumberFormatException) {
+        }
+        val d2: Double
+        return try {
+            d2 = conditionValue.toDouble()
+            val d1 = nodeValue.toDouble()
+            java.lang.Double.compare(d1, d2)
+        } catch (fne: NumberFormatException) {
+            if (ignoreCase) nodeValue.compareTo(conditionValue, ignoreCase = true) else nodeValue.compareTo(
+                conditionValue
+            )
+        }
+    }
 
-	static final String IGNORE_CASE = "ignore_case";
-	static final String VALUE = "value";
-	private String conditionValue;
-	private boolean ignoreCase;
+    override fun saveAttributes(child: XMLElement?) {
+        super.saveAttributes(child)
+        child!!.setAttribute(VALUE, conditionValue)
+        child.setAttribute(IGNORE_CASE, Tools.BooleanToXml(ignoreCase))
+    }
 
-	CompareConditionAdapter(String value, boolean ignoreCase) {
-		super();
-		this.conditionValue = value;
-		this.ignoreCase = ignoreCase;
-	}
+    fun createDescription(
+        attribute: String?, comparationResult: Int,
+        succeed: Boolean
+    ): String {
+        val simpleCondition: NamedObject
+        simpleCondition = when (comparationResult) {
+            -1 -> if (succeed) ConditionFactory.FILTER_LT else ConditionFactory.FILTER_GE
+            0 -> if (succeed) ConditionFactory.FILTER_IS_EQUAL_TO else ConditionFactory.FILTER_IS_NOT_EQUAL_TO
+            1 -> if (succeed) ConditionFactory.FILTER_GT else ConditionFactory.FILTER_LE
+            else -> throw IllegalArgumentException()
+        }
+        return ConditionFactory.createDescription(
+            attribute, simpleCondition.name,
+            conditionValue, ignoreCase
+        )
+    }
 
-	protected int compareTo(String nodeValue) throws NumberFormatException {
-		try {
-			int i2 = Integer.parseInt(conditionValue);
-			int i1 = Integer.parseInt(nodeValue);
-			return i1 < i2 ? -1 : (i1 == i2 ? 0 : 1);
-		} catch (NumberFormatException fne) {
-		}
-		double d2;
-		try {
-			d2 = Double.parseDouble(conditionValue);
-			double d1 = Double.parseDouble(nodeValue);
-			return Double.compare(d1, d2);
-		} catch (NumberFormatException fne) {
-			return ignoreCase ? nodeValue.compareToIgnoreCase(conditionValue)
-					: nodeValue.compareTo(conditionValue);
-		}
-	}
-
-	public void saveAttributes(XMLElement child) {
-		super.saveAttributes(child);
-		child.setAttribute(VALUE, conditionValue);
-		child.setAttribute(IGNORE_CASE, Tools.BooleanToXml(ignoreCase));
-	}
-
-	public String createDescription(String attribute, int comparationResult,
-			boolean succeed) {
-		NamedObject simpleCondition;
-		switch (comparationResult) {
-		case -1:
-			simpleCondition = succeed ? ConditionFactory.FILTER_LT
-					: ConditionFactory.FILTER_GE;
-			break;
-		case 0:
-			simpleCondition = succeed ? ConditionFactory.FILTER_IS_EQUAL_TO
-							: ConditionFactory.FILTER_IS_NOT_EQUAL_TO;
-			break;
-		case 1:
-			simpleCondition = succeed ? ConditionFactory.FILTER_GT
-					: ConditionFactory.FILTER_LE;
-			break;
-		default:
-			throw new IllegalArgumentException();
-		}
-		return ConditionFactory.createDescription(attribute, simpleCondition.getName(),
-				conditionValue, ignoreCase);
-	}
-
+    companion object {
+        const val IGNORE_CASE = "ignore_case"
+        const val VALUE = "value"
+    }
 }

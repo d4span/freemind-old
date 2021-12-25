@@ -21,216 +21,223 @@
  * Created on 17.05.2005
  *
  */
-package freemind.controller.filter.condition;
+package freemind.controller.filter.condition
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-
-import freemind.common.NamedObject;
-import freemind.main.Resources;
-import freemind.main.XMLElement;
+import freemind.common.NamedObject
+import freemind.common.NamedObject.Companion.literal
+import freemind.main.Resources
+import freemind.main.XMLElement
+import javax.swing.JComponent
+import javax.swing.JLabel
 
 /**
  * @author dimitri 17.05.2005
  */
-public class ConditionFactory {
-	
-	static final NamedObject FILTER_NODE= Resources.getInstance().createTranslatedString("filter_node");
-	static final NamedObject FILTER_ICON = Resources.getInstance().createTranslatedString("filter_icon");
+class ConditionFactory
+/**
+ *
+ */
+{
+    fun loadCondition(element: XMLElement): Condition? {
+        if (element.name.equals(NodeContainsCondition.NAME, ignoreCase = true)) return NodeContainsCondition.load(
+            element
+        )
+        if (element.name.equals(
+                IgnoreCaseNodeContainsCondition.NAME, ignoreCase = true
+            )
+        ) return IgnoreCaseNodeContainsCondition.load(element)
+        if (element.name.equals(NodeCompareCondition.NAME, ignoreCase = true)) return NodeCompareCondition.load(element)
+        if (element.name.equals(IconContainedCondition.NAME, ignoreCase = true)) return IconContainedCondition.load(
+            element
+        )
+        if (element.name.equals(
+                IconNotContainedCondition.NAME,
+                ignoreCase = true
+            )
+        ) return IconNotContainedCondition.load(element)
+        if (element.name.equals(
+                AttributeCompareCondition.NAME,
+                ignoreCase = true
+            )
+        ) return AttributeCompareCondition.load(element)
+        if (element.name.equals(AttributeExistsCondition.NAME, ignoreCase = true)) return AttributeExistsCondition.load(
+            element
+        )
+        if (element.name
+                .equals(AttributeNotExistsCondition.NAME, ignoreCase = true)
+        ) return AttributeNotExistsCondition.load(element)
+        if (element.name.equals(
+                ConditionNotSatisfiedDecorator.NAME, ignoreCase = true
+            )
+        ) {
+            return ConditionNotSatisfiedDecorator.load(element)
+        }
+        if (element.name.equals(ConjunctConditions.NAME, ignoreCase = true)) {
+            return ConjunctConditions.load(element)
+        }
+        return if (element.name.equals(DisjunctConditions.NAME, ignoreCase = true)) {
+            DisjunctConditions.load(element)
+        } else null
+    }
 
-	static final String FILTER_DOES_NOT_EXIST = "filter_does_not_exist";
-	static final String FILTER_EXIST = "filter_exist";
-	static final NamedObject FILTER_CONTAINS = Resources.getInstance().createTranslatedString("filter_contains");
-	static final NamedObject FILTER_NOT_CONTAINS = Resources.getInstance().createTranslatedString("filter_not_contains") ;
-	static final NamedObject FILTER_IS_NOT_EQUAL_TO = Resources.getInstance().createTranslatedString("filter_is_not_equal_to") ;
-	static final NamedObject FILTER_IS_EQUAL_TO =Resources.getInstance().createTranslatedString("filter_is_equal_to") ;
-	static final NamedObject FILTER_LE = NamedObject.literal("<=");
-	static final NamedObject FILTER_LT = NamedObject.literal("<");
-	static final NamedObject FILTER_GE = NamedObject.literal(">=");
-	static final NamedObject FILTER_GT = NamedObject.literal(">");
-	
-	static final String FILTER_IGNORE_CASE = "filter_ignore_case";
-	
-	
-	
-	
+    fun createAttributeCondition(
+        attribute: String?,
+        simpleCondition: NamedObject, value: String?, ignoreCase: Boolean
+    ): Condition? {
+        if (simpleCondition.equals(FILTER_EXIST)) return AttributeExistsCondition(
+            attribute!!
+        )
+        if (simpleCondition.equals(FILTER_DOES_NOT_EXIST)) return AttributeNotExistsCondition(
+            attribute!!
+        )
+        if (ignoreCase) {
+            if (simpleCondition.equals(FILTER_IS_EQUAL_TO)) return AttributeCompareCondition(
+                attribute!!, value!!, true, 0,
+                true
+            )
+            if (simpleCondition.equals(FILTER_IS_NOT_EQUAL_TO)) return AttributeCompareCondition(
+                attribute!!, value!!, true, 0,
+                false
+            )
+            if (simpleCondition.equals(FILTER_GT)) return AttributeCompareCondition(
+                attribute!!, value!!, true, 1,
+                true
+            )
+            if (simpleCondition.equals(FILTER_GE)) return AttributeCompareCondition(
+                attribute!!, value!!, true,
+                -1, false
+            )
+            if (simpleCondition.equals(FILTER_LT)) return AttributeCompareCondition(
+                attribute!!, value!!, true,
+                -1, true
+            )
+            if (simpleCondition.equals(FILTER_LE)) return AttributeCompareCondition(
+                attribute!!, value!!, true, 1,
+                false
+            )
+        } else {
+            if (simpleCondition.equals(FILTER_IS_EQUAL_TO)) return AttributeCompareCondition(
+                attribute!!, value!!, false,
+                0, true
+            )
+            if (simpleCondition.equals(FILTER_IS_NOT_EQUAL_TO)) return AttributeCompareCondition(
+                attribute!!, value!!, false,
+                0, false
+            )
+            if (simpleCondition.equals(FILTER_GT)) return AttributeCompareCondition(
+                attribute!!, value!!, false,
+                1, true
+            )
+            if (simpleCondition.equals(FILTER_GE)) return AttributeCompareCondition(
+                attribute!!, value!!, false,
+                -1, false
+            )
+            if (simpleCondition.equals(FILTER_LT)) return AttributeCompareCondition(
+                attribute!!, value!!, false,
+                -1, true
+            )
+            if (simpleCondition.equals(FILTER_LE)) return AttributeCompareCondition(
+                attribute!!, value!!, false,
+                1, false
+            )
+        }
+        return null
+    }
 
-
-	/**
-     *
-     */
-	public ConditionFactory() {
-	}
-
-	static String createDescription(String attribute, String simpleCondition,
-			String value, boolean ignoreCase) {
-		String description = attribute
-				+ " "
-				+ simpleCondition
-				+ (value != null ? " \"" + value + "\"" : "")
-				+ (ignoreCase && value != null ? ", "
-						+ Resources.getInstance().getResourceString(
-								FILTER_IGNORE_CASE) : "");
-		return description;
-	}
-
-	public Condition loadCondition(XMLElement element) {
-		if (element.getName().equalsIgnoreCase(NodeContainsCondition.NAME))
-			return NodeContainsCondition.load(element);
-		if (element.getName().equalsIgnoreCase(
-				IgnoreCaseNodeContainsCondition.NAME))
-			return IgnoreCaseNodeContainsCondition.load(element);
-		if (element.getName().equalsIgnoreCase(NodeCompareCondition.NAME))
-			return NodeCompareCondition.load(element);
-		if (element.getName().equalsIgnoreCase(IconContainedCondition.NAME))
-			return IconContainedCondition.load(element);
-       	if (element.getName().equalsIgnoreCase(IconNotContainedCondition.NAME))
-			return IconNotContainedCondition.load(element);
-       	if (element.getName().equalsIgnoreCase(AttributeCompareCondition.NAME))
-       		return AttributeCompareCondition.load(element);
-       	if (element.getName().equalsIgnoreCase(AttributeExistsCondition.NAME))
-       		return AttributeExistsCondition.load(element);
-       	if (element.getName()
-       			.equalsIgnoreCase(AttributeNotExistsCondition.NAME))
-       		return AttributeNotExistsCondition.load(element);
-		if (element.getName().equalsIgnoreCase(
-				ConditionNotSatisfiedDecorator.NAME)) {
-			return ConditionNotSatisfiedDecorator.load(element);
-		}
-		if (element.getName().equalsIgnoreCase(ConjunctConditions.NAME)) {
-			return ConjunctConditions.load(element);
-		}
-		if (element.getName().equalsIgnoreCase(DisjunctConditions.NAME)) {
-			return DisjunctConditions.load(element);
-		}
-		return null;
-	}
-
-	public Condition createAttributeCondition(String attribute,
-			NamedObject simpleCondition, String value, boolean ignoreCase) {
-		if (simpleCondition.equals(FILTER_EXIST))
-			return new AttributeExistsCondition(attribute);
-		if (simpleCondition.equals(FILTER_DOES_NOT_EXIST))
-			return new AttributeNotExistsCondition(attribute);
-		if (ignoreCase) {
-			if (simpleCondition.equals(FILTER_IS_EQUAL_TO))
-				return new AttributeCompareCondition(attribute, value, true, 0,
-						true);
-			if (simpleCondition.equals(FILTER_IS_NOT_EQUAL_TO))
-				return new AttributeCompareCondition(attribute, value, true, 0,
-						false);
-			if (simpleCondition.equals(FILTER_GT))
-				return new AttributeCompareCondition(attribute, value, true, 1,
-						true);
-			if (simpleCondition.equals(FILTER_GE))
-				return new AttributeCompareCondition(attribute, value, true,
-						-1, false);
-			if (simpleCondition.equals(FILTER_LT))
-				return new AttributeCompareCondition(attribute, value, true,
-						-1, true);
-			if (simpleCondition.equals(FILTER_LE))
-				return new AttributeCompareCondition(attribute, value, true, 1,
-						false);
-		} else {
-			if (simpleCondition.equals(FILTER_IS_EQUAL_TO))
-				return new AttributeCompareCondition(attribute, value, false,
-						0, true);
-			if (simpleCondition.equals(FILTER_IS_NOT_EQUAL_TO))
-				return new AttributeCompareCondition(attribute, value, false,
-						0, false);
-			if (simpleCondition.equals(FILTER_GT))
-				return new AttributeCompareCondition(attribute, value, false,
-						1, true);
-			if (simpleCondition.equals(FILTER_GE))
-				return new AttributeCompareCondition(attribute, value, false,
-						-1, false);
-			if (simpleCondition.equals(FILTER_LT))
-				return new AttributeCompareCondition(attribute, value, false,
-						-1, true);
-			if (simpleCondition.equals(FILTER_LE))
-				return new AttributeCompareCondition(attribute, value, false,
-						1, false);
-		}
-		return null;
-	}
-
-	public Condition createCondition(NamedObject attribute,
-			NamedObject simpleCondition, String value, boolean ignoreCase) {
-		if (attribute.equals(FILTER_ICON)
-				&& simpleCondition.equals(FILTER_CONTAINS))
-			return new IconContainedCondition(value);
+    fun createCondition(
+        attribute: NamedObject,
+        simpleCondition: NamedObject, value: String, ignoreCase: Boolean
+    ): Condition? {
         if (attribute.equals(FILTER_ICON)
-            && simpleCondition.equals(FILTER_NOT_CONTAINS)    )
-            return new IconNotContainedCondition(value);
-		if (attribute.equals(FILTER_NODE)) {
-			return createNodeCondition(simpleCondition, value, ignoreCase);
-		}
-		return null;
-	}
+            && simpleCondition.equals(FILTER_CONTAINS)
+        ) return IconContainedCondition(value)
+        if (attribute.equals(FILTER_ICON)
+            && simpleCondition.equals(FILTER_NOT_CONTAINS)
+        ) return IconNotContainedCondition(value)
+        return if (attribute.equals(FILTER_NODE)) {
+            createNodeCondition(simpleCondition, value, ignoreCase)
+        } else null
+    }
 
-	public NamedObject[] getNodeConditionNames() {
-		return new NamedObject[] {
-				FILTER_CONTAINS, FILTER_IS_EQUAL_TO, FILTER_IS_NOT_EQUAL_TO,
-				FILTER_GT, FILTER_GE, FILTER_LE, FILTER_LT };
-	}
+    val nodeConditionNames: Array<NamedObject>
+        get() = arrayOf(
+            FILTER_CONTAINS, FILTER_IS_EQUAL_TO, FILTER_IS_NOT_EQUAL_TO,
+            FILTER_GT, FILTER_GE, FILTER_LE, FILTER_LT
+        )
+    val iconConditionNames: Array<NamedObject>
+        get() = arrayOf(FILTER_CONTAINS, FILTER_NOT_CONTAINS)
+    val attributeConditionNames: Array<NamedObject>
+        get() = arrayOf(
+            Resources.getInstance().createTranslatedString(FILTER_EXIST),
+            Resources.getInstance().createTranslatedString(FILTER_DOES_NOT_EXIST), FILTER_IS_EQUAL_TO,
+            FILTER_IS_NOT_EQUAL_TO, FILTER_GT, FILTER_GE, FILTER_LE, FILTER_LT
+        )
 
-	public Object[] getIconConditionNames() {
-		return new NamedObject[] { FILTER_CONTAINS, FILTER_NOT_CONTAINS};
-	}
+    protected fun createNodeCondition(
+        simpleCondition: NamedObject,
+        value: String, ignoreCase: Boolean
+    ): Condition? {
+        if (ignoreCase) {
+            if (simpleCondition.equals(FILTER_CONTAINS)) {
+                return if (value == "") null else IgnoreCaseNodeContainsCondition(value)
+            }
+            if (simpleCondition.equals(FILTER_IS_EQUAL_TO)) return NodeCompareCondition(value, true, 0, true)
+            if (simpleCondition.equals(FILTER_IS_NOT_EQUAL_TO)) return NodeCompareCondition(value, true, 0, false)
+            if (simpleCondition.equals(FILTER_GT)) return NodeCompareCondition(value, true, 1, true)
+            if (simpleCondition.equals(FILTER_GE)) return NodeCompareCondition(value, true, -1, false)
+            if (simpleCondition.equals(FILTER_LT)) return NodeCompareCondition(value, true, -1, true)
+            if (simpleCondition.equals(FILTER_LE)) return NodeCompareCondition(value, true, 1, false)
+        } else {
+            if (simpleCondition.equals(FILTER_CONTAINS)) {
+                return if (value == "") null else NodeContainsCondition(value)
+            }
+            if (simpleCondition.equals(FILTER_IS_EQUAL_TO)) return NodeCompareCondition(value, false, 0, true)
+            if (simpleCondition.equals(FILTER_IS_NOT_EQUAL_TO)) return NodeCompareCondition(value, false, 0, false)
+            if (simpleCondition.equals(FILTER_GT)) return NodeCompareCondition(value, false, 1, true)
+            if (simpleCondition.equals(FILTER_GE)) return NodeCompareCondition(value, false, -1, false)
+            if (simpleCondition.equals(FILTER_LT)) return NodeCompareCondition(value, false, -1, true)
+            if (simpleCondition.equals(FILTER_LE)) return NodeCompareCondition(value, false, 1, false)
+        }
+        return null
+    }
 
-	public NamedObject[] getAttributeConditionNames() {
-		return new NamedObject[] { Resources.getInstance().createTranslatedString(FILTER_EXIST),
-				Resources.getInstance().createTranslatedString(FILTER_DOES_NOT_EXIST), FILTER_IS_EQUAL_TO,
-				FILTER_IS_NOT_EQUAL_TO, FILTER_GT, FILTER_GE, FILTER_LE, FILTER_LT, };
-	}
+    companion object {
+        @JvmField
+        val FILTER_NODE = Resources.getInstance().createTranslatedString("filter_node")
+        val FILTER_ICON = Resources.getInstance().createTranslatedString("filter_icon")
+        const val FILTER_DOES_NOT_EXIST = "filter_does_not_exist"
+        const val FILTER_EXIST = "filter_exist"
+        @JvmField
+        val FILTER_CONTAINS = Resources.getInstance().createTranslatedString("filter_contains")
+        val FILTER_NOT_CONTAINS = Resources.getInstance().createTranslatedString("filter_not_contains")
+        val FILTER_IS_NOT_EQUAL_TO = Resources.getInstance().createTranslatedString("filter_is_not_equal_to")
+        val FILTER_IS_EQUAL_TO = Resources.getInstance().createTranslatedString("filter_is_equal_to")
+        val FILTER_LE = literal("<=")
+        val FILTER_LT = literal("<")
+        val FILTER_GE = literal(">=")
+        val FILTER_GT = literal(">")
+        const val FILTER_IGNORE_CASE = "filter_ignore_case"
+        @JvmStatic
+        fun createDescription(
+            attribute: String?, simpleCondition: String?,
+            value: String?, ignoreCase: Boolean
+        ): String {
+            return (attribute
+                    + " "
+                    + simpleCondition
+                    + (if (value != null) " \"$value\"" else "")
+                    + if (ignoreCase && value != null) ", "
+                    + Resources.getInstance().getResourceString(
+                FILTER_IGNORE_CASE
+            ) else "")
+        }
 
-	protected Condition createNodeCondition(NamedObject simpleCondition,
-			String value, boolean ignoreCase) {
-		if (ignoreCase) {
-			if (simpleCondition.equals(FILTER_CONTAINS)) {
-				if (value.equals(""))
-					return null;
-				return new IgnoreCaseNodeContainsCondition(value);
-			}
-			if (simpleCondition.equals(FILTER_IS_EQUAL_TO))
-				return new NodeCompareCondition(value, true, 0, true);
-			if (simpleCondition.equals(FILTER_IS_NOT_EQUAL_TO))
-				return new NodeCompareCondition(value, true, 0, false);
-			if (simpleCondition.equals(FILTER_GT))
-				return new NodeCompareCondition(value, true, 1, true);
-			if (simpleCondition.equals(FILTER_GE))
-				return new NodeCompareCondition(value, true, -1, false);
-			if (simpleCondition.equals(FILTER_LT))
-				return new NodeCompareCondition(value, true, -1, true);
-			if (simpleCondition.equals(FILTER_LE))
-				return new NodeCompareCondition(value, true, 1, false);
-		} else {
-			if (simpleCondition.equals(FILTER_CONTAINS)) {
-				if (value.equals(""))
-					return null;
-				return new NodeContainsCondition(value);
-			}
-			if (simpleCondition.equals(FILTER_IS_EQUAL_TO))
-				return new NodeCompareCondition(value, false, 0, true);
-			if (simpleCondition.equals(FILTER_IS_NOT_EQUAL_TO))
-				return new NodeCompareCondition(value, false, 0, false);
-			if (simpleCondition.equals(FILTER_GT))
-				return new NodeCompareCondition(value, false, 1, true);
-			if (simpleCondition.equals(FILTER_GE))
-				return new NodeCompareCondition(value, false, -1, false);
-			if (simpleCondition.equals(FILTER_LT))
-				return new NodeCompareCondition(value, false, -1, true);
-			if (simpleCondition.equals(FILTER_LE))
-				return new NodeCompareCondition(value, false, 1, false);
-		}
-		return null;
-	}
-
-	static public JComponent createCellRendererComponent(String description) {
-		JCondition component = new JCondition();
-		JLabel label = new JLabel(description);
-		component.add(label);
-		return component;
-	}
-
+        @JvmStatic
+        fun createCellRendererComponent(description: String?): JComponent {
+            val component = JCondition()
+            val label = JLabel(description)
+            component.add(label)
+            return component
+        }
+    }
 }

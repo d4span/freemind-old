@@ -21,88 +21,78 @@
  * Created on 05.05.2005
  * Copyright (C) 2005 Dimitri Polivaev
  */
-package freemind.controller.filter.condition;
+package freemind.controller.filter.condition
 
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
+import freemind.controller.Controller
+import freemind.main.Resources
+import freemind.main.XMLElement
+import freemind.modes.MindIcon
+import freemind.modes.MindMapNode
+import javax.swing.JComponent
+import javax.swing.JLabel
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
+class IconNotContainedCondition(private val iconName: String) : Condition {
 
-import freemind.controller.Controller;
-import freemind.main.Resources;
-import freemind.main.XMLElement;
-import freemind.modes.MindIcon;
-import freemind.modes.MindMapNode;
-
-public class IconNotContainedCondition implements Condition {
-	static final String ICON = "icon";
-	static final String NAME = "icon_not_contained_condition";
-	private final String iconName;
-	public IconNotContainedCondition(String iconName){
-		this.iconName = iconName;
-	}
-
-	public boolean checkNode(Controller c, MindMapNode node) {
-		return iconFirstIndex(node, iconName) == -1 && !isStateIconContained(node, iconName);
-	}
-
-	static public int iconFirstIndex(MindMapNode node, String iconName) {
-		List<MindIcon> icons = node.getIcons();
-		for (ListIterator<MindIcon> i=icons.listIterator(); i.hasNext(); ) {
-			MindIcon nextIcon =i.next() ;
-			if (iconName.equals(nextIcon.getName())) return i.previousIndex();
-		}
-		return -1;
-		
-	}
-
-	static public int iconLastIndex(MindMapNode node, String iconName) {
-		List<MindIcon> icons = node.getIcons();
-		ListIterator<MindIcon> i=icons.listIterator(icons.size());
-		while ( i.hasPrevious()) {
-			MindIcon nextIcon = (MindIcon) i.previous() ;
-			if (iconName.equals(nextIcon.getName())) return i.nextIndex();
-		}
-		return -1;
-		
-	}
-
-	private static boolean isStateIconContained(MindMapNode node, String iconName) {
-		Set<String> stateIcons = node.getStateIcons().keySet();
-		for(String nextIcon : stateIcons){
-			if (iconName.equals(nextIcon)) return true;		    
-		}
-		return false;
-	}
+    override fun checkNode(c: Controller?, node: MindMapNode?): Boolean {
+        return iconFirstIndex(node, iconName) == -1 && !isStateIconContained(node, iconName)
+    }
 
     /* (non-Javadoc)
      * @see javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
      */
-    public JComponent getListCellRendererComponent() {
-        JCondition component = new JCondition(); 
-        String text = Resources.getInstance().getResourceString("filter_icon")
-        + ' ' 
-        + Resources.getInstance().getResourceString("filter_not_contains")
-        + ' ';
-        component.add(new JLabel(text));
-        component.add(MindIcon.factory(getIconName()).getRendererComponent());
-        return component;
+    override val listCellRendererComponent: JComponent
+        get() {
+            val component = JCondition()
+            val text = (Resources.getInstance().getResourceString("filter_icon")
+                    + ' '
+                    + Resources.getInstance().getResourceString("filter_not_contains")
+                    + ' ')
+            component.add(JLabel(text))
+            component.add(MindIcon.factory(iconName).rendererComponent)
+            return component
+        }
+
+    override fun save(element: XMLElement?) {
+        val child = XMLElement()
+        child.name = NAME
+        child.setAttribute(ICON, iconName)
+        element!!.addChild(child)
     }
 
-    private String getIconName() {
-        return iconName;
-    }
-	public void save(XMLElement element) {
-		XMLElement child = new XMLElement();
-		child.setName(NAME);
-		child.setAttribute(ICON, iconName);
-		element.addChild(child);		
-	}
+    companion object {
+        const val ICON = "icon"
+        const val NAME = "icon_not_contained_condition"
+        fun iconFirstIndex(node: MindMapNode?, iconName: String): Int {
+            val icons = node!!.icons
+            val i: ListIterator<MindIcon> = icons.listIterator()
+            while (i.hasNext()) {
+                val nextIcon = i.next()
+                if (iconName == nextIcon.name) return i.previousIndex()
+            }
+            return -1
+        }
 
-	static Condition load(XMLElement element) {
-		return new IconNotContainedCondition(
-				element.getStringAttribute(ICON));
-	}
+        fun iconLastIndex(node: MindMapNode, iconName: String): Int {
+            val icons = node.icons
+            val i: ListIterator<MindIcon> = icons.listIterator(icons.size)
+            while (i.hasPrevious()) {
+                if (iconName == i.previous().name) return i.nextIndex()
+            }
+            return -1
+        }
+
+        private fun isStateIconContained(node: MindMapNode?, iconName: String): Boolean {
+            val stateIcons: Set<String> = node!!.stateIcons.keys
+            for (nextIcon in stateIcons) {
+                if (iconName == nextIcon) return true
+            }
+            return false
+        }
+
+        fun load(element: XMLElement): Condition {
+            return IconNotContainedCondition(
+                element.getStringAttribute(ICON)
+            )
+        }
+    }
 }

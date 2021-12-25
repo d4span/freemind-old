@@ -21,79 +21,72 @@
  * Created on 08.05.2005
  *
  */
-package freemind.controller.filter.condition;
+package freemind.controller.filter.condition
 
-import java.util.Vector;
-
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-
-import freemind.controller.Controller;
-import freemind.controller.filter.FilterController;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
+import freemind.controller.Controller
+import freemind.controller.filter.FilterController
+import freemind.main.Resources
+import freemind.main.Tools
+import freemind.main.XMLElement
+import freemind.modes.MindMapNode
+import javax.swing.JComponent
+import javax.swing.JLabel
 
 /**
  * @author dimitri 08.05.2005
  */
-public class ConditionNotSatisfiedDecorator implements Condition {
-
-	static final String NAME = "negate_condition";
-	private Condition originalCondition;
-
-	/**
-     *
-     */
-	public ConditionNotSatisfiedDecorator(Condition originalCondition) {
-		super();
-		this.originalCondition = originalCondition;
-	}
-
-	/*
+class ConditionNotSatisfiedDecorator
+/**
+ *
+ */(private val originalCondition: Condition?) : Condition {
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * freemind.controller.filter.condition.Condition#checkNode(freemind.modes
 	 * .MindMapNode)
 	 */
-	public boolean checkNode(Controller c, MindMapNode node) {
-		return !originalCondition.checkNode(null, node);
-	}
+    override fun checkNode(c: Controller?, node: MindMapNode?): Boolean {
+        return !originalCondition!!.checkNode(null, node)
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * freemind.controller.filter.condition.Condition#getListCellRendererComponent
 	 * ()
 	 */
-	public JComponent getListCellRendererComponent() {
-		JCondition component = new JCondition();
-		final String not = Tools.removeMnemonic(Resources.getInstance()
-				.getResourceString("filter_not"));
-		String text = not + ' ';
-		component.add(new JLabel(text));
-		final JComponent renderer = originalCondition
-				.getListCellRendererComponent();
-		renderer.setOpaque(false);
-		component.add(renderer);
-		return component;
-	}
+    override val listCellRendererComponent: JComponent
+        get() {
+            val component = JCondition()
+            val not = Tools.removeMnemonic(
+                Resources.getInstance()
+                    .getResourceString("filter_not")
+            )
+            val text = "$not "
+            component.add(JLabel(text))
+            val renderer = originalCondition?.listCellRendererComponent
+            renderer!!.isOpaque = false
+            component.add(renderer)
+            return component
+        }
 
-	public void save(XMLElement element) {
-		XMLElement child = new XMLElement();
-		child.setName(NAME);
-		originalCondition.save(child);
-		element.addChild(child);
-	}
+    override fun save(element: XMLElement?) {
+        val child = XMLElement()
+        child.name = NAME
+        originalCondition!!.save(child)
+        element!!.addChild(child)
+    }
 
-	static Condition load(XMLElement element) {
-		final Vector<XMLElement> children = element.getChildren();
-		Condition cond = FilterController.getConditionFactory().loadCondition(
-				(XMLElement) children.get(0));
-		return new ConditionNotSatisfiedDecorator(cond);
-	}
-
+    companion object {
+        const val NAME = "negate_condition"
+        fun load(element: XMLElement): Condition {
+            val children = element.children
+            val cond = FilterController.getConditionFactory().loadCondition(
+                (children[0] as XMLElement)
+            )
+            return ConditionNotSatisfiedDecorator(cond)
+        }
+    }
 }

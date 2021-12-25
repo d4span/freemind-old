@@ -21,54 +21,49 @@
  * Created on 18.04.2006
  * Created by Dimitri Polivaev
  */
-package freemind.controller.filter.condition;
+package freemind.controller.filter.condition
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
+import freemind.controller.Controller
+import freemind.main.Resources
+import freemind.main.XMLElement
+import freemind.modes.MindMapNode
+import javax.swing.JComponent
+import javax.swing.JLabel
 
-import freemind.controller.Controller;
-import freemind.main.Resources;
-import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
+class NoFilteringCondition private constructor() : Condition {
+    override fun toString(): String {
+        if (description == null) {
+            description = Resources.getInstance().getResourceString(
+                "filter_no_filtering"
+            )
+        }
+        return description!!
+    }
 
-public class NoFilteringCondition implements Condition {
+    override fun checkNode(c: Controller?, node: MindMapNode?): Boolean {
+        return true
+    }
 
-	private static String description;
-	private static JComponent renderer;
-	private static NoFilteringCondition condition;
+    override val listCellRendererComponent: JComponent?
+        get() {
+            if (renderer == null) {
+                renderer = JLabel(description)
+            }
+            return renderer
+        }
 
-	private NoFilteringCondition() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    override fun save(element: XMLElement?) {}
 
-	public String toString() {
-		if (description == null) {
-			description = Resources.getInstance().getResourceString(
-					"filter_no_filtering");
-		}
-		return description;
-	}
-
-	public boolean checkNode(Controller c, MindMapNode node) {
-		return true;
-	}
-
-	public JComponent getListCellRendererComponent() {
-		if (renderer == null) {
-			renderer = new JLabel(description);
-		}
-		return renderer;
-	}
-
-	public static Condition createCondition() {
-		if (condition == null) {
-			condition = new NoFilteringCondition();
-		}
-		return condition;
-	}
-
-	public void save(XMLElement element) {
-	}
-
+    companion object {
+        private var description: String? = null
+        private var renderer: JComponent? = null
+        private var condition: NoFilteringCondition? = null
+        @JvmStatic
+        fun createCondition(): Condition? {
+            if (condition == null) {
+                condition = NoFilteringCondition()
+            }
+            return condition
+        }
+    }
 }

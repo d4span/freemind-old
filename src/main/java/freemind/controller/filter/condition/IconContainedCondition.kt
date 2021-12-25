@@ -21,72 +21,66 @@
  * Created on 05.05.2005
  * Copyright (C) 2005 Dimitri Polivaev
  */
-package freemind.controller.filter.condition;
+package freemind.controller.filter.condition
 
-import java.util.Set;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import freemind.controller.Controller;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.main.XMLElement;
-import freemind.modes.MindIcon;
-import freemind.modes.MindMapNode;
+import freemind.controller.Controller
+import freemind.main.Resources
+import freemind.main.Tools
+import freemind.main.XMLElement
+import freemind.modes.MindIcon
+import freemind.modes.MindMapNode
+import javax.swing.JComponent
+import javax.swing.JLabel
 
-public class IconContainedCondition implements Condition {
-	static final String ICON = "icon";
-	static final String NAME = "icon_contained_condition";
-	private String iconName;
+class IconContainedCondition(private val iconName: String) : Condition {
 
-	public IconContainedCondition(String iconName) {
-		this.iconName = iconName;
-	}
+    override fun checkNode(c: Controller?, node: MindMapNode?): Boolean {
+        return (Tools.iconFirstIndex(node, iconName) != -1
+                || isStateIconContained(node, iconName))
+    }
 
-	public boolean checkNode(Controller c, MindMapNode node) {
-		return Tools.iconFirstIndex(node, iconName) != -1
-				|| isStateIconContained(node, iconName);
-	}
-
-	private static boolean isStateIconContained(MindMapNode node,
-			String iconName) {
-		Set<String> stateIcons = node.getStateIcons().keySet();
-		for (String nextIcon : stateIcons) {
-			if (iconName.equals(nextIcon))
-				return true;
-		}
-		return false;
-	}
-
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing
 	 * .JList, java.lang.Object, int, boolean, boolean)
 	 */
-	public JComponent getListCellRendererComponent() {
-		JCondition component = new JCondition();
-		String text = Resources.getInstance().getResourceString("filter_icon")
-				+ ' '
-				+ Resources.getInstance().getResourceString("filter_contains")
-				+ ' ';
-		component.add(new JLabel(text));
-		component.add(MindIcon.factory(getIconName()).getRendererComponent());
-		return component;
-	}
+    override val listCellRendererComponent: JComponent
+        get() {
+            val component = JCondition()
+            val text = (Resources.getInstance().getResourceString("filter_icon")
+                    + ' '
+                    + Resources.getInstance().getResourceString("filter_contains")
+                    + ' ')
+            component.add(JLabel(text))
+            component.add(MindIcon.factory(iconName).rendererComponent)
+            return component
+        }
 
-	private String getIconName() {
-		return iconName;
-	}
+    override fun save(element: XMLElement?) {
+        val child = XMLElement()
+        child.name = NAME
+        child.setAttribute(ICON, iconName)
+        element!!.addChild(child)
+    }
 
-	public void save(XMLElement element) {
-		XMLElement child = new XMLElement();
-		child.setName(NAME);
-		child.setAttribute(ICON, iconName);
-		element.addChild(child);
-	}
+    companion object {
+        const val ICON = "icon"
+        const val NAME = "icon_contained_condition"
+        private fun isStateIconContained(
+            node: MindMapNode?,
+            iconName: String
+        ): Boolean {
+            val stateIcons: Set<String> = node!!.stateIcons.keys
+            for (nextIcon in stateIcons) {
+                if (iconName == nextIcon) return true
+            }
+            return false
+        }
 
-	static Condition load(XMLElement element) {
-		return new IconContainedCondition(element.getStringAttribute(ICON));
-	}
+        fun load(element: XMLElement): Condition {
+            return IconContainedCondition(element.getStringAttribute(ICON))
+        }
+    }
 }

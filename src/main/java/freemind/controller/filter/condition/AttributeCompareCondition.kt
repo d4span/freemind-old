@@ -21,79 +21,75 @@
  * Created on 12.07.2005
  * Copyright (C) 2005 Dimitri Polivaev
  */
-package freemind.controller.filter.condition;
+package freemind.controller.filter.condition
 
-import freemind.controller.Controller;
-import freemind.main.Tools;
-import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
-import freemind.modes.attributes.Attribute;
+import freemind.controller.Controller
+import freemind.main.Tools
+import freemind.main.XMLElement
+import freemind.modes.MindMapNode
 
 /**
  * @author Dimitri Polivaev 12.07.2005
  */
-public class AttributeCompareCondition extends CompareConditionAdapter {
-	static final String COMPARATION_RESULT = "comparation_result";
-	static final String ATTRIBUTE = "attribute";
-	static final String NAME = "attribute_compare_condition";
-	static final String SUCCEED = "succeed";
-	private String attribute;
-	private int comparationResult;
-	private boolean succeed;
-
-	/**
-     */
-	public AttributeCompareCondition(String attribute, String value,
-			boolean ignoreCase, int comparationResult, boolean succeed) {
-		super(value, ignoreCase);
-		this.attribute = attribute;
-		this.comparationResult = comparationResult;
-		this.succeed = succeed;
-	}
-
-	/*
+class AttributeCompareCondition
+/**
+ */(
+    private val attribute: String, value: String,
+    ignoreCase: Boolean, private val comparationResult: Int, private val succeed: Boolean
+) : CompareConditionAdapter(value, ignoreCase) {
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * freemind.controller.filter.condition.Condition#checkNode(freemind.modes
 	 * .MindMapNode)
 	 */
-	public boolean checkNode(Controller c, MindMapNode node) {
-		for (int i = 0; i < node.getAttributeTableLength(); i++) {
-			try {
-				Attribute attribute2 = node.getAttribute(i);
-				if (attribute2.getName().equals(attribute)
-						&& succeed == (compareTo(attribute2.getValue()
-								.toString()) == comparationResult))
-					return true;
-			} catch (NumberFormatException fne) {
-			}
-		}
-		return false;
-	}
+    override fun checkNode(c: Controller?, node: MindMapNode?): Boolean {
+        for (i in 0 until (node?.attributeTableLength ?: 0)) {
+            try {
+                val attribute2 = node?.getAttribute(i)
+                if (attribute2?.name == attribute && succeed == (compareTo(
+                        attribute2.value
+                            .toString()
+                    ) == comparationResult)
+                ) return true
+            } catch (fne: NumberFormatException) {
+            }
+        }
+        return false
+    }
 
-	public void save(XMLElement element) {
-		XMLElement child = new XMLElement();
-		child.setName(NAME);
-		super.saveAttributes(child);
-		child.setAttribute(ATTRIBUTE, attribute);
-		child.setIntAttribute(COMPARATION_RESULT, comparationResult);
-		child.setAttribute(SUCCEED, Tools.BooleanToXml(succeed));
-		element.addChild(child);
+    override fun save(element: XMLElement?) {
+        val child = XMLElement()
+        child.name = NAME
+        super.saveAttributes(child)
+        child.setAttribute(ATTRIBUTE, attribute)
+        child.setIntAttribute(COMPARATION_RESULT, comparationResult)
+        child.setAttribute(SUCCEED, Tools.BooleanToXml(succeed))
+        element?.addChild(child)
+    }
 
-	}
+    override fun createDesctiption(): String {
+        return super.createDescription(attribute, comparationResult, succeed)
+    }
 
-	static Condition load(XMLElement element) {
-		return new AttributeCompareCondition(
-				element.getStringAttribute(ATTRIBUTE),
-				element.getStringAttribute(AttributeCompareCondition.VALUE),
-				Tools.xmlToBoolean(element
-						.getStringAttribute(AttributeCompareCondition.IGNORE_CASE)),
-				element.getIntAttribute(COMPARATION_RESULT), Tools
-						.xmlToBoolean(element.getStringAttribute(SUCCEED)));
-	}
-
-	protected String createDesctiption() {
-		return super.createDescription(attribute, comparationResult, succeed);
-	}
+    companion object {
+        const val COMPARATION_RESULT = "comparation_result"
+        const val ATTRIBUTE = "attribute"
+        const val NAME = "attribute_compare_condition"
+        const val SUCCEED = "succeed"
+        @JvmStatic
+        fun load(element: XMLElement): Condition {
+            return AttributeCompareCondition(
+                element.getStringAttribute(ATTRIBUTE),
+                element.getStringAttribute(VALUE),
+                Tools.xmlToBoolean(
+                    element
+                        .getStringAttribute(IGNORE_CASE)
+                ),
+                element.getIntAttribute(COMPARATION_RESULT), Tools
+                    .xmlToBoolean(element.getStringAttribute(SUCCEED))
+            )
+        }
+    }
 }

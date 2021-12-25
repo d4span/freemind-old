@@ -21,99 +21,97 @@
  * Created on 08.05.2005
  *
  */
-package freemind.controller.filter.condition;
+package freemind.controller.filter.condition
 
-import java.util.Vector;
-
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-
-import freemind.controller.Controller;
-import freemind.controller.filter.FilterController;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
+import freemind.controller.Controller
+import freemind.controller.filter.FilterController
+import freemind.main.Resources
+import freemind.main.Tools
+import freemind.main.XMLElement
+import freemind.modes.MindMapNode
+import javax.swing.JComponent
+import javax.swing.JLabel
 
 /**
  * @author dimitri 08.05.2005
  */
-public class ConjunctConditions implements Condition {
-
-	static final String NAME = "conjunct_condition";
-	private Object[] conditions;
-
-	/**
-     *
-     */
-	public ConjunctConditions(Object[] conditions) {
-		this.conditions = conditions;
-	}
-
-	/*
+class ConjunctConditions
+/**
+ *
+ */(private val conditions: Array<Any?>) : Condition {
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * freemind.controller.filter.condition.Condition#checkNode(freemind.modes
 	 * .MindMapNode)
 	 */
-	public boolean checkNode(Controller c, MindMapNode node) {
-		int i;
-		for (i = 0; i < conditions.length; i++) {
-			Condition cond = (Condition) conditions[i];
-			if (!cond.checkNode(c, node))
-				return false;
-		}
-		return true;
-	}
+    override fun checkNode(c: Controller?, node: MindMapNode?): Boolean {
+        var i: Int
+        i = 0
+        while (i < conditions.size) {
+            val cond = conditions[i] as Condition?
+            if (!cond!!.checkNode(c, node)) return false
+            i++
+        }
+        return true
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * freemind.controller.filter.condition.Condition#getListCellRendererComponent
 	 * ()
 	 */
-	public JComponent getListCellRendererComponent() {
-		JCondition component = new JCondition();
-		component.add(new JLabel("("));
-		Condition cond = (Condition) conditions[0];
-		JComponent rendererComponent = cond.getListCellRendererComponent();
-		rendererComponent.setOpaque(false);
-		component.add(rendererComponent);
-		int i;
-		for (i = 1; i < conditions.length; i++) {
-			final String and = Tools.removeMnemonic(Resources.getInstance()
-					.getResourceString("filter_and"));
-			String text = ' ' + and + ' ';
-			component.add(new JLabel(text));
-			cond = (Condition) conditions[i];
-			rendererComponent = cond.getListCellRendererComponent();
-			rendererComponent.setOpaque(false);
-			component.add(rendererComponent);
-		}
-		component.add(new JLabel(")"));
-		return component;
-	}
+    override val listCellRendererComponent: JComponent
+        get() {
+            val component = JCondition()
+            component.add(JLabel("("))
+            var cond = conditions[0] as Condition?
+            var rendererComponent = cond!!.listCellRendererComponent
+            rendererComponent!!.isOpaque = false
+            component.add(rendererComponent)
+            var i: Int
+            i = 1
+            while (i < conditions.size) {
+                val and = Tools.removeMnemonic(
+                    Resources.getInstance()
+                        .getResourceString("filter_and")
+                )
+                val text = " $and "
+                component.add(JLabel(text))
+                cond = conditions[i] as Condition?
+                rendererComponent = cond!!.listCellRendererComponent
+                rendererComponent!!.isOpaque = false
+                component.add(rendererComponent)
+                i++
+            }
+            component.add(JLabel(")"))
+            return component
+        }
 
-	public void save(XMLElement element) {
-		XMLElement child = new XMLElement();
-		child.setName(NAME);
-		for (int i = 0; i < conditions.length; i++) {
-			Condition cond = (Condition) conditions[i];
-			cond.save(child);
-		}
-		element.addChild(child);
-	}
+    override fun save(element: XMLElement?) {
+        val child = XMLElement()
+        child.name = NAME
+        for (i in conditions.indices) {
+            val cond = conditions[i] as Condition?
+            cond!!.save(child)
+        }
+        element!!.addChild(child)
+    }
 
-	static Condition load(XMLElement element) {
-		final Vector<XMLElement> children = element.getChildren();
-		Object[] conditions = new Object[children.size()];
-		for (int i = 0; i < conditions.length; i++) {
-			Condition cond = FilterController.getConditionFactory()
-					.loadCondition((XMLElement) children.get(i));
-			conditions[i] = cond;
-		}
-		return new ConjunctConditions(conditions);
-	}
+    companion object {
+        const val NAME = "conjunct_condition"
+        fun load(element: XMLElement): Condition {
+            val children = element.children
+            val conditions = arrayOfNulls<Any>(children.size)
+            for (i in conditions.indices) {
+                val cond = FilterController.getConditionFactory()
+                    .loadCondition((children[i] as XMLElement))
+                conditions[i] = cond
+            }
+            return ConjunctConditions(conditions)
+        }
+    }
 }

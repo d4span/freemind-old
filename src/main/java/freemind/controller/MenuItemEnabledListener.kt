@@ -20,16 +20,16 @@
  * Created on 15.07.2004
  */
 /*$Id: MenuItemEnabledListener.java,v 1.1.4.1.16.1 2008/01/13 20:55:34 christianfoltin Exp $*/
-package freemind.controller;
+package freemind.controller
 
-import javax.swing.Action;
-import javax.swing.JMenuItem;
+import javax.swing.Action
+import javax.swing.JMenuItem
 
-public interface MenuItemEnabledListener {
-	/**
-	 * @param pItem
-	 * @param pAction
-	 * @return true, if the menu item should be accessible. False otherwise.
-	 */
-	boolean isEnabled(JMenuItem pItem, Action pAction);
+interface MenuItemEnabledListener {
+    /**
+     * @param pItem
+     * @param pAction
+     * @return true, if the menu item should be accessible. False otherwise.
+     */
+    fun isEnabled(pItem: JMenuItem?, pAction: Action?): Boolean
 }

@@ -20,11 +20,11 @@
  * Created on 15.07.2004
  */
 /*$Id: MenuItemSelectedListener.java,v 1.1.4.1.16.1 2008/01/04 22:52:30 christianfoltin Exp $*/
-package freemind.controller;
+package freemind.controller
 
-import javax.swing.Action;
-import javax.swing.JMenuItem;
+import javax.swing.Action
+import javax.swing.JMenuItem
 
-public interface MenuItemSelectedListener {
-	boolean isSelected(JMenuItem checkItem, Action action);
+interface MenuItemSelectedListener {
+    fun isSelected(checkItem: JMenuItem?, action: Action?): Boolean
 }

@@ -41,7 +41,7 @@ class SelectedViewCondition : Condition {
     }
 
     override fun checkNode(c: Controller?, node: MindMapNode?): Boolean {
-        val viewer = c!!.modeController.getNodeView(node)
+        val viewer = c!!.modeController?.getNodeView(node)
         return viewer != null && viewer.isSelected
     }
 

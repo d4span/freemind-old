@@ -17,33 +17,25 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: MainToolBar.java,v 1.16.14.2.4.8 2009/07/04 20:38:27 christianfoltin Exp $*/
+package freemind.controller
 
-package freemind.controller;
+import java.awt.Insets
+import java.util.logging.Logger
 
-import java.awt.Insets;
-import java.util.logging.Logger;
+class MainToolBar(var controller: Controller) : FreeMindToolBar() {
+    init {
+        if (logger == null) {
+            logger = controller.frame.getLogger(this.javaClass.name)
+        }
+        isRollover = true
+        isBorderPainted = false
+        margin = Insets(0, 0, 0, 0)
+    }
 
-@SuppressWarnings("serial")
-public class MainToolBar extends FreeMindToolBar {
-	Controller controller;
-	private static Logger logger = null;
+    fun activate() {}
+    fun setAllActions() {}
 
-	public MainToolBar(final Controller controller) {
-		super();
-		this.controller = controller;
-		if (logger == null) {
-			logger = controller.getFrame().getLogger(this.getClass().getName());
-		}
-		setRollover(true);
-		setBorderPainted(false);
-		setMargin(new Insets(0, 0, 0, 0));
-	}
-
-	public void activate(boolean visible) {
-	}
-
-
-	public void setAllActions(boolean enabled) {
-	}
-
+    companion object {
+        private var logger: Logger? = null
+    }
 }

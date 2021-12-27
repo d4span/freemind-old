@@ -20,437 +20,444 @@
  * Created on 08.08.2004
  */
 /*$Id: MapModuleManager.java,v 1.1.4.4.2.14 2008/05/31 10:55:04 dpolivaev Exp $*/
+package freemind.controller
 
-package freemind.controller;
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import freemind.main.Tools;
-import freemind.modes.MindMap;
-import freemind.modes.Mode;
-import freemind.modes.ModeController;
-import freemind.view.MapModule;
-import freemind.view.mindmapview.MapView;
+import freemind.main.Tools
+import freemind.modes.MindMap
+import freemind.modes.Mode
+import freemind.modes.ModeController
+import freemind.view.MapModule
+import freemind.view.mindmapview.MapView
+import java.io.File
+import java.net.MalformedURLException
+import java.net.URL
+import java.util.Collections
+import java.util.LinkedList
+import java.util.Vector
 
 /**
  * Manages the list of MapModules. As this task is very complex, I exported it
  * from Controller to this class to keep Controller simple.
- * 
+ *
  * The information exchange between controller and this class is managed by
  * oberser pattern (the controller observes changes to the map modules here).
- * 
+ *
  * TODO: Use an vector with the map modules ordered by the screen order.
  */
-public class MapModuleManager {
+class MapModuleManager internal constructor() {
+    interface MapModuleChangeObserver {
+        /**
+         * The params may be null to indicate the there was no previous map, or
+         * that the last map is closed now.
+         */
+        fun isMapModuleChangeAllowed(
+            oldMapModule: MapModule?, oldMode: Mode?,
+            newMapModule: MapModule?, newMode: Mode?
+        ): Boolean
 
-	public static interface MapModuleChangeObserver {
-		/**
-		 * The params may be null to indicate the there was no previous map, or
-		 * that the last map is closed now.
-		 */
-		boolean isMapModuleChangeAllowed(MapModule oldMapModule, Mode oldMode,
-				MapModule newMapModule, Mode newMode);
+        fun beforeMapModuleChange(
+            oldMapModule: MapModule?, oldMode: Mode?,
+            newMapModule: MapModule?, newMode: Mode?
+        )
 
-		void beforeMapModuleChange(MapModule oldMapModule, Mode oldMode,
-				MapModule newMapModule, Mode newMode);
+        fun afterMapClose(oldMapModule: MapModule?, oldMode: Mode?)
+        fun afterMapModuleChange(
+            oldMapModule: MapModule?, oldMode: Mode?,
+            newMapModule: MapModule?, newMode: Mode?
+        )
 
-		void afterMapClose(MapModule oldMapModule, Mode oldMode);
+        /**
+         * To enable/disable the previous/next map actions.
+         *
+         * @param pIndex
+         * TODO
+         */
+        fun numberOfOpenMapInformation(number: Int, pIndex: Int)
+    }
 
-		void afterMapModuleChange(MapModule oldMapModule, Mode oldMode,
-				MapModule newMapModule, Mode newMode);
+    class MapModuleChangeObserverCompound : MapModuleChangeObserver {
+        private val listeners = HashSet<MapModuleChangeObserver>()
+        fun addListener(listener: MapModuleChangeObserver) {
+            listeners.add(listener)
+        }
 
-		/**
-		 * To enable/disable the previous/next map actions.
-		 * 
-		 * @param pIndex
-		 *            TODO
-		 */
-		void numberOfOpenMapInformation(int number, int pIndex);
-	}
+        fun removeListener(listener: MapModuleChangeObserver) {
+            listeners.remove(listener)
+        }
 
-	public static class MapModuleChangeObserverCompound implements
-			MapModuleChangeObserver {
-		private HashSet<MapModuleChangeObserver> listeners = new HashSet<>();
+        override fun isMapModuleChangeAllowed(
+            oldMapModule: MapModule?,
+            oldMode: Mode?, newMapModule: MapModule?, newMode: Mode?
+        ): Boolean {
+            var returnValue = true
+            for (observer in Vector(listeners)) {
+                returnValue = observer.isMapModuleChangeAllowed(
+                    oldMapModule,
+                    oldMode, newMapModule, newMode
+                )
+                if (!returnValue) {
+                    break
+                }
+            }
+            return returnValue
+        }
 
-		public void addListener(MapModuleChangeObserver listener) {
-			listeners.add(listener);
-		}
+        override fun beforeMapModuleChange(
+            oldMapModule: MapModule?, oldMode: Mode?,
+            newMapModule: MapModule?, newMode: Mode?
+        ) {
+            for (observer in Vector(listeners)) {
+                observer.beforeMapModuleChange(
+                    oldMapModule, oldMode,
+                    newMapModule, newMode
+                )
+            }
+        }
 
-		public void removeListener(MapModuleChangeObserver listener) {
-			listeners.remove(listener);
-		}
+        override fun afterMapModuleChange(
+            oldMapModule: MapModule?, oldMode: Mode?,
+            newMapModule: MapModule?, newMode: Mode?
+        ) {
+            for (observer in Vector(listeners)) {
+                observer.afterMapModuleChange(
+                    oldMapModule, oldMode,
+                    newMapModule, newMode
+                )
+            }
+        }
 
-		public boolean isMapModuleChangeAllowed(MapModule oldMapModule,
-				Mode oldMode, MapModule newMapModule, Mode newMode) {
-			boolean returnValue = true;
-			for (MapModuleChangeObserver observer : new Vector<>(listeners)) {
-				returnValue = observer.isMapModuleChangeAllowed(oldMapModule,
-						oldMode, newMapModule, newMode);
-				if (!returnValue) {
-					break;
-				}
-			}
-			return returnValue;
-		}
+        override fun numberOfOpenMapInformation(number: Int, pIndex: Int) {
+            for (observer in Vector(listeners)) {
+                observer.numberOfOpenMapInformation(number, pIndex)
+            }
+        }
 
-		public void beforeMapModuleChange(MapModule oldMapModule, Mode oldMode,
-				MapModule newMapModule, Mode newMode) {
-			for (MapModuleChangeObserver observer : new Vector<>(listeners)) {
-				observer.beforeMapModuleChange(oldMapModule, oldMode,
-						newMapModule, newMode);
-			}
-		}
+        override fun afterMapClose(oldMapModule: MapModule?, oldMode: Mode?) {
+            for (observer in Vector(listeners)) {
+                observer.afterMapClose(oldMapModule, oldMode)
+            }
+        }
+    }
 
-		public void afterMapModuleChange(MapModule oldMapModule, Mode oldMode,
-				MapModule newMapModule, Mode newMode) {
-			for (MapModuleChangeObserver observer : new Vector<>(listeners)) {
-				observer.afterMapModuleChange(oldMapModule, oldMode,
-						newMapModule, newMode);
-			}
-		}
+    /**
+     * You can register yourself to this listener at the main controller.
+     */
+    interface MapTitleChangeListener {
+        fun setMapTitle(
+            pNewMapTitle: String?, pMapModule: MapModule?,
+            pModel: MindMap?
+        )
+    }
 
-		public void numberOfOpenMapInformation(int number, int pIndex) {
-			for (MapModuleChangeObserver observer : new Vector<>(listeners)) {
+    var listener = MapModuleChangeObserverCompound()
+    fun addListener(pListener: MapModuleChangeObserver) {
+        listener.addListener(pListener)
+    }
 
-				observer.numberOfOpenMapInformation(number, pIndex);
-			}
-		}
+    fun removeListener(pListener: MapModuleChangeObserver) {
+        listener.removeListener(pListener)
+    }
 
-		public void afterMapClose(MapModule pOldMapModule, Mode pOldMode) {
-			for (MapModuleChangeObserver observer : new Vector<>(listeners)) {
-				observer.afterMapClose(pOldMapModule, pOldMode);
-			}
-		}
-	}
+    /**
+     * You can register yourself as a contributor to the title at the main
+     * controller.
+     */
+    interface MapTitleContributor {
+        /**
+         * @param pOldTitle
+         * The current title
+         * @param pMapModule
+         * @param pModel
+         * @return The current title can be changed or something can be added,
+         * but it must be returned as a whole.
+         */
+        fun getMapTitle(
+            pOldTitle: String?, pMapModule: MapModule?,
+            pModel: MindMap?
+        ): String?
+    }
+    // /** Contains pairs String (key+extension) => MapModule instances.
+    // * The instances of mode, ie. the Model/View pairs. Normally, the
+    // * order should be the order of insertion, but such a Map is not
+    // * available. */
+    // private Map mapModules = new HashMap();
+    /**
+     * A vector of MapModule instances. They are ordered according to their
+     * screen order.
+     */
+    private val mapModuleVector = Vector<MapModule?>()
 
-	/**
-	 * You can register yourself to this listener at the main controller.
-	 */
-	public static interface MapTitleChangeListener {
-		void setMapTitle(String pNewMapTitle, MapModule pMapModule,
-				MindMap pModel);
-	}
+    /** reference to the current mapmodule; null is allowed, too.  */
+    var mapModule: MapModule? = null
+        private set
 
-	MapModuleChangeObserverCompound listener = new MapModuleChangeObserverCompound();
+    /**
+     * Reference to the current mode as the mapModule may be null.
+     */
+    private var mCurrentMode: Mode? = null
 
-	public void addListener(MapModuleChangeObserver pListener) {
-		listener.addListener(pListener);
-	}
+    /**
+     * @return a map of String to MapModule elements.
+     */
+    @get:Deprecated(
+        """use getMapModuleVector instead (and get the displayname as
+	              MapModule.getDisplayName()."""
+    )
+    val mapModules: Map<String, MapModule?>
+        get() {
+            val returnValue = HashMap<String, MapModule?>()
+            for (module in mapModuleVector) {
+                returnValue[module!!.displayName] = module
+            }
+            return Collections.unmodifiableMap(returnValue)
+        }
 
-	public void removeListener(MapModuleChangeObserver pListener) {
-		listener.removeListener(pListener);
-	}
+    fun getMapModuleVector(): List<MapModule?> {
+        return Collections.unmodifiableList(mapModuleVector)
+    }
 
-	/**
-	 * You can register yourself as a contributor to the title at the main
-	 * controller.
-	 */
-	public static interface MapTitleContributor {
-		/**
-		 * @param pOldTitle
-		 *            The current title
-		 * @param pMapModule
-		 * @param pModel
-		 * @return The current title can be changed or something can be added,
-		 *         but it must be returned as a whole.
-		 */
-		String getMapTitle(String pOldTitle, MapModule pMapModule,
-				MindMap pModel);
-	}
+    /** @return an unmodifiable set of all display names of current opened maps.
+     */
+    val mapKeys: List<String>
+        get() {
+            val returnValue = LinkedList<String>()
+            for (module in mapModuleVector) {
+                returnValue.add(module!!.displayName)
+            }
+            return Collections.unmodifiableList(returnValue)
+        }
 
-	// /** Contains pairs String (key+extension) => MapModule instances.
-	// * The instances of mode, ie. the Model/View pairs. Normally, the
-	// * order should be the order of insertion, but such a Map is not
-	// * available. */
-	// private Map mapModules = new HashMap();
+    fun newMapModule(map: MindMap?, modeController: ModeController) {
+        val mapModule = MapModule(
+            map, MapView(map, modeController),
+            modeController.mode, modeController
+        )
+        addToOrChangeInMapModules(mapModule.toString(), mapModule)
+        setMapModule(mapModule, modeController.mode)
+    }
 
-	/**
-	 * A vector of MapModule instances. They are ordered according to their
-	 * screen order.
-	 */
-	private Vector<MapModule> mapModuleVector = new Vector<>();
+    fun getModuleGivenModeController(pModeController: ModeController): MapModule? {
+        var mapModule: MapModule? = null
+        for (value in getMapModuleVector()) {
+            mapModule = value
+            if (pModeController == mapModule!!.modeController) {
+                break
+            }
+            mapModule = null
+        }
+        return mapModule
+    }
 
-	/** reference to the current mapmodule; null is allowed, too. */
-	private MapModule mapModule;
-	/**
-	 * Reference to the current mode as the mapModule may be null.
-	 */
-	private Mode mCurrentMode = null;
+    fun updateMapModuleName() {
+        // removeFromViews() doesn't work because MapModuleChanged()
+        // must not be called at this state
+        mapModule!!.rename()
+        addToOrChangeInMapModules(mapModule.toString(), mapModule)
+        setMapModule(mapModule, mapModule!!.mode)
+    }
 
-	MapModuleManager(Controller c) {
-	}
+    fun nextMapModule() {
+        val index: Int
+        val size = mapModuleVector.size
+        index = if (mapModule != null) mapModuleVector.indexOf(mapModule) else size - 1
+        if (index + 1 < size && index >= 0) {
+            changeToMapModule(mapModuleVector[index + 1])
+        } else if (size > 0) {
+            // Change to the first in the list
+            changeToMapModule(mapModuleVector[0])
+        }
+    }
 
-	/**
-	 * @return a map of String to MapModule elements.
-	 * @deprecated use getMapModuleVector instead (and get the displayname as
-	 *             MapModule.getDisplayName().
-	 */
-	public Map<String, MapModule> getMapModules() {
-		HashMap<String, MapModule> returnValue = new HashMap<>();
-		for (MapModule module : mapModuleVector) {
-			returnValue.put(module.getDisplayName(), module);
-		}
-		return Collections.unmodifiableMap(returnValue);
-	}
+    fun previousMapModule() {
+        val index: Int
+        val size = mapModuleVector.size
+        index = if (mapModule != null) mapModuleVector.indexOf(mapModule) else 0
+        if (index > 0) {
+            changeToMapModule(mapModuleVector[index - 1])
+        } else {
+            if (size > 0) {
+                changeToMapModule(mapModuleVector[size - 1])
+            }
+        }
+    }
+    // Change MapModules
+    /**
+     * This is the question whether the map is already opened. If this is the
+     * case, the map is automatically opened + returns true. Otherwise does
+     * nothing + returns false.
+     */
+    fun tryToChangeToMapModule(mapModule: String?): Boolean {
+        return if (mapModule != null && mapKeys.contains(mapModule)) {
+            changeToMapModule(mapModule)
+            true
+        } else {
+            false
+        }
+    }
 
-	public List<MapModule> getMapModuleVector() {
-		return Collections.unmodifiableList(mapModuleVector);
-	}
+    /**
+     *
+     * Checks, whether or not a given url is already opened. Unlike
+     * tryToChangeToMapModule, it does not consider the map+extension
+     * identifiers nor switches to the module.
+     *
+     * @return null, if not found, the map+extension identifier otherwise.
+     */
+    @Throws(MalformedURLException::class)
+    fun checkIfFileIsAlreadyOpened(urlToCheck: URL): String? {
+        for (module in mapModuleVector) {
+            if (module!!.model != null) {
+                val moduleUrl = module.model.url
+                if (sameFile(urlToCheck, moduleUrl)) return module.displayName
+            }
+        }
+        return null
+    }
 
-	/** @return an unmodifiable set of all display names of current opened maps. */
-	public List<String> getMapKeys() {
-		LinkedList<String> returnValue = new LinkedList<>();
-		for (MapModule module : mapModuleVector) {
-			returnValue.add(module.getDisplayName());
-		}
-		return Collections.unmodifiableList(returnValue);
-	}
+    private fun sameFile(urlToCheck: URL, moduleUrl: URL?): Boolean {
+        if (moduleUrl == null) {
+            return false
+        }
+        return if (urlToCheck.protocol == "file" && moduleUrl.protocol == "file") {
+            File(urlToCheck.file) == File(
+                moduleUrl
+                    .file
+            )
+        } else urlToCheck.sameFile(moduleUrl)
+    }
 
-	public MapModule getMapModule() {
-		return mapModule;
-	}
+    fun changeToMapModule(mapModuleDisplayName: String): Boolean {
+        var mapModuleCandidate: MapModule? = null
+        for (mapMod in mapModuleVector) {
+            if (Tools.safeEquals(mapModuleDisplayName, mapMod!!.displayName)) {
+                mapModuleCandidate = mapMod
+                break
+            }
+        }
+        requireNotNull(mapModuleCandidate) {
+            ("Map module "
+                    + mapModuleDisplayName + " not found.")
+        }
+        return changeToMapModule(mapModuleCandidate)
+    }
 
-	public void newMapModule(MindMap map, ModeController modeController) {
-		MapModule mapModule = new MapModule(map, new MapView(map, modeController),
-				modeController.getMode(), modeController);
-		addToOrChangeInMapModules(mapModule.toString(), mapModule);
-		setMapModule(mapModule, modeController.getMode());
-	}
+    fun changeToMapModule(mapModuleCandidate: MapModule?): Boolean {
+        return setMapModule(mapModuleCandidate, mapModuleCandidate!!.mode)
+    }
 
-	public MapModule getModuleGivenModeController(ModeController pModeController) {
-		MapModule mapModule = null;
-		for (Map.Entry<String, MapModule> mapEntry : getMapModules().entrySet()) {
-			mapModule = (MapModule) mapEntry.getValue();
-			if (pModeController.equals(mapModule.getModeController())) {
-				break;
-			}
-			mapModule = null;
-		}
-		return mapModule;
-	}
+    fun changeToMapOfMode(mode: Mode) {
+        for (mapMod in mapModuleVector) {
+            if (mapMod!!.mode === mode) {
+                changeToMapModule(mapMod)
+                return
+            }
+        }
+        // there is no map with the given mode open. We have to create an empty
+        // one?
+        setMapModule(null, mode)
+        // FIXME: Is getting here an error? fc, 25.11.2005.
+    }
 
-	public void updateMapModuleName() {
-		// removeFromViews() doesn't work because MapModuleChanged()
-		// must not be called at this state
-		getMapModule().rename();
-		addToOrChangeInMapModules(getMapModule().toString(), getMapModule());
-		setMapModule(getMapModule(), getMapModule().getMode());
-	}
+    /**
+     * is null if the old mode should be closed.
+     *
+     * @return true if the set command was successful.
+     */
+    fun setMapModule(newMapModule: MapModule?, newMode: Mode?): Boolean {
+        // allowed?
+        val oldMapModule = mapModule
+        val oldMode = mCurrentMode
+        if (!listener.isMapModuleChangeAllowed(
+                oldMapModule, oldMode,
+                newMapModule, newMode
+            )
+        ) {
+            return false
+        }
+        listener.beforeMapModuleChange(
+            oldMapModule, oldMode, newMapModule,
+            newMode
+        )
+        mapModule = newMapModule
+        mCurrentMode = newMode
+        listener.afterMapModuleChange(
+            oldMapModule, oldMode, newMapModule,
+            newMode
+        )
+        fireNumberOfOpenMapInformation()
+        return true
+    }
 
-	void nextMapModule() {
-		int index;
-		int size = mapModuleVector.size();
-		if (getMapModule() != null)
-			index = mapModuleVector.indexOf(getMapModule());
-		else
-			index = size - 1;
+    private fun fireNumberOfOpenMapInformation() {
+        listener.numberOfOpenMapInformation(
+            mapModuleVector.size,
+            mapModuleVector.indexOf(mapModule)
+        )
+    }
 
-		if (index + 1 < size && index >= 0) {
-			changeToMapModule((MapModule) mapModuleVector.get(index + 1));
-		} else if (size > 0) {
-			// Change to the first in the list
-			changeToMapModule((MapModule) mapModuleVector.get(0));
-		}
-	}
+    // private
+    private fun addToOrChangeInMapModules(
+        key: String,
+        newOrChangedMapModule: MapModule?
+    ) {
+        // begin bug fix, 20.12.2003, fc.
+        // check, if already present:
+        var extension = ""
+        var count = 1
+        val mapKeys = mapKeys
+        while (mapKeys.contains(key + extension)) {
+            extension = "<" + ++count + ">"
+        }
+        // rename map:
+        newOrChangedMapModule!!.name = key + extension
+        newOrChangedMapModule.displayName = key + extension
+        if (!mapModuleVector.contains(newOrChangedMapModule)) {
+            mapModuleVector.add(newOrChangedMapModule)
+        }
+        // end bug fix, 20.12.2003, fc.
+    }
 
-	void previousMapModule() {
-		int index;
-		int size = mapModuleVector.size();
-		if (getMapModule() != null)
-			index = mapModuleVector.indexOf(getMapModule());
-		else
-			index = 0;
-		if (index > 0) {
-			changeToMapModule((MapModule) mapModuleVector.get(index - 1));
-		} else {
-			if (size > 0) {
-				changeToMapModule((MapModule) mapModuleVector.get(size - 1));
-			}
-		}
-	}
+    /**
+     * Close the currently active map, return false if closing canceled.
+     *
+     * @param force
+     * forces the closing without any save actions.
+     * @param pRestorable
+     * is a buffer, if the name of the restorable is needed after
+     * saving.
+     * @return false if saving was canceled.
+     */
+    fun close(force: Boolean, pRestorable: StringBuffer?): Boolean {
+        // (DP) The mode controller does not close the map
+        val module = mapModule
+        // FIXME: This is not correct, as this class should not ask somebody.
+        // This class is only a list!
+        val closingNotCancelled = module!!.modeController.close(
+            force,
+            this
+        )
+        if (!closingNotCancelled) {
+            return false
+        }
+        pRestorable?.append(module.model.restorable)
+        var index = mapModuleVector.indexOf(module)
+        mapModuleVector.remove(module)
+        if (mapModuleVector.isEmpty()) {
+            /* Keep the current running mode */
+            setMapModule(null, module.mode)
+        } else {
+            if (index >= mapModuleVector.size || index < 0) {
+                index = mapModuleVector.size - 1
+            }
+            changeToMapModule(mapModuleVector[index])
+        }
+        listener.afterMapClose(module, module.mode)
+        return true
+    }
 
-	// Change MapModules
-	/**
-	 * This is the question whether the map is already opened. If this is the
-	 * case, the map is automatically opened + returns true. Otherwise does
-	 * nothing + returns false.
-	 */
-	public boolean tryToChangeToMapModule(String mapModule) {
-		if (mapModule != null && getMapKeys().contains(mapModule)) {
-			changeToMapModule(mapModule);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * 
-	 * Checks, whether or not a given url is already opened. Unlike
-	 * tryToChangeToMapModule, it does not consider the map+extension
-	 * identifiers nor switches to the module.
-	 * 
-	 * @return null, if not found, the map+extension identifier otherwise.
-	 */
-	public String checkIfFileIsAlreadyOpened(URL urlToCheck)
-			throws MalformedURLException {
-		for (MapModule module : mapModuleVector) {
-			if (module.getModel() != null) {
-				final URL moduleUrl = module.getModel().getURL();
-				if (sameFile(urlToCheck, moduleUrl))
-					return module.getDisplayName();
-			}
-		}
-		return null;
-	}
-
-	private boolean sameFile(URL urlToCheck, final URL moduleUrl) {
-		if (moduleUrl == null) {
-			return false;
-		}
-		if (urlToCheck.getProtocol().equals("file")
-				&& moduleUrl.getProtocol().equals("file")) {
-			return (new File(urlToCheck.getFile())).equals(new File(moduleUrl
-					.getFile()));
-		}
-		return urlToCheck.sameFile(moduleUrl);
-	}
-
-	public boolean changeToMapModule(String mapModuleDisplayName) {
-		MapModule mapModuleCandidate = null;
-		for (MapModule mapMod : mapModuleVector) {
-			if (Tools.safeEquals(mapModuleDisplayName, mapMod.getDisplayName())) {
-				mapModuleCandidate = mapMod;
-				break;
-			}
-		}
-		if (mapModuleCandidate == null) {
-			throw new IllegalArgumentException("Map module "
-					+ mapModuleDisplayName + " not found.");
-		}
-		return changeToMapModule(mapModuleCandidate);
-	}
-
-	public boolean changeToMapModule(MapModule mapModuleCandidate) {
-		return setMapModule(mapModuleCandidate, mapModuleCandidate.getMode());
-	}
-
-	public void changeToMapOfMode(Mode mode) {
-		for (MapModule mapMod : mapModuleVector) {
-			if (mapMod.getMode() == mode) {
-				changeToMapModule(mapMod);
-				return;
-			}
-		}
-		// there is no map with the given mode open. We have to create an empty
-		// one?
-		setMapModule(null, mode);
-		// FIXME: Is getting here an error? fc, 25.11.2005.
-	}
-
-	/**
-	 * is null if the old mode should be closed.
-	 * 
-	 * @return true if the set command was successful.
-	 */
-	boolean setMapModule(MapModule newMapModule, Mode newMode) {
-		// allowed?
-		MapModule oldMapModule = this.mapModule;
-		Mode oldMode = mCurrentMode;
-		if (!listener.isMapModuleChangeAllowed(oldMapModule, oldMode,
-				newMapModule, newMode)) {
-			return false;
-		}
-
-		listener.beforeMapModuleChange(oldMapModule, oldMode, newMapModule,
-				newMode);
-		this.mapModule = newMapModule;
-		this.mCurrentMode = newMode;
-		listener.afterMapModuleChange(oldMapModule, oldMode, newMapModule,
-				newMode);
-		fireNumberOfOpenMapInformation();
-		return true;
-	}
-
-	private void fireNumberOfOpenMapInformation() {
-		listener.numberOfOpenMapInformation(mapModuleVector.size(),
-				mapModuleVector.indexOf(getMapModule()));
-	}
-
-	// private
-
-	private void addToOrChangeInMapModules(String key,
-			MapModule newOrChangedMapModule) {
-		// begin bug fix, 20.12.2003, fc.
-		// check, if already present:
-		String extension = "";
-		int count = 1;
-		List<String> mapKeys = getMapKeys();
-		while (mapKeys.contains(key + extension)) {
-			extension = "<" + (++count) + ">";
-		}
-		// rename map:
-		newOrChangedMapModule.setName(key + extension);
-		newOrChangedMapModule.setDisplayName(key + extension);
-		if (!mapModuleVector.contains(newOrChangedMapModule)) {
-			mapModuleVector.add(newOrChangedMapModule);
-		}
-		// end bug fix, 20.12.2003, fc.
-	}
-
-	/**
-	 * Close the currently active map, return false if closing canceled.
-	 * 
-	 * @param force
-	 *            forces the closing without any save actions.
-	 * @param pRestorable
-	 *            is a buffer, if the name of the restorable is needed after
-	 *            saving.
-	 * @return false if saving was canceled.
-	 */
-	public boolean close(boolean force, StringBuffer pRestorable) {
-		// (DP) The mode controller does not close the map
-		MapModule module = getMapModule();
-		// FIXME: This is not correct, as this class should not ask somebody.
-		// This class is only a list!
-		boolean closingNotCancelled = module.getModeController().close(force,
-				this);
-		if (!closingNotCancelled) {
-			return false;
-		}
-		if (pRestorable != null) {
-			pRestorable.append(module.getModel().getRestorable());
-		}
-
-		int index = mapModuleVector.indexOf(module);
-		mapModuleVector.remove(module);
-		if (mapModuleVector.isEmpty()) {
-			/* Keep the current running mode */
-			setMapModule(null, module.getMode());
-		} else {
-			if (index >= mapModuleVector.size() || index < 0) {
-				index = mapModuleVector.size() - 1;
-			}
-			changeToMapModule((MapModule) mapModuleVector.get(index));
-		}
-		listener.afterMapClose(module, module.getMode());
-		return true;
-	}
-
-	// }}
-
-	public void swapModules(int src, int dst) {
-		Tools.swapVectorPositions(mapModuleVector, src, dst);
-		fireNumberOfOpenMapInformation();
-	}
-
+    // }}
+    fun swapModules(src: Int, dst: Int) {
+        Tools.swapVectorPositions(mapModuleVector, src, dst)
+        fireNumberOfOpenMapInformation()
+    }
 }

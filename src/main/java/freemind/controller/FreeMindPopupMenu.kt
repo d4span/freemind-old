@@ -21,61 +21,61 @@
  * Created on 03.01.2008
  *
  */
-package freemind.controller;
+package freemind.controller
 
-import java.util.HashSet;
-
-import javax.swing.JPopupMenu;
-import javax.swing.event.MenuListener;
+import freemind.controller.StructuredMenuHolder.MenuEventSupplier
+import freemind.main.Resources
+import java.util.logging.Logger
+import javax.swing.JPopupMenu
+import javax.swing.event.MenuListener
 
 /**
  * @author foltin
- * 
  */
-@SuppressWarnings("serial")
-public class FreeMindPopupMenu extends JPopupMenu implements
-		StructuredMenuHolder.MenuEventSupplier {
-	private HashSet<MenuListener> listeners = new HashSet<>();
+open class FreeMindPopupMenu : JPopupMenu(), MenuEventSupplier {
+    private val listeners = HashSet<MenuListener>()
 
-	protected static java.util.logging.Logger logger = null;
-	
-	public FreeMindPopupMenu() {
-		if (logger == null) {
-			logger = freemind.main.Resources.getInstance().getLogger(
-					this.getClass().getName());
-		}
-	}
-	
-	protected void firePopupMenuWillBecomeVisible() {
-		super.firePopupMenuWillBecomeVisible();
-		logger.fine("Popup firePopupMenuWillBecomeVisible called.");
-		for (MenuListener listener : listeners) {
-			listener.menuSelected(null);
-		}
-	}
+    init {
+        if (logger == null) {
+            logger = Resources.getInstance().getLogger(
+                this.javaClass.name
+            )
+        }
+    }
 
-	public void addMenuListener(MenuListener listener) {
-		listeners.add(listener);
-	}
+    override fun firePopupMenuWillBecomeVisible() {
+        super.firePopupMenuWillBecomeVisible()
+        logger!!.fine("Popup firePopupMenuWillBecomeVisible called.")
+        for (listener in listeners) {
+            listener.menuSelected(null)
+        }
+    }
 
-	public void removeMenuListener(MenuListener listener) {
-		listeners.remove(listener);
-	}
+    override fun addMenuListener(listener: MenuListener) {
+        listeners.add(listener)
+    }
 
-	protected void firePopupMenuCanceled() {
-		super.firePopupMenuCanceled();
-		// logger.info("Popup firePopupMenuCanceled called.");
-		for (MenuListener listener : listeners) {
-			listener.menuCanceled(null);
-		}
-	}
+    override fun removeMenuListener(listener: MenuListener) {
+        listeners.remove(listener)
+    }
 
-	protected void firePopupMenuWillBecomeInvisible() {
-		super.firePopupMenuWillBecomeInvisible();
-		// logger.info("Popup firePopupMenuWillBecomeInvisible called.");
-		for (MenuListener listener : listeners) {
-			listener.menuDeselected(null);
-		}
-	}
+    override fun firePopupMenuCanceled() {
+        super.firePopupMenuCanceled()
+        // logger.info("Popup firePopupMenuCanceled called.");
+        for (listener in listeners) {
+            listener.menuCanceled(null)
+        }
+    }
 
+    override fun firePopupMenuWillBecomeInvisible() {
+        super.firePopupMenuWillBecomeInvisible()
+        // logger.info("Popup firePopupMenuWillBecomeInvisible called.");
+        for (listener in listeners) {
+            listener.menuDeselected(null)
+        }
+    }
+
+    companion object {
+        protected var logger: Logger? = null
+    }
 }

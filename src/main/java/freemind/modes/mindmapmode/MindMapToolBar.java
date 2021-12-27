@@ -20,18 +20,6 @@
 
 package freemind.modes.mindmapmode;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.GridLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
-import javax.swing.Action;
-import javax.swing.Box;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JToolBar;
-
 import freemind.controller.Controller;
 import freemind.controller.FreeMindToolBar;
 import freemind.controller.StructuredMenuHolder;
@@ -44,6 +32,17 @@ import freemind.main.Tools;
 import freemind.modes.MindMapNode;
 import freemind.view.ImageFactory;
 import freemind.view.mindmapview.MapView;
+
+import javax.swing.Action;
+import javax.swing.Box;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JToolBar;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 @SuppressWarnings("serial")
 public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
@@ -272,7 +271,7 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 	/* (non-Javadoc)
 	 * @see freemind.controller.ZoomListener#setZoom(float)
 	 */
-	public void setZoom(float f) {
+	public void setZoom(Float f) {
 		logger.fine("setZoomComboBox is called with " + f + ".");
 		String toBeFound = getItemForZoom(f);
 		for (int i = 0; i < zoom.getItemCount(); ++i) {

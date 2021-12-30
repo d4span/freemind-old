@@ -352,7 +352,7 @@ public class TimeList extends MindMapHookAdapter implements
 		addAccelerator(menuHolder.addAction(toggleViewFoldedNodesAction,
 				"main/view/showFoldedNodes"),
 				"keystroke_plugins/TimeList_showFoldedNodes");
-		menuHolder.updateMenus(menuBar, "main/");
+		menuHolder.updateMenus(menuBar);
 		mDialog.setJMenuBar(menuBar);
 
 		/* Initial State */

@@ -194,11 +194,11 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     private var mTabbedPaneSelectionUpdate = true
     fun init() {
         initialization()
-        nodeMouseMotionListener = NodeMouseMotionListener(this)
-        nodeMotionListener = NodeMotionListener(this)
-        nodeKeyListener = NodeKeyListener(this)
+        nodeMouseMotionListener = NodeMouseMotionListener()
+        nodeMotionListener = NodeMotionListener()
+        nodeKeyListener = NodeKeyListener()
         nodeDragListener = NodeDragListener(this)
-        nodeDropListener = NodeDropListener(this)
+        nodeDropListener = NodeDropListener()
         mapMouseMotionListener = MapMouseMotionListener(this)
         mapMouseWheelListener = MapMouseWheelListener()
         close = CloseAction(this)

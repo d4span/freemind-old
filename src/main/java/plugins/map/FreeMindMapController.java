@@ -1308,7 +1308,7 @@ public class FreeMindMapController extends JMapController implements
 				"keystroke_plugins/map/MapDialog_moveDown");
 		menuHolder.addSeparator("main/navigation/");
 
-		menuHolder.updateMenus(mMenuBar, "main/");
+		menuHolder.updateMenus(mMenuBar);
 		mMapDialog.setJMenuBar(mMenuBar);
 		/* Popup menu */
 		menuHolder.addAction(newNodeAction, "popup/newNode");
@@ -1325,7 +1325,7 @@ public class FreeMindMapController extends JMapController implements
 				"popup/copyLinkToClipboardAction");
 		menuHolder.addAction(copyCoordinatesToClipboardAction,
 				"popup/copyCoordinatesToClipboardAction");
-		menuHolder.updateMenus(mPopupMenu, "popup/");
+		menuHolder.updateMenus(mPopupMenu);
 		/*
 		 * map location context menu
 		 */
@@ -1347,10 +1347,10 @@ public class FreeMindMapController extends JMapController implements
 				"contextPopup/copyLinkToClipboardAction");
 		menuHolder.addAction(new AddMapPictureToNode(),
 				"contextPopup/addPictureToNode");
-		menuHolder.updateMenus(getContextPopupMenu(), "contextPopup/");
+		menuHolder.updateMenus(getContextPopupMenu());
 		menuHolder.addAction(maxmimalZoomToCursorAction,
 				"searchPopup/maxmimalZoomToCursorAction");
-		menuHolder.updateMenus(getSearchPopupMenu(), "searchPopup/");
+		menuHolder.updateMenus(getSearchPopupMenu());
 
 		mMapDialog.addKeyListener(this);
 		// Tools.addFocusPrintTimer();

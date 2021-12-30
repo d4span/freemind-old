@@ -33,7 +33,7 @@ import javax.swing.event.MenuListener
  * @author foltin
  */
 open class FreeMindPopupMenu : JPopupMenu(), MenuEventSupplier {
-    private val listeners = HashSet<MenuListener>()
+    private val listeners = HashSet<MenuListener?>()
 
     init {
         if (logger == null) {
@@ -47,15 +47,15 @@ open class FreeMindPopupMenu : JPopupMenu(), MenuEventSupplier {
         super.firePopupMenuWillBecomeVisible()
         logger!!.fine("Popup firePopupMenuWillBecomeVisible called.")
         for (listener in listeners) {
-            listener.menuSelected(null)
+            listener?.menuSelected(null)
         }
     }
 
-    override fun addMenuListener(listener: MenuListener) {
+    override fun addMenuListener(listener: MenuListener?) {
         listeners.add(listener)
     }
 
-    override fun removeMenuListener(listener: MenuListener) {
+    override fun removeMenuListener(listener: MenuListener?) {
         listeners.remove(listener)
     }
 
@@ -63,7 +63,7 @@ open class FreeMindPopupMenu : JPopupMenu(), MenuEventSupplier {
         super.firePopupMenuCanceled()
         // logger.info("Popup firePopupMenuCanceled called.");
         for (listener in listeners) {
-            listener.menuCanceled(null)
+            listener?.menuCanceled(null)
         }
     }
 
@@ -71,7 +71,7 @@ open class FreeMindPopupMenu : JPopupMenu(), MenuEventSupplier {
         super.firePopupMenuWillBecomeInvisible()
         // logger.info("Popup firePopupMenuWillBecomeInvisible called.");
         for (listener in listeners) {
-            listener.menuDeselected(null)
+            listener?.menuDeselected(null)
         }
     }
 

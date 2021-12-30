@@ -341,7 +341,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 		addAccelerator(
 				menuHolder.addAction(new RemoveMarkAction(), "main/markings/remove"),
 				"keystroke_plugins/TimeManagement_remove_marking");
-		menuHolder.updateMenus(menu, "main/");
+		menuHolder.updateMenus(menu);
 		mDialog.setJMenuBar(menu);
 
 		calendar = new JTripleCalendar(lastActivePosition, lastDate);

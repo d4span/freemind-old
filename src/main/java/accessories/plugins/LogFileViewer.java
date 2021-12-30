@@ -270,7 +270,7 @@ public class LogFileViewer extends MindMapHookAdapter implements
 					"main/loglevel/setLogLevel_"+level.getName());
 			
 		}
-		menuHolder.updateMenus(mMenuBar, "main/");
+		menuHolder.updateMenus(mMenuBar);
 		mLogFileViewer.setJMenuBar(mMenuBar);
 		mLogFileViewer.setSize(400, 400);
 		mLogFileViewer.setLayout(new BorderLayout());

@@ -17,45 +17,34 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: NodeKeyListener.java,v 1.16.18.2 2006/01/12 23:10:12 christianfoltin Exp $*/
+package freemind.controller
 
-package freemind.controller;
-
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent
+import java.awt.event.KeyListener
 
 /**
  * The KeyListener which belongs to the node and cares for Events like C-D
  * (Delete Node). It forwards the requests to NodeController.
  */
-public class NodeKeyListener implements KeyListener {
+class NodeKeyListener : KeyListener {
+    private var mListener: KeyListener? = null
+    fun register(listener: KeyListener?) {
+        mListener = listener
+    }
 
-	private KeyListener mListener;
+    fun deregister() {
+        mListener = null
+    }
 
-	public NodeKeyListener(Controller controller) {
-	}
+    override fun keyPressed(e: KeyEvent) {
+        if (mListener != null) mListener!!.keyPressed(e)
+    }
 
-	public void register(KeyListener listener) {
-		this.mListener = listener;
+    override fun keyReleased(e: KeyEvent) {
+        if (mListener != null) mListener!!.keyReleased(e)
+    }
 
-	}
-
-	public void deregister() {
-		mListener = null;
-	}
-
-	public void keyPressed(KeyEvent e) {
-		if (mListener != null)
-			mListener.keyPressed(e);
-	}
-
-	public void keyReleased(KeyEvent e) {
-		if (mListener != null)
-			mListener.keyReleased(e);
-	}
-
-	public void keyTyped(KeyEvent e) {
-		if (mListener != null)
-			mListener.keyTyped(e);
-	}
-
+    override fun keyTyped(e: KeyEvent) {
+        if (mListener != null) mListener!!.keyTyped(e)
+    }
 }

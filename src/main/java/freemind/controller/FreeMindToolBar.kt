@@ -51,7 +51,7 @@ open class FreeMindToolBar @JvmOverloads constructor(arg0: String? = "", arg1: I
 
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.swing.JToolBar#add(javax.swing.Action)
 	 */
     override fun add(arg0: Action): JButton {

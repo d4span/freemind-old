@@ -98,14 +98,14 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     private val mMapTitleChangeListenerSet = HashSet<MapTitleChangeListener>()
     private val mZoomListenerSet = HashSet<ZoomListener>()
     private val mMapTitleContributorSet = HashSet<MapTitleContributor>()
-    var lastOpenedList // A list of the pathnames of all the maps
-            : LastOpenedList? = null
-        private set
+    var lastOpenedList: LastOpenedList? = // A list of the pathnames of all the maps
+        null
+            private set
 
     // that were opened in the last time
-    var mapModuleManager // new MapModuleManager();
-            : MapModuleManager? = null
-        private set
+    var mapModuleManager: MapModuleManager? = // new MapModuleManager();
+        null
+            private set
 
     /** The current mode  */
     var mode: Mode? = null
@@ -279,8 +279,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         mapModuleManager!!.addListener(this)
         if (!Tools.isAvailableFontFamily(getProperty("defaultfont"))) {
             logger!!.warning(
-                "Warning: the font you have set as standard - "
-                        + getProperty("defaultfont") + " - is not available."
+                "Warning: the font you have set as standard - " +
+                    getProperty("defaultfont") + " - is not available."
             )
             frame.setProperty("defaultfont", "SansSerif")
         }
@@ -301,7 +301,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     }
 
     private fun firePropertyChanged(
-        property: String?, value: String?,
+        property: String?,
+        value: String?,
         oldValue: String?
     ) {
         if (oldValue == null || oldValue != value) {
@@ -323,7 +324,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
     fun getResourceString(resource: String?): String {
         return frame.getResourceString(resource)
-    }// no map present: we take the default:
+    } // no map present: we take the default:
 
     /**
      * @return the current modeController, or null, if FreeMind is just starting
@@ -382,7 +383,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
     private fun getFontStringCode(font: Font): String {
         return font.toString() + "/" + font.attributes[TextAttribute.STRIKETHROUGH]
-    }// Maybe implement handling for cases when the font is not
+    } // Maybe implement handling for cases when the font is not
 
     // available on this system.
     //
@@ -436,23 +437,27 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
     override fun isMapModuleChangeAllowed(
         oldMapModule: MapModule?,
-        oldMode: Mode?, newMapModule: MapModule?, newMode: Mode?
+        oldMode: Mode?,
+        newMapModule: MapModule?,
+        newMode: Mode?
     ): Boolean {
         return true
     }
 
     override fun afterMapClose(oldMapModule: MapModule?, oldMode: Mode?) {}
     override fun beforeMapModuleChange(
-        oldMapModule: MapModule?, oldMode: Mode?,
-        newMapModule: MapModule?, newMode: Mode?
+        oldMapModule: MapModule?,
+        oldMode: Mode?,
+        newMapModule: MapModule?,
+        newMode: Mode?
     ) {
         val oldModeController: ModeController?
         mode = newMode
         // if (oldMapModule != null) {
-            // shut down screens of old view + frame
-            oldModeController = oldMapModule?.modeController
-            oldModeController?.setVisible(false)
-            oldModeController?.shutdownController()
+        // shut down screens of old view + frame
+        oldModeController = oldMapModule?.modeController
+        oldModeController?.setVisible(false)
+        oldModeController?.shutdownController()
 //        } else {
 //            oldModeController = if (oldMode != null) {
 //                oldMode.defaultModeController
@@ -474,27 +479,29 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     }
 
     override fun afterMapModuleChange(
-        oldMapModule: MapModule?, oldMode: Mode?,
-        newMapModule: MapModule?, newMode: Mode?
+        oldMapModule: MapModule?,
+        oldMode: Mode?,
+        newMapModule: MapModule?,
+        newMode: Mode?
     ) {
         val newModeController: ModeController?
 //        if (newMapModule != null) {
-            frame.view = newMapModule?.view
-            setAllActions(true)
-            if (view!!.selected == null) {
-                // moveToRoot();
-                view!!.selectAsTheOnlyOneSelected(view!!.root)
-            }
-            lastOpenedList!!.mapOpened(newMapModule)
-            changeZoomValueProperty(newMapModule?.view?.zoom)
-            // ((MainToolBar) getToolbar()).setZoomComboBox(zoomValue);
-            // old
-            // obtainFocusForSelected();
-            newModeController = newMapModule?.modeController
-            newModeController?.startupController()
-            newModeController?.setVisible(true)
-            // old
-            // obtainFocusForSelected();
+        frame.view = newMapModule?.view
+        setAllActions(true)
+        if (view!!.selected == null) {
+            // moveToRoot();
+            view!!.selectAsTheOnlyOneSelected(view!!.root)
+        }
+        lastOpenedList!!.mapOpened(newMapModule)
+        changeZoomValueProperty(newMapModule?.view?.zoom)
+        // ((MainToolBar) getToolbar()).setZoomComboBox(zoomValue);
+        // old
+        // obtainFocusForSelected();
+        newModeController = newMapModule?.modeController
+        newModeController?.startupController()
+        newModeController?.setVisible(true)
+        // old
+        // obtainFocusForSelected();
 //        } else {
 //            newModeController = newMode.defaultModeController
 //            frame.view = null
@@ -541,8 +548,10 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         navigationNextMap!!.isEnabled = number > 0
         logger!!.info("number $number, pIndex $pIndex")
         navigationMoveMapLeftAction!!.isEnabled = number > 1 && pIndex > 0
-        navigationMoveMapRightAction!!.isEnabled = (number > 1
-                && pIndex < number - 1)
+        navigationMoveMapRightAction!!.isEnabled = (
+            number > 1 &&
+                pIndex < number - 1
+            )
     }
 
     /**
@@ -688,8 +697,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         // logger.finest("obtainFocusForSelected");
         if (view != null) { // is null if the last map was closed.
             logger!!.fine(
-                "Requesting Focus for " + view + " in model "
-                        + view!!.model
+                "Requesting Focus for " + view + " in model " +
+                    view!!.model
             )
             view!!.requestFocusInWindow()
         } else {
@@ -748,12 +757,14 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         if (mapModule != null) {
             model = mapModule.model
             rawTitle = mapModule.toString()
-            title = (rawTitle
-                    + (if (model.isSaved) "" else "*")
-                    + " - "
-                    + title
-                    + if (model.isReadOnly) " ("
-                    + getResourceString("read_only") + ")" else "")
+            title = (
+                rawTitle +
+                    (if (model.isSaved) "" else "*") +
+                    " - " +
+                    title +
+                    if (model.isReadOnly) " (" +
+                        getResourceString("read_only") + ")" else ""
+                )
             val file = model.file
             if (file != null) {
                 title += " " + file.absolutePath
@@ -918,7 +929,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         if (Tools.safeEquals(getProperty("page_orientation"), "landscape")) {
             pageFormat!!.orientation = PageFormat.LANDSCAPE
         } else if (Tools
-                .safeEquals(getProperty("page_orientation"), "portrait")
+            .safeEquals(getProperty("page_orientation"), "portrait")
         ) {
             pageFormat!!.orientation = PageFormat.PORTRAIT
         } else if (Tools.safeEquals(
@@ -1037,10 +1048,11 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
             // Ask about custom printing settings
             val dialog = JDialog(
                 frame as JFrame,
-                getResourceString("printing_settings"),  /* modal= */true
+                getResourceString("printing_settings"), /* modal= */true
             )
             val fitToPage = JCheckBox(
-                getResourceString("fit_to_page"), Resources.getInstance()
+                getResourceString("fit_to_page"),
+                Resources.getInstance()
                     .getBoolProperty("fit_to_page")
             )
             val userZoomL = JLabel(getResourceString("user_zoom"))
@@ -1189,8 +1201,9 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         AbstractAction(controller.getResourceString("about")) {
         override fun actionPerformed(e: ActionEvent) {
             JOptionPane.showMessageDialog(
-                view, controller.getResourceString("about_text")
-                        + frame.freemindVersion,
+                view,
+                controller.getResourceString("about_text") +
+                    frame.freemindVersion,
                 controller.getResourceString("about"),
                 JOptionPane.INFORMATION_MESSAGE
             )
@@ -1213,7 +1226,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     // Map navigation
     //
     private inner class NavigationPreviousMapAction internal constructor(controller: Controller) : AbstractAction(
-        controller.getResourceString("previous_map"), ImageFactory.getInstance().createIcon(
+        controller.getResourceString("previous_map"),
+        ImageFactory.getInstance().createIcon(
             getResource("images/1leftarrow.png")
         )
     ) {
@@ -1227,7 +1241,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     }
 
     private inner class ShowFilterToolbarAction internal constructor() : AbstractAction(
-        getResourceString("filter_toolbar"), ImageFactory.getInstance().createIcon(
+        getResourceString("filter_toolbar"),
+        ImageFactory.getInstance().createIcon(
             getResource("images/filter.gif")
         )
     ) {
@@ -1241,7 +1256,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     }
 
     private inner class NavigationNextMapAction internal constructor(controller: Controller) : AbstractAction(
-        controller.getResourceString("next_map"), ImageFactory.getInstance().createIcon(
+        controller.getResourceString("next_map"),
+        ImageFactory.getInstance().createIcon(
             getResource("images/1rightarrow.png")
         )
     ) {
@@ -1255,7 +1271,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     }
 
     private inner class NavigationMoveMapLeftAction internal constructor(controller: Controller) : AbstractAction(
-        controller.getResourceString("move_map_left"), ImageFactory.getInstance().createIcon(
+        controller.getResourceString("move_map_left"),
+        ImageFactory.getInstance().createIcon(
             getResource("images/draw-arrow-back.png")
         )
     ) {
@@ -1477,9 +1494,10 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
                     val key = i.next()
                     // save only changed keys:
                     val newProperty = props.getProperty(key)
-                    propertiesChanged = (propertiesChanged
-                            || newProperty != controller
-                        .getProperty(key))
+                    propertiesChanged = (
+                        propertiesChanged ||
+                            newProperty != controller.getProperty(key)
+                        )
                     controller.setProperty(key, newProperty)
                 }
                 if (propertiesChanged) {
@@ -1533,7 +1551,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     }
 
     // switch auto properties for selection mechanism fc, 7.12.2003.
-    private inner class OptionSelectionMechanismAction internal constructor(var c: Controller) : AbstractAction(),
+    private inner class OptionSelectionMechanismAction internal constructor(var c: Controller) :
+        AbstractAction(),
         FreemindPropertyListener {
         init {
             addPropertyChangeListener(this)
@@ -1555,7 +1574,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         }
 
         override fun propertyChanged(
-            propertyName: String, newValue: String,
+            propertyName: String,
+            newValue: String,
             oldValue: String
         ) {
             if (propertyName == FreeMind.RESOURCES_SELECTION_METHOD) {
@@ -1567,7 +1587,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     // open faq url from freeminds page:
     inner class OpenURLAction internal constructor(var c: Controller, description: String?, private val url: String) :
         AbstractAction(
-            description, ImageFactory.getInstance().createIcon(
+            description,
+            ImageFactory.getInstance().createIcon(
                 c.getResource("images/Link.png")
             )
         ) {
@@ -1579,7 +1600,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
                     """
     ${c.getResourceString("url_error")}
     $ex
-    """.trimIndent()
+                    """.trimIndent()
                 )
             } catch (ex: Exception) {
                 c.errorMessage(ex)
@@ -1594,7 +1615,9 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         mapModuleManager!!.addListener(object : MapModuleChangeObserver {
             override fun afterMapModuleChange(
                 oldMapModule: MapModule?,
-                oldMode: Mode?, newMapModule: MapModule?, newMode: Mode?
+                oldMode: Mode?,
+                newMapModule: MapModule?,
+                newMode: Mode?
             ) {
                 val selectedIndex = mTabbedPane!!.selectedIndex
 //                if (pNewMapModule == null) {
@@ -1617,13 +1640,17 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
             override fun beforeMapModuleChange(
                 oldMapModule: MapModule?,
-                oldMode: Mode?, newMapModule: MapModule?, newMode: Mode?
+                oldMode: Mode?,
+                newMapModule: MapModule?,
+                newMode: Mode?
             ) {
             }
 
             override fun isMapModuleChangeAllowed(
                 oldMapModule: MapModule?,
-                oldMode: Mode?, newMapModule: MapModule?, newMode: Mode?
+                oldMode: Mode?,
+                newMapModule: MapModule?,
+                newMode: Mode?
             ): Boolean {
                 return true
             }
@@ -1633,8 +1660,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
                 for (i in mTabbedPaneMapModules!!.indices) {
                     if (mTabbedPaneMapModules!![i] === oldMapModule) {
                         logger!!.fine(
-                            "Remove tab:" + i + " with title:"
-                                    + mTabbedPane!!.getTitleAt(i)
+                            "Remove tab:" + i + " with title:" +
+                                mTabbedPane!!.getTitleAt(i)
                         )
                         mTabbedPaneSelectionUpdate = false
                         mTabbedPane!!.removeTabAt(i)
@@ -1647,7 +1674,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
             }
         })
 
-        val listener: MapTitleChangeListener = object: MapTitleChangeListener {
+        val listener: MapTitleChangeListener = object : MapTitleChangeListener {
             override fun setMapTitle(pNewMapTitle: String?, pMapModule: MapModule?, pModel: MindMap?) {
                 for (i in mTabbedPaneMapModules!!.indices) {
                     if (mTabbedPaneMapModules!![i] === pMapModule) {
@@ -1676,8 +1703,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         }
         val module = mTabbedPaneMapModules!![selectedIndex] as MapModule
         logger!!.fine(
-            "Selected index of tab is now: " + selectedIndex
-                    + " with title:" + module.toString()
+            "Selected index of tab is now: " + selectedIndex +
+                " with title:" + module.toString()
         )
         if (module !== mapModule) {
             // we have to change the active map actively:
@@ -1706,7 +1733,6 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
     enum class SplitComponentType(val index: Int) {
         NOTE_PANEL(0), ATTRIBUTE_PANEL(1);
-
     }
 
     private var mOptionalSplitPane: JOptionalSplitPane? = null
@@ -1760,8 +1786,9 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     private fun storeOptionSplitPanePosition() {
         if (mOptionalSplitPane != null) {
             setProperty(
-                FreeMind.RESOURCES_OPTIONAL_SPLIT_DIVIDER_POSITION, ""
-                        + mOptionalSplitPane!!.dividerPosition
+                FreeMind.RESOURCES_OPTIONAL_SPLIT_DIVIDER_POSITION,
+                "" +
+                    mOptionalSplitPane!!.dividerPosition
             )
         }
     }
@@ -1800,7 +1827,8 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         @Throws(HeadlessException::class)
         fun showCommonJColorChooserDialog(
             component: Component?,
-            title: String?, initialColor: Color?
+            title: String?,
+            initialColor: Color?
         ): Color? {
             val pane = commonJColorChooser
             pane.color = initialColor

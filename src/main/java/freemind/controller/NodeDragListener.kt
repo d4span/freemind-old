@@ -54,9 +54,11 @@ class NodeDragListener(private val c: Controller) : DragGestureListener {
         var dragAction = "MOVE"
         var cursor: Cursor? = getCursorByAction(e.dragAction)
         val modifiersEx = e.triggerEvent.modifiersEx
-        val macLinkAction = (Tools.isMacOsX()
-                && modifiersEx and InputEvent.BUTTON1_DOWN_MASK != 0
-                && e.triggerEvent.isMetaDown)
+        val macLinkAction = (
+            Tools.isMacOsX() &&
+                modifiersEx and InputEvent.BUTTON1_DOWN_MASK != 0 &&
+                e.triggerEvent.isMetaDown
+            )
         val otherOsLinkAction = modifiersEx and InputEvent.BUTTON3_DOWN_MASK != 0
         if (macLinkAction || otherOsLinkAction) {
             // Change drag action
@@ -75,14 +77,17 @@ class NodeDragListener(private val c: Controller) : DragGestureListener {
 
         // starts the dragging
         // DragSource dragSource = DragSource.getDefaultDragSource();
-        e.startDrag(cursor, t, object : DragSourceListener {
-            override fun dragDropEnd(dsde: DragSourceDropEvent) {}
-            override fun dragEnter(e: DragSourceDragEvent) {}
-            override fun dragExit(dse: DragSourceEvent) {}
-            override fun dragOver(dsde: DragSourceDragEvent) {}
-            override fun dropActionChanged(dsde: DragSourceDragEvent) {
-                dsde.dragSourceContext.cursor = getCursorByAction(dsde.userAction)
+        e.startDrag(
+            cursor, t,
+            object : DragSourceListener {
+                override fun dragDropEnd(dsde: DragSourceDropEvent) {}
+                override fun dragEnter(e: DragSourceDragEvent) {}
+                override fun dragExit(dse: DragSourceEvent) {}
+                override fun dragOver(dsde: DragSourceDragEvent) {}
+                override fun dropActionChanged(dsde: DragSourceDragEvent) {
+                    dsde.dragSourceContext.cursor = getCursorByAction(dsde.userAction)
+                }
             }
-        })
+        )
     }
 }

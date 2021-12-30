@@ -39,18 +39,22 @@ import javax.swing.JPanel
 import javax.swing.JScrollPane
 import javax.swing.JToolBar
 
-class PreviewDialog(title: String?, protected var view: MapView, pPageFormat: PageFormat?) : JDialog(
-    JOptionPane.getFrameForComponent(
-        view
-    ), title, true
-), ActionListener {
+class PreviewDialog(title: String?, protected var view: MapView, pPageFormat: PageFormat?) :
+    JDialog(
+        JOptionPane.getFrameForComponent(
+            view
+        ),
+        title, true
+    ),
+    ActionListener {
     private val pageNumber: JLabel
     private fun getButton(iconName: String, action: AbstractAction): JButton {
         return getButton(null, iconName, action)
     }
 
     private fun getButton(
-        name: String?, iconName: String,
+        name: String?,
+        iconName: String,
         action: AbstractAction?
     ): JButton {
         var result: JButton?
@@ -83,7 +87,8 @@ class PreviewDialog(title: String?, protected var view: MapView, pPageFormat: Pa
         contentPane.add(toolbar, "North")
         pageNumber = JLabel("- 1 -")
         val button = getButton(
-            "Back24.gif", BrowseAction(
+            "Back24.gif",
+            BrowseAction(
                 preview, pageNumber, -1
             )
         )
@@ -93,7 +98,8 @@ class PreviewDialog(title: String?, protected var view: MapView, pPageFormat: Pa
         toolbar.add(pageNumber)
         toolbar.add(
             getButton(
-                "Forward24.gif", BrowseAction(
+                "Forward24.gif",
+                BrowseAction(
                     preview,
                     pageNumber, 1
                 )
@@ -102,7 +108,8 @@ class PreviewDialog(title: String?, protected var view: MapView, pPageFormat: Pa
         toolbar.add(JToolBar.Separator())
         toolbar.add(
             getButton(
-                "ZoomIn24.gif", ZoomAction(
+                "ZoomIn24.gif",
+                ZoomAction(
                     preview,
                     DEFAULT_ZOOM_FACTOR_STEP
                 )
@@ -110,7 +117,8 @@ class PreviewDialog(title: String?, protected var view: MapView, pPageFormat: Pa
         )
         toolbar.add(
             getButton(
-                "ZoomOut24.gif", ZoomAction(
+                "ZoomOut24.gif",
+                ZoomAction(
                     preview,
                     -DEFAULT_ZOOM_FACTOR_STEP
                 )

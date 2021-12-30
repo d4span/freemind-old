@@ -32,7 +32,7 @@ import javax.swing.Icon
 class BlindIcon(private val length: Int) : Icon {
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.swing.Icon#getIconHeight()
 	 */
     override fun getIconHeight(): Int {
@@ -41,7 +41,7 @@ class BlindIcon(private val length: Int) : Icon {
 
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.swing.Icon#getIconWidth()
 	 */
     override fun getIconWidth(): Int {
@@ -50,7 +50,7 @@ class BlindIcon(private val length: Int) : Icon {
 
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.swing.Icon#paintIcon(java.awt.Component, java.awt.Graphics,
 	 * int, int)
 	 */

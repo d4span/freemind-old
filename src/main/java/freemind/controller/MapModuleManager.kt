@@ -51,19 +51,25 @@ class MapModuleManager internal constructor() {
          * that the last map is closed now.
          */
         fun isMapModuleChangeAllowed(
-            oldMapModule: MapModule?, oldMode: Mode?,
-            newMapModule: MapModule?, newMode: Mode?
+            oldMapModule: MapModule?,
+            oldMode: Mode?,
+            newMapModule: MapModule?,
+            newMode: Mode?
         ): Boolean
 
         fun beforeMapModuleChange(
-            oldMapModule: MapModule?, oldMode: Mode?,
-            newMapModule: MapModule?, newMode: Mode?
+            oldMapModule: MapModule?,
+            oldMode: Mode?,
+            newMapModule: MapModule?,
+            newMode: Mode?
         )
 
         fun afterMapClose(oldMapModule: MapModule?, oldMode: Mode?)
         fun afterMapModuleChange(
-            oldMapModule: MapModule?, oldMode: Mode?,
-            newMapModule: MapModule?, newMode: Mode?
+            oldMapModule: MapModule?,
+            oldMode: Mode?,
+            newMapModule: MapModule?,
+            newMode: Mode?
         )
 
         /**
@@ -87,7 +93,9 @@ class MapModuleManager internal constructor() {
 
         override fun isMapModuleChangeAllowed(
             oldMapModule: MapModule?,
-            oldMode: Mode?, newMapModule: MapModule?, newMode: Mode?
+            oldMode: Mode?,
+            newMapModule: MapModule?,
+            newMode: Mode?
         ): Boolean {
             var returnValue = true
             for (observer in Vector(listeners)) {
@@ -103,8 +111,10 @@ class MapModuleManager internal constructor() {
         }
 
         override fun beforeMapModuleChange(
-            oldMapModule: MapModule?, oldMode: Mode?,
-            newMapModule: MapModule?, newMode: Mode?
+            oldMapModule: MapModule?,
+            oldMode: Mode?,
+            newMapModule: MapModule?,
+            newMode: Mode?
         ) {
             for (observer in Vector(listeners)) {
                 observer.beforeMapModuleChange(
@@ -115,8 +125,10 @@ class MapModuleManager internal constructor() {
         }
 
         override fun afterMapModuleChange(
-            oldMapModule: MapModule?, oldMode: Mode?,
-            newMapModule: MapModule?, newMode: Mode?
+            oldMapModule: MapModule?,
+            oldMode: Mode?,
+            newMapModule: MapModule?,
+            newMode: Mode?
         ) {
             for (observer in Vector(listeners)) {
                 observer.afterMapModuleChange(
@@ -144,7 +156,8 @@ class MapModuleManager internal constructor() {
      */
     interface MapTitleChangeListener {
         fun setMapTitle(
-            pNewMapTitle: String?, pMapModule: MapModule?,
+            pNewMapTitle: String?,
+            pMapModule: MapModule?,
             pModel: MindMap?
         )
     }
@@ -172,7 +185,8 @@ class MapModuleManager internal constructor() {
          * but it must be returned as a whole.
          */
         fun getMapTitle(
-            pOldTitle: String?, pMapModule: MapModule?,
+            pOldTitle: String?,
+            pMapModule: MapModule?,
             pModel: MindMap?
         ): String?
     }
@@ -335,8 +349,10 @@ class MapModuleManager internal constructor() {
             }
         }
         requireNotNull(mapModuleCandidate) {
-            ("Map module "
-                    + mapModuleDisplayName + " not found.")
+            (
+                "Map module " +
+                    mapModuleDisplayName + " not found."
+                )
         }
         return changeToMapModule(mapModuleCandidate)
     }

@@ -23,229 +23,210 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package freemind.extensions;
+package freemind.extensions
 
-import java.io.IOException;
-import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Iterator;
-
-import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
-import freemind.view.mindmapview.NodeView;
+import freemind.main.XMLElement
+import freemind.modes.MindMapNode
+import freemind.modes.mindmapmode.actions.xml.ActionPair
+import freemind.view.mindmapview.NodeView
+import java.io.IOException
+import java.io.Writer
+import java.lang.reflect.InvocationTargetException
 
 /**
- * Simple, straight forward implementation of PermanentNodeHook 
+ * Simple, straight forward implementation of PermanentNodeHook
  * with some support for saving and loading
- * 
+ *
  * @author foltin
  */
-public class PermanentNodeHookAdapter extends NodeHookAdapter implements
-		PermanentNodeHook {
-
-	// Logging:
-	// private static java.util.logging.Logger logger;
-
-	/**
-	 */
-	public PermanentNodeHookAdapter() {
-		super();
-		// if(logger == null)
-		// logger =
-		// ((ControllerAdapter)getController()).getFrame().getLogger(this.getClass().getName());
-	}
-
-	/*
+open class PermanentNodeHookAdapter  // Logging:
+// private static java.util.logging.Logger logger;
+/**
+ */
+    : NodeHookAdapter(), PermanentNodeHook {
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.modes.NodeHook#shutdownMapHook()
 	 */
-	public void shutdownMapHook() {
-		logger.finest("shutdownMapHook");
-		setNode(null);
-		setMap(null);
-		super.shutdownMapHook();
-	}
+    override fun shutdownMapHook() {
+        logger!!.finest("shutdownMapHook")
+        setNode(null)
+        setMap(null)
+        super.shutdownMapHook()
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.modes.NodeHook#onUpdateNodeHook()
 	 */
-	public void onUpdateNodeHook() {
-		logger.finest("onUpdateNodeHook");
-	}
+    override fun onUpdateNodeHook() {
+        logger!!.finest("onUpdateNodeHook")
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.modes.NodeHook#onUpdateChildrenHook()
 	 */
-	public void onUpdateChildrenHook(MindMapNode updatedNode) {
-		logger.finest("onUpdateChildrenHook");
-	}
+    override fun onUpdateChildrenHook(updatedNode: MindMapNode?) {
+        logger!!.finest("onUpdateChildrenHook")
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.modes.NodeHook#onAddChild(freemind.modes.MindMapNode)
 	 */
-	public void onAddChild(MindMapNode newChildNode) {
-		logger.finest("onAddChild");
-	}
+    override fun onAddChild(addedChildNode: MindMapNode?) {
+        logger!!.finest("onAddChild")
+    }
 
-	public void onNewChild(MindMapNode newChildNode) {
-		logger.finest("onNewChild");
-	}
+    override fun onNewChild(newChildNode: MindMapNode?) {
+        logger!!.finest("onNewChild")
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.extensions.PermanentNodeHook#onRemoveChild(freemind.modes.
 	 * MindMapNode)
 	 */
-	public void onRemoveChild(MindMapNode oldChildNode) {
-		logger.finest("onRemoveChild");
-	}
+    override fun onRemoveChild(oldChildNode: MindMapNode?) {
+        logger!!.finest("onRemoveChild")
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.extensions.PermanentNodeHook#save(freemind.main.XMLElement)
 	 */
-	public void save(XMLElement xml) {
-		String saveName = getName();
-		// saveName=saveName.replace(File.separatorChar, '/');
-		xml.setAttribute("name", saveName);
-	}
+    override fun save(hookElement: XMLElement?) {
+        val saveName = name!!
+        // saveName=saveName.replace(File.separatorChar, '/');
+        hookElement!!.setAttribute("name", saveName)
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * freemind.extensions.PermanentNodeHook#loadFrom(freemind.main.XMLElement)
 	 */
-	public void loadFrom(XMLElement child) {
-	}
+    override fun loadFrom(child: XMLElement?) {}
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.modes.NodeHook#onSelectHook()
 	 */
-	public void onFocusNode(NodeView nodeView) {
-		logger.finest("onSelectHook");
+    override fun onFocusNode(nodeView: NodeView?) {
+        logger!!.finest("onSelectHook")
+    }
 
-	}
-
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.extensions.PermanentNodeHook#onDeselectHook()
 	 */
-	public void onLostFocusNode(NodeView nodeView) {
-		logger.finest("onDeselectHook");
-	}
+    override fun onLostFocusNode(nodeView: NodeView?) {
+        logger!!.finest("onDeselectHook")
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.extensions.PermanentNodeHook#onAddChildren(freemind.modes.
 	 * MindMapNode)
 	 */
-	public void onAddChildren(MindMapNode addedChild) {
-		logger.finest("onAddChildren");
-	}
+    override fun onAddChildren(addedChild: MindMapNode?) {
+        logger!!.finest("onAddChildren")
+    }
 
-	public static final String PARAMETERS = "Parameters";
-
-	/**
-	 */
-	protected HashMap<String, String> loadNameValuePairs(XMLElement xml) {
-		HashMap<String, String> result = new HashMap<>();
-		if(xml.getChildren().isEmpty()) {
-			return result;
-		}
-		XMLElement child = (XMLElement) xml.getChildren().get(0);
-		if (child != null && PARAMETERS.equals(child.getName())) {
-			for (Iterator<String> i = child.enumerateAttributeNames(); i.hasNext();) {
-				String name = i.next();
-				result.put(name, child.getStringAttribute(name));
-			}
-		}
-		return result;
-	}
-
-	/**
-	 */
-	protected void saveNameValuePairs(HashMap<String, Object> nameValuePairs, XMLElement xml) {
-		if(!nameValuePairs.isEmpty()) {
-			XMLElement child = new XMLElement();
-			child.setName(PARAMETERS);
-			for (String key : nameValuePairs.keySet()) {
-				Object value = nameValuePairs.get(key);
-				child.setAttribute(key, value);
-			}
-			xml.addChild(child);
-		}
-	}
-
-	public void onRemoveChildren(MindMapNode oldChildNode, MindMapNode oldDad) {
-		logger.finest("onRemoveChildren");
-	}
-
-	public void onViewCreatedHook(NodeView nodeView) {
-	}
-
-	public void onViewRemovedHook(NodeView nodeView) {
-	}
-
-	/**
+    /**
      */
-	protected void setToolTip(String key, String value) {
-		setToolTip(getNode(), key, value);
-	}
+    protected fun loadNameValuePairs(xml: XMLElement): HashMap<String, String> {
+        val result = HashMap<String, String>()
+        if (xml.children.isEmpty()) {
+            return result
+        }
+        val child = xml.children[0] as XMLElement
+        if (PARAMETERS == child.name) {
+            val i = child.enumerateAttributeNames()
+            while (i.hasNext()) {
+                val name = i.next()
+                result[name] = child.getStringAttribute(name)
+            }
+        }
+        return result
+    }
 
-	protected void setToolTip(MindMapNode node, String key, String value) {
-		getController().setToolTip(node, key, value);
-	}
+    /**
+     */
+    protected fun saveNameValuePairs(nameValuePairs: HashMap<String?, Any?>, xml: XMLElement) {
+        if (!nameValuePairs.isEmpty()) {
+            val child = XMLElement()
+            child.name = PARAMETERS
+            for (key in nameValuePairs.keys) {
+                val value = nameValuePairs[key]
+                child.setAttribute(key, value)
+            }
+            xml.addChild(child)
+        }
+    }
 
-	/* (non-Javadoc)
+    override fun onRemoveChildren(oldChildNode: MindMapNode?, oldDad: MindMapNode?) {
+        logger!!.finest("onRemoveChildren")
+    }
+
+    override fun onViewCreatedHook(nodeView: NodeView?) {}
+    override fun onViewRemovedHook(nodeView: NodeView?) {}
+
+    /**
+     */
+    protected fun setToolTip(key: String?, value: String?) {
+        setToolTip(getNode(), key, value)
+    }
+
+    protected open fun setToolTip(node: MindMapNode?, key: String?, value: String?) {
+        controller!!.setToolTip(node, key, value)
+    }
+
+    /* (non-Javadoc)
 	 * @see freemind.extensions.PermanentNodeHook#executeTransaction(freemind.modes.mindmapmode.actions.xml.ActionPair)
 	 */
-	protected void executeTransaction(final ActionPair pair)
-			throws InterruptedException, InvocationTargetException {
-	}
+    @Throws(InterruptedException::class, InvocationTargetException::class)
+    protected fun executeTransaction() {
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see freemind.extensions.PermanentNodeHook#registerFilter()
 	 */
-	public void registerFilter() {
-	}
+    fun registerFilter() {}
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see freemind.extensions.PermanentNodeHook#deregisterFilter()
 	 */
-	public void deregisterFilter() {
-	}
+    fun deregisterFilter() {}
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see freemind.extensions.PermanentNodeHook#filterAction(freemind.modes.mindmapmode.actions.xml.ActionPair)
 	 */
-	public ActionPair filterAction(ActionPair pPair) {
-		return null;
-	}
+    fun filterAction(): ActionPair? {
+        return null
+    }
 
-	public void processUnfinishedLinks() {
-	}
+    override fun processUnfinishedLinks() {}
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see freemind.extensions.PermanentNodeHook#saveHtml(java.io.Writer)
 	 */
-	public void saveHtml(Writer pFileout) throws IOException {
-	}
+    @Throws(IOException::class)
+    override fun saveHtml(pFileout: Writer?) {
+    }
 
-	
+    companion object {
+        const val PARAMETERS = "Parameters"
+    }
 }

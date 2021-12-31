@@ -23,103 +23,101 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package freemind.extensions;
+package freemind.extensions
 
-import java.io.IOException;
-import java.io.Writer;
-
-import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
-import freemind.view.mindmapview.NodeView;
+import freemind.main.XMLElement
+import freemind.modes.MindMapNode
+import freemind.view.mindmapview.NodeView
+import java.io.IOException
+import java.io.Writer
 
 /**
- * Basic interface for all node hooks that are permanent. 
+ * Basic interface for all node hooks that are permanent.
  * Thus, there are methods that inform the plugin about changes on the node, it is stick to.
- * Moreover, methods for loading and saving the hook are present.  
- * 
- * 
+ * Moreover, methods for loading and saving the hook are present.
+ *
+ *
  * @author foltin
  */
-public interface PermanentNodeHook extends NodeHook {
+interface PermanentNodeHook : NodeHook {
+    fun onFocusNode(nodeView: NodeView?)
 
-	void onFocusNode(NodeView nodeView);
+    /**
+     *
+     */
+    fun onLostFocusNode(nodeView: NodeView?)
 
-	/**
-	 * 
-	 */
-	void onLostFocusNode(NodeView nodeView);
+    /**
+     * Fired after node is getting visible (is unfolded after having been folded).
+     */
+    fun onViewCreatedHook(nodeView: NodeView?)
 
-	/**
-	 * Fired after node is getting visible (is unfolded after having been folded).
-	 */
-	void onViewCreatedHook(NodeView nodeView);
+    /**
+     * Fired after a node is getting invisible (folded).
+     */
+    fun onViewRemovedHook(nodeView: NodeView?)
 
-	/**
-	 * Fired after a node is getting invisible (folded).
-	 */
-	void onViewRemovedHook(NodeView nodeView);
+    /**
+     * If the node I belong to is changed, I get this notification.
+     */
+    fun onUpdateNodeHook()
 
-	/**
-	 * If the node I belong to is changed, I get this notification.
-	 * */
-	void onUpdateNodeHook();
+    /**
+     * Is called if the addedChildNode is inserted as a direct child of the
+     * node, this hook is attached to. The cases in which this method is called
+     * contain new nodes, paste, move, etc.
+     *
+     * Ah, don't call propagate in this method, as paste introduces nodes with
+     * the hook and you'll have them twice, ... see onNewChild
+     */
+    fun onAddChild(addedChildNode: MindMapNode?)
 
-	/**
-	 * Is called if the addedChildNode is inserted as a direct child of the
-	 * node, this hook is attached to. The cases in which this method is called
-	 * contain new nodes, paste, move, etc.
-	 * 
-	 * Ah, don't call propagate in this method, as paste introduces nodes with
-	 * the hook and you'll have them twice, ... see onNewChild
-	 */
-	void onAddChild(MindMapNode addedChildNode);
+    /**
+     * Is only called, if a new nodes is inserted as a child. Remark: In this
+     * case onAddChild is called too and moreover *before* this method. see
+     * onAddChild.
+     */
+    fun onNewChild(newChildNode: MindMapNode?)
 
-	/**
-	 * Is only called, if a new nodes is inserted as a child. Remark: In this
-	 * case onAddChild is called too and moreover *before* this method. see
-	 * onAddChild.
-	 */
-	void onNewChild(MindMapNode newChildNode);
+    /**
+     * This method is called, if a child is added to me or to any of my
+     * children. (See onUpdateChildrenHook)
+     */
+    fun onAddChildren(addedChild: MindMapNode?)
+    fun onRemoveChild(oldChildNode: MindMapNode?)
 
-	/**
-	 * This method is called, if a child is added to me or to any of my
-	 * children. (See onUpdateChildrenHook)
-	 */
-	void onAddChildren(MindMapNode addedChild);
+    /**
+     * This method is called, if a child is removed to me or to any of my
+     * children. (See onUpdateChildrenHook)
+     *
+     * @param oldDad
+     * TODO
+     */
+    fun onRemoveChildren(oldChildNode: MindMapNode?, oldDad: MindMapNode?)
 
-	void onRemoveChild(MindMapNode oldChildNode);
+    /**
+     * If any of my children is updated, I get this notification.
+     */
+    fun onUpdateChildrenHook(updatedNode: MindMapNode?)
 
-	/**
-	 * This method is called, if a child is removed to me or to any of my
-	 * children. (See onUpdateChildrenHook)
-	 * 
-	 * @param oldDad
-	 *            TODO
-	 */
-	void onRemoveChildren(MindMapNode oldChildNode, MindMapNode oldDad);
+    /**
+     */
+    fun save(hookElement: XMLElement?)
 
-	/**
-	 * If any of my children is updated, I get this notification.
-	 */
-	void onUpdateChildrenHook(MindMapNode updatedNode);
+    /**
+     */
+    fun loadFrom(child: XMLElement?)
 
-	/**
-	 */
-	void save(XMLElement hookElement);
+    /**
+     * Can be used to adjust some things after a paste action. (Currently it is used for clones).
+     */
+    fun processUnfinishedLinks()
 
-	/**
-	 */
-	void loadFrom(XMLElement child);
-
-	/**
-	 * Can be used to adjust some things after a paste action. (Currently it is used for clones).
-	 */
-	void processUnfinishedLinks();
-
-	/**
-	 * Can be used to contribute to the standard html export.
-	 * @param pFileout
-	 * @throws IOException 
-	 */
-	void saveHtml(Writer pFileout) throws IOException;
+    /**
+     * Can be used to contribute to the standard html export.
+     * @param pFileout
+     * @throws IOException
+     */
+    @Throws(IOException::class)
+    fun saveHtml(pFileout: Writer?)
 }

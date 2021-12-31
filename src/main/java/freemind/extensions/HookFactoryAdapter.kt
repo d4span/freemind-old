@@ -20,62 +20,55 @@
  * Created on 31.12.2005
  */
 /*$Id: HookFactoryAdapter.java,v 1.1.2.1.2.2 2006/07/25 20:28:20 christianfoltin Exp $*/
-package freemind.extensions;
+package freemind.extensions
 
-import java.util.HashMap;
-
-import freemind.modes.MindMapNode;
+import freemind.extensions.HookFactory.RegistrationContainer
+import freemind.modes.MindMapNode
 
 /**
  * @author foltin
- * 
  */
-public abstract class HookFactoryAdapter implements HookFactory {
+abstract class HookFactoryAdapter
+/**
+ *
+ */
+protected constructor() : HookFactory {
+    /** Contains PluginType -> Object (baseClass) relations.  */
+    @JvmField
+    protected var allRegistrationInstances: HashMap<String?, HookRegistration?>? = null
 
-	/** Contains PluginType -> Object (baseClass) relations. */
-	protected HashMap<String, HookRegistration> allRegistrationInstances;
+    /**
+     * @return null if not present, the hook otherwise.
+     */
+    override fun getHookInNode(node: MindMapNode?, hookName: String?): PermanentNodeHook? {
+        // search for already instanciated hooks of this type:
+        for (otherHook in node!!.activatedHooks) {
+            if (otherHook.name == hookName) {
+                // there is already one instance.
+                return otherHook
+            }
+        }
+        return null
+    }
 
-	/**
-	 * 
-	 */
-	protected HookFactoryAdapter() {
-		super();
-	}
+    /**
+     * See getRegistrations. The registration makes sense for the factory, as
+     * the factory observes every object creation. <br></br>
+     * Moreover, the factory can tell other hooks it creates, who is its base
+     * plugin.
+     *
+     */
+    override fun registerRegistrationContainer(
+        container: RegistrationContainer?,
+        instanciatedRegistrationObject: HookRegistration?
+    ) {
+        // registration only for pluginBases.
+        if (container!!.isPluginBase) {
+            allRegistrationInstances!![container.correspondingPlugin!!.label] = instanciatedRegistrationObject
+        }
+    }
 
-	/**
-	 * @return null if not present, the hook otherwise.
-	 */
-	public PermanentNodeHook getHookInNode(MindMapNode node, String hookName) {
-		// search for already instanciated hooks of this type:
-		for (PermanentNodeHook otherHook : node.getActivatedHooks()) {
-			if (otherHook.getName().equals(hookName)) {
-				// there is already one instance.
-				return otherHook;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * See getRegistrations. The registration makes sense for the factory, as
-	 * the factory observes every object creation. <br>
-	 * Moreover, the factory can tell other hooks it creates, who is its base
-	 * plugin.
-	 * 
-	 */
-	public void registerRegistrationContainer(
-			HookFactory.RegistrationContainer container,
-			HookRegistration instanciatedRegistrationObject) {
-		// registration only for pluginBases.
-		if (container.isPluginBase) {
-			allRegistrationInstances.put(
-					container.correspondingPlugin.getLabel(),
-					instanciatedRegistrationObject);
-		}
-	}
-
-	public void deregisterAllRegistrationContainer() {
-		allRegistrationInstances.clear();
-	}
-
+    override fun deregisterAllRegistrationContainer() {
+        allRegistrationInstances!!.clear()
+    }
 }

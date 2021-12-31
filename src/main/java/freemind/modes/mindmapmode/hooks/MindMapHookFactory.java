@@ -19,21 +19,6 @@
 
 package freemind.modes.mindmapmode.hooks;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Vector;
-
-import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
-
-import org.jibx.runtime.IUnmarshallingContext;
-
 import freemind.common.XmlBindingTools;
 import freemind.controller.actions.generated.instance.Plugin;
 import freemind.controller.actions.generated.instance.PluginAction;
@@ -51,6 +36,19 @@ import freemind.extensions.ModeControllerHook;
 import freemind.extensions.NodeHook;
 import freemind.main.Resources;
 import freemind.modes.mindmapmode.MindMapController;
+import org.jibx.runtime.IUnmarshallingContext;
+
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Manages the hook available from the class path.
@@ -323,7 +321,7 @@ public class MindMapHookFactory extends HookFactoryAdapter {
 				RegistrationContainer container = new RegistrationContainer();
 				container.hookRegistrationClass = hookRegistrationClass;
 				container.correspondingPlugin = plugin;
-				container.isPluginBase = descriptor.getIsPluginBase();
+				container.isPluginBase = descriptor.isPluginBase();
 				returnValue.add(container);
 			} catch (ClassNotFoundException e) {
 				freemind.main.Resources.getInstance().logException(e);

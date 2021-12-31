@@ -64,8 +64,10 @@ open class HookDescriptorBase(
      * @return the relative/absolute(?) position of the plugin xml file.
      */
     private val pluginDirectory: String
-        get() = (Resources.getInstance().freemindBaseDir + "/"
-                + File(mXmlPluginFile).parent)
+        get() = (
+            Resources.getInstance().freemindBaseDir + "/" +
+                File(mXmlPluginFile).parent
+            )
     val pluginClasspath: List<PluginClasspath>
         get() {
             val returnValue = Vector<PluginClasspath>()
@@ -133,8 +135,8 @@ open class HookDescriptorBase(
                 }
                 // end new version by ewl.
                 logger!!.info(
-                    "file " + Tools.fileToUrl(file) + " exists = "
-                            + file.exists()
+                    "file " + Tools.fileToUrl(file) + " exists = " +
+                        file.exists()
                 )
                 urls[j++] = Tools.fileToUrl(file)
             }

@@ -40,9 +40,9 @@ import java.util.logging.Logger
 open class HookAdapter : MindMapHook {
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.modes.NodeHook#getName()
-	 */  override var name: String? = null
+	 */ override var name: String? = null
     private var properties: Properties? = null
     protected var controller: ModeController? = null
 
@@ -69,7 +69,7 @@ open class HookAdapter : MindMapHook {
 
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.modes.NodeHook#startupMapHook(java.lang.String)
 	 */
     override fun startupMapHook() {
@@ -78,7 +78,7 @@ open class HookAdapter : MindMapHook {
 
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.modes.NodeHook#shutdownMapHook()
 	 */
     override fun shutdownMapHook() {
@@ -108,7 +108,7 @@ open class HookAdapter : MindMapHook {
 
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.extensions.MindMapHook#getResourceString(java.lang.String)
 	 */
     override fun getResourceString(property: String?): String? {
@@ -128,7 +128,7 @@ open class HookAdapter : MindMapHook {
 
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.extensions.MindMapHook#getPluginBaseClass()
 	 */
     override fun getPluginBaseClass(): Any? {

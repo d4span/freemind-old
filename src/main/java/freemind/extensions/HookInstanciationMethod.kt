@@ -30,7 +30,8 @@ class HookInstanciationMethod private constructor(
     /**
      * @return Returns the isPermanent.
      */
-    val isPermanent: Boolean, val isSingleton: Boolean,
+    val isPermanent: Boolean,
+    val isSingleton: Boolean,
     private val getter: DestinationNodesGetter,
     /**
      */
@@ -57,7 +58,8 @@ class HookInstanciationMethod private constructor(
 
         override fun getCenterNode(
             controller: MapFeedback,
-            focussed: MindMapNode, selecteds: List<MindMapNode?>?
+            focussed: MindMapNode,
+            selecteds: List<MindMapNode?>?
         ): MindMapNode {
             return focussed
         }
@@ -116,7 +118,8 @@ class HookInstanciationMethod private constructor(
      */
     fun getDestinationNodes(
         controller: MapFeedback,
-        focussed: MindMapNode?, selecteds: List<MindMapNode>
+        focussed: MindMapNode?,
+        selecteds: List<MindMapNode>
     ): Collection<MindMapNode> {
         return getter.getDestinationNodes(controller, focussed, selecteds)
     }
@@ -138,7 +141,8 @@ class HookInstanciationMethod private constructor(
      */
     fun getCenterNode(
         controller: MapFeedback,
-        focussed: MindMapNode, selecteds: List<MindMapNode?>?
+        focussed: MindMapNode,
+        selecteds: List<MindMapNode?>?
     ): MindMapNode {
         return getter.getCenterNode(controller, focussed, selecteds)
     }

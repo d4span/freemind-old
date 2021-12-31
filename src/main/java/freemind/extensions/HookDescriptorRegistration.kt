@@ -31,7 +31,8 @@ import freemind.controller.actions.generated.instance.PluginRegistration
  */
 class HookDescriptorRegistration(
     xmlPluginFile: String?,
-    pluginBase: Plugin?, private val mRegistration: PluginRegistration
+    pluginBase: Plugin?,
+    private val mRegistration: PluginRegistration
 ) : HookDescriptorBase(pluginBase!!, xmlPluginFile!!) {
     // public PluginRegistration getPluginRegistration() {
     // return mRegistration;

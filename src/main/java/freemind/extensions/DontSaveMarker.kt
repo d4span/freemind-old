@@ -27,4 +27,4 @@ package freemind.extensions
  * restored the next time, the map is loaded (eg. the collaboration
  * feature).
  */
-interface DontSaveMarker 
+interface DontSaveMarker

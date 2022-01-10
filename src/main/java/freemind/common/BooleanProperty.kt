@@ -26,7 +26,7 @@ import com.jgoodies.forms.builder.DefaultFormBuilder
 import java.util.Locale
 import javax.swing.JCheckBox
 
-open class BooleanProperty(override var description: String, override var label: String) :
+open class BooleanProperty(override var description: String?, override var label: String) :
     PropertyBean(),
     PropertyControl {
     @JvmField

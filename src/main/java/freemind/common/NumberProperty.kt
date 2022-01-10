@@ -28,7 +28,7 @@ import javax.swing.JSpinner
 import javax.swing.SpinnerNumberModel
 
 class NumberProperty(
-    override var description: String,
+    override var description: String?,
     override var label: String,
     private val min: Int,
     private val max: Int,

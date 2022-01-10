@@ -69,6 +69,7 @@ import java.net.MalformedURLException
 import java.net.URL
 import java.text.MessageFormat
 import java.util.Collections
+import java.util.Properties
 import java.util.Vector
 import java.util.logging.Logger
 import javax.swing.AbstractAction
@@ -1481,33 +1482,38 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
             val dialog = JDialog(frame.jFrame, true /* modal */)
             dialog.isResizable = true
             dialog.isUndecorated = false
-            val options = OptionPanel(
-                frame as FreeMind,
-                dialog
-            ) { props ->
-                val sortedKeys = Vector<String>()
-                sortedKeys.addAll(props.stringPropertyNames())
-                Collections.sort(sortedKeys)
-                var propertiesChanged = false
-                val i: Iterator<String> = sortedKeys.iterator()
-                while (i.hasNext()) {
-                    val key = i.next()
-                    // save only changed keys:
-                    val newProperty = props.getProperty(key)
-                    propertiesChanged = (
-                        propertiesChanged ||
-                            newProperty != controller.getProperty(key)
+
+            val panelFeedback = object : OptionPanel.OptionPanelFeedback {
+                override fun writeProperties(props: Properties?) {
+                    val sortedKeys = Vector<String>()
+                    sortedKeys.addAll(props?.stringPropertyNames() ?: emptyList())
+                    Collections.sort(sortedKeys)
+                    var propertiesChanged = false
+                    val i: Iterator<String> = sortedKeys.iterator()
+                    while (i.hasNext()) {
+                        val key = i.next()
+                        // save only changed keys:
+                        val newProperty = props?.getProperty(key)
+                        propertiesChanged = (
+                            propertiesChanged ||
+                                newProperty != controller.getProperty(key)
+                            )
+                        controller.setProperty(key, newProperty)
+                    }
+                    if (propertiesChanged) {
+                        JOptionPane.showMessageDialog(
+                            null,
+                            getResourceString("option_changes_may_require_restart")
                         )
-                    controller.setProperty(key, newProperty)
-                }
-                if (propertiesChanged) {
-                    JOptionPane.showMessageDialog(
-                        null,
-                        getResourceString("option_changes_may_require_restart")
-                    )
-                    controller.frame.saveProperties(false)
+                        controller.frame.saveProperties(false)
+                    }
                 }
             }
+            val options = OptionPanel(
+                frame as FreeMind,
+                dialog,
+                panelFeedback
+            )
             options.buildPanel()
             options.setProperties()
             dialog.title = "Freemind Properties"
@@ -1565,7 +1571,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
         /**
          */
-        private fun changeSelection(command: String) {
+        private fun changeSelection(command: String?) {
             setProperty("selection_method", command)
             // and update the selection method in the NodeMouseMotionListener
             c.nodeMouseMotionListener!!.updateSelectionMethod()
@@ -1574,9 +1580,9 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         }
 
         override fun propertyChanged(
-            propertyName: String,
-            newValue: String,
-            oldValue: String
+            propertyName: String?,
+            newValue: String?,
+            oldValue: String?
         ) {
             if (propertyName == FreeMind.RESOURCES_SELECTION_METHOD) {
                 changeSelection(newValue)

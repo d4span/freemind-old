@@ -20,21 +20,16 @@
  * Created on 26.03.2006
  */
 /*$Id: FreemindPropertyContributor.java,v 1.1.2.1.2.1 2007/08/05 20:33:17 christianfoltin Exp $*/
-package freemind.preferences;
+package freemind.preferences
 
-import java.util.List;
-
-import freemind.common.PropertyControl;
-import freemind.common.TextTranslator;
+import freemind.common.PropertyControl
+import freemind.common.TextTranslator
 
 /**
  * Implement this interface to take part in the property dialog.
- * 
+ *
  * @author foltin
- * 
  */
-public interface FreemindPropertyContributor {
-
-	public List<PropertyControl> getControls(TextTranslator pTextTranslator);
-
+interface FreemindPropertyContributor {
+    fun getControls(pTextTranslator: TextTranslator?): List<PropertyControl?>?
 }

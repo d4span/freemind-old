@@ -29,7 +29,7 @@ import javax.swing.DefaultComboBoxModel
 import javax.swing.JComboBox
 
 open class ComboProperty : PropertyBean, PropertyControl {
-    override var description: String
+    override var description: String?
     override var label: String
     protected var mComboBox = JComboBox<String?>()
     @JvmField
@@ -40,9 +40,9 @@ open class ComboProperty : PropertyBean, PropertyControl {
      * TODO
      */
     constructor(
-        description: String,
+        description: String?,
         label: String,
-        possibles: Array<String>,
+        possibles: Array<String?>,
         pTranslator: TextTranslator
     ) : super() {
         this.description = description
@@ -63,7 +63,7 @@ open class ComboProperty : PropertyBean, PropertyControl {
     constructor(
         description: String,
         label: String,
-        possibles: Array<String>,
+        possibles: Array<String?>,
         possibleTranslations: List<String?>?
     ) {
         this.description = description
@@ -95,13 +95,13 @@ open class ComboProperty : PropertyBean, PropertyControl {
 
     /**
      */
-    private fun fillPossibleValues(possibles: Array<String>) {
+    private fun fillPossibleValues(possibles: Array<String?>) {
         fillPossibleValues(Arrays.asList(*possibles))
     }
 
     /**
      */
-    private fun fillPossibleValues(possibles: List<String>) {
+    private fun fillPossibleValues(possibles: List<String?>) {
         possibleValues = Vector()
         possibleValues!!.addAll(possibles)
     }

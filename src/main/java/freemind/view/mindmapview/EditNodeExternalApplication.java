@@ -23,13 +23,13 @@
 
 package freemind.view.mindmapview;
 
+import freemind.main.Tools;
+import freemind.modes.ModeController;
+
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.text.MessageFormat;
-
-import freemind.main.Tools;
-import freemind.modes.ModeController;
 
 /**
  * @author Daniel Polansky
@@ -59,7 +59,7 @@ public class EditNodeExternalApplication extends EditNodeBase {
 
 					// a. Write the text of the long node to the temporary file
 					writer = new FileWriter(temporaryFile);
-					writer.write(text);
+					writer.write(getText());
 					writer.close();
 
 					// b. Call the editor

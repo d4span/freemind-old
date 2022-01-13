@@ -19,6 +19,10 @@
 
 package freemind.view.mindmapview;
 
+import freemind.main.FreeMind;
+import freemind.main.Resources;
+import freemind.main.Tools;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -26,10 +30,6 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-
-import freemind.main.FreeMind;
-import freemind.main.Resources;
-import freemind.main.Tools;
 
 @SuppressWarnings("serial")
 class RootMainView extends MainView {
@@ -93,18 +93,18 @@ class RootMainView extends MainView {
 		graphics.fillOval(1, 1, getWidth() - 2, getHeight() - 2);
 	}
 
-	Point getLeftPoint() {
+	public Point getLeftPoint() {
 		Point in = new Point(0, getHeight() / 2);
 		return in;
 	}
 
-	Point getCenterPoint() {
+	public Point getCenterPoint() {
 		Point in = getLeftPoint();
 		in.x = getWidth() / 2;
 		return in;
 	}
 
-	Point getRightPoint() {
+	public Point getRightPoint() {
 		Point in = getLeftPoint();
 		in.x = getWidth() - 1;
 		return in;
@@ -120,7 +120,7 @@ class RootMainView extends MainView {
 	 * 
 	 * @see freemind.view.mindmapview.NodeView#getStyle()
 	 */
-	String getStyle() {
+	public String getStyle() {
 		return Resources.getInstance().getProperty(
 				FreeMind.RESOURCES_ROOT_NODE_STYLE);
 	}
@@ -128,7 +128,7 @@ class RootMainView extends MainView {
 	/**
 	 * Returns the relative position of the Edge
 	 */
-	int getAlignment() {
+	public int getAlignment() {
 		return NodeView.ALIGN_CENTER;
 	}
 

@@ -17,33 +17,26 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: SharpLinearEdgeView.java,v 1.3.34.3 2007/08/22 13:23:54 dpolivaev Exp $*/
+package freemind.view.mindmapview
 
-package freemind.view.mindmapview;
-
-import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.Color
+import java.awt.Graphics2D
 
 /**
  * This class represents a sharp Edge of a MindMap.
  */
-public class SharpLinearEdgeView extends EdgeView {
+class SharpLinearEdgeView : EdgeView() {
+    override fun paint(g: Graphics2D?) {
+        g!!.color = color
+        g.paint = color
+        g.stroke = DEF_STROKE
+        val w = map.getZoomed(width / 2 + 1)
+        val xs = intArrayOf(start!!.x, end!!.x, start!!.x)
+        val ys = intArrayOf(start!!.y + w, end!!.y, start!!.y - w)
+        // g.drawPolygon(xs,ys,3);
+        g.fillPolygon(xs, ys, 3)
+    }
 
-	public SharpLinearEdgeView() {
-		super();
-	}
-
-	protected void paint(Graphics2D g) {
-		g.setColor(getColor());
-		g.setPaint(getColor());
-		g.setStroke(DEF_STROKE);
-		int w = getMap().getZoomed(getWidth() / 2 + 1);
-		int xs[] = { start.x, end.x, start.x };
-		int ys[] = { start.y + w, end.y, start.y - w };
-		// g.drawPolygon(xs,ys,3);
-		g.fillPolygon(xs, ys, 3);
-	}
-
-	public Color getColor() {
-		return getModel().getColor();
-	}
+    override val color: Color
+        get() = model.color
 }

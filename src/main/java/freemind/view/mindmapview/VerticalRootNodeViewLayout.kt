@@ -21,104 +21,115 @@
  * Created on 05.06.2005
  *
  */
-package freemind.view.mindmapview;
+package freemind.view.mindmapview
 
-import java.awt.Dimension;
-import java.awt.Point;
-
-import freemind.main.Resources;
-import freemind.main.Tools;
+import freemind.main.Resources
+import freemind.main.Tools
+import java.awt.Dimension
+import java.awt.Point
 
 /**
  * Root layout.
  * @author dimitri 05.06.2005
  */
-public class VerticalRootNodeViewLayout extends NodeViewLayoutAdapter {
-	private static final String USE_COMMON_OUT_POINT_FOR_ROOT_NODE_STRING = "use_common_out_point_for_root_node";
-	static boolean USE_COMMON_OUT_POINT_FOR_ROOT_NODE = Resources.getInstance()
-			.getBoolProperty(USE_COMMON_OUT_POINT_FOR_ROOT_NODE_STRING);
+class VerticalRootNodeViewLayout : NodeViewLayoutAdapter() {
+    override fun layout() {
+        val rightContentHeight = getChildContentHeight(false)
+        var rightChildVerticalShift = getChildVerticalShift(false)
+        val leftContentHeight = getChildContentHeight(true)
+        var leftChildVerticalShift = getChildVerticalShift(true)
+        val childHorizontalShift = childHorizontalShift
+        val contentHeight = Math.max(
+            rightContentHeight,
+            leftContentHeight
+        )
+        val x = Math.max(spaceAround, -childHorizontalShift)
+        if (view!!.isContentVisible) {
+            content!!.isVisible = true
+            val contentPreferredSize = content?.getPreferredSize() ?: Dimension(0, 0)
+            rightChildVerticalShift += (contentPreferredSize.height - rightContentHeight) / 2
+            leftChildVerticalShift += (contentPreferredSize.height - leftContentHeight) / 2
+            val childVerticalShift = Math.min(
+                rightChildVerticalShift,
+                leftChildVerticalShift
+            )
+            val y = Math.max(spaceAround, -childVerticalShift)
+            content!!.setBounds(
+                x, y, contentPreferredSize.width,
+                contentPreferredSize.height
+            )
+        } else {
+            content!!.isVisible = false
+            val childVerticalShift = Math.min(
+                rightChildVerticalShift,
+                leftChildVerticalShift
+            )
+            val y = Math.max(spaceAround, -childVerticalShift)
+            content!!.setBounds(x, y, 0, contentHeight)
+        }
+        placeLeftChildren(leftChildVerticalShift)
+        val width1 = view!!.width
+        val height1 = view!!.height
+        placeRightChildren(rightChildVerticalShift)
+        val width2 = view!!.width
+        val height2 = view!!.height
+        view!!.setSize(Math.max(width1, width2), Math.max(height1, height2))
+    }
 
-	static private VerticalRootNodeViewLayout instance = null;
+    override fun layoutNodeMotionListenerView(view: NodeMotionListenerView?) {
+        // there is no move handle at root.
+    }
 
-	protected void layout() {
-		final int rightContentHeight = getChildContentHeight(false);
-		int rightChildVerticalShift = getChildVerticalShift(false);
-		final int leftContentHeight = getChildContentHeight(true);
-		int leftChildVerticalShift = getChildVerticalShift(true);
-		final int childHorizontalShift = getChildHorizontalShift();
-		final int contentHeight = Math.max(rightContentHeight,
-				leftContentHeight);
-		final int x = Math.max(getSpaceAround(), -childHorizontalShift);
-		if (getView().isContentVisible()) {
-			getContent().setVisible(true);
-			final Dimension contentPreferredSize = getContent()
-					.getPreferredSize();
-			rightChildVerticalShift += (contentPreferredSize.height - rightContentHeight) / 2;
-			leftChildVerticalShift += (contentPreferredSize.height - leftContentHeight) / 2;
-			final int childVerticalShift = Math.min(rightChildVerticalShift,
-					leftChildVerticalShift);
-			final int y = Math.max(getSpaceAround(), -childVerticalShift);
-			getContent().setBounds(x, y, contentPreferredSize.width,
-					contentPreferredSize.height);
-		} else {
-			getContent().setVisible(false);
-			int childVerticalShift = Math.min(rightChildVerticalShift,
-					leftChildVerticalShift);
-			final int y = Math.max(getSpaceAround(), -childVerticalShift);
-			getContent().setBounds(x, y, 0, contentHeight);
-		}
+    override fun getMainViewOutPoint(
+        view: NodeView?,
+        targetView: NodeView?,
+        destinationPoint: Point?
+    ): Point? {
+        val mainView = view!!.getMainView()
+        if (USE_COMMON_OUT_POINT_FOR_ROOT_NODE) {
+            return if (targetView!!.isLeft) {
+                mainView!!.leftPoint
+            } else {
+                mainView!!.rightPoint
+            }
+        }
+        val p = Point(destinationPoint)
+        Tools.convertPointFromAncestor(view, p, mainView)
+        val nWidth = (mainView!!.width / 2f).toDouble()
+        val nHeight = (mainView.height / 2f).toDouble()
+        val centerPoint = Point(nWidth.toInt(), nHeight.toInt())
+        // assume, that destinationPoint is on the right:
+        var angle = Math.atan(
+            (
+                (p.y - centerPoint.y + 0f) /
+                    (p.x - centerPoint.x + 0f)
+                ).toDouble()
+        )
+        if (p.x < centerPoint.x) {
+            angle += Math.PI
+        }
+        // now determine point on ellipsis corresponding to that angle:
+        return Point(
+            centerPoint.x +
+                (Math.cos(angle) * nWidth).toInt(),
+            centerPoint.y +
+                (Math.sin(angle) * nHeight).toInt()
+        )
+    }
 
-		placeLeftChildren(leftChildVerticalShift);
-		int width1 = getView().getWidth();
-		int height1 = getView().getHeight();
-		placeRightChildren(rightChildVerticalShift);
-		int width2 = getView().getWidth();
-		int height2 = getView().getHeight();
-		getView().setSize(Math.max(width1, width2), Math.max(height1, height2));
+    override fun getMainViewInPoint(view: NodeView?): Point? {
+        return view!!.getMainView()!!.centerPoint
+    }
 
-	}
-
-	static VerticalRootNodeViewLayout getInstance() {
-		if (instance == null)
-			instance = new VerticalRootNodeViewLayout();
-		return instance;
-	}
-
-	public void layoutNodeMotionListenerView(NodeMotionListenerView view) {
-		// there is no move handle at root.
-	}
-
-	public Point getMainViewOutPoint(NodeView view, NodeView targetView,
-			Point destinationPoint) {
-		final MainView mainView = view.getMainView();
-		if (USE_COMMON_OUT_POINT_FOR_ROOT_NODE) {
-			if (targetView.isLeft()) {
-				return mainView.getLeftPoint();
-			} else {
-				return mainView.getRightPoint();
-			}
-		}
-		final Point p = new Point(destinationPoint);
-		Tools.convertPointFromAncestor(view, p, mainView);
-		double nWidth = mainView.getWidth() / 2f;
-		double nHeight = mainView.getHeight() / 2f;
-		final Point centerPoint = new Point((int) nWidth, (int) nHeight);
-		// assume, that destinationPoint is on the right:
-		double angle = Math.atan((p.y - centerPoint.y + 0f)
-				/ (p.x - centerPoint.x + 0f));
-		if (p.x < centerPoint.x) {
-			angle += Math.PI;
-		}
-		// now determine point on ellipsis corresponding to that angle:
-		final Point out = new Point(centerPoint.x
-				+ (int) (Math.cos(angle) * nWidth), centerPoint.y
-				+ (int) (Math.sin(angle) * nHeight));
-		return out;
-	}
-
-	public Point getMainViewInPoint(NodeView view) {
-		final Point centerPoint = view.getMainView().getCenterPoint();
-		return centerPoint;
-	}
-
+    companion object {
+        private const val USE_COMMON_OUT_POINT_FOR_ROOT_NODE_STRING = "use_common_out_point_for_root_node"
+        var USE_COMMON_OUT_POINT_FOR_ROOT_NODE = Resources.getInstance()
+            .getBoolProperty(USE_COMMON_OUT_POINT_FOR_ROOT_NODE_STRING)
+        var instance: VerticalRootNodeViewLayout? = null
+            get() {
+                if (field == null) field = VerticalRootNodeViewLayout()
+                return field
+            }
+            private set
+    }
 }

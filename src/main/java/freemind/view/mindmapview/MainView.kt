@@ -196,7 +196,7 @@ abstract class MainView internal constructor() : JLabel() {
         return super.getWidth()
     }
 
-    protected abstract val centerPoint: Point?
+    abstract val centerPoint: Point?
     abstract val leftPoint: Point?
     abstract val rightPoint: Point?
 

@@ -16,191 +16,181 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package freemind.view.mindmapview
 
-package freemind.view.mindmapview;
+import freemind.modes.EdgeAdapter
+import freemind.modes.MindMapNode
+import java.awt.Component
+import java.awt.Container
+import java.awt.Dimension
+import java.awt.LayoutManager
+import javax.swing.JComponent
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.LayoutManager;
+internal class NodeViewFactory // Singleton
+private constructor() {
+    private class ContentPane() : JComponent() {
+        init {
+            layout = layoutManager
+        }
 
-import javax.swing.JComponent;
+        companion object {
+            private val layoutManager: LayoutManager = ContentPaneLayout()
+        }
+    }
 
-import freemind.modes.EdgeAdapter;
-import freemind.modes.MindMapNode;
+    private class ContentPaneLayout : LayoutManager {
+        override fun addLayoutComponent(name: String, comp: Component) {}
+        override fun layoutContainer(parent: Container) {
+            val componentCount = parent.componentCount
+            val width = parent.width
+            var y = 0
+            for (i in 0 until componentCount) {
+                val component = parent.getComponent(i)
+                if (component.isVisible) {
+                    val preferredCompSize = component
+                        .preferredSize
+                    if (component is MainView) {
+                        component.setBounds(
+                            0, y, width,
+                            preferredCompSize.height
+                        )
+                    } else {
+                        val x = (component.alignmentX * (width - preferredCompSize.width)).toInt()
+                        component.setBounds(
+                            x, y, preferredCompSize.width,
+                            preferredCompSize.height
+                        )
+                    }
+                    y += preferredCompSize.height
+                }
+            }
+        }
 
-class NodeViewFactory {
+        override fun minimumLayoutSize(parent: Container): Dimension {
+            return preferredLayoutSize(parent)
+        }
 
-	@SuppressWarnings("serial")
-	private static class ContentPane extends JComponent {
-		static private LayoutManager layoutManager = new ContentPaneLayout();
+        override fun preferredLayoutSize(parent: Container): Dimension {
+            val prefSize = Dimension(0, 0)
+            val componentCount = parent.componentCount
+            for (i in 0 until componentCount) {
+                val component = parent.getComponent(i)
+                if (component.isVisible) {
+                    val preferredCompSize = component
+                        .preferredSize
+                    prefSize.height += preferredCompSize.height
+                    prefSize.width = Math.max(
+                        prefSize.width,
+                        preferredCompSize.width
+                    )
+                }
+            }
+            return prefSize
+        }
 
-		ContentPane() {
-			setLayout(layoutManager);
-		}
-	}
+        override fun removeLayoutComponent(comp: Component) {}
+    }
 
-	private static class ContentPaneLayout implements LayoutManager {
+    private var sharpBezierEdgeView: EdgeView? = null
+        get() {
+            if (field == null) {
+                field = SharpBezierEdgeView()
+            }
+            return field
+        }
+    private var sharpLinearEdgeView: EdgeView? = null
+        get() {
+            if (field == null) {
+                field = SharpLinearEdgeView()
+            }
+            return field
+        }
+    private var bezierEdgeView: EdgeView? = null
+        get() {
+            if (field == null) {
+                field = BezierEdgeView()
+            }
+            return field
+        }
+    private var linearEdgeView: EdgeView? = null
+        get() {
+            if (field == null) {
+                field = LinearEdgeView()
+            }
+            return field
+        }
 
-		public void addLayoutComponent(String name, Component comp) {
-		}
+    fun getEdge(newView: NodeView): EdgeView {
+        val edgeStyle = newView.model.edge.styleAsInt
+        return when (edgeStyle) {
+            EdgeAdapter.INT_EDGESTYLE_LINEAR -> linearEdgeView!!
+            EdgeAdapter.INT_EDGESTYLE_BEZIER -> bezierEdgeView!!
+            EdgeAdapter.INT_EDGESTYLE_SHARP_LINEAR -> sharpLinearEdgeView!!
+            EdgeAdapter.INT_EDGESTYLE_SHARP_BEZIER -> sharpBezierEdgeView!!
+            else -> linearEdgeView!!
+        }
+    }
 
-		public void layoutContainer(Container parent) {
-			final int componentCount = parent.getComponentCount();
-			final int width = parent.getWidth();
-			int y = 0;
-			for (int i = 0; i < componentCount; i++) {
-				final Component component = parent.getComponent(i);
-				if (component.isVisible()) {
-					final Dimension preferredCompSize = component
-							.getPreferredSize();
-					if (component instanceof MainView) {
-						component.setBounds(0, y, width,
-								preferredCompSize.height);
-					} else {
-						int x = (int) (component.getAlignmentX() * (width - preferredCompSize.width));
-						component.setBounds(x, y, preferredCompSize.width,
-								preferredCompSize.height);
-					}
-					y += preferredCompSize.height;
-				}
-			}
-		}
+    /**
+     * Factory method which creates the right NodeView for the model.
+     */
+    fun newNodeView(
+        model: MindMapNode?,
+        map: MapView,
+        parent: Container?
+    ): NodeView? {
+        if (model != null) {
+            val newView = NodeView(model, map, parent!!)
+            if (model.isRoot) {
+                val mainView: MainView = RootMainView()
+                newView.setMainView(mainView)
+                newView.layout = VerticalRootNodeViewLayout.instance
+            } else {
+                newView.setMainView(newMainView(model))
+                if (newView.isLeft) {
+                    newView.layout = LeftNodeViewLayout.instance
+                } else {
+                    newView.layout = RightNodeViewLayout.instance
+                }
+            }
+            map.addViewer(model, newView)
+            newView.update()
+            fireNodeViewCreated(newView)
+            return newView
+        } else return null
+    }
 
-		public Dimension minimumLayoutSize(Container parent) {
-			return preferredLayoutSize(parent);
-		}
+    fun newMainView(model: MindMapNode): MainView {
+        if (model.isRoot) {
+            return RootMainView()
+        }
+        return if (model.style == MindMapNode.STYLE_FORK) {
+            ForkMainView()
+        } else if (model.style == MindMapNode.STYLE_BUBBLE) {
+            BubbleMainView()
+        } else {
+            System.err.println("Tried to create a NodeView of unknown Style.")
+            ForkMainView()
+        }
+    }
 
-		public Dimension preferredLayoutSize(Container parent) {
-			final Dimension prefSize = new Dimension(0, 0);
-			final int componentCount = parent.getComponentCount();
-			for (int i = 0; i < componentCount; i++) {
-				final Component component = parent.getComponent(i);
-				if (component.isVisible()) {
-					final Dimension preferredCompSize = component
-							.getPreferredSize();
-					prefSize.height += preferredCompSize.height;
-					prefSize.width = Math.max(prefSize.width,
-							preferredCompSize.width);
-				}
-			}
-			return prefSize;
-		}
+    private fun fireNodeViewCreated(newView: NodeView) {
+        newView.map.viewFeedback
+            .onViewCreatedHook(newView)
+    }
 
-		public void removeLayoutComponent(Component comp) {
-		}
+    fun newContentPane(): JComponent {
+        return ContentPane()
+    }
 
-	}
-
-	private static NodeViewFactory factory;
-	private EdgeView sharpBezierEdgeView;
-	private EdgeView sharpLinearEdgeView;
-	private EdgeView bezierEdgeView;
-	private EdgeView linearEdgeView;
-
-	// Singleton
-	private NodeViewFactory() {
-
-	}
-
-	static NodeViewFactory getInstance() {
-		if (factory == null) {
-			factory = new NodeViewFactory();
-		}
-		return factory;
-	}
-
-	EdgeView getEdge(NodeView newView) {
-		final int edgeStyle = newView.getModel().getEdge().getStyleAsInt();
-		switch(edgeStyle) {
-		case EdgeAdapter.INT_EDGESTYLE_LINEAR:
-			return getLinearEdgeView();
-		case EdgeAdapter.INT_EDGESTYLE_BEZIER:
-			return getBezierEdgeView();
-		case EdgeAdapter.INT_EDGESTYLE_SHARP_LINEAR:
-			return getSharpLinearEdgeView();
-		case EdgeAdapter.INT_EDGESTYLE_SHARP_BEZIER:
-			return getSharpBezierEdgeView();
-		default:
-			return getLinearEdgeView();
-		}
-	}
-
-	private EdgeView getSharpBezierEdgeView() {
-		if (sharpBezierEdgeView == null) {
-			sharpBezierEdgeView = new SharpBezierEdgeView();
-		}
-		return sharpBezierEdgeView;
-	}
-
-	private EdgeView getSharpLinearEdgeView() {
-		if (sharpLinearEdgeView == null) {
-			sharpLinearEdgeView = new SharpLinearEdgeView();
-		}
-		return sharpLinearEdgeView;
-	}
-
-	private EdgeView getBezierEdgeView() {
-		if (bezierEdgeView == null) {
-			bezierEdgeView = new BezierEdgeView();
-		}
-		return bezierEdgeView;
-	}
-
-	private EdgeView getLinearEdgeView() {
-		if (linearEdgeView == null) {
-			linearEdgeView = new LinearEdgeView();
-		}
-		return linearEdgeView;
-	}
-
-	/**
-	 * Factory method which creates the right NodeView for the model.
-	 */
-	NodeView newNodeView(MindMapNode model, int position, MapView map,
-			Container parent) {
-		NodeView newView = new NodeView(model, map, parent);
-
-		if (model.isRoot()) {
-			final MainView mainView = new RootMainView();
-			newView.setMainView(mainView);
-			newView.setLayout(VerticalRootNodeViewLayout.getInstance());
-
-		} else {
-			newView.setMainView(newMainView(model));
-			if (newView.isLeft()) {
-				newView.setLayout(LeftNodeViewLayout.getInstance());
-			} else {
-				newView.setLayout(RightNodeViewLayout.getInstance());
-			}
-		}
-
-		map.addViewer(model, newView);
-		newView.update();
-		fireNodeViewCreated(newView);
-		return newView;
-	}
-
-	MainView newMainView(MindMapNode model) {
-		if (model.isRoot()) {
-			return new RootMainView();
-		}
-		if (model.getStyle().equals(MindMapNode.STYLE_FORK)) {
-			return new ForkMainView();
-		} else if (model.getStyle().equals(MindMapNode.STYLE_BUBBLE)) {
-			return new BubbleMainView();
-		} else {
-			System.err.println("Tried to create a NodeView of unknown Style.");
-			return new ForkMainView();
-		}
-	}
-
-	private void fireNodeViewCreated(NodeView newView) {
-		newView.getMap().getViewFeedback()
-				.onViewCreatedHook(newView);
-	}
-
-	JComponent newContentPane(NodeView view) {
-		return new ContentPane();
-	}
+    companion object {
+        private var factory: NodeViewFactory? = null
+        val instance: NodeViewFactory?
+            get() {
+                if (factory == null) {
+                    factory = NodeViewFactory()
+                }
+                return factory
+            }
+    }
 }

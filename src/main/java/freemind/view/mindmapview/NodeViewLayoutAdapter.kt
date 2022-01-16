@@ -65,7 +65,7 @@ abstract class NodeViewLayoutAdapter : NodeViewLayout {
     /**
      * @return Returns the vGap.
      */
-    var vGap = 0
+    var vGap: Int? = 0
         private set
 
     /**
@@ -86,14 +86,14 @@ abstract class NodeViewLayoutAdapter : NodeViewLayout {
 
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.awt.LayoutManager#removeLayoutComponent(java.awt.Component)
 	 */
     override fun removeLayoutComponent(arg0: Component) {}
 
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.awt.LayoutManager#minimumLayoutSize(java.awt.Container)
 	 */
     override fun minimumLayoutSize(arg0: Container): Dimension {
@@ -103,7 +103,7 @@ abstract class NodeViewLayoutAdapter : NodeViewLayout {
 
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.awt.LayoutManager#preferredLayoutSize(java.awt.Container)
 	 */
     override fun preferredLayoutSize(c: Container): Dimension {
@@ -118,7 +118,7 @@ abstract class NodeViewLayoutAdapter : NodeViewLayout {
         layout()
         val location2 = view!!.location
         Tools.convertPointToAncestor(view, location2, view!!.map)
-        //		logger.info("Layouting node '" + view.getModel() + "' to " + location2);
+        // 		logger.info("Layouting node '" + view.getModel() + "' to " + location2);
         layoutOtherItems()
         shutDown()
     }
@@ -146,13 +146,13 @@ abstract class NodeViewLayoutAdapter : NodeViewLayout {
             localView.getComponent(i).validate()
         }
         view = localView
-        model = localView.getModel()
+        model = localView.model
         childCount = localChildCount
         content = localView.content
         if (model?.isVisible() ?: false) {
             vGap = view!!.vGap
         } else {
-            vGap = view!!.visibleParentView.vGap
+            vGap = view!!.visibleParentView?.vGap
         }
         spaceAround = view!!.map.getZoomed(NodeView.SPACE_AROUND)
     }
@@ -180,13 +180,13 @@ abstract class NodeViewLayoutAdapter : NodeViewLayout {
                 if (child.isLeft == isLeft) {
                     val additionalCloudHeigth = child
                         .additionalCloudHeigth
-                    val contentHeight = child.content.height
-                    height += contentHeight + additionalCloudHeigth
+                    val contentHeight = child.content?.height
+                    height = height + (contentHeight?.plus(additionalCloudHeigth) ?: 0)
                     count++
                 }
             }
         }
-        return height + vGap * (count - 1)
+        return height + (vGap?.times(count - 1) ?: 0)
     }
 
     /**
@@ -207,7 +207,7 @@ abstract class NodeViewLayoutAdapter : NodeViewLayout {
                         shift += childShift
                         isFirstNodeView = false
                     }
-                    shift -= child.content.y - spaceAround
+                    shift -= child.content?.y?.minus(spaceAround) ?: 0
                     foundNodeView = true
                 }
             }
@@ -228,14 +228,15 @@ abstract class NodeViewLayoutAdapter : NodeViewLayout {
                     val child = component
                     var shiftCandidate: Int
                     if (child.isLeft) {
-                        shiftCandidate = (-child.content.x
-                                - child.content.width)
+                        shiftCandidate = (0.minus(child.content?.x ?: 0) - (child.content?.width ?: 0))
                         if (child.isContentVisible) {
-                            shiftCandidate -= (child.hGap
-                                    + child.additionalCloudHeigth / 2)
+                            shiftCandidate -= (
+                                child.hGap +
+                                    child.additionalCloudHeigth / 2
+                                )
                         }
                     } else {
-                        shiftCandidate = -child.content.x
+                        shiftCandidate = 0.minus(child.content?.x ?: 0)
                         if (child.isContentVisible) {
                             shiftCandidate += child.hGap
                         }
@@ -266,9 +267,9 @@ abstract class NodeViewLayoutAdapter : NodeViewLayout {
                 val additionalCloudHeigth = child.additionalCloudHeigth / 2
                 y += additionalCloudHeigth
                 val shiftY = child.shift
-                val childHGap = if (child.content.isVisible) child
+                val childHGap = if (child.content?.isVisible ?: false) child
                     .hGap else 0
-                val x = baseX + childHGap - child.content.x
+                val x = baseX + childHGap - (child.content?.x ?: 0)
                 if (shiftY < 0) {
                     child.setLocation(x, y)
                     y -= shiftY
@@ -276,24 +277,29 @@ abstract class NodeViewLayoutAdapter : NodeViewLayout {
                     y += shiftY
                     child.setLocation(x, y)
                 }
-                //				logger.info("Place of child " + component.getModel().getText() + ": " + child.getLocation());
-                y += (child.height - 2 * spaceAround + vGap
-                        + additionalCloudHeigth)
+                // 				logger.info("Place of child " + component.getModel().getText() + ": " + child.getLocation());
+                y += (
+                    child.height - 2 * spaceAround + (vGap ?: 0) +
+                        additionalCloudHeigth
+                    )
                 right = Math.max(
-                    right, x + child.width
-                            + additionalCloudHeigth
+                    right,
+                    x + child.width +
+                        additionalCloudHeigth
                 )
             }
         }
-        val bottom = (content!!.y + content!!.height
-                + spaceAround)
+        val bottom = (
+            content!!.y + content!!.height +
+                spaceAround
+            )
         if (child != null) {
             view!!.setSize(
                 right,
                 Math.max(
                     bottom,
-                    child.y + child.height
-                            + child.additionalCloudHeigth / 2
+                    child.y + child.height +
+                        child.additionalCloudHeigth / 2
                 )
             )
         } else {
@@ -321,10 +327,12 @@ abstract class NodeViewLayoutAdapter : NodeViewLayout {
                 val additionalCloudHeigth = child.additionalCloudHeigth / 2
                 y += additionalCloudHeigth
                 val shiftY = child.shift
-                val childHGap = if (child.content.isVisible) child
+                val childHGap = if (child.content?.isVisible ?: false) child
                     .hGap else 0
-                val x = (baseX - childHGap - child.content.x
-                        - child.content.width)
+                val x = (
+                    baseX - childHGap - (child.content?.x ?: 0) -
+                        (child.content?.width ?: 0)
+                    )
                 if (shiftY < 0) {
                     child.setLocation(x, y)
                     y -= shiftY
@@ -332,20 +340,24 @@ abstract class NodeViewLayoutAdapter : NodeViewLayout {
                     y += shiftY
                     child.setLocation(x, y)
                 }
-                y += (child.height - 2 * spaceAround + vGap
-                        + additionalCloudHeigth)
+                y += (
+                    child.height - 2 * spaceAround + (vGap ?: 0) +
+                        additionalCloudHeigth
+                    )
                 right = Math.max(right, x + child.width)
             }
         }
-        val bottom = (content!!.y + content!!.height
-                + spaceAround)
+        val bottom = (
+            content!!.y + content!!.height +
+                spaceAround
+            )
         if (child != null) {
             view!!.setSize(
                 right,
                 Math.max(
                     bottom,
-                    child.y + child.height
-                            + child.additionalCloudHeigth / 2
+                    child.y + child.height +
+                        child.additionalCloudHeigth / 2
                 )
             )
         } else {

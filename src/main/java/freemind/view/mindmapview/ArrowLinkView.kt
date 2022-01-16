@@ -38,7 +38,7 @@ import java.awt.geom.Rectangle2D
 /**
  * This class represents a ArrowLink around a node.
  */
-class ArrowLinkView     /* Note, that source and target are nodeviews and not nodemodels!. */(
+class ArrowLinkView /* Note, that source and target are nodeviews and not nodemodels!. */(
     /**
      * fc: This getter is public, because the view gets the model by click on
      * the curve.
@@ -49,7 +49,7 @@ class ArrowLinkView     /* Note, that source and target are nodeviews and not no
 ) {
     protected var iterativeLevel = 0
     @JvmField
-	var arrowLinkCurve: CubicCurve2D? = null
+    var arrowLinkCurve: CubicCurve2D? = null
     val bounds: Rectangle
         get() = if (arrowLinkCurve == null) Rectangle() else arrowLinkCurve!!.bounds
 
@@ -84,13 +84,13 @@ class ArrowLinkView     /* Note, that source and target are nodeviews and not no
             targetIsLeft = target!!.isLeft
         }
         // determine point 2 and 3:
-        if (model.endInclination == null
-            || model.startInclination == null
+        if (model.endInclination == null ||
+            model.startInclination == null
         ) {
             val dellength: Double? = if (isSourceVisible && isTargetVisible) p1
                 ?.distance(p2)?.div(zoom) else 30.0
-            if (isSourceVisible
-                && model.startInclination == null
+            if (isSourceVisible &&
+                model.startInclination == null
             ) {
                 val incl = calcInclination(dellength)
                 model.startInclination = incl
@@ -107,10 +107,10 @@ class ArrowLinkView     /* Note, that source and target are nodeviews and not no
         if (p1 != null) {
             p3 = Point(p1)
             p3.translate(
-                (if (sourceIsLeft) -1 else 1)
-                        * map.getZoomed(
-                    model.startInclination.x
-                ),
+                (if (sourceIsLeft) -1 else 1) *
+                    map.getZoomed(
+                        model.startInclination.x
+                    ),
                 map.getZoomed(model.startInclination.y)
             )
             if (p2 == null) {
@@ -120,10 +120,10 @@ class ArrowLinkView     /* Note, that source and target are nodeviews and not no
         if (p2 != null) {
             p4 = Point(p2)
             p4.translate(
-                (if (targetIsLeft) -1 else 1)
-                        * map.getZoomed(
-                    model.endInclination.x
-                ),
+                (if (targetIsLeft) -1 else 1) *
+                    map.getZoomed(
+                        model.endInclination.x
+                    ),
                 map.getZoomed(model.endInclination.y)
             )
             if (p1 == null) {
@@ -143,8 +143,8 @@ class ArrowLinkView     /* Note, that source and target are nodeviews and not no
             paintArrow(p2, p4, g)
         }
         // Control Points
-        if (model.showControlPointsFlag || !isSourceVisible
-            || !isTargetVisible
+        if (model.showControlPointsFlag || !isSourceVisible ||
+            !isTargetVisible
         ) {
             g.stroke = BasicStroke(
                 width.toFloat(), BasicStroke.CAP_ROUND,
@@ -193,12 +193,14 @@ class ArrowLinkView     /* Note, that source and target are nodeviews and not no
         val dyn: Double
         dx = (p3!!.x - p1!!.x).toDouble() /* direction of p1 -> p3 */
         dy = (p3.y - p1.y).toDouble()
-        val length = Math.sqrt(dx * dx + dy * dy) / (zoom * 10 /*
+        val length = Math.sqrt(dx * dx + dy * dy) / (
+            zoom * 10 /*
 																	 * =zoom
 																	 * factor
 																	 * for
 																	 * arrows
-																	 */)
+																	 */
+            )
         dxn = dx / length /* normalized direction of p1 -> p3 */
         dyn = dy / length
         // suggestion of daniel to have arrows that are not so wide open. fc,
@@ -207,12 +209,20 @@ class ArrowLinkView     /* Note, that source and target are nodeviews and not no
         val p = Polygon()
         p.addPoint(p1.x, p1.y)
         p.addPoint(
-            (p1.x + dxn + width * dyn).toInt(), (p1.y + dyn - width
-                    * dxn).toInt()
+            (p1.x + dxn + width * dyn).toInt(),
+            (
+                p1.y + dyn - width
+                    * dxn
+                ).toInt()
         )
         p.addPoint(
-            (p1.x + dxn - width * dyn).toInt(), (p1.y + dyn + (width
-                    * dxn)).toInt()
+            (p1.x + dxn - width * dyn).toInt(),
+            (
+                p1.y + dyn + (
+                    width
+                        * dxn
+                    )
+                ).toInt()
         )
         p.addPoint(p1.x, p1.y)
         g.fillPolygon(p)
@@ -300,7 +310,7 @@ class ArrowLinkView     /* Note, that source and target are nodeviews and not no
     protected val map: MapView
         get() = if (source == null) target!!.map else source!!.map
     protected val zoom: Double
-        get() = map.zoom.toDouble()
+        get() = map.getZoom().toDouble()
 
     /**
      */

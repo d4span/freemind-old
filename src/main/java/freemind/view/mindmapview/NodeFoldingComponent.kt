@@ -17,312 +17,323 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: NodeMotionListenerView.java,v 1.1.4.4.4.9 2009/03/29 19:37:23 christianfoltin Exp $*/
-package freemind.view.mindmapview;
+package freemind.view.mindmapview
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.geom.Ellipse2D;
-
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultButtonModel;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.Timer;
-import javax.swing.plaf.basic.BasicButtonListener;
-import javax.swing.plaf.basic.BasicButtonUI;
-
-import freemind.main.FreeMind;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.main.FreeMind
+import freemind.main.Resources
+import freemind.main.Tools
+import java.awt.Color
+import java.awt.Dimension
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.Point
+import java.awt.Shape
+import java.awt.event.ActionListener
+import java.awt.event.MouseEvent
+import java.awt.event.MouseListener
+import java.awt.geom.Ellipse2D
+import java.util.logging.Logger
+import javax.swing.AbstractButton
+import javax.swing.BorderFactory
+import javax.swing.DefaultButtonModel
+import javax.swing.JButton
+import javax.swing.JComponent
+import javax.swing.Timer
+import javax.swing.plaf.basic.BasicButtonListener
+import javax.swing.plaf.basic.BasicButtonUI
 
 /**
  * @author Foltin
- * 
  */
-@SuppressWarnings("serial")
-public class NodeFoldingComponent extends JButton {
-	private static final int TIMER_DELAY = 50;
-	private static final int COLOR_COUNTER_MAX = 15;
-	private static final int SIZE_FACTOR_ON_MOUSE_OVER = 4;
-	protected static java.util.logging.Logger logger = null;
-	private boolean mIsEntered;
-	private int mColorCounter = 0;
-	private NodeView nodeView;
-	private boolean mIsEnabled = true;
-	private Timer mTimer = null;
+class NodeFoldingComponent(view: NodeView) : JButton() {
+    private var mIsEntered = false
+    private var mColorCounter = 0
+    val nodeView: NodeView
+    private var mIsEnabled = true
+    private var mTimer: Timer? = null
 
-	public NodeFoldingComponent(NodeView view) {
-		super();
-		if (logger == null) {
-			logger = freemind.main.Resources.getInstance().getLogger(
-					this.getClass().getName());			
-		}
-		this.nodeView = view;
-		setModel(new DefaultButtonModel());
-		init(null, null);
-		setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-		setBackground(Color.BLACK);
-		setContentAreaFilled(false);
-		setFocusPainted(false);
-		setFocusable(false);
-		setAlignmentY(Component.TOP_ALIGNMENT);
-		setUI(new RoundImageButtonUI());
-		mIsEnabled = Resources.getInstance().getBoolProperty(
-				FreeMind.RESOURCES_DISPLAY_FOLDING_BUTTONS);
-		if (mIsEnabled) {
-			addMouseListener(new MouseListener() {
-	
-				public void mouseReleased(MouseEvent pE) {
-				}
-	
-				public void mousePressed(MouseEvent pE) {
-				}
-	
-				public void mouseExited(MouseEvent pE) {
-					mIsEntered = false;
-					mColorCounter = COLOR_COUNTER_MAX;
-					repaint();
-				}
-	
-				public void mouseEntered(MouseEvent pE) {
-					mIsEntered = true;
-					startTimer();
-					repaint();
-				}
-	
-				public void mouseClicked(MouseEvent pE) {
-				}
-			});
-			int delay = TIMER_DELAY;
-			ActionListener taskPerformer = new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					if (mIsEntered && mColorCounter < COLOR_COUNTER_MAX) {
-						mColorCounter++;
-						repaint();
-					}
-					if (!mIsEntered && mColorCounter > 0) {
-						mColorCounter--;
-						if(mColorCounter == 0) {
-							stopTimer();
-						}
-						repaint();
-					}
-	
-				}
-			};
-			mTimer = new Timer(delay, taskPerformer);
-		}
-	}
+    init {
+        if (logger == null) {
+            logger = Resources.getInstance().getLogger(
+                this.javaClass.name
+            )
+        }
+        nodeView = view
+        setModel(DefaultButtonModel())
+        init(null, null)
+        border = BorderFactory.createEmptyBorder(1, 1, 1, 1)
+        background = Color.BLACK
+        isContentAreaFilled = false
+        isFocusPainted = false
+        isFocusable = false
+        alignmentY = TOP_ALIGNMENT
+        setUI(RoundImageButtonUI())
+        mIsEnabled = Resources.getInstance().getBoolProperty(
+            FreeMind.RESOURCES_DISPLAY_FOLDING_BUTTONS
+        )
+        if (mIsEnabled) {
+            addMouseListener(object : MouseListener {
+                override fun mouseReleased(pE: MouseEvent) {}
+                override fun mousePressed(pE: MouseEvent) {}
+                override fun mouseExited(pE: MouseEvent) {
+                    mIsEntered = false
+                    mColorCounter = COLOR_COUNTER_MAX
+                    repaint()
+                }
 
-	public Dimension getPreferredSize() {
-		return getUI().getPreferredSize(this);
-	}
+                override fun mouseEntered(pE: MouseEvent) {
+                    mIsEntered = true
+                    startTimer()
+                    repaint()
+                }
 
-	/**
-	 * @return
-	 */
-	private int getZoomedCircleRadius() {
-		return nodeView.getZoomedFoldingSymbolHalfWidth();
-	}
+                override fun mouseClicked(pE: MouseEvent) {}
+            })
+            val delay = TIMER_DELAY
+            val taskPerformer = ActionListener {
+                if (mIsEntered && mColorCounter < COLOR_COUNTER_MAX) {
+                    mColorCounter++
+                    repaint()
+                }
+                if (!mIsEntered && mColorCounter > 0) {
+                    mColorCounter--
+                    if (mColorCounter == 0) {
+                        stopTimer()
+                    }
+                    repaint()
+                }
+            }
+            mTimer = Timer(delay, taskPerformer)
+        }
+    }
 
-	class RoundImageButtonUI extends BasicButtonUI {
-		protected Shape shape, base;
+    override fun getPreferredSize(): Dimension {
+        return getUI().getPreferredSize(this)
+    }
 
-		protected void installDefaults(AbstractButton b) {
-			super.installDefaults(b);
-			clearTextShiftOffset();
-			defaultTextShiftOffset = 0;
-			b.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-			b.setContentAreaFilled(false);
-			b.setFocusPainted(false);
-			b.setOpaque(false);
-			b.setBackground(Color.BLACK);
-			b.setAlignmentY(Component.TOP_ALIGNMENT);
-			initShape(b);
-		}
+    /**
+     * @return
+     */
+    private val zoomedCircleRadius: Int
+        get() = nodeView.zoomedFoldingSymbolHalfWidth
 
-		/* Is called by a button class automatically.*/
-		protected void installListeners(AbstractButton b) {
-			BasicButtonListener listener = new BasicButtonListener(b) {
+    internal inner class RoundImageButtonUI : BasicButtonUI() {
+        protected var shape: Shape? = null
+        protected var base: Shape? = null
+        override fun installDefaults(b: AbstractButton) {
+            super.installDefaults(b)
+            clearTextShiftOffset()
+            defaultTextShiftOffset = 0
+            b.border = BorderFactory.createEmptyBorder(1, 1, 1, 1)
+            b.isContentAreaFilled = false
+            b.isFocusPainted = false
+            b.isOpaque = false
+            b.background = Color.BLACK
+            b.alignmentY = TOP_ALIGNMENT
+            initShape(b)
+        }
 
-				public void mousePressed(MouseEvent e) {
-					AbstractButton b = (AbstractButton) e.getSource();
-					initShape(b);
-					if (shape.contains(e.getX(), e.getY())) {
-						super.mousePressed(e);
-					}
-				}
+        /* Is called by a button class automatically.*/
+        override fun installListeners(b: AbstractButton) {
+            val listener: BasicButtonListener = object : BasicButtonListener(b) {
+                override fun mousePressed(e: MouseEvent) {
+                    val button = e.source as AbstractButton
+                    initShape(button)
+                    if (shape!!.contains(e.x.toDouble(), e.y.toDouble())) {
+                        super.mousePressed(e)
+                    }
+                }
 
-				public void mouseEntered(MouseEvent e) {
-					AbstractButton b = (AbstractButton) e.getSource();
-					initShape(b);
-					if (shape.contains(e.getX(), e.getY())) {
-						super.mouseEntered(e);
-					}
-				}
+                override fun mouseEntered(e: MouseEvent) {
+                    val button = e.source as AbstractButton
+                    initShape(button)
+                    if (shape!!.contains(e.x.toDouble(), e.y.toDouble())) {
+                        super.mouseEntered(e)
+                    }
+                }
 
-				public void mouseMoved(MouseEvent e) {
-					AbstractButton b = (AbstractButton) e.getSource();
-					initShape(b);
-					if (shape.contains(e.getX(), e.getY())) {
-						super.mouseEntered(e);
-					} else {
-						super.mouseExited(e);
-					}
-				}
-			};
-			b.addMouseListener(listener);
-			b.addMouseMotionListener(listener);
-			b.addFocusListener(listener);
-			b.addPropertyChangeListener(listener);
-			b.addChangeListener(listener);
-		}
+                override fun mouseMoved(e: MouseEvent) {
+                    val button = e.source as AbstractButton
+                    initShape(button)
+                    if (shape!!.contains(e.x.toDouble(), e.y.toDouble())) {
+                        super.mouseEntered(e)
+                    } else {
+                        super.mouseExited(e)
+                    }
+                }
+            }
+            b.addMouseListener(listener)
+            b.addMouseMotionListener(listener)
+            b.addFocusListener(listener)
+            b.addPropertyChangeListener(listener)
+            b.addChangeListener(listener)
+        }
 
-		public void paint(Graphics g, JComponent c) {
-			super.paint(g, c);
-			Graphics2D g2 = (Graphics2D) g;
-			initShape(c);
-			// Border
-			Object oldRenderingHint = nodeView.getMap()
-					.setEdgesRenderingHint(g2);
-			g2.setColor(c.getBackground());
-			g2.setStroke(BubbleMainView.DEF_STROKE);
-			NodeFoldingComponent b = (NodeFoldingComponent) c;
-			Rectangle bounds = shape.getBounds();
-			Color col = getColorForCounter();
-			Color lineColor = nodeView.getModel().getEdge().getColor();
-			if (b.mIsEntered) {
-				Color oldColor = g2.getColor();
-				g2.setColor(nodeView.getMap().getBackground());
-				g2.fillOval(bounds.x, bounds.y, bounds.width, bounds.height);
-				g2.setColor(lineColor);
-				int xmiddle = bounds.x + bounds.width / 2;
-				int ymiddle = bounds.y + bounds.height / 2;
-				g2.drawLine(bounds.x, ymiddle, bounds.x + bounds.width, ymiddle);
-				if (isFolded()) {
-					g2.drawLine(xmiddle, bounds.y, xmiddle, bounds.y
-							+ bounds.height);
-				}
-				g2.draw(shape);
-				g2.setColor(oldColor);
-			} else {
-				int xmiddle = bounds.x + bounds.width / 2;
-				int ymiddle = bounds.y + bounds.height / 2;
-				int foldingCircleDiameter = bounds.width
-						/ SIZE_FACTOR_ON_MOUSE_OVER;
-				Color oldColor = g2.getColor();
-				if (mColorCounter != 0) {
-					int diameter = bounds.width * mColorCounter
-							/ COLOR_COUNTER_MAX;
-					if (isFolded()) {
-						diameter = Math.max(diameter, foldingCircleDiameter);
-					}
-					int radius = diameter / 2;
-					g2.setColor(nodeView.getMap().getBackground());
-					g2.fillOval(xmiddle - radius, ymiddle - radius, diameter,
-							diameter);
-					g2.setColor(col);
-					if (isFolded()) {
-						g2.drawLine(xmiddle, ymiddle - radius, xmiddle, ymiddle
-								+ radius);
-					}
-					g2.drawLine(xmiddle - radius, ymiddle, xmiddle + radius,
-							ymiddle);
-					g2.setColor(lineColor);
-					g2.drawOval(xmiddle - radius, ymiddle - radius, diameter,
-							diameter);
-					g2.setColor(oldColor);
-				} else {
-					if (isFolded()) {
-						int radius = foldingCircleDiameter / 2;
-						g2.setColor(nodeView.getMap().getBackground());
-						g2.fillOval(xmiddle - radius, ymiddle - radius,
-								foldingCircleDiameter, foldingCircleDiameter);
-						g2.setColor(lineColor);
-						g2.drawOval(xmiddle - radius, ymiddle - radius,
-								foldingCircleDiameter, foldingCircleDiameter);
-						g2.setColor(oldColor);
-					}
-				}
-			}
-			Tools.restoreAntialiasing(g2, oldRenderingHint);
-		}
+        override fun paint(g: Graphics, c: JComponent) {
+            super.paint(g, c)
+            val g2 = g as Graphics2D
+            initShape(c)
+            // Border
+            val oldRenderingHint = nodeView.map
+                .setEdgesRenderingHint(g2)
+            g2.color = c.background
+            g2.stroke = BubbleMainView.DEF_STROKE
+            val b = c as NodeFoldingComponent
+            val bounds = shape!!.bounds
+            val col = colorForCounter
+            val lineColor = nodeView.model.edge.color
+            if (b.mIsEntered) {
+                val oldColor = g2.color
+                g2.color = nodeView.map.background
+                g2.fillOval(bounds.x, bounds.y, bounds.width, bounds.height)
+                g2.color = lineColor
+                val xmiddle = bounds.x + bounds.width / 2
+                val ymiddle = bounds.y + bounds.height / 2
+                g2.drawLine(bounds.x, ymiddle, bounds.x + bounds.width, ymiddle)
+                if (isFolded) {
+                    g2.drawLine(
+                        xmiddle, bounds.y, xmiddle,
+                        bounds.y +
+                            bounds.height
+                    )
+                }
+                g2.draw(shape)
+                g2.color = oldColor
+            } else {
+                val xmiddle = bounds.x + bounds.width / 2
+                val ymiddle = bounds.y + bounds.height / 2
+                val foldingCircleDiameter = (
+                    bounds.width /
+                        SIZE_FACTOR_ON_MOUSE_OVER
+                    )
+                val oldColor = g2.color
+                if (mColorCounter != 0) {
+                    var diameter = (
+                        bounds.width * mColorCounter /
+                            COLOR_COUNTER_MAX
+                        )
+                    if (isFolded) {
+                        diameter = Math.max(diameter, foldingCircleDiameter)
+                    }
+                    val radius = diameter / 2
+                    g2.color = nodeView.map.background
+                    g2.fillOval(
+                        xmiddle - radius, ymiddle - radius, diameter,
+                        diameter
+                    )
+                    g2.color = col
+                    if (isFolded) {
+                        g2.drawLine(
+                            xmiddle, ymiddle - radius, xmiddle,
+                            ymiddle +
+                                radius
+                        )
+                    }
+                    g2.drawLine(
+                        xmiddle - radius, ymiddle, xmiddle + radius,
+                        ymiddle
+                    )
+                    g2.color = lineColor
+                    g2.drawOval(
+                        xmiddle - radius, ymiddle - radius, diameter,
+                        diameter
+                    )
+                    g2.color = oldColor
+                } else {
+                    if (isFolded) {
+                        val radius = foldingCircleDiameter / 2
+                        g2.color = nodeView.map.background
+                        g2.fillOval(
+                            xmiddle - radius, ymiddle - radius,
+                            foldingCircleDiameter, foldingCircleDiameter
+                        )
+                        g2.color = lineColor
+                        g2.drawOval(
+                            xmiddle - radius, ymiddle - radius,
+                            foldingCircleDiameter, foldingCircleDiameter
+                        )
+                        g2.color = oldColor
+                    }
+                }
+            }
+            Tools.restoreAntialiasing(g2, oldRenderingHint)
+        }
 
-		/**
-		 * @return
-		 */
-		private Color getColorForCounter() {
-			Color color = nodeView.getModel().getEdge().getColor();
+        /**
+         * @return
+         */
+        private val colorForCounter: Color
+            get() {
+                val color = nodeView.model.edge.color
+                val col = 16 * mColorCounter
+                return Color(
+                    color.red, color.green,
+                    color.blue, col
+                )
+            }
 
-			int col = 16 * mColorCounter;
-			return new Color((int) (color.getRed()), (int) (color.getGreen()),
-					(int) (color.getBlue()), col);
-		}
+        override fun getPreferredSize(c: JComponent): Dimension {
+            val b = c as JButton
+            val i = b.insets
+            val iw = (zoomedCircleRadius * 2f * SIZE_FACTOR_ON_MOUSE_OVER).toInt()
+            return Dimension(iw + i.right + i.left, iw + i.top + i.bottom)
+        }
 
-		public Dimension getPreferredSize(JComponent c) {
-			JButton b = (JButton) c;
-			Insets i = b.getInsets();
-			int iw = (int) (getZoomedCircleRadius() * 2f * SIZE_FACTOR_ON_MOUSE_OVER);
-			return new Dimension(iw + i.right + i.left, iw + i.top + i.bottom);
-		}
+        private fun initShape(c: JComponent) {
+            if (c.bounds != base) {
+                val s = c.preferredSize
+                base = c.bounds
+                shape = Ellipse2D.Float(0F, 0F, (s.width - 1).toFloat(), (s.height - 1).toFloat())
+            }
+        }
+    }
 
-		private void initShape(JComponent c) {
-			if (!c.getBounds().equals(base)) {
-				Dimension s = c.getPreferredSize();
-				base = c.getBounds();
-				shape = new Ellipse2D.Float(0, 0, s.width - 1, s.height - 1);
-			}
-		}
-	}
+    fun setCorrectedLocation(p: Point?) {
+        if (p != null) {
+            val zoomedCircleRadius = zoomedCircleRadius
+            val left = nodeView.model.isLeft
+            val xCorrection = (zoomedCircleRadius * (SIZE_FACTOR_ON_MOUSE_OVER + if (left) +1f else -1f)).toInt()
+            setLocation(
+                p.x - xCorrection,
+                (
+                    p.y - zoomedCircleRadius
+                        * SIZE_FACTOR_ON_MOUSE_OVER
+                    )
+            )
+        }
+    }
 
-	public NodeView getNodeView() {
-		return nodeView;
-	}
+    fun dispose() {
+        if (mTimer != null) {
+            stopTimer()
+            mTimer = null
+        }
+    }
 
-	public void setCorrectedLocation(Point p) {
-		int zoomedCircleRadius = getZoomedCircleRadius();
-		boolean left = nodeView.getModel().isLeft();
-		int xCorrection = (int) (zoomedCircleRadius * (SIZE_FACTOR_ON_MOUSE_OVER + ((left) ? +1f
-				: -1f)));
-		setLocation(p.x - xCorrection, (int) (p.y - zoomedCircleRadius
-				* SIZE_FACTOR_ON_MOUSE_OVER));
-	}
+    protected val isFolded: Boolean
+        get() {
+            val model = nodeView.model
+            return model.isFolded && model.isVisible
+        }
 
-	public void dispose() {
-		if (mTimer != null) {
-			stopTimer();
-			mTimer = null;
-		}
-	}
+    @Synchronized
+    protected fun startTimer() {
+        if (!mTimer!!.isRunning) {
+            mTimer!!.start()
+        }
+    }
 
-	protected boolean isFolded() {
-		MindMapNode model = nodeView.getModel();
-		return model.isFolded() && model.isVisible();
-	}
+    @Synchronized
+    protected fun stopTimer() {
+        if (mTimer!!.isRunning) {
+            mTimer!!.stop()
+        }
+    }
 
-	protected synchronized void startTimer() {
-		if (!mTimer.isRunning()) {
-			mTimer.start();
-		}
-	}
-
-	protected synchronized void stopTimer() {
-		if (mTimer.isRunning()) {
-			mTimer.stop();
-		}
-	}
-
+    companion object {
+        private const val TIMER_DELAY = 50
+        private const val COLOR_COUNTER_MAX = 15
+        private const val SIZE_FACTOR_ON_MOUSE_OVER = 4
+        protected var logger: Logger? = null
+    }
 }

@@ -22,6 +22,47 @@ package plugins.map;
 
 //License: GPL. Copyright 2008 by Jan Peter Stotz
 
+import freemind.common.FreeMindTask;
+import freemind.common.XmlBindingTools;
+import freemind.controller.MenuItemEnabledListener;
+import freemind.controller.MenuItemSelectedListener;
+import freemind.controller.StructuredMenuHolder;
+import freemind.controller.actions.generated.instance.Place;
+import freemind.controller.actions.generated.instance.Reversegeocode;
+import freemind.controller.actions.generated.instance.Searchresults;
+import freemind.extensions.ExportHook;
+import freemind.main.Resources;
+import freemind.main.Tools;
+import freemind.modes.MindMapNode;
+import freemind.modes.ModeController;
+import freemind.modes.common.plugins.MapNodePositionHolderBase;
+import freemind.modes.mindmapmode.MindMapController;
+import freemind.view.mindmapview.EditNodeBase;
+import freemind.view.mindmapview.EditNodeTextField;
+import freemind.view.mindmapview.NodeView;
+import org.openstreetmap.gui.jmapviewer.Coordinate;
+import org.openstreetmap.gui.jmapviewer.JMapController;
+import org.openstreetmap.gui.jmapviewer.JMapViewer;
+import org.openstreetmap.gui.jmapviewer.OsmMercator;
+import org.openstreetmap.gui.jmapviewer.interfaces.TileSource;
+import org.openstreetmap.gui.jmapviewer.tilesources.AbstractOsmTileSource;
+import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
+import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource.Mapnik;
+
+import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JTable;
+import javax.swing.KeyStroke;
+import javax.swing.Timer;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -58,49 +99,6 @@ import java.util.Locale;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
-import javax.swing.Timer;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
-
-import org.openstreetmap.gui.jmapviewer.Coordinate;
-import org.openstreetmap.gui.jmapviewer.JMapController;
-import org.openstreetmap.gui.jmapviewer.JMapViewer;
-import org.openstreetmap.gui.jmapviewer.OsmMercator;
-import org.openstreetmap.gui.jmapviewer.interfaces.TileSource;
-import org.openstreetmap.gui.jmapviewer.tilesources.AbstractOsmTileSource;
-import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
-import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource.Mapnik;
-
-import freemind.common.FreeMindTask;
-import freemind.common.XmlBindingTools;
-import freemind.controller.MenuItemEnabledListener;
-import freemind.controller.MenuItemSelectedListener;
-import freemind.controller.StructuredMenuHolder;
-import freemind.controller.actions.generated.instance.Place;
-import freemind.controller.actions.generated.instance.Reversegeocode;
-import freemind.controller.actions.generated.instance.Searchresults;
-import freemind.extensions.ExportHook;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.modes.MindMapNode;
-import freemind.modes.ModeController;
-import freemind.modes.common.plugins.MapNodePositionHolderBase;
-import freemind.modes.mindmapmode.MindMapController;
-import freemind.view.mindmapview.EditNodeBase;
-import freemind.view.mindmapview.EditNodeTextField;
-import freemind.view.mindmapview.NodeView;
 
 /**
  * Default map controller which implements map moving by pressing the right
@@ -368,7 +366,7 @@ public class FreeMindMapController extends JMapController implements
 
 		protected void addTextfield() {
 			// add to front to make it visible over the map.
-			mParent.add(textfield);
+			getMParent().add(textfield);
 		}
 	}
 

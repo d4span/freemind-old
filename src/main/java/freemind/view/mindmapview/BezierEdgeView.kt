@@ -34,16 +34,20 @@ class BezierEdgeView : EdgeView() {
         // above or below source.
         val sign = if (target!!.isLeft) -1 else 1
         var sourceSign = 1
-        if (source!!.isRoot
-            && !VerticalRootNodeViewLayout.USE_COMMON_OUT_POINT_FOR_ROOT_NODE
+        if (source!!.isRoot &&
+            !VerticalRootNodeViewLayout.USE_COMMON_OUT_POINT_FOR_ROOT_NODE
         ) {
             sourceSign = 0
         }
         val xctrl = map.getZoomed(sourceSign * sign * XCTRL)
         val childXctrl = map.getZoomed(-1 * sign * CHILD_XCTRL)
         graph.setCurve(
-            start!!.x.toFloat(), start!!.y.toFloat(), (start!!.x + xctrl).toFloat(), start!!.y.toFloat(), (end!!.x
-                    + childXctrl).toFloat(), end!!.y.toFloat(), end!!.x.toFloat(), end!!.y.toFloat()
+            start!!.x.toFloat(), start!!.y.toFloat(), (start!!.x + xctrl).toFloat(), start!!.y.toFloat(),
+            (
+                end!!.x +
+                    childXctrl
+                ).toFloat(),
+            end!!.y.toFloat(), end!!.x.toFloat(), end!!.y.toFloat()
         )
     }
 

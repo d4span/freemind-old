@@ -82,7 +82,7 @@ class RootMainView extends MainView {
 
 	public void paintSelected(Graphics2D graphics) {
 		if (getNodeView().useSelectionColors()) {
-			paintBackground(graphics, getNodeView().getSelectedColor());
+			paintBackground(graphics, NodeView.Companion.getSelectedColor());
 		} else {
 			paintBackground(graphics, getNodeView().getTextBackground());
 		}

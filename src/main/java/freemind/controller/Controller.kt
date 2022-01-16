@@ -494,7 +494,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
             view!!.selectAsTheOnlyOneSelected(view!!.root)
         }
         lastOpenedList!!.mapOpened(newMapModule)
-        changeZoomValueProperty(newMapModule?.view?.zoom)
+        changeZoomValueProperty(newMapModule?.view?.getZoom())
         // ((MainToolBar) getToolbar()).setZoomComboBox(zoomValue);
         // old
         // obtainFocusForSelected();
@@ -720,7 +720,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     // other
     //
     fun setZoom(zoom: Float) {
-        view!!.zoom = zoom
+        view!!.setZoom(zoom)
         changeZoomValueProperty(zoom)
         // ((MainToolBar) toolbar).setZoomComboBox(zoom);
         // show text in status bar:
@@ -1407,7 +1407,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         AbstractAction(controller.getResourceString("zoom_in")) {
         override fun actionPerformed(e: ActionEvent) {
             // logger.info("ZoomInAction actionPerformed");
-            val currentZoom = view!!.zoom
+            val currentZoom = view!!.getZoom()
             for (i in zoomValues.indices) {
                 val `val` = zoomValues[i]
                 if (`val` > currentZoom) {
@@ -1422,7 +1422,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     protected inner class ZoomOutAction(controller: Controller) :
         AbstractAction(controller.getResourceString("zoom_out")) {
         override fun actionPerformed(e: ActionEvent) {
-            val currentZoom = view!!.zoom
+            val currentZoom = view!!.getZoom()
             var lastZoom = zoomValues[0]
             for (i in zoomValues.indices) {
                 val `val` = zoomValues[i]

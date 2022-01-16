@@ -159,7 +159,7 @@ class NodeViewFactory {
 	 */
 	NodeView newNodeView(MindMapNode model, int position, MapView map,
 			Container parent) {
-		NodeView newView = new NodeView(model, position, map, parent);
+		NodeView newView = new NodeView(model, map, parent);
 
 		if (model.isRoot()) {
 			final MainView mainView = new RootMainView();

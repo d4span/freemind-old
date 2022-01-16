@@ -66,12 +66,12 @@ abstract class EdgeView {
 
     protected fun createEnd() {
         end = target!!.mainViewInPoint
-        Tools.convertPointToAncestor(target!!.mainView, end, source)
+        Tools.convertPointToAncestor(target!!.getMainView(), end, source)
     }
 
     protected open fun createStart() {
         start = source!!.getMainViewOutPoint(target, end)
-        Tools.convertPointToAncestor(source!!.mainView, start, source)
+        Tools.convertPointToAncestor(source!!.getMainView(), start, source)
     }
 
     protected abstract fun paint(g: Graphics2D?)
@@ -87,14 +87,14 @@ abstract class EdgeView {
             return if (width == EdgeAdapter.WIDTH_THIN) {
                 DEF_STROKE
             } else BasicStroke(
-                width * map.zoom,
+                width * map.getZoom(),
                 BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER
             )
         }
     val width: Int
         get() = model.width
     protected val model: MindMapEdge
-        get() = target!!.getModel().edge
+        get() = target!!.model.edge
     protected val map: MapView
         get() = target!!.map
     protected val isTargetEclipsed: Boolean

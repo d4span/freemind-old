@@ -48,8 +48,10 @@ import javax.swing.JTextArea
  */
 @Suppress("DEPRECATION")
 class EditNodeDialog(
-    node: NodeView?, text: String?,
-    private val firstEvent: KeyEvent, controller: ModeController?,
+    node: NodeView?,
+    text: String?,
+    private val firstEvent: KeyEvent,
+    controller: ModeController?,
     editControl: EditControl?
 ) : EditNodeBase((node)!!, (text)!!, (controller)!!, (editControl)!!) {
     internal open inner class LongNodeDialog() : EditDialog(this@EditNodeDialog) {
@@ -70,23 +72,27 @@ class EditNodeDialog(
             // Integer(getFrame().getProperty("el__default_window_height")).intValue();
             var preferredHeight = node.height
             preferredHeight = Math.max(
-                preferredHeight, frame.getProperty(
+                preferredHeight,
+                frame.getProperty(
                     "el__min_default_window_height"
                 ).toInt()
             )
             preferredHeight = Math.min(
-                preferredHeight, frame.getProperty(
+                preferredHeight,
+                frame.getProperty(
                     "el__max_default_window_height"
                 ).toInt()
             )
             var preferredWidth = node.width
             preferredWidth = Math.max(
-                preferredWidth, frame.getProperty(
+                preferredWidth,
+                frame.getProperty(
                     "el__min_default_window_width"
                 ).toInt()
             )
             preferredWidth = Math.min(
-                preferredWidth, frame.getProperty(
+                preferredWidth,
+                frame.getProperty(
                     "el__max_default_window_width"
                 ).toInt()
             )
@@ -149,13 +155,17 @@ class EditNodeDialog(
                         e.consume()
                         confirmedCancel()
                     } else if (e.keyCode == KeyEvent.VK_ENTER) {
-                        if ((enterConfirms.isSelected
-                                    && (e.modifiers and KeyEvent.SHIFT_MASK) != 0)
+                        if ((
+                            enterConfirms.isSelected &&
+                                (e.modifiers and KeyEvent.SHIFT_MASK) != 0
+                            )
                         ) {
                             e.consume()
                             textArea.insert("\n", textArea.caretPosition)
-                        } else if ((enterConfirms.isSelected
-                                    || ((e.modifiers and KeyEvent.ALT_MASK) != 0))
+                        } else if ((
+                            enterConfirms.isSelected ||
+                                ((e.modifiers and KeyEvent.ALT_MASK) != 0)
+                            )
                         ) {
                             e.consume()
                             submit()
@@ -195,7 +205,7 @@ class EditNodeDialog(
             })
             var font = node.textFont
             font = Tools.updateFontSize(
-                font, view.zoom,
+                font, view.getZoom(),
                 font.size
             )
             textArea.font = font
@@ -240,7 +250,7 @@ class EditNodeDialog(
 
         /*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see freemind.view.mindmapview.EditNodeBase.Dialog#cancel()
 		 */
         override fun cancel() {
@@ -250,7 +260,7 @@ class EditNodeDialog(
 
         /*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see freemind.view.mindmapview.EditNodeBase.Dialog#split()
 		 */
         override fun split() {
@@ -263,7 +273,7 @@ class EditNodeDialog(
 
         /*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see freemind.view.mindmapview.EditNodeBase.Dialog#submit()
 		 */
         override fun submit() {
@@ -273,7 +283,7 @@ class EditNodeDialog(
 
         /*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see freemind.view.mindmapview.EditNodeBase.Dialog#isChanged()
 		 */
         override val isChanged: Boolean

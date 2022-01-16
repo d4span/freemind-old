@@ -17,108 +17,110 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: MindMapLayout.java,v 1.15.14.5.4.12 2007/04/21 15:11:23 dpolivaev Exp $*/
+package freemind.view.mindmapview
 
-package freemind.view.mindmapview;
-
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.LayoutManager;
+import freemind.main.Resources
+import java.awt.Component
+import java.awt.Container
+import java.awt.Dimension
+import java.awt.LayoutManager
+import java.util.logging.Logger
 
 /**
  * This class will Layout the Nodes and Edges of an MapView.
  */
-public class MindMapLayout implements LayoutManager {
+class MindMapLayout : LayoutManager {
+    init {
+        if (logger == null) {
+            logger = Resources.getInstance().getLogger(
+                this.javaClass.name
+            )
+        }
+    }
 
-	final static int BORDER = 30;// width of the border around the map.
-	// minimal width for input field of leaf or folded node (PN)
-	// the MINIMAL_LEAF_WIDTH is reserved by calculation of the map width
-	public final static int MINIMAL_LEAF_WIDTH = 150;
-	protected static java.util.logging.Logger logger = null;
+    override fun addLayoutComponent(name: String, comp: Component) {}
+    override fun removeLayoutComponent(comp: Component) {}
+    override fun layoutContainer(c: Container) {
+        val mapView = c as MapView
+        val calcXBorderSize = calcXBorderSize(mapView)
+        val calcYBorderSize = calcYBorderSize(mapView)
+        getRoot(mapView)!!.validate()
+        getRoot(mapView)!!.setLocation(calcXBorderSize, calcYBorderSize)
+        mapView.setSize(
+            calcXBorderSize * 2 + getRoot(mapView)!!.width,
+            calcYBorderSize * 2 + getRoot(mapView)!!.height
+        )
+        val componentCount = mapView.componentCount
+        for (i in 0 until componentCount) {
+            val component = mapView.getComponent(i)
+            if (!component.isValid) {
+                component.validate()
+            }
+        }
+    }
 
-	public MindMapLayout() {
-		if (logger == null) {
-			logger = freemind.main.Resources.getInstance().getLogger(
-					this.getClass().getName());
-		}
-	}
+    //
+    // Absolute positioning
+    //
+    //
+    // Get Methods
+    //
+    private fun getRoot(c: Container): NodeView? {
+        return (c as MapView).root
+    }
 
-	public void addLayoutComponent(String name, Component comp) {
-	}
+    // This is actually never used.
+    override fun minimumLayoutSize(parent: Container): Dimension {
+        return Dimension(200, 200)
+    } // For testing Purposes
 
-	public void removeLayoutComponent(Component comp) {
-	}
+    override fun preferredLayoutSize(c: Container): Dimension {
+        val mapView = c as MapView
+        val preferredSize = mapView.root!!.preferredSize
+        return Dimension(
+            2 * calcXBorderSize(mapView) + preferredSize.width,
+            2 *
+                calcYBorderSize(mapView) + preferredSize.height
+        )
+    }
 
-	public void layoutContainer(Container c) {
-		final MapView mapView = (MapView) c;
-		final int calcXBorderSize = calcXBorderSize(mapView);
-		final int calcYBorderSize = calcYBorderSize(mapView);
-		getRoot(mapView).validate();
-		getRoot(mapView).setLocation(calcXBorderSize, calcYBorderSize);
-		mapView.setSize(calcXBorderSize * 2 + getRoot(mapView).getWidth(),
-				calcYBorderSize * 2 + getRoot(mapView).getHeight());
-		final int componentCount = mapView.getComponentCount();
-		for (int i = 0; i < componentCount; i++) {
-			final Component component = mapView.getComponent(i);
-			if (!component.isValid()) {
-				component.validate();
-			}
-		}
-	}
+    /**
+     * @param map
+     * TODO
+     */
+    private fun calcYBorderSize(map: MapView): Int {
+        val yBorderSize: Int
+        val minBorderHeight = map.getZoomed(BORDER)
+        val visibleSize = map.viewportSize
+        yBorderSize = if (visibleSize != null) {
+            Math.max(visibleSize.height, minBorderHeight)
+        } else {
+            minBorderHeight
+        }
+        return yBorderSize
+    }
 
-	//
-	// Absolute positioning
-	//
+    private fun calcXBorderSize(map: MapView): Int {
+        val xBorderSize: Int
+        val visibleSize = map.viewportSize
+        val minBorderWidth = map.getZoomed(
+            BORDER +
+                MINIMAL_LEAF_WIDTH
+        )
+        xBorderSize = if (visibleSize != null) {
+            Math.max(visibleSize.width, minBorderWidth)
+        } else {
+            minBorderWidth
+        }
+        return xBorderSize
+    }
 
-	//
-	// Get Methods
-	//
+    companion object {
+        const val BORDER = 30 // width of the border around the map.
 
-	private NodeView getRoot(Container c) {
-		return ((MapView) c).getRoot();
-	}
-
-	// This is actually never used.
-	public Dimension minimumLayoutSize(Container parent) {
-		return new Dimension(200, 200);
-	} // For testing Purposes
-
-	public Dimension preferredLayoutSize(Container c) {
-		final MapView mapView = (MapView) c;
-		final Dimension preferredSize = mapView.getRoot().getPreferredSize();
-		return new Dimension(
-				2 * calcXBorderSize(mapView) + preferredSize.width, 2
-						* calcYBorderSize(mapView) + preferredSize.height);
-	}
-
-	/**
-	 * @param map
-	 *            TODO
-	 */
-	private int calcYBorderSize(MapView map) {
-		int yBorderSize;
-		final int minBorderHeight = map.getZoomed(MindMapLayout.BORDER);
-		Dimension visibleSize = map.getViewportSize();
-		if (visibleSize != null) {
-			yBorderSize = Math.max(visibleSize.height, minBorderHeight);
-		} else {
-			yBorderSize = minBorderHeight;
-		}
-		return yBorderSize;
-	}
-
-	private int calcXBorderSize(MapView map) {
-		int xBorderSize;
-		Dimension visibleSize = map.getViewportSize();
-		final int minBorderWidth = map.getZoomed(MindMapLayout.BORDER
-				+ MindMapLayout.MINIMAL_LEAF_WIDTH);
-		if (visibleSize != null) {
-			xBorderSize = Math.max(visibleSize.width, minBorderWidth);
-		} else {
-			xBorderSize = minBorderWidth;
-
-		}
-		return xBorderSize;
-	}
-
-}// class MindMapLayout
+        // minimal width for input field of leaf or folded node (PN)
+        // the MINIMAL_LEAF_WIDTH is reserved by calculation of the map width
+        const val MINIMAL_LEAF_WIDTH = 150
+        protected var logger: Logger? = null
+    }
+} // class MindMapLayout

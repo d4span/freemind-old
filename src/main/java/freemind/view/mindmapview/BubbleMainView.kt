@@ -31,7 +31,7 @@ import java.awt.Stroke
 internal class BubbleMainView : MainView() {
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.view.mindmapview.NodeView.MainView#getPreferredSize()
 	 */
     override fun getPreferredSize(): Dimension {
@@ -43,7 +43,7 @@ internal class BubbleMainView : MainView() {
     override fun paint(g: Graphics) {
         val graphics2D = g as Graphics2D
         val nodeView = nodeView
-        val model = nodeView.getModel() ?: return
+        val model = nodeView.model
         val renderingHint = nodeView.map.setEdgesRenderingHint(graphics2D)
         paintSelected(graphics2D)
         paintDragOver(graphics2D)
@@ -96,19 +96,19 @@ internal class BubbleMainView : MainView() {
         get() {
             var width = width
             val dW = zoomedFoldingSymbolHalfWidth * 2
-            if (nodeView.getModel().isFolded) {
+            if (nodeView.model.isFolded) {
                 width += dW
             }
             return width + dW
         }
     override val deltaX: Int
-        get() = if (nodeView.getModel().isFolded && nodeView.isLeft) {
+        get() = if (nodeView.model.isFolded && nodeView.isLeft) {
             super.deltaX + zoomedFoldingSymbolHalfWidth * 2
         } else super.deltaX
 
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.view.mindmapview.NodeView#getStyle()
 	 */
     override val style: String
@@ -122,7 +122,7 @@ internal class BubbleMainView : MainView() {
 
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.view.mindmapview.NodeView#getTextWidth()
 	 */
     override val textWidth: Int
@@ -130,7 +130,7 @@ internal class BubbleMainView : MainView() {
 
     /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.view.mindmapview.NodeView#getTextX()
 	 */
     override val textX: Int
@@ -138,6 +138,6 @@ internal class BubbleMainView : MainView() {
 
     companion object {
         @JvmField
-		val DEF_STROKE: Stroke = BasicStroke()
+        val DEF_STROKE: Stroke = BasicStroke()
     }
 }

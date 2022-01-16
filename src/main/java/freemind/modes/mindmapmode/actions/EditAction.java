@@ -25,13 +25,6 @@
  */
 package freemind.modes.mindmapmode.actions;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.util.Vector;
-import java.util.regex.Pattern;
-
-import javax.swing.JOptionPane;
-
 import freemind.common.OptionalDontShowMeAgainDialog;
 import freemind.main.FreeMind;
 import freemind.main.HtmlTools;
@@ -45,6 +38,12 @@ import freemind.view.mindmapview.EditNodeTextField;
 import freemind.view.mindmapview.EditNodeWYSIWYG;
 import freemind.view.mindmapview.MapView;
 import freemind.view.mindmapview.NodeView;
+
+import javax.swing.JOptionPane;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.Vector;
+import java.util.regex.Pattern;
 
 //
 //Node editing
@@ -103,7 +102,7 @@ public class EditAction extends MindmapAction {
 				.getProperty("html_editing_option");
 
 		boolean isHtmlNode = HtmlTools.isHtmlNode(text);
-		boolean isLongNode = node.getIsLong();
+		boolean isLongNode = node.isLong();
 
 		// do we need a decision if plain or HTML editing?
 		String useRichTextInNewLongNodes = (isHtmlNode) ? "true" : "false";

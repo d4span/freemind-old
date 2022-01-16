@@ -24,7 +24,8 @@ import java.awt.Point
 interface NodeViewLayout : LayoutManager {
     fun layoutNodeMotionListenerView(view: NodeMotionListenerView?)
     fun getMainViewOutPoint(
-        view: NodeView?, targetView: NodeView?,
+        view: NodeView?,
+        targetView: NodeView?,
         destinationPoint: Point?
     ): Point?
 

@@ -17,90 +17,83 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: NodeMotionListenerView.java,v 1.1.4.4.4.9 2009/03/29 19:37:23 christianfoltin Exp $*/
-package freemind.view.mindmapview;
+package freemind.view.mindmapview
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Stroke;
-
-import javax.swing.JComponent;
-
-import freemind.main.Resources;
-import freemind.main.Tools;
+import freemind.main.Resources
+import freemind.main.Tools
+import java.awt.BasicStroke
+import java.awt.Color
+import java.awt.Cursor
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.util.logging.Logger
+import javax.swing.JComponent
 
 /**
- * 
+ *
  * The oval appearing to move nodes to other positions.
- * 
+ *
  * @author Dimitri
- * 
  */
-@SuppressWarnings("serial")
-public class NodeMotionListenerView extends JComponent {
-	protected static java.util.logging.Logger logger = null;
-	public NodeMotionListenerView(NodeView view) {
-		super();
-		if (logger == null) {
-			logger = freemind.main.Resources.getInstance().getLogger(
-					this.getClass().getName());
-		}
-		this.movedView = view;
-		MapView map = view.getMap();
-		addMouseListener(map.getNodeMotionListener());
-		addMouseMotionListener(map.getNodeMotionListener());
-		// fc, 16.6.2005: to emphasis the possible movement.
-		this.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-		final String helpMsg = Resources.getInstance().getResourceString(
-				"node_location_help");
-		this.setToolTipText(helpMsg);
-	}
+class NodeMotionListenerView(view: NodeView) : JComponent() {
+    val movedView: NodeView
+    var isMouseEntered = false
+        private set
 
-	private NodeView movedView;
-	private boolean isMouseEntered;
+    init {
+        if (logger == null) {
+            logger = Resources.getInstance().getLogger(
+                this.javaClass.name
+            )
+        }
+        movedView = view
+        val map = view.map
+        addMouseListener(map.nodeMotionListener)
+        addMouseMotionListener(map.nodeMotionListener)
+        // fc, 16.6.2005: to emphasis the possible movement.
+        cursor = Cursor(Cursor.MOVE_CURSOR)
+        val helpMsg = Resources.getInstance().getResourceString(
+            "node_location_help"
+        )
+        this.toolTipText = helpMsg
+    }
 
-	public NodeView getMovedView() {
-		return movedView;
-	}
+    public override fun paintComponent(g: Graphics) {
+        super.paintComponent(g)
+        if (isMouseEntered) {
+            val g2 = g as Graphics2D
+            // set antialiasing.
+            val renderingHint = movedView.map.setEdgesRenderingHint(g2)
+            val color = g2.color
+            val oldStroke = g2.stroke
+            g2.stroke = BasicStroke()
+            if (movedView.model.hGap <= 0) {
+                g2.color = Color.RED
+                g.fillOval(0, 0, width - 1, height - 1)
+            } else {
+                g2.color = Color.BLACK
+                g.drawOval(0, 0, width - 1, height - 1)
+            }
+            g2.stroke = oldStroke
+            g2.color = color
+            Tools.restoreAntialiasing(g2, renderingHint)
+        }
+    }
 
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		if (isMouseEntered()) {
-			Graphics2D g2 = (Graphics2D) g;
-			// set antialiasing.
-			Object renderingHint = movedView.getMap().setEdgesRenderingHint(g2);
-			Color color = g2.getColor();
-			Stroke oldStroke = g2.getStroke();
-			g2.setStroke(new BasicStroke());
-			if (movedView.getModel().getHGap() <= 0) {
-				g2.setColor(Color.RED);
-				g.fillOval(0, 0, getWidth() - 1, getHeight() - 1);
-			} else {
-				g2.setColor(Color.BLACK);
-				g.drawOval(0, 0, getWidth() - 1, getHeight() - 1);
-			}
-			g2.setStroke(oldStroke);
-			g2.setColor(color);
-			Tools.restoreAntialiasing(g2, renderingHint);
-		}
-	}
+    fun setMouseEntered() {
+        isMouseEntered = true
+        // fc, 13.3.2008: variable is not used:
+        // final FreeMindMain frame =
+        // movedView.getMap().getModel().getModeController().getFrame();
+        repaint()
+    }
 
-	public boolean isMouseEntered() {
-		return isMouseEntered;
-	}
+    fun setMouseExited() {
+        isMouseEntered = false
+        repaint()
+    }
 
-	public void setMouseEntered() {
-		this.isMouseEntered = true;
-		// fc, 13.3.2008: variable is not used:
-		// final FreeMindMain frame =
-		// movedView.getMap().getModel().getModeController().getFrame();
-		repaint();
-	}
-
-	public void setMouseExited() {
-		this.isMouseEntered = false;
-		repaint();
-	}
+    companion object {
+        protected var logger: Logger? = null
+    }
 }

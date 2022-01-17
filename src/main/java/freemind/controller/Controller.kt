@@ -760,13 +760,13 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
             rawTitle = mapModule.toString()
             title = (
                 rawTitle +
-                    (if (model.isSaved) "" else "*") +
+                    (if (model?.isSaved ?: false) "" else "*") +
                     " - " +
                     title +
-                    if (model.isReadOnly) " (" +
+                    if (model?.isReadOnly ?: false) " (" +
                         getResourceString("read_only") + ")" else ""
                 )
-            val file = model.file
+            val file = model?.file
             if (file != null) {
                 title += " " + file.absolutePath
             }
@@ -841,8 +841,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
         // move to first map in the window.
         val mapModuleVector = mapModuleManager!!.getMapModuleVector()
         if (mapModuleVector.size > 0) {
-            val displayName = (mapModuleVector[0] as MapModule)
-                .displayName
+            val displayName = (mapModuleVector[0] as MapModule).displayName
             mapModuleManager!!.changeToMapModule(displayName)
         }
         while (mapModuleVector.size > 0) {
@@ -985,7 +984,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
     private inner class PrintAction internal constructor(controller: Controller, isDlg: Boolean) : AbstractAction(
         if (isDlg) controller.getResourceString("print_dialog") else controller.getResourceString("print"),
-        ImageFactory.getInstance().createIcon(
+        ImageFactory.instance?.createIcon(
             getResource("images/fileprint.png")
         )
     ) {
@@ -1228,7 +1227,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     //
     private inner class NavigationPreviousMapAction internal constructor(controller: Controller) : AbstractAction(
         controller.getResourceString("previous_map"),
-        ImageFactory.getInstance().createIcon(
+        ImageFactory.instance?.createIcon(
             getResource("images/1leftarrow.png")
         )
     ) {
@@ -1243,7 +1242,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
     private inner class ShowFilterToolbarAction internal constructor() : AbstractAction(
         getResourceString("filter_toolbar"),
-        ImageFactory.getInstance().createIcon(
+        ImageFactory.instance?.createIcon(
             getResource("images/filter.gif")
         )
     ) {
@@ -1258,7 +1257,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
     private inner class NavigationNextMapAction internal constructor(controller: Controller) : AbstractAction(
         controller.getResourceString("next_map"),
-        ImageFactory.getInstance().createIcon(
+        ImageFactory.instance?.createIcon(
             getResource("images/1rightarrow.png")
         )
     ) {
@@ -1273,7 +1272,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
     private inner class NavigationMoveMapLeftAction internal constructor(controller: Controller) : AbstractAction(
         controller.getResourceString("move_map_left"),
-        ImageFactory.getInstance().createIcon(
+        ImageFactory.instance?.createIcon(
             getResource("images/draw-arrow-back.png")
         )
     ) {
@@ -1292,7 +1291,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
     private inner class NavigationMoveMapRightAction internal constructor(controller: Controller) : AbstractAction(
         controller.getResourceString("move_map_right"),
-        ImageFactory.getInstance().createIcon(getResource("images/draw-arrow-forward.png"))
+        ImageFactory.instance?.createIcon(getResource("images/draw-arrow-forward.png"))
     ) {
         init {
             isEnabled = false
@@ -1468,7 +1467,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
 
     /**
      */
-    val map: MindMap
+    val map: MindMap?
         get() = mapModule!!.model
 
     /**
@@ -1594,7 +1593,7 @@ class Controller(var frame: FreeMindMain) : MapModuleChangeObserver {
     inner class OpenURLAction internal constructor(var c: Controller, description: String?, private val url: String) :
         AbstractAction(
             description,
-            ImageFactory.getInstance().createIcon(
+            ImageFactory.instance?.createIcon(
                 c.getResource("images/Link.png")
             )
         ) {

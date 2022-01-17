@@ -17,67 +17,66 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package freemind.view
 
-package freemind.view;
-
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-
-import javax.swing.ImageIcon;
-
-import freemind.main.Resources;
-import freemind.main.Tools;
+import freemind.main.Resources
+import freemind.main.Tools
+import java.io.IOException
+import java.net.URL
+import javax.swing.ImageIcon
 
 /**
  * @author foltin
  * @date 24.05.2015
  */
-public class ImageFactory {
-	private static ImageFactory mInstance = null;
+class ImageFactory {
+    fun createIcon(pUrl: URL?): ImageIcon {
+        if (Tools.getScalingFactorPlain() == 100) {
+            return createUnscaledIcon(pUrl)
+        }
+        val icon = ScalableImageIcon(pUrl)
+        icon.scale = Tools.getScalingFactor()
+        return icon
+    }
 
-	public static ImageFactory getInstance() {
-		if (mInstance == null) {
-			mInstance = new ImageFactory();
-		}
-		return mInstance;
-	}
+    /**
+     * All icons directly displayed in the mindmap view are scaled by the zoom.
+     */
+    fun createUnscaledIcon(pResource: URL?): ImageIcon {
+        return ImageIcon(pResource)
+    }
 
-	public ImageIcon createIcon(URL pUrl){
-		if(Tools.getScalingFactorPlain()==100){
-			return createUnscaledIcon(pUrl);
-		}
-		ScalableImageIcon icon = new ScalableImageIcon(pUrl);
-		icon.setScale(Tools.getScalingFactor());
-		return icon;
-	}
+    /**
+     * @param pString
+     * @return
+     */
+    fun createIcon(pFilePath: String): ImageIcon {
+        if (Tools.getScalingFactorPlain() == 200) {
+            // test for existence  of a scaled icon:
+            if (pFilePath.endsWith(".png")) {
+                try {
+                    val url = Resources.getInstance().getResource(pFilePath.replace(".png$".toRegex(), "_32.png"))
+                    val connection = url.openConnection()
+                    if (connection.contentLength > 0) {
+                        return createUnscaledIcon(url)
+                    }
+                } catch (e: IOException) {
+                    Resources.getInstance().logException(e)
+                }
+            }
+        }
+        return createIcon(Resources.getInstance().getResource(pFilePath))
+    }
 
-	/**
-	 * All icons directly displayed in the mindmap view are scaled by the zoom.
-	 */
-	public ImageIcon createUnscaledIcon(URL pResource) {
-		return new ImageIcon(pResource);
-	}
-
-	/**
-	 * @param pString
-	 * @return
-	 */
-	public ImageIcon createIcon(String pFilePath) {
-		if(Tools.getScalingFactorPlain()==200){
-			// test for existence  of a scaled icon:
-			if(pFilePath.endsWith(".png")){
-				try {
-					URL url = Resources.getInstance().getResource(pFilePath.replaceAll(".png$", "_32.png"));
-					URLConnection connection = url.openConnection();
-					if(connection.getContentLength()>0){
-						return createUnscaledIcon(url);
-					}
-				} catch (IOException e) {
-					freemind.main.Resources.getInstance().logException(e);
-				}
-			}
-		}
-		return createIcon(Resources.getInstance().getResource(pFilePath));
-	}
+    companion object {
+        private var mInstance: ImageFactory? = null
+        @JvmStatic
+        val instance: ImageFactory?
+            get() {
+                if (mInstance == null) {
+                    mInstance = ImageFactory()
+                }
+                return mInstance
+            }
+    }
 }

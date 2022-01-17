@@ -124,11 +124,11 @@ open class ThreeCheckBoxProperty(override var description: String?, override var
         const val DON_T_TOUCH_VALUE_INT = 2
         const val TRUE_VALUE_INT = 0
         const val FALSE_VALUE_INT = 1
-        private val PLUS_IMAGE = ImageFactory.getInstance().createIcon(
+        private val PLUS_IMAGE = ImageFactory.instance?.createIcon(
             Resources
                 .getInstance().getResource("images/edit_add.png")
         )
-        private val MINUS_IMAGE = ImageFactory.getInstance().createIcon(
+        private val MINUS_IMAGE = ImageFactory.instance?.createIcon(
             Resources
                 .getInstance().getResource("images/edit_remove.png")
         )

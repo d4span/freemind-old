@@ -62,11 +62,11 @@ class PreviewDialog(title: String?, protected var view: MapView, pPageFormat: Pa
         val imageURL = javaClass.classLoader.getResource(
             "images/$iconName"
         )
-        if (imageURL != null) icon = ImageFactory.getInstance().createIcon(imageURL)
+        if (imageURL != null) icon = ImageFactory.instance?.createIcon(imageURL)
         result = if (action != null) {
             if (icon != null) action.putValue(
                 Action.SMALL_ICON,
-                ImageFactory.getInstance().createIcon(imageURL)
+                ImageFactory.instance?.createIcon(imageURL)
             )
             if (name != null) action.putValue(Action.NAME, name)
             JButton(action)

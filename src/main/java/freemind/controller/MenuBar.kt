@@ -257,7 +257,7 @@ class MenuBar(var c: Controller) : JMenuBar() {
             newItem.isSelected = false
             group.add(newItem)
             newItem.addActionListener(mapsMenuActionListener)
-            newItem.setMnemonic(displayName[0])
+            if (displayName != null) newItem.setMnemonic(displayName[0])
             val currentMapModule = mapModuleManager.mapModule
             if (currentMapModule != null) {
                 if (mapModule === currentMapModule) {

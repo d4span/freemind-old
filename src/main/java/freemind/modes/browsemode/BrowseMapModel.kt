@@ -16,163 +16,159 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package freemind.modes.browsemode
 
+import freemind.modes.ArrowLinkAdapter
+import freemind.modes.ArrowLinkTarget
+import freemind.modes.CloudAdapter
+import freemind.modes.EdgeAdapter
+import freemind.modes.MapAdapter
+import freemind.modes.MapFeedback
+import freemind.modes.MindMap
+import freemind.modes.MindMapLinkRegistry
+import freemind.modes.ModeController
+import freemind.modes.NodeAdapter
+import java.io.File
+import java.io.IOException
+import java.io.Writer
+import java.net.URL
 
-package freemind.modes.browsemode;
+class BrowseMapModel(root: BrowseNodeModel?, modeController: ModeController) : MapAdapter(modeController) {
+    private var url: URL? = null
+    private val linkRegistry: MindMapLinkRegistry
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
-import java.net.URL;
+    init {
+        if (root != null) setRoot(root) else setRoot(
+            BrowseNodeModel(
+                modeController.getResourceString(
+                    "new_mindmap"
+                ),
+                this
+            )
+        )
+        // register new LinkRegistryAdapter
+        linkRegistry = MindMapLinkRegistry()
+    }
 
-import freemind.modes.ArrowLinkAdapter;
-import freemind.modes.ArrowLinkTarget;
-import freemind.modes.CloudAdapter;
-import freemind.modes.EdgeAdapter;
-import freemind.modes.MapAdapter;
-import freemind.modes.MapFeedback;
-import freemind.modes.MindMap;
-import freemind.modes.MindMapLinkRegistry;
-import freemind.modes.ModeController;
-import freemind.modes.NodeAdapter;
+    //
+    // Other methods
+    //
+    override fun getLinkRegistry(): MindMapLinkRegistry {
+        return linkRegistry
+    }
 
-@SuppressWarnings("serial")
-public class BrowseMapModel extends MapAdapter {
+    override fun toString(): String {
+        return getURL().toString()
+    }
 
-	private static final String ENCRYPTED_BROWSE_NODE = EncryptedBrowseNode.class
-			.getName();
-	private URL url;
-	private MindMapLinkRegistry linkRegistry;
+    override fun getFile(): File? {
+        return null
+    }
 
-	public BrowseMapModel(BrowseNodeModel root, ModeController modeController) {
-		super(modeController);
-		if (root != null)
-			setRoot(root);
-		else
-			setRoot(new BrowseNodeModel(modeController.getResourceString(
-					"new_mindmap"), this));
-		// register new LinkRegistryAdapter
-		linkRegistry = new MindMapLinkRegistry();
-	}
+    protected fun setFile() {}
 
-	//
-	// Other methods
-	//
-	public MindMapLinkRegistry getLinkRegistry() {
-		return linkRegistry;
-	}
+    /**
+     * Get the value of url.
+     *
+     * @return Value of url.
+     */
+    override fun getURL(): URL {
+        return url!!
+    }
 
-	public String toString() {
-		if (getURL() == null) {
-			return null;
-		} else {
-			return getURL().toString();
-		}
-	}
+    /**
+     * Set the value of url.
+     *
+     * @param v
+     * Value to assign to url.
+     */
+    fun setURL(v: URL?) {
+        url = v
+    }
 
-	public File getFile() {
-		return null;
-	}
+    override fun save(file: File): Boolean {
+        return true
+    }
 
-	protected void setFile() {
-	}
+    override fun isSaved(): Boolean {
+        return true
+    }
 
-	/**
-	 * Get the value of url.
-	 * 
-	 * @return Value of url.
-	 */
-	public URL getURL() {
-		return url;
-	}
-
-	/**
-	 * Set the value of url.
-	 * 
-	 * @param v
-	 *            Value to assign to url.
-	 */
-	public void setURL(URL v) {
-		this.url = v;
-	}
-
-	public boolean save(File file) {
-		return true;
-	}
-
-	public boolean isSaved() {
-		return true;
-	}
-
-	/*
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.modes.MindMap#setLinkInclinationChanged()
 	 */
-	public void setLinkInclinationChanged() {
-	}
+    fun setLinkInclinationChanged() {}
 
-	/*
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.modes.MindMap#getXml(java.io.Writer)
 	 */
-	public void getXml(Writer fileout) throws IOException {
-		// nothing.
-		// FIXME: Implement me if you need me.
-		throw new RuntimeException("Unimplemented method called.");
-	}
+    @Throws(IOException::class)
+    override fun getXml(fileout: Writer) {
+        // nothing.
+        // FIXME: Implement me if you need me.
+        throw RuntimeException("Unimplemented method called.")
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.modes.MindMap#getFilteredXml(java.io.Writer)
 	 */
-	public void getFilteredXml(Writer fileout) throws IOException {
-		// nothing.
-		// FIXME: Implement me if you need me.
-		throw new RuntimeException("Unimplemented method called.");
-	}
+    @Throws(IOException::class)
+    override fun getFilteredXml(fileout: Writer) {
+        // nothing.
+        // FIXME: Implement me if you need me.
+        throw RuntimeException("Unimplemented method called.")
+    }
 
+    protected fun createNodeAdapter(pMapFeedback: MapFeedback, nodeClass: String?): NodeAdapter {
+        return if (nodeClass === ENCRYPTED_BROWSE_NODE) {
+            EncryptedBrowseNode(null, pMapFeedback)
+        } else BrowseNodeModel(null, pMapFeedback.map)
+    }
 
-	protected NodeAdapter createNodeAdapter(MapFeedback pMapFeedback, String nodeClass) {
-		if (nodeClass == ENCRYPTED_BROWSE_NODE) {
-			return new EncryptedBrowseNode(null, pMapFeedback);
-		}
-		return new BrowseNodeModel(null, pMapFeedback.getMap());
-	}
+    override fun createEdgeAdapter(node: NodeAdapter): EdgeAdapter {
+        return BrowseEdgeModel(node, mMapFeedback)
+    }
 
-	public EdgeAdapter createEdgeAdapter(NodeAdapter node) {
-		return new BrowseEdgeModel(node, mMapFeedback);
-	}
+    override fun createCloudAdapter(node: NodeAdapter): CloudAdapter {
+        return BrowseCloudModel(node, mMapFeedback)
+    }
 
-	public CloudAdapter createCloudAdapter(NodeAdapter node) {
-		return new BrowseCloudModel(node, mMapFeedback);
-	}
+    override fun createArrowLinkAdapter(
+        source: NodeAdapter,
+        target: NodeAdapter
+    ): ArrowLinkAdapter {
+        return BrowseArrowLinkModel(source, target, mMapFeedback)
+    }
 
-	public ArrowLinkAdapter createArrowLinkAdapter(NodeAdapter source,
-			NodeAdapter target) {
-		return new BrowseArrowLinkModel(source, target, mMapFeedback);
-	}
+    override fun createArrowLinkTarget(
+        source: NodeAdapter,
+        target: NodeAdapter
+    ): ArrowLinkTarget? {
+        // FIXME: Need an implementation here
+        return null
+    }
 
-	public ArrowLinkTarget createArrowLinkTarget(NodeAdapter source,
-			NodeAdapter target) {
-		// FIXME: Need an implementation here
-		return null;
-	}
-	
-	public NodeAdapter createEncryptedNode(String additionalInfo) {
-		NodeAdapter node = createNodeAdapter(mMapFeedback, ENCRYPTED_BROWSE_NODE);
-		node.setAdditionalInfo(additionalInfo);
-		return node;
-	}
+    override fun createEncryptedNode(additionalInfo: String): NodeAdapter {
+        val node = createNodeAdapter(mMapFeedback, ENCRYPTED_BROWSE_NODE)
+        node.additionalInfo = additionalInfo
+        return node
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see freemind.modes.XMLElementAdapter#createNodeAdapter(freemind.modes.MindMap, java.lang.String)
 	 */
-	@Override
-	public NodeAdapter createNodeAdapter(MindMap pMap, String pNodeClass) {
-		return createNodeAdapter(mMapFeedback, null);
-	}
+    override fun createNodeAdapter(pMap: MindMap, pNodeClass: String): NodeAdapter {
+        return createNodeAdapter(mMapFeedback, null)
+    }
 
+    companion object {
+        private val ENCRYPTED_BROWSE_NODE = EncryptedBrowseNode::class.java
+            .name
+    }
 }

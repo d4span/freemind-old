@@ -16,89 +16,77 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package freemind.modes.browsemode
 
-package freemind.modes.browsemode;
-
-import java.awt.Color;
-import java.awt.Dimension;
-
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-
-import freemind.controller.Controller.SplitComponentType;
-import freemind.modes.ControllerAdapter;
-import freemind.modes.MindMapNode;
-import freemind.modes.ModeController.NodeSelectionListener;
-import freemind.modes.common.plugins.NodeNoteBase;
-import freemind.view.mindmapview.NodeView;
+import freemind.controller.Controller.SplitComponentType
+import freemind.modes.ControllerAdapter
+import freemind.modes.MindMapNode
+import freemind.modes.ModeController.NodeSelectionListener
+import freemind.modes.common.plugins.NodeNoteBase
+import freemind.view.ImageFactory.Companion.instance
+import freemind.view.mindmapview.NodeView
+import java.awt.Color
+import java.awt.Dimension
+import javax.swing.ImageIcon
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JScrollPane
 
 /**
  * @author foltin
- * 
  */
-public class NodeNoteViewer extends NodeNoteBase implements
-		NodeSelectionListener {
-	private JComponent noteScrollPane;
+class NodeNoteViewer(private val mBrowseController: ControllerAdapter) : NodeNoteBase(), NodeSelectionListener {
+    private var noteScrollPane: JComponent? = null
+    private var noteViewer: JLabel? = null
+    protected fun getNoteViewerComponent(): JComponent? {
+        if (noteViewer == null) {
+            noteViewer = JLabel()
+            noteViewer!!.background = Color.WHITE
+            noteViewer!!.verticalAlignment = JLabel.TOP
+            noteViewer!!.isOpaque = true
+            noteScrollPane = JScrollPane(noteViewer)
+            noteScrollPane?.setPreferredSize(Dimension(1, 200))
+        }
+        return noteScrollPane
+    }
 
-	private JLabel noteViewer;
+    override fun onLostFocusNode(pNode: NodeView) {
+        mBrowseController.controller.removeSplitPane(SplitComponentType.NOTE_PANEL)
+    }
 
-	private final ControllerAdapter mBrowseController;
+    override fun onFocusNode(pNode: NodeView) {
+        val noteText = pNode.model.noteText
+        if (noteText != null && noteText != "") {
+            // logger.info("Panel added");
+            mBrowseController.controller.insertComponentIntoSplitPane(
+                getNoteViewerComponent(), SplitComponentType.NOTE_PANEL
+            )
+            noteViewer!!.text = noteText
+        }
+    }
 
-	private static ImageIcon noteIcon = null;
+    override fun onSaveNode(pNode: MindMapNode) {}
+    override fun onUpdateNodeHook(pNode: MindMapNode) {
+        setStateIcon(pNode, true)
+    }
 
-	public NodeNoteViewer(ControllerAdapter pBrowseController) {
-		mBrowseController = pBrowseController;
-	}
+    /** Copied from NodeNoteRegistration.  */
+    protected fun setStateIcon(node: MindMapNode, enabled: Boolean) {
+        // icon
+        if (noteIcon == null) {
+            noteIcon = instance!!.createUnscaledIcon(
+                mBrowseController.getResource("images/knotes.png")
+            )
+        }
+        node.setStateIcon(NODE_NOTE_ICON, if (enabled) noteIcon else null)
+    }
 
-	protected JComponent getNoteViewerComponent(String text) {
-		if (noteViewer == null) {
-			noteViewer = new JLabel();
-			noteViewer.setBackground(Color.WHITE);
-			noteViewer.setVerticalAlignment(JLabel.TOP);
-			noteViewer.setOpaque(true);
-			noteScrollPane = new JScrollPane(noteViewer);
-			noteScrollPane.setPreferredSize(new Dimension(1, 200));
-		}
-		return noteScrollPane;
-	}
-
-	public void onLostFocusNode(NodeView pNode) {
-		mBrowseController.getController().removeSplitPane(SplitComponentType.NOTE_PANEL);
-	}
-
-	public void onFocusNode(NodeView pNode) {
-		String noteText = pNode.getModel().getNoteText();
-		if (noteText != null && !noteText.equals("")) {
-			// logger.info("Panel added");
-			mBrowseController.getController().insertComponentIntoSplitPane(
-					getNoteViewerComponent(noteText), SplitComponentType.NOTE_PANEL);
-			noteViewer.setText(noteText != null ? noteText : "");
-		}
-	}
-
-	public void onSaveNode(MindMapNode pNode) {
-	}
-
-	public void onUpdateNodeHook(MindMapNode pNode) {
-		setStateIcon(pNode, true);
-	}
-
-	/** Copied from NodeNoteRegistration. */
-	protected void setStateIcon(MindMapNode node, boolean enabled) {
-		// icon
-		if (noteIcon == null) {
-			noteIcon = freemind.view.ImageFactory.getInstance().createUnscaledIcon(
-					mBrowseController.getResource("images/knotes.png"));
-		}
-		node.setStateIcon(NODE_NOTE_ICON, (enabled) ? noteIcon : null);
-	}
-
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see freemind.modes.ModeController.NodeSelectionListener#onSelectionChange(freemind.modes.MindMapNode, boolean)
 	 */
-	public void onSelectionChange(NodeView pNode, boolean pIsSelected) {
-	}
+    override fun onSelectionChange(pNode: NodeView, pIsSelected: Boolean) {}
 
+    companion object {
+        private var noteIcon: ImageIcon? = null
+    }
 }

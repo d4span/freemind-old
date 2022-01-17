@@ -19,90 +19,77 @@
  *
  * Created on 31.01.2006
  */
+package freemind.modes.common.dialogs
 
-package freemind.modes.common.dialogs;
+import freemind.modes.ModeController
+import java.awt.event.ActionListener
+import javax.swing.JComboBox
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+class PersistentEditableComboBox(
+    private val mModeController: ModeController,
+    private val pStorageKey: String
+) : JComboBox<Any?>() {
+    private var actionListener: ActionListener? = null
+    private var sendExternalEvents = true
 
-import javax.swing.JComboBox;
+    init {
+        setEditable(true)
+        addUrl("", false)
+        val storedUrls = mModeController.frame.getProperty(pStorageKey)
+        if (storedUrls != null) {
+            val array = storedUrls.split("\t").toTypedArray()
+            for (i in array.indices) {
+                val string = array[i]
+                addUrl(string, false)
+            }
+        }
+        selectedIndex = 0
+        super.addActionListener { arg0 ->
+            addUrl(text, false)
+            // notification only if a new string is entered.
+            if (sendExternalEvents && actionListener != null) {
+                actionListener!!.actionPerformed(arg0)
+            }
+        }
+    }
 
-import freemind.modes.ModeController;
+    override fun addActionListener(arg0: ActionListener) {
+        actionListener = arg0
+    }
 
-@SuppressWarnings("serial")
-public class PersistentEditableComboBox extends JComboBox {
-	private ActionListener actionListener = null;
+    private fun addUrl(selectedItem: String?, calledFromSetText: Boolean): Boolean {
+        // search:
+        for (i in 0 until model.size) {
+            val element = model.getElementAt(i) as String
+            if (element == selectedItem) {
+                if (calledFromSetText) {
+                    selectedIndex = i
+                }
+                return false
+            }
+        }
+        addItem(selectedItem)
+        selectedIndex = model.size - 1
+        if (calledFromSetText) {
+            val resultBuffer = StringBuffer()
+            for (i in 0 until model.size) {
+                val element = model.getElementAt(i) as String
+                resultBuffer.append(element)
+                resultBuffer.append("\t")
+            }
+            mModeController.frame.setProperty(
+                pStorageKey,
+                resultBuffer.toString()
+            )
+        }
+        return true
+    }
 
-	private boolean sendExternalEvents = true;
-
-	private final ModeController mModeController;
-
-	private final String pStorageKey;
-
-	public PersistentEditableComboBox(ModeController modeController,
-			String storageKey) {
-		this.mModeController = modeController;
-		this.pStorageKey = storageKey;
-		setEditable(true);
-
-		addUrl("", false);
-		String storedUrls = mModeController.getFrame().getProperty(pStorageKey);
-		if (storedUrls != null) {
-			String[] array = storedUrls.split("\t");
-			for (int i = 0; i < array.length; i++) {
-				String string = array[i];
-				addUrl(string, false);
-			}
-		}
-		setSelectedIndex(0);
-		super.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				addUrl(getText(), false);
-				// notification only if a new string is entered.
-				if (sendExternalEvents && actionListener != null) {
-					actionListener.actionPerformed(arg0);
-				}
-			}
-		});
-	}
-
-	public void addActionListener(ActionListener arg0) {
-		this.actionListener = arg0;
-	}
-
-	private boolean addUrl(String selectedItem, boolean calledFromSetText) {
-		// search:
-		for (int i = 0; i < getModel().getSize(); i++) {
-			String element = (String) getModel().getElementAt(i);
-			if (element.equals(selectedItem)) {
-				if (calledFromSetText) {
-					setSelectedIndex(i);
-				}
-				return false;
-			}
-		}
-		addItem(selectedItem);
-		setSelectedIndex(getModel().getSize() - 1);
-		if (calledFromSetText) {
-			StringBuffer resultBuffer = new StringBuffer();
-			for (int i = 0; i < getModel().getSize(); i++) {
-				String element = (String) getModel().getElementAt(i);
-				resultBuffer.append(element);
-				resultBuffer.append("\t");
-			}
-			mModeController.getFrame().setProperty(pStorageKey,
-					resultBuffer.toString());
-		}
-		return true;
-	};
-
-	public String getText() {
-		return getSelectedItem().toString();
-	}
-
-	public void setText(String text) {
-		sendExternalEvents = false;
-		addUrl(text, true);
-		sendExternalEvents = true;
-	}
+    var text: String?
+        get() = selectedItem.toString()
+        set(text) {
+            sendExternalEvents = false
+            addUrl(text, true)
+            sendExternalEvents = true
+        }
 }

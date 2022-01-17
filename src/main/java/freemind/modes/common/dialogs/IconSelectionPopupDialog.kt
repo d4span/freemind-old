@@ -1,390 +1,380 @@
 /**
  * Created on 22.02.2004
- *FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
- *See COPYING for Details
+ * FreeMind - A Program for creating and viewing Mindmaps
+ * Copyright (C) 2000-2001  Joerg Mueller <joergmueller></joergmueller>@bigfoot.com>
+ * See COPYING for Details
  *
- *This program is free software; you can redistribute it and/or
- *modify it under the terms of the GNU General Public License
- *as published by the Free Software Foundation; either version 2
- *of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
- *This program is distributed in the hope that it will be useful,
- *but WITHOUT ANY WARRANTY; without even the implied warranty of
- *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *You should have received a copy of the GNU General Public License
- *along with this program; if not, write to the Free Software
- *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @author <a href="mailto:labe@users.sourceforge.net">Lars Berning</a>
+ * @author [Lars Berning](mailto:labe@users.sourceforge.net)
  */
-package freemind.modes.common.dialogs;
+package freemind.modes.common.dialogs
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.Vector;
+import freemind.main.FreeMindMain
+import freemind.modes.IconInformation
+import java.awt.BorderLayout
+import java.awt.Dimension
+import java.awt.GridLayout
+import java.awt.event.ActionEvent
+import java.awt.event.InputEvent
+import java.awt.event.KeyEvent
+import java.awt.event.KeyListener
+import java.awt.event.MouseEvent
+import java.awt.event.MouseListener
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import java.util.Vector
+import javax.swing.BorderFactory
+import javax.swing.JDialog
+import javax.swing.JFrame
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.border.BevelBorder
 
-import javax.swing.BorderFactory;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.border.BevelBorder;
+@Suppress("DEPRECATION")
+class IconSelectionPopupDialog(
+    caller: JFrame?,
+    icons: Vector<IconInformation>,
+    freeMindMain: FreeMindMain
+) : JDialog(caller, freeMindMain.getResourceString("select_icon")), KeyListener, MouseListener {
+    private val icons: Vector<IconInformation>
+    var result = 0
+        private set
+    private val iconPanel = JPanel()
+    private val iconLabels: Array<JLabel?>
+    private val descriptionLabel: JLabel
+    private val numOfIcons: Int
+    private val xDimension: Int
+    private var yDimension = 0
+    private var selected = Position(0, 0)
+    private val freeMindMain: FreeMindMain
+    private var mModifiers = 0
 
-import freemind.main.FreeMindMain;
-import freemind.modes.IconInformation;
+    init {
+        contentPane.layout = BorderLayout()
+        this.freeMindMain = freeMindMain
+        this.icons = icons
+        defaultCloseOperation = DO_NOTHING_ON_CLOSE
+        addWindowListener(object : WindowAdapter() {
+            override fun windowClosing(we: WindowEvent) {
+                close()
+            }
+        })
 
-@SuppressWarnings("serial")
-public class IconSelectionPopupDialog extends JDialog implements KeyListener,
-		MouseListener {
-	private Vector<IconInformation> icons;
-	private int result;
-	private JPanel iconPanel = new JPanel();
-	private JLabel[] iconLabels;
-	private JLabel descriptionLabel;
-	private int numOfIcons;
-	private int xDimension;
-	private int yDimension;
-	private Position selected = new Position(0, 0);
-	private static Position lastPosition = new Position(0, 0);
-	private FreeMindMain freeMindMain;
-	private int mModifiers;
+        // we will build a button-matrix which is closest to quadratical
+        numOfIcons = icons.size
+        xDimension = Math.ceil(Math.sqrt(numOfIcons.toDouble())).toInt()
+        yDimension = if (numOfIcons <= xDimension * (xDimension - 1)) xDimension - 1 else xDimension
+        val gridlayout = GridLayout(0, xDimension)
+        gridlayout.hgap = 3
+        gridlayout.vgap = 3
+        iconPanel.layout = gridlayout
+        iconLabels = arrayOfNulls(numOfIcons)
+        for (i in 0 until numOfIcons) {
+            val icon = icons[i] as IconInformation
+            iconPanel.add(JLabel(icon.icon).also { iconLabels[i] = it })
+            iconLabels[i]!!.border = BorderFactory
+                .createBevelBorder(BevelBorder.RAISED)
+            iconLabels[i]!!.addMouseListener(this)
+        }
+        var perIconSize = 27
+        if (icons.size > 0) {
+            // assume, that all icons are of the same size
+            perIconSize = (icons[0].icon.iconWidth * 1.7f).toInt()
+        }
+        iconPanel.preferredSize = Dimension(
+            xDimension * perIconSize,
+            yDimension * perIconSize
+        )
+        iconPanel.minimumSize = Dimension(
+            xDimension * perIconSize,
+            yDimension * perIconSize
+        )
+        iconPanel.maximumSize = Dimension(
+            xDimension * perIconSize,
+            yDimension * perIconSize
+        )
+        iconPanel.size = Dimension(
+            xDimension * perIconSize,
+            yDimension
+                * perIconSize
+        )
+        contentPane.add(iconPanel, BorderLayout.CENTER)
+        descriptionLabel = JLabel(" ")
+        // descriptionLabel.setEnabled(false);
+        contentPane.add(descriptionLabel, BorderLayout.SOUTH)
+        val selected = lastPosition
+        select(selected)
 
-	public IconSelectionPopupDialog(JFrame caller, Vector<IconInformation> icons,
-			FreeMindMain freeMindMain) {
+        this.selected = selected
+        addKeyListener(this)
+        pack()
+    }
 
-		super(caller, freeMindMain.getResourceString("select_icon"));
-		getContentPane().setLayout(new BorderLayout());
-		this.freeMindMain = freeMindMain;
-		this.icons = icons;
+    private fun canSelect(position: Position): Boolean {
+        return (
+            position.x >= 0 && position.x < xDimension &&
+                position.y >= 0 && position.y < yDimension && calculateIndex(position) < numOfIcons
+            )
+    }
 
-		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent we) {
-				close();
-			}
-		});
+    private fun calculateIndex(position: Position): Int {
+        return position.y * xDimension + position.x
+    }
 
-		// we will build a button-matrix which is closest to quadratical
-		numOfIcons = icons.size();
-		xDimension = new Double(Math.ceil(Math.sqrt(numOfIcons))).intValue();
-		if (numOfIcons <= xDimension * (xDimension - 1))
-			yDimension = xDimension - 1;
-		else
-			yDimension = xDimension;
+    private fun getPosition(caller: JLabel): Position {
+        var index: Int
+        index = 0
+        while (index < iconLabels.size) {
+            if (caller === iconLabels[index]) break
+            index++
+        }
+        return getPositionFromIndex(index)
+    }
 
-		GridLayout gridlayout = new GridLayout(0, xDimension);
-		gridlayout.setHgap(3);
-		gridlayout.setVgap(3);
-		iconPanel.setLayout(gridlayout);
+    private fun getPositionFromIndex(index: Int): Position {
+        return Position(index % xDimension, index / xDimension)
+    }
 
-		iconLabels = new JLabel[numOfIcons];
-		for (int i = 0; i < numOfIcons; ++i) {
-			final IconInformation icon = (IconInformation) icons.get(i);
-			iconPanel.add(iconLabels[i] = new JLabel(icon.getIcon()));
-			iconLabels[i].setBorder(BorderFactory
-					.createBevelBorder(BevelBorder.RAISED));
-			iconLabels[i].addMouseListener(this);
-		}
+    private var selectedPosition: Position
+        get() = selected
+        private set(position) {
+            selected = position
+            lastPosition = position
+        }
 
-		int perIconSize = 27;
-		if(icons.size()>0){
-			// assume, that all icons are of the same size
-			perIconSize = (int) (icons.get(0).getIcon().getIconWidth()*1.7f);
-		}
-		iconPanel.setPreferredSize(new Dimension(xDimension * perIconSize,
-				yDimension * perIconSize));
-		iconPanel.setMinimumSize(new Dimension(xDimension * perIconSize,
-				yDimension * perIconSize));
-		iconPanel.setMaximumSize(new Dimension(xDimension * perIconSize,
-				yDimension * perIconSize));
-		iconPanel.setSize(new Dimension(xDimension * perIconSize, yDimension
-				* perIconSize));
+    private fun select(position: Position) {
+        unhighlight(selectedPosition)
+        selectedPosition = position
+        highlight(position)
+        val index = calculateIndex(position)
+        val iconInformation = icons[index] as IconInformation
+        val keyStroke = freeMindMain
+            .getAdjustableProperty(
+                iconInformation
+                    .keystrokeResourceName
+            )
+        if (keyStroke != null) {
+            descriptionLabel.text = (
+                iconInformation.description + ", " +
+                    keyStroke
+                )
+        } else {
+            descriptionLabel.text = iconInformation.description
+        }
+    }
 
-		getContentPane().add(iconPanel, BorderLayout.CENTER);
-		descriptionLabel = new JLabel(" ");
-		// descriptionLabel.setEnabled(false);
-		getContentPane().add(descriptionLabel, BorderLayout.SOUTH);
-		setSelectedPosition(lastPosition);
-		select(getSelectedPosition());
-		addKeyListener(this);
-		pack();
-	}
+    private fun unhighlight(position: Position) {
+        iconLabels[calculateIndex(position)]!!.border = BorderFactory
+            .createBevelBorder(BevelBorder.RAISED)
+    }
 
-	private boolean canSelect(Position position) {
-		return ((position.getX() >= 0) && (position.getX() < xDimension)
-				&& (position.getY() >= 0) && (position.getY() < yDimension) && (calculateIndex(position) < numOfIcons));
-	}
+    private fun highlight(position: Position) {
+        iconLabels[calculateIndex(position)]!!.border = BorderFactory
+            .createBevelBorder(BevelBorder.LOWERED)
+    }
 
-	private int calculateIndex(Position position) {
-		return position.getY() * xDimension + position.getX();
-	}
+    private fun cursorLeft() {
+        val newPosition = Position(
+            selectedPosition.x - 1,
+            selectedPosition.y
+        )
+        if (canSelect(newPosition)) select(newPosition)
+    }
 
-	private Position getPosition(JLabel caller) {
-		int index = 0;
-		for (index = 0; index < iconLabels.length; index++) {
-			if (caller == iconLabels[index])
-				break;
-		}
-		return getPositionFromIndex(index);
-	}
+    private fun cursorRight() {
+        val newPosition = Position(
+            selectedPosition.x + 1,
+            selectedPosition.y
+        )
+        if (canSelect(newPosition)) select(newPosition)
+    }
 
-	private Position getPositionFromIndex(int index) {
-		return new Position(index % xDimension, index / xDimension);
-	}
+    private fun cursorUp() {
+        val newPosition = Position(
+            selectedPosition.x,
+            selectedPosition.y - 1
+        )
+        if (canSelect(newPosition)) select(newPosition)
+    }
 
-	private void setSelectedPosition(Position position) {
-		selected = position;
-		lastPosition = position;
-	}
+    private fun cursorDown() {
+        val newPosition = Position(
+            selectedPosition.x,
+            selectedPosition.y + 1
+        )
+        if (canSelect(newPosition)) select(newPosition)
+    }
 
-	private Position getSelectedPosition() {
-		return selected;
-	}
+    private fun addIcon(pModifiers: Int) {
+        result = calculateIndex(selectedPosition)
+        mModifiers = pModifiers
+        dispose()
+    }
 
-	private void select(Position position) {
-		unhighlight(getSelectedPosition());
-		setSelectedPosition(position);
-		highlight(position);
-		final int index = calculateIndex(position);
-		final IconInformation iconInformation = (IconInformation) icons
-				.get(index);
-		final String keyStroke = freeMindMain
-				.getAdjustableProperty(iconInformation
-						.getKeystrokeResourceName());
-		if (keyStroke != null) {
-			descriptionLabel.setText(iconInformation.getDescription() + ", "
-					+ keyStroke);
-		} else {
-			descriptionLabel.setText(iconInformation.getDescription());
-		}
-	}
+    /**
+     * Transfer shift masks from InputEvent to ActionEvent. But, why don't they
+     * use the same constants???? Java miracle.
+     */
+    val modifiers: Int
+        get() {
+            var m = mModifiers
+            if (mModifiers and (ActionEvent.SHIFT_MASK or InputEvent.SHIFT_DOWN_MASK) != 0) m =
+                m or ActionEvent.SHIFT_MASK
+            if (mModifiers and (ActionEvent.CTRL_MASK or InputEvent.CTRL_DOWN_MASK) != 0) m = m or ActionEvent.CTRL_MASK
+            if (mModifiers and (ActionEvent.ALT_MASK or InputEvent.ALT_DOWN_MASK) != 0) m = m or ActionEvent.ALT_MASK
+            return m
+        }
 
-	private void unhighlight(Position position) {
-		iconLabels[calculateIndex(position)].setBorder(BorderFactory
-				.createBevelBorder(BevelBorder.RAISED));
-	}
-
-	private void highlight(Position position) {
-		iconLabels[calculateIndex(position)].setBorder(BorderFactory
-				.createBevelBorder(BevelBorder.LOWERED));
-	}
-
-	private void cursorLeft() {
-		Position newPosition = new Position(getSelectedPosition().getX() - 1,
-				getSelectedPosition().getY());
-		if (canSelect(newPosition))
-			select(newPosition);
-	}
-
-	private void cursorRight() {
-		Position newPosition = new Position(getSelectedPosition().getX() + 1,
-				getSelectedPosition().getY());
-		if (canSelect(newPosition))
-			select(newPosition);
-	}
-
-	private void cursorUp() {
-		Position newPosition = new Position(getSelectedPosition().getX(),
-				getSelectedPosition().getY() - 1);
-		if (canSelect(newPosition))
-			select(newPosition);
-	}
-
-	private void cursorDown() {
-		Position newPosition = new Position(getSelectedPosition().getX(),
-				getSelectedPosition().getY() + 1);
-		if (canSelect(newPosition))
-			select(newPosition);
-	}
-
-	private void addIcon(int pModifiers) {
-		result = calculateIndex(getSelectedPosition());
-		mModifiers = pModifiers;
-		this.dispose();
-	}
-
-	public int getResult() {
-		return result;
-	}
-
-	/**
-	 * Transfer shift masks from InputEvent to ActionEvent. But, why don't they
-	 * use the same constants???? Java miracle.
-	 */
-	public int getModifiers() {
-		int m = mModifiers;
-		if ((mModifiers & (ActionEvent.SHIFT_MASK | InputEvent.SHIFT_DOWN_MASK)) != 0)
-			m |= ActionEvent.SHIFT_MASK;
-		if ((mModifiers & (ActionEvent.CTRL_MASK | InputEvent.CTRL_DOWN_MASK)) != 0)
-			m |= ActionEvent.CTRL_MASK;
-		if ((mModifiers & (ActionEvent.ALT_MASK | InputEvent.ALT_DOWN_MASK)) != 0)
-			m |= ActionEvent.ALT_MASK;
-		return m;
-	}
-
-	/*
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.awt.event.KeyListener#keyPressed(java.awt.event.KeyEvent)
 	 */
-	public void keyPressed(KeyEvent keyEvent) {
-		switch (keyEvent.getKeyCode()) {
-		case KeyEvent.VK_RIGHT:
-		case KeyEvent.VK_KP_RIGHT:
-			cursorRight();
-			return;
-		case KeyEvent.VK_LEFT:
-		case KeyEvent.VK_KP_LEFT:
-			cursorLeft();
-			return;
-		case KeyEvent.VK_DOWN:
-		case KeyEvent.VK_KP_DOWN:
-			cursorDown();
-			return;
-		case KeyEvent.VK_UP:
-		case KeyEvent.VK_KP_UP:
-			cursorUp();
-			return;
-		case KeyEvent.VK_ESCAPE:
-			keyEvent.consume();
-			close();
-			return;
-		case KeyEvent.VK_ENTER:
-		case KeyEvent.VK_SPACE:
-			keyEvent.consume();
-			addIcon(keyEvent.getModifiers());
-			return;
-		}
-		int index = findIndexByKeyEvent(keyEvent);
-		if (index != -1) {
-			result = index;
-			lastPosition = getPositionFromIndex(index);
-			mModifiers = keyEvent.getModifiers();
-			keyEvent.consume();
-			this.dispose();
-		}
-	}
+    override fun keyPressed(keyEvent: KeyEvent) {
+        when (keyEvent.keyCode) {
+            KeyEvent.VK_RIGHT, KeyEvent.VK_KP_RIGHT -> {
+                cursorRight()
+                return
+            }
+            KeyEvent.VK_LEFT, KeyEvent.VK_KP_LEFT -> {
+                cursorLeft()
+                return
+            }
+            KeyEvent.VK_DOWN, KeyEvent.VK_KP_DOWN -> {
+                cursorDown()
+                return
+            }
+            KeyEvent.VK_UP, KeyEvent.VK_KP_UP -> {
+                cursorUp()
+                return
+            }
+            KeyEvent.VK_ESCAPE -> {
+                keyEvent.consume()
+                close()
+                return
+            }
+            KeyEvent.VK_ENTER, KeyEvent.VK_SPACE -> {
+                keyEvent.consume()
+                addIcon(keyEvent.modifiers)
+                return
+            }
+        }
+        val index = findIndexByKeyEvent(keyEvent)
+        if (index != -1) {
+            result = index
+            lastPosition = getPositionFromIndex(index)
+            mModifiers = keyEvent.modifiers
+            keyEvent.consume()
+            dispose()
+        }
+    }
 
-	private int findIndexByKeyEvent(KeyEvent keyEvent) {
-		for (int i = 0; i < icons.size(); i++) {
-			IconInformation info = (IconInformation) icons.get(i);
-			final KeyStroke iconKeyStroke = info.getKeyStroke();
-			if (iconKeyStroke != null
-					&& (keyEvent.getKeyCode() == iconKeyStroke.getKeyCode()
-							&& keyEvent.getKeyCode() != 0
-							&& (iconKeyStroke.getModifiers() & KeyEvent.SHIFT_MASK) == (keyEvent
-									.getModifiers() & KeyEvent.SHIFT_MASK) || keyEvent
-							.getKeyChar() == iconKeyStroke.getKeyChar())
-					&& keyEvent.getKeyChar() != 0
-					&& keyEvent.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {
-				return i;
-			}
-		}
-		return -1;
-	}
+    private fun findIndexByKeyEvent(keyEvent: KeyEvent): Int {
+        for (i in icons.indices) {
+            val info = icons[i] as IconInformation
+            val iconKeyStroke = info.keyStroke
+            if (iconKeyStroke != null && (
+                keyEvent.keyCode == iconKeyStroke.keyCode && keyEvent.keyCode != 0 && iconKeyStroke.modifiers and KeyEvent.SHIFT_MASK == keyEvent
+                    .modifiers and KeyEvent.SHIFT_MASK || keyEvent
+                    .keyChar == iconKeyStroke.keyChar
+                ) &&
+                keyEvent.keyChar.code != 0 && keyEvent.keyChar != KeyEvent.CHAR_UNDEFINED
+            ) {
+                return i
+            }
+        }
+        return -1
+    }
 
-	private void close() {
-		result = -1;
-		mModifiers = 0;
-		this.dispose();
-	}
+    private fun close() {
+        result = -1
+        mModifiers = 0
+        dispose()
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.awt.event.KeyListener#keyReleased(java.awt.event.KeyEvent)
 	 */
-	public void keyReleased(KeyEvent arg0) {
-	}
+    override fun keyReleased(arg0: KeyEvent) {}
 
-	/*
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.awt.event.KeyListener#keyTyped(java.awt.event.KeyEvent)
 	 */
-	public void keyTyped(KeyEvent arg0) {
-	}
+    override fun keyTyped(arg0: KeyEvent) {}
 
-	/*
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
 	 */
-	public void mouseClicked(MouseEvent mouseEvent) {
-		addIcon(mouseEvent.getModifiers());
-	}
+    override fun mouseClicked(mouseEvent: MouseEvent) {
+        addIcon(mouseEvent.modifiers)
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
 	 */
-	public void mouseEntered(MouseEvent arg0) {
-		select(getPosition((JLabel) arg0.getSource()));
-	}
+    override fun mouseEntered(arg0: MouseEvent) {
+        select(getPosition(arg0.source as JLabel))
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
 	 */
-	public void mouseExited(MouseEvent arg0) {
-	}
+    override fun mouseExited(arg0: MouseEvent) {}
 
-	/*
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
 	 */
-	public void mousePressed(MouseEvent arg0) {
-	}
+    override fun mousePressed(arg0: MouseEvent) {}
 
-	/*
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
 	 */
-	public void mouseReleased(MouseEvent arg0) {
-	}
+    override fun mouseReleased(arg0: MouseEvent) {}
+    internal class Position(
+        /**
+         * @return Returns the x.
+         */
+        val x: Int,
+        /**
+         * @return Returns the y.
+         */
+        val y: Int
+    ) {
 
-	static class Position {
-		private int x, y;
+        override fun toString(): String {
+            return "($x,$y)"
+        }
+    }
 
-		public Position(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
-
-		/**
-		 * @return Returns the x.
-		 */
-		public int getX() {
-			return x;
-		}
-
-		/**
-		 * @return Returns the y.
-		 */
-		public int getY() {
-			return y;
-		}
-
-		public String toString() {
-			return ("(" + getX() + "," + getY() + ")");
-		}
-	}
+    companion object {
+        private var lastPosition = Position(0, 0)
+    }
 }

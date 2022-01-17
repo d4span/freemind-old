@@ -21,25 +21,19 @@
  * Created on 10.07.2005
  * Copyright (C) 2005 Dimitri Polivaev
  */
-package freemind.modes.attributes;
+package freemind.modes.attributes
 
-import javax.swing.table.TableModel;
-
-import freemind.modes.MindMapNode;
+import freemind.modes.MindMapNode
+import javax.swing.table.TableModel
 
 /**
  * @author Dimitri Polivaev 10.07.2005
  */
-public interface AttributeTableModel extends TableModel {
-	int getRowCount();
-
-	int getColumnWidth(int col);
-
-	Object getValueAt(int row, int col);
-
-	void setValueAt(Object o, int row, int col);
-
-	MindMapNode getNode();
-
-	void fireTableDataChanged();
+interface AttributeTableModel : TableModel {
+    override fun getRowCount(): Int
+    fun getColumnWidth(col: Int): Int
+    override fun getValueAt(row: Int, col: Int): Any
+    override fun setValueAt(o: Any, row: Int, col: Int)
+    val node: MindMapNode?
+    fun fireTableDataChanged()
 }

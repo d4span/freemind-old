@@ -17,22 +17,15 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: BrowseCloudModel.java,v 1.1 2003/12/03 07:15:56 christianfoltin Exp $*/
+package freemind.modes.browsemode
 
-package freemind.modes.browsemode;
+import freemind.main.XMLElement
+import freemind.modes.CloudAdapter
+import freemind.modes.MapFeedback
+import freemind.modes.MindMapNode
 
-import freemind.main.XMLElement;
-import freemind.modes.CloudAdapter;
-import freemind.modes.MapFeedback;
-import freemind.modes.MindMapNode;
-
-public class BrowseCloudModel extends CloudAdapter {
-
-	public BrowseCloudModel(MindMapNode node, MapFeedback pMapFeedback) {
-		super(node, pMapFeedback);
-	}
-
-	public XMLElement save() {
-		return null;
-	}
-
+class BrowseCloudModel(node: MindMapNode?, pMapFeedback: MapFeedback?) : CloudAdapter(node, pMapFeedback) {
+    override fun save(): XMLElement? {
+        return null
+    }
 }

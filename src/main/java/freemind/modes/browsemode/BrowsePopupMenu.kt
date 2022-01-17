@@ -17,59 +17,49 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: BrowsePopupMenu.java,v 1.4.34.2 2007/08/05 10:29:06 dpolivaev Exp $*/
+package freemind.modes.browsemode
 
-package freemind.modes.browsemode;
+import javax.swing.Action
+import javax.swing.JPopupMenu
+import javax.swing.KeyStroke
+import javax.swing.event.PopupMenuEvent
+import javax.swing.event.PopupMenuListener
 
-import javax.swing.Action;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.KeyStroke;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
+class BrowsePopupMenu(private val c: BrowseController) : JPopupMenu(), PopupMenuListener {
+    protected fun add(action: Action?, keystroke: String?) {
+        val item = add(action)
+        item.accelerator = KeyStroke.getKeyStroke(
+            c.frame
+                .getAdjustableProperty(keystroke)
+        )
+    }
 
-@SuppressWarnings("serial")
-public class BrowsePopupMenu extends JPopupMenu implements PopupMenuListener {
+    init {
+        add(c.find, "keystroke_find")
+        add(c.findNext, "keystroke_find_next")
+        add(c.followLink, "keystroke_follow_link")
+        addSeparator()
+        add(c.toggleFolded, "keystroke_toggle_folded")
+        add(c.toggleChildrenFolded, "keystroke_toggle_children_folded")
+        addSeparator()
+        add(c.followMapLink, "keystroke_follow_map_link")
+        addPopupMenuListener(this)
+    }
 
-	private BrowseController c;
-
-	protected void add(Action action, String keystroke) {
-		JMenuItem item = add(action);
-		item.setAccelerator(KeyStroke.getKeyStroke(c.getFrame()
-				.getAdjustableProperty(keystroke)));
-	}
-
-	public BrowsePopupMenu(BrowseController c) {
-		this.c = c;
-		add(c.find, "keystroke_find");
-		add(c.findNext, "keystroke_find_next");
-		add(c.followLink, "keystroke_follow_link");
-
-		addSeparator();
-
-		add(c.toggleFolded, "keystroke_toggle_folded");
-		add(c.toggleChildrenFolded, "keystroke_toggle_children_folded");
-		addSeparator();
-		add(c.followMapLink, "keystroke_follow_map_link");
-		addPopupMenuListener(this);
-	}
-
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see javax.swing.event.PopupMenuListener#popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent)
 	 */
-	public void popupMenuWillBecomeVisible(PopupMenuEvent pE) {
-		c.followMapLink.setEnabled(c.followMapLink.isEnabled(null, null));
-	}
+    override fun popupMenuWillBecomeVisible(pE: PopupMenuEvent) {
+        c.followMapLink.isEnabled = c.followMapLink.isEnabled(null, null)
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see javax.swing.event.PopupMenuListener#popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent)
 	 */
-	public void popupMenuWillBecomeInvisible(PopupMenuEvent pE) {
-	}
+    override fun popupMenuWillBecomeInvisible(pE: PopupMenuEvent) {}
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see javax.swing.event.PopupMenuListener#popupMenuCanceled(javax.swing.event.PopupMenuEvent)
 	 */
-	public void popupMenuCanceled(PopupMenuEvent pE) {
-	}
-	
+    override fun popupMenuCanceled(pE: PopupMenuEvent) {}
 }

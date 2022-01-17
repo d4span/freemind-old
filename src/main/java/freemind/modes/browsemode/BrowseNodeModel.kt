@@ -17,41 +17,35 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: BrowseNodeModel.java,v 1.7.18.1.14.2 2008/05/26 19:25:07 christianfoltin Exp $*/
+package freemind.modes.browsemode
 
-package freemind.modes.browsemode;
-
-import java.util.LinkedList;
-
-import freemind.main.XMLElement;
-import freemind.modes.MindMap;
-import freemind.modes.NodeAdapter;
+import freemind.main.XMLElement
+import freemind.modes.MindMap
+import freemind.modes.NodeAdapter
+import java.util.LinkedList
 
 /**
  * This class represents a single Node of a Tree. It contains direct handles to
  * its parent and children and to its view.
  */
-public class BrowseNodeModel extends NodeAdapter {
+open class BrowseNodeModel(userObject: Any?, map: MindMap?) : NodeAdapter(userObject, map) {
+    //
+    // Constructors
+    //
+    init {
+        children = LinkedList()
+        edge = BrowseEdgeModel(this, mapFeedback)
+    }
 
-	//
-	// Constructors
-	//
+    //
+    // The mandatory load and save methods
+    //
+    // NanoXML save method
+    fun save(): XMLElement? {
+        return null
+    }
 
-	public BrowseNodeModel(Object userObject, MindMap map) {
-		super(userObject, map);
-		children = new LinkedList<>();
-		setEdge(new BrowseEdgeModel(this, getMapFeedback()));
-	}
-
-	//
-	// The mandatory load and save methods
-	//
-
-	// NanoXML save method
-	public XMLElement save() {
-		return null;
-	}
-
-	public boolean isWriteable() {
-		return false;
-	}
+    override fun isWriteable(): Boolean {
+        return false
+    }
 }

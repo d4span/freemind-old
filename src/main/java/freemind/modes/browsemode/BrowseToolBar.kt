@@ -16,57 +16,48 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package freemind.modes.browsemode
 
+import freemind.main.Resources
+import freemind.modes.ControllerAdapter
+import freemind.modes.common.dialogs.PersistentEditableComboBox
+import java.awt.event.ActionListener
+import java.net.URL
+import javax.swing.JLabel
+import javax.swing.JToolBar
 
-package freemind.modes.browsemode;
+class BrowseToolBar(private val c: ControllerAdapter) : JToolBar() {
+    private var urlfield: PersistentEditableComboBox? = null
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.net.URL;
+    init {
+        this.isRollover = true
+        this.add(c.controller.showFilterToolbarAction)
+        urlfield = PersistentEditableComboBox(
+            c,
+            BROWSE_URL_STORAGE_KEY
+        )
+        urlfield?.addActionListener(
+            ActionListener { e ->
+                val urlText = urlfield?.text
+                if ("" == urlText || e.actionCommand == "comboBoxEdited") return@ActionListener
+                try {
+                    c.load(URL(urlText))
+                } catch (e1: Exception) {
+                    Resources.getInstance().logException(e1)
+                    // FIXME: Give a good error message.
+                    c.controller.errorMessage(e1)
+                }
+            }
+        )
+        add(JLabel("URL:"))
+        add(urlfield)
+    }
 
-import javax.swing.JLabel;
-import javax.swing.JToolBar;
+    fun setURLField(text: String?) {
+        urlfield!!.text = text
+    }
 
-import freemind.modes.ControllerAdapter;
-import freemind.modes.common.dialogs.PersistentEditableComboBox;
-
-@SuppressWarnings("serial")
-public class BrowseToolBar extends JToolBar {
-
-	public static final String BROWSE_URL_STORAGE_KEY = "browse_url_storage";
-
-	private ControllerAdapter c;
-	private PersistentEditableComboBox urlfield = null;
-
-	public BrowseToolBar(ControllerAdapter controller) {
-
-		this.c = controller;
-		this.setRollover(true);
-		this.add(controller.getController().showFilterToolbarAction);
-		urlfield = new PersistentEditableComboBox(controller,
-				BROWSE_URL_STORAGE_KEY);
-
-		urlfield.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String urlText = urlfield.getText();
-				if ("".equals(urlText)
-						|| e.getActionCommand().equals("comboBoxEdited"))
-					return;
-				try {
-					c.load(new URL(urlText));
-				} catch (Exception e1) {
-					freemind.main.Resources.getInstance().logException(e1);
-					// FIXME: Give a good error message.
-					c.getController().errorMessage(e1);
-				}
-			}
-		});
-
-		add(new JLabel("URL:"));
-		add(urlfield);
-	}
-
-	void setURLField(String text) {
-		urlfield.setText(text);
-	}
+    companion object {
+        const val BROWSE_URL_STORAGE_KEY = "browse_url_storage"
+    }
 }

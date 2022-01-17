@@ -19,47 +19,40 @@
  *
  * Created on 11.01.2006
  */
+package freemind.modes.browsemode
 
-package freemind.modes.browsemode;
-
-import freemind.modes.MindMapNode;
-import freemind.modes.common.plugins.ReminderHookBase;
+import freemind.modes.MindMapNode
+import freemind.modes.common.plugins.ReminderHookBase
 
 /**
  * @author foltin
- * 
  */
-public class BrowseReminderHook extends ReminderHookBase {
-
-	/**
-	 *
-	 */
-	public BrowseReminderHook() {
-		super();
-	}
-
-	/*
+class BrowseReminderHook :
+/**
+     *
+     */
+        ReminderHookBase() {
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * freemind.modes.common.plugins.ReminderHookBase#nodeRefresh(freemind.modes
 	 * .MindMapNode)
 	 */
-	protected void nodeRefresh(MindMapNode node) {
-		getController().nodeChanged(node);
-	}
+        override fun nodeRefresh(node: MindMapNode) {
+            controller!!.nodeChanged(node)
+        }
 
-	/*
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * freemind.modes.common.plugins.ReminderHookBase#setToolTip(freemind.modes
 	 * .MindMapNode, java.lang.String, java.lang.String)
 	 */
-	protected void setToolTip(MindMapNode node, String key, String value) {
-		// FIXME: Duplicated code.
-		node.setToolTip(key, value);
-		nodeRefresh(node);
-	}
-
-}
+        override fun setToolTip(node: MindMapNode?, key: String?, value: String?) {
+            // FIXME: Duplicated code.
+            node!!.setToolTip(key, value)
+            nodeRefresh(node)
+        }
+    }

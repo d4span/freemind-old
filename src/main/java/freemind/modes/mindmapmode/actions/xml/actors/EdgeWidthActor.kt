@@ -17,73 +17,69 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+package freemind.modes.mindmapmode.actions.xml.actors
 
-package freemind.modes.mindmapmode.actions.xml.actors;
-
-import freemind.controller.actions.generated.instance.EdgeWidthFormatAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.modes.EdgeAdapter;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
+import freemind.controller.actions.generated.instance.EdgeWidthFormatAction
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.modes.EdgeAdapter
+import freemind.modes.ExtendedMapFeedback
+import freemind.modes.MindMapNode
+import freemind.modes.mindmapmode.actions.xml.ActionPair
 
 /**
  * @author foltin
  * @date 26.03.2014
  */
-public class EdgeWidthActor extends XmlActorAdapter {
+class EdgeWidthActor
+/**
+ * @param pMapFeedback
+ */
+(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
+    override fun getDoActionClass(): Class<EdgeWidthFormatAction> {
+        return EdgeWidthFormatAction::class.java
+    }
 
-	/**
-	 * @param pMapFeedback
-	 */
-	public EdgeWidthActor(ExtendedMapFeedback pMapFeedback) {
-		super(pMapFeedback);
-	}
+    fun setEdgeWidth(node: MindMapNode, width: Int) {
+        if (width == getWidth(node)) {
+            return
+        }
+        execute(getActionPair(node, width))
+    }
 
-	public Class<EdgeWidthFormatAction> getDoActionClass() {
-		return EdgeWidthFormatAction.class;
-	}
+    fun getActionPair(selected: MindMapNode, width: Int): ActionPair {
+        val styleAction = createEdgeWidthFormatAction(
+            selected, width
+        )
+        val undoStyleAction = createEdgeWidthFormatAction(
+            selected, getWidth(selected)
+        )
+        return ActionPair(styleAction, undoStyleAction)
+    }
 
-	public void setEdgeWidth(MindMapNode node, int width) {
-		if (width == getWidth(node)) {
-			return;
-		}
-		execute(getActionPair(node, width));
+    fun getWidth(selected: MindMapNode): Int {
+        return (selected.edge as EdgeAdapter).realWidth
+    }
 
-	}
+    private fun createEdgeWidthFormatAction(
+        selected: MindMapNode,
+        width: Int
+    ): EdgeWidthFormatAction {
+        val edgeWidthAction = EdgeWidthFormatAction()
+        edgeWidthAction.node = getNodeID(selected)
+        edgeWidthAction.width = width
+        return edgeWidthAction
+    }
 
-	public ActionPair getActionPair(MindMapNode selected, int width) {
-		EdgeWidthFormatAction styleAction = createEdgeWidthFormatAction(
-				selected, width);
-		EdgeWidthFormatAction undoStyleAction = createEdgeWidthFormatAction(
-				selected, getWidth(selected));
-		return new ActionPair(styleAction, undoStyleAction);
-	}
-
-	public int getWidth(MindMapNode selected) {
-		return ((EdgeAdapter) selected.getEdge()).getRealWidth();
-	}
-
-	private EdgeWidthFormatAction createEdgeWidthFormatAction(
-			MindMapNode selected, int width) {
-		EdgeWidthFormatAction edgeWidthAction = new EdgeWidthFormatAction();
-		edgeWidthAction.setNode(getNodeID(selected));
-		edgeWidthAction.setWidth(width);
-		return edgeWidthAction;
-	}
-
-	public void act(XmlAction action) {
-		if (action instanceof EdgeWidthFormatAction) {
-			EdgeWidthFormatAction edgeWithAction = (EdgeWidthFormatAction) action;
-			MindMapNode node = getNodeFromID(edgeWithAction.getNode());
-			int width = edgeWithAction.getWidth();
-			EdgeAdapter edge = (EdgeAdapter) node.getEdge();
-			if (edge.getRealWidth() != width) {
-				edge.setWidth(width);
-				getExMapFeedback().nodeChanged(node);
-			}
-		}
-	}
-
-
+    override fun act(action: XmlAction) {
+        if (action is EdgeWidthFormatAction) {
+            val edgeWithAction = action
+            val node = getNodeFromID(edgeWithAction.node)
+            val width = edgeWithAction.width
+            val edge = node?.edge as EdgeAdapter
+            if (edge.realWidth != width) {
+                edge.width = width
+                exMapFeedback?.nodeChanged(node)
+            }
+        }
+    }
 }

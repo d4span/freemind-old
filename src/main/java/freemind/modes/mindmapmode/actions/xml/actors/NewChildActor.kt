@@ -17,103 +17,104 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+package freemind.modes.mindmapmode.actions.xml.actors
 
-package freemind.modes.mindmapmode.actions.xml.actors;
-
-import freemind.controller.actions.generated.instance.DeleteNodeAction;
-import freemind.controller.actions.generated.instance.NewNodeAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.extensions.PermanentNodeHook;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapLinkRegistry;
-import freemind.modes.MindMapNode;
-import freemind.modes.NodeAdapter;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
+import freemind.controller.actions.generated.instance.NewNodeAction
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.modes.ExtendedMapFeedback
+import freemind.modes.MindMapLinkRegistry
+import freemind.modes.MindMapNode
+import freemind.modes.mindmapmode.actions.xml.ActionPair
 
 /**
  * @author foltin
  * @date 16.03.2014
  */
-public class NewChildActor extends XmlActorAdapter {
-
-	/**
-	 * @param pMapFeedback
-	 */
-	public NewChildActor(ExtendedMapFeedback pMapFeedback) {
-		super(pMapFeedback);
-	}
-
-	/*
+class NewChildActor
+/**
+ * @param pMapFeedback
+ */
+(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * freemind.controller.actions.ActorXml#act(freemind.controller.actions.
 	 * generated.instance.XmlAction)
 	 */
-	public void act(XmlAction action) {
-		NewNodeAction addNodeAction = (NewNodeAction) action;
-		NodeAdapter parent = getNodeFromID(addNodeAction.getNode());
-		int index = addNodeAction.getIndex();
-		MindMapNode newNode = getExMapFeedback().newNode("", parent.getMap());
-		newNode.setLeft(addNodeAction.getPosition().equals("left"));
-		String newId = addNodeAction.getNewId();
-		String givenId = getLinkRegistry()
-				.registerLinkTarget(newNode, newId);
-		if (!givenId.equals(newId)) {
-			throw new IllegalArgumentException("Designated id '" + newId
-					+ "' was not given to the node. It received '" + givenId
-					+ "'.");
-		}
-		getExMapFeedback().insertNodeInto(newNode, parent, index);
-		// call hooks:
-		for (PermanentNodeHook hook : parent.getActivatedHooks()) {
-			hook.onNewChild(newNode);
-		}
-		// done.
-	}
+    override fun act(action: XmlAction) {
+        val addNodeAction = action as NewNodeAction
+        val parent = getNodeFromID(addNodeAction.node)
+        val index = addNodeAction.index
+        val newNode = exMapFeedback?.newNode("", parent?.map)
+        newNode?.isLeft = addNodeAction.position == "left"
+        val newId = addNodeAction.newId
+        val givenId = linkRegistry?.registerLinkTarget(newNode, newId)
+        require(givenId == newId) {
+            (
+                "Designated id '" + newId +
+                    "' was not given to the node. It received '" + givenId +
+                    "'."
+                )
+        }
+        exMapFeedback?.insertNodeInto(newNode, parent, index)
+        // call hooks:
+        for (hook in parent?.activatedHooks ?: emptyList()) {
+            hook.onNewChild(newNode)
+        }
+        // done.
+    }
 
-	protected MindMapLinkRegistry getLinkRegistry() {
-		return getExMapFeedback().getMap().getLinkRegistry();
-	}
+    override val linkRegistry: MindMapLinkRegistry?
+        get() = exMapFeedback?.map?.linkRegistry
 
-	/*
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.controller.actions.ActorXml#getDoActionClass()
 	 */
-	public Class<NewNodeAction> getDoActionClass() {
-		return NewNodeAction.class;
-	}
+    override fun getDoActionClass(): Class<NewNodeAction> {
+        return NewNodeAction::class.java
+    }
 
+    fun addNewNode(
+        parent: MindMapNode,
+        index: Int,
+        newNodeIsLeft: Boolean
+    ): MindMapNode {
+        var i = index
+        if (i == -1) {
+            i = parent.childCount
+        }
+        // bug fix from Dimitri.
+        linkRegistry?.registerLinkTarget(parent)
+        val newId = linkRegistry?.generateUniqueID(null)
+        val newNodeAction = getAddNodeAction(
+            parent, i, newId,
+            newNodeIsLeft
+        )
+        // Undo-action
+        val deleteAction = exMapFeedback?.actorFactory?.deleteChildActor
+            ?.getDeleteNodeAction(newId)
+        exMapFeedback?.doTransaction(
+            exMapFeedback?.getResourceString("new_child"),
+            ActionPair(newNodeAction, deleteAction)
+        )
+        return parent.getChildAt(i) as MindMapNode
+    }
 
-
-	public MindMapNode addNewNode(MindMapNode parent, int index,
-			boolean newNodeIsLeft) {
-		if (index == -1) {
-			index = parent.getChildCount();
-		}
-		// bug fix from Dimitri.
-		getLinkRegistry().registerLinkTarget(parent);
-		String newId = getLinkRegistry().generateUniqueID(null);
-		NewNodeAction newNodeAction = getAddNodeAction(parent, index, newId,
-				newNodeIsLeft);
-		// Undo-action
-		DeleteNodeAction deleteAction = getExMapFeedback().getActorFactory().getDeleteChildActor()
-				.getDeleteNodeAction(newId);
-		getExMapFeedback().doTransaction(getExMapFeedback().getResourceString("new_child"),
-				new ActionPair(newNodeAction, deleteAction));
-		return (MindMapNode) parent.getChildAt(index);
-	}
-
-	public NewNodeAction getAddNodeAction(MindMapNode parent, int index,
-			String newId, boolean newNodeIsLeft) {
-		String pos = newNodeIsLeft ? "left" : "right";
-		NewNodeAction newNodeAction = new NewNodeAction();
-		newNodeAction.setNode(getNodeID(parent));
-		newNodeAction.setPosition(pos);
-		newNodeAction.setIndex(index);
-		newNodeAction.setNewId(newId);
-		return newNodeAction;
-	}
-
+    fun getAddNodeAction(
+        parent: MindMapNode?,
+        index: Int,
+        newId: String?,
+        newNodeIsLeft: Boolean
+    ): NewNodeAction {
+        val pos = if (newNodeIsLeft) "left" else "right"
+        val newNodeAction = NewNodeAction()
+        newNodeAction.node = getNodeID(parent)
+        newNodeAction.position = pos
+        newNodeAction.index = index
+        newNodeAction.newId = newId
+        return newNodeAction
+    }
 }

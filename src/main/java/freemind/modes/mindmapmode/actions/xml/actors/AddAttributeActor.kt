@@ -17,66 +17,62 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package freemind.modes.mindmapmode.actions.xml.actors
 
-package freemind.modes.mindmapmode.actions.xml.actors;
+import freemind.controller.actions.generated.instance.AddAttributeAction
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.modes.ExtendedMapFeedback
+import freemind.modes.MindMapNode
+import freemind.modes.attributes.Attribute
+import freemind.modes.mindmapmode.actions.xml.ActionPair
 
-import freemind.controller.actions.generated.instance.AddAttributeAction;
-import freemind.controller.actions.generated.instance.RemoveAttributeAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
-import freemind.modes.NodeAdapter;
-import freemind.modes.attributes.Attribute;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
+class AddAttributeActor(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
+    override fun act(action: XmlAction) {
+        if (action is AddAttributeAction) {
+            val addAttributeAction = action
+            val node = getNodeFromID(addAttributeAction.node)
+            val newAttribute = Attribute(
+                addAttributeAction.name, addAttributeAction.value
+            )
+            node?.addAttribute(newAttribute)
+            exMapFeedback?.nodeChanged(node)
+        }
+    }
 
-public class AddAttributeActor extends XmlActorAdapter {
+    override fun getDoActionClass(): Class<AddAttributeAction> {
+        return AddAttributeAction::class.java
+    }
 
-	public AddAttributeActor(ExtendedMapFeedback pMapFeedback) {
-		super(pMapFeedback);
-	}
+    fun getActionPair(selected: MindMapNode, pAttribute: Attribute): ActionPair {
+        val setAttributeAction = getAddAttributeAction(
+            selected,
+            pAttribute
+        )
+        val undoAddAttributeAction = xmlActorFactory?.removeAttributeActor
+            ?.getRemoveAttributeAction(selected, selected.attributeTableLength)
+        return ActionPair(setAttributeAction, undoAddAttributeAction)
+    }
 
-	public void act(XmlAction action) {
-		if (action instanceof AddAttributeAction) {
-			AddAttributeAction addAttributeAction = (AddAttributeAction) action;
-			NodeAdapter node = getNodeFromID(addAttributeAction.getNode());
-			Attribute newAttribute = new Attribute(
-					addAttributeAction.getName(), addAttributeAction.getValue());
-			node.addAttribute(newAttribute);
-			getExMapFeedback().nodeChanged(node);
-		}
-	}
+    /**
+     * @param pSelected
+     * @param pAttribute
+     * @return
+     */
+    fun getAddAttributeAction(
+        pSelected: MindMapNode?,
+        pAttribute: Attribute
+    ): AddAttributeAction {
+        val addAttributeAction = AddAttributeAction()
+        addAttributeAction.node = getNodeID(pSelected)
+        addAttributeAction.name = pAttribute.name
+        addAttributeAction.value = pAttribute.value
+        return addAttributeAction
+    }
 
-	public Class<AddAttributeAction> getDoActionClass() {
-		return AddAttributeAction.class;
-	}
-
-	public ActionPair getActionPair(MindMapNode selected, Attribute pAttribute) {
-		AddAttributeAction setAttributeAction = getAddAttributeAction(selected,
-				pAttribute);
-		RemoveAttributeAction undoAddAttributeAction = getXmlActorFactory().getRemoveAttributeActor()
-				.getRemoveAttributeAction(selected, selected.getAttributeTableLength());
-		return new ActionPair(setAttributeAction, undoAddAttributeAction);
-	}
-
-	/**
-	 * @param pSelected
-	 * @param pAttribute
-	 * @return
-	 */
-	public AddAttributeAction getAddAttributeAction(MindMapNode pSelected,
-			Attribute pAttribute) {
-		AddAttributeAction addAttributeAction = new AddAttributeAction();
-		addAttributeAction.setNode(getNodeID(pSelected));
-		addAttributeAction.setName(pAttribute.getName());
-		addAttributeAction.setValue(pAttribute.getValue());
-		return addAttributeAction;
-	}
-
-	public int addAttribute(MindMapNode pNode, Attribute pAttribute) {
-		int retValue = pNode.getAttributeTableLength();
-		ActionPair actionPair = getActionPair(pNode, pAttribute);
-		execute(actionPair);
-		return retValue;
-	}
-
+    fun addAttribute(pNode: MindMapNode, pAttribute: Attribute): Int {
+        val retValue = pNode.attributeTableLength
+        val actionPair = getActionPair(pNode, pAttribute)
+        execute(actionPair)
+        return retValue
+    }
 }

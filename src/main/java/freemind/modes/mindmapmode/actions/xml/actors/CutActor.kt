@@ -17,93 +17,86 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+package freemind.modes.mindmapmode.actions.xml.actors
 
-package freemind.modes.mindmapmode.actions.xml.actors;
-
-import java.awt.datatransfer.Transferable;
-import java.util.Iterator;
-import java.util.List;
-
-import freemind.controller.actions.generated.instance.CompoundAction;
-import freemind.controller.actions.generated.instance.CutNodeAction;
-import freemind.controller.actions.generated.instance.UndoPasteNodeAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
-import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.NodeCoordinate;
+import freemind.controller.actions.generated.instance.CompoundAction
+import freemind.controller.actions.generated.instance.CutNodeAction
+import freemind.controller.actions.generated.instance.UndoPasteNodeAction
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.modes.ExtendedMapFeedback
+import freemind.modes.MindMapNode
+import freemind.modes.mindmapmode.actions.xml.ActionPair
+import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.NodeCoordinate
+import java.awt.datatransfer.Transferable
 
 /**
  * @author foltin
  * @date 11.04.2014
  */
-public class CutActor extends XmlActorAdapter {
+class CutActor
+/**
+ * @param pMapFeedback
+ */
+(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
+    fun getCutNodeAction(node: MindMapNode?): CutNodeAction {
+        val cutAction = CutNodeAction()
+        cutAction.node = getNodeID(node)
+        return cutAction
+    }
 
-	/**
-	 * @param pMapFeedback
-	 */
-	public CutActor(ExtendedMapFeedback pMapFeedback) {
-		super(pMapFeedback);
-	}
+    fun cut(nodeList: List<MindMapNode>): Transferable? {
+        exMapFeedback?.sortNodesByDepth(nodeList)
+        val totalCopy = exMapFeedback?.copy(nodeList, true)
+        // Do-action
+        val doAction = CompoundAction()
+        // Undo-action
+        val undo = CompoundAction()
+        // sort selectedNodes list by depth, in order to guarantee that sons are
+        // deleted first:
+        val i = nodeList.iterator()
+        while (i.hasNext()) {
+            val node = i.next()
+            if (node.parentNode == null) {
+                continue
+            }
+            val cutNodeAction = getCutNodeAction(node)
+            doAction.addChoice(cutNodeAction)
+            val coord = NodeCoordinate(node, node.isLeft)
+            val copy = exMapFeedback?.copy(node, true)
+            val pasteNodeAction = xmlActorFactory?.pasteActor
+                ?.getPasteNodeAction(copy, coord, null as UndoPasteNodeAction?)
+            // The paste actions are reversed because of the strange
+            // coordinates.
+            undo.addAtChoice(0, pasteNodeAction)
+        }
+        if (doAction.sizeChoiceList() > 0) {
+            execute(ActionPair(doAction, undo))
+        }
+        return totalCopy
+    }
 
-	public CutNodeAction getCutNodeAction(MindMapNode node) {
-		CutNodeAction cutAction = new CutNodeAction();
-		cutAction.setNode(getNodeID(node));
-		return cutAction;
-	}
-
-	public Transferable cut(List<MindMapNode> nodeList) {
-		getExMapFeedback().sortNodesByDepth(nodeList);
-		Transferable totalCopy = getExMapFeedback().copy(nodeList, true);
-		// Do-action
-		CompoundAction doAction = new CompoundAction();
-		// Undo-action
-		CompoundAction undo = new CompoundAction();
-		// sort selectedNodes list by depth, in order to guarantee that sons are
-		// deleted first:
-		for (Iterator<MindMapNode> i = nodeList.iterator(); i.hasNext();) {
-			MindMapNode node = i.next();
-			if (node.getParentNode() == null)
-				continue;
-			CutNodeAction cutNodeAction = getCutNodeAction(node);
-			doAction.addChoice(cutNodeAction);
-
-			NodeCoordinate coord = new NodeCoordinate(node, node.isLeft());
-			Transferable copy = getExMapFeedback().copy(node, true);
-			XmlAction pasteNodeAction = getXmlActorFactory().getPasteActor()
-					.getPasteNodeAction(copy, coord, (UndoPasteNodeAction) null);
-			// The paste actions are reversed because of the strange
-			// coordinates.
-			undo.addAtChoice(0, pasteNodeAction);
-
-		}
-		if (doAction.sizeChoiceList() > 0) {
-			execute(new ActionPair(doAction, undo));
-		}
-		return totalCopy;
-	}
-
-	/*
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * freemind.controller.actions.ActorXml#act(freemind.controller.actions.
 	 * generated.instance.XmlAction)
 	 */
-	public void act(XmlAction action) {
-		CutNodeAction cutAction = (CutNodeAction) action;
-		MindMapNode selectedNode = getNodeFromID(cutAction
-				.getNode());
-		getXmlActorFactory().getDeleteChildActor().deleteWithoutUndo(selectedNode);
-	}
+    override fun act(action: XmlAction) {
+        val cutAction = action as CutNodeAction
+        val selectedNode = getNodeFromID(
+            cutAction
+                .node
+        )
+        xmlActorFactory?.deleteChildActor?.deleteWithoutUndo(selectedNode)
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.controller.actions.ActorXml#getDoActionClass()
 	 */
-	public Class<CutNodeAction> getDoActionClass() {
-		return CutNodeAction.class;
-	}
-
+    override fun getDoActionClass(): Class<CutNodeAction> {
+        return CutNodeAction::class.java
+    }
 }

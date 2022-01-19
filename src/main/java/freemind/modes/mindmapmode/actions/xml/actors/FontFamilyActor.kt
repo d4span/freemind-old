@@ -17,78 +17,79 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+package freemind.modes.mindmapmode.actions.xml.actors
 
-package freemind.modes.mindmapmode.actions.xml.actors;
-
-import java.awt.Font;
-
-import freemind.controller.actions.generated.instance.FontNodeAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.main.Tools;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
-import freemind.modes.NodeAdapter;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
+import freemind.controller.actions.generated.instance.FontNodeAction
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.main.Tools
+import freemind.modes.ExtendedMapFeedback
+import freemind.modes.MindMapNode
+import freemind.modes.NodeAdapter
+import freemind.modes.mindmapmode.actions.xml.ActionPair
+import java.awt.Font
 
 /**
  * @author foltin
  * @date 26.03.2014
  */
-public class FontFamilyActor extends XmlActorAdapter {
+class FontFamilyActor
+/**
+ * @param pMapFeedback
+ */
+(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
+    override fun getDoActionClass(): Class<FontNodeAction> {
+        return FontNodeAction::class.java
+    }
 
-	/**
-	 * @param pMapFeedback
-	 */
-	public FontFamilyActor(ExtendedMapFeedback pMapFeedback) {
-		super(pMapFeedback);
-		// TODO Auto-generated constructor stub
-	}
-
-	public Class<FontNodeAction> getDoActionClass() {
-		return FontNodeAction.class;
-	}
-
-	/**
+    /**
      */
-	public void setFontFamily(MindMapNode node, String fontFamilyValue) {
-		execute(getActionPair(node, fontFamilyValue));
-	}
+    fun setFontFamily(node: MindMapNode, fontFamilyValue: String?) {
+        execute(getActionPair(node, fontFamilyValue))
+    }
 
-	public ActionPair getActionPair(MindMapNode node, String fontFamilyValue) {
-		FontNodeAction fontFamilyAction = createFontNodeAction(node,
-				fontFamilyValue);
-		FontNodeAction undoFontFamilyAction = createFontNodeAction(node,
-				node.getFontFamilyName());
-		return new ActionPair(fontFamilyAction, undoFontFamilyAction);
-	}
+    fun getActionPair(node: MindMapNode, fontFamilyValue: String?): ActionPair {
+        val fontFamilyAction = createFontNodeAction(
+            node,
+            fontFamilyValue
+        )
+        val undoFontFamilyAction = createFontNodeAction(
+            node,
+            node.fontFamilyName
+        )
+        return ActionPair(fontFamilyAction, undoFontFamilyAction)
+    }
 
-	private FontNodeAction createFontNodeAction(MindMapNode node,
-			String fontValue) {
-		FontNodeAction fontFamilyAction = new FontNodeAction();
-		fontFamilyAction.setNode(getNodeID(node));
-		fontFamilyAction.setFont(fontValue);
-		return fontFamilyAction;
+    private fun createFontNodeAction(
+        node: MindMapNode,
+        fontValue: String?
+    ): FontNodeAction {
+        val fontFamilyAction = FontNodeAction()
+        fontFamilyAction.node = getNodeID(node)
+        fontFamilyAction.font = fontValue
+        return fontFamilyAction
+    }
 
-	}
-
-	/**
+    /**
      *
      */
-
-	public void act(XmlAction action) {
-		if (action instanceof FontNodeAction) {
-			FontNodeAction fontFamilyAction = (FontNodeAction) action;
-			MindMapNode node = getNodeFromID(fontFamilyAction.getNode());
-			String fontFamily = fontFamilyAction.getFont();
-			if (!Tools.safeEquals(node.getFontFamilyName(), fontFamily)) {
-				((NodeAdapter) node).establishOwnFont();
-				node.setFont(getExMapFeedback().getFontThroughMap(
-						new Font(fontFamily, node.getFont().getStyle(), node
-								.getFont().getSize())));
-				getExMapFeedback().nodeChanged(node);
-			}
-		}
-	}
-
-	
+    override fun act(action: XmlAction) {
+        if (action is FontNodeAction) {
+            val fontFamilyAction = action
+            val node = getNodeFromID(fontFamilyAction.node)
+            val fontFamily = fontFamilyAction.font
+            if (!Tools.safeEquals(node?.fontFamilyName, fontFamily)) {
+                (node as NodeAdapter).establishOwnFont()
+                node.setFont(
+                    exMapFeedback?.getFontThroughMap(
+                        Font(
+                            fontFamily, node.getFont().style,
+                            node
+                                .getFont().size
+                        )
+                    )
+                )
+                exMapFeedback?.nodeChanged(node)
+            }
+        }
+    }
 }

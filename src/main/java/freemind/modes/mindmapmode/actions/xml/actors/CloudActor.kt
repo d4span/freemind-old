@@ -17,94 +17,95 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+package freemind.modes.mindmapmode.actions.xml.actors
 
-package freemind.modes.mindmapmode.actions.xml.actors;
-
-import java.awt.Color;
-
-import freemind.controller.actions.generated.instance.AddCloudXmlAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.main.Tools;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
-import freemind.modes.mindmapmode.MindMapCloudModel;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
+import freemind.controller.actions.generated.instance.AddCloudXmlAction
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.main.Tools
+import freemind.modes.ExtendedMapFeedback
+import freemind.modes.MindMap
+import freemind.modes.MindMapNode
+import freemind.modes.mindmapmode.MindMapCloudModel
+import freemind.modes.mindmapmode.actions.xml.ActionPair
+import java.awt.Color
 
 /**
  * @author foltin
  * @date 26.03.2014
  */
-public class CloudActor extends NodeXmlActorAdapter {
+class CloudActor
+/**
+ * @param pMapFeedback
+ */
+(pMapFeedback: ExtendedMapFeedback?) : NodeXmlActorAdapter(pMapFeedback) {
+    override fun getDoActionClass(): Class<AddCloudXmlAction> {
+        return AddCloudXmlAction::class.java
+    }
 
-	/**
-	 * @param pMapFeedback
-	 */
-	public CloudActor(ExtendedMapFeedback pMapFeedback) {
-		super(pMapFeedback);
-	}
-	
-	public Class<AddCloudXmlAction> getDoActionClass() {
-		return AddCloudXmlAction.class;
-	}
+    override fun apply(model: MindMap, selected: MindMapNode): ActionPair {
+        return getActionPair(selected, selected.cloud == null)
+    }
 
-	public ActionPair apply(MindMap model, MindMapNode selected) {
-		ActionPair pair = getActionPair(selected, selected.getCloud() == null);
-		return pair;
-	}
+    fun setCloud(node: MindMapNode?, enable: Boolean) {
+        execute(getActionPair(node, enable))
+    }
 
-	public void setCloud(MindMapNode node, boolean enable) {
-		execute(getActionPair(node, enable));
+    private fun getActionPair(selected: MindMapNode?, enable: Boolean): ActionPair {
+        val cloudAction = createAddCloudXmlAction(
+            selected,
+            enable, null
+        )
+        var undocloudAction: AddCloudXmlAction?
+        undocloudAction = if (selected?.cloud != null) {
+            createAddCloudXmlAction(
+                selected, true,
+                selected
+                    .cloud?.color
+            )
+        } else {
+            createAddCloudXmlAction(selected, false, null)
+        }
+        return ActionPair(cloudAction, undocloudAction)
+    }
 
-	}
+    private fun createAddCloudXmlAction(
+        selected: MindMapNode?,
+        enable: Boolean,
+        color: Color?
+    ): AddCloudXmlAction {
+        val nodecloudAction = AddCloudXmlAction()
+        nodecloudAction.node = getNodeID(selected)
+        nodecloudAction.enabled = enable
+        nodecloudAction.color = Tools.colorToXml(color)
+        return nodecloudAction
+    }
 
-	private ActionPair getActionPair(MindMapNode selected, boolean enable) {
-		AddCloudXmlAction cloudAction = createAddCloudXmlAction(selected,
-				enable, null);
-		AddCloudXmlAction undocloudAction = null;
-		if (selected.getCloud() != null) {
-			undocloudAction = createAddCloudXmlAction(selected, true, selected
-					.getCloud().getColor());
-		} else {
-			undocloudAction = createAddCloudXmlAction(selected, false, null);
-
-		}
-		return new ActionPair(cloudAction, undocloudAction);
-	}
-
-	private AddCloudXmlAction createAddCloudXmlAction(MindMapNode selected,
-			boolean enable, Color color) {
-		AddCloudXmlAction nodecloudAction = new AddCloudXmlAction();
-		nodecloudAction.setNode(getNodeID(selected));
-		nodecloudAction.setEnabled(enable);
-		nodecloudAction.setColor(Tools.colorToXml(color));
-		return nodecloudAction;
-	}
-
-	public void act(XmlAction action) {
-		if (action instanceof AddCloudXmlAction) {
-			AddCloudXmlAction nodecloudAction = (AddCloudXmlAction) action;
-			MindMapNode node = getNodeFromID(nodecloudAction.getNode());
-			if ((node.getCloud() == null) == nodecloudAction.getEnabled()) {
-				if (nodecloudAction.getEnabled()) {
-					if (node.isRoot()) {
-						return;
-					}
-					MindMapCloudModel cloudModel = new MindMapCloudModel(node,
-							getExMapFeedback());
-					node.setCloud(cloudModel);
-					if (nodecloudAction.getColor() != null) {
-						Color color = Tools.xmlToColor(nodecloudAction
-								.getColor());
-						cloudModel.setColor(color);
-					}
-				} else {
-					node.setCloud(null);
-				}
-				getExMapFeedback().nodeChanged(node);
-			}
-		}
-	}
-
-
+    override fun act(action: XmlAction) {
+        if (action is AddCloudXmlAction) {
+            val nodecloudAction = action
+            val node = getNodeFromID(nodecloudAction.node)
+            if (node?.cloud == null == nodecloudAction.enabled) {
+                if (nodecloudAction.enabled) {
+                    if (node?.isRoot ?: false) {
+                        return
+                    }
+                    val cloudModel = MindMapCloudModel(
+                        node,
+                        exMapFeedback
+                    )
+                    node?.cloud = cloudModel
+                    if (nodecloudAction.color != null) {
+                        val color = Tools.xmlToColor(
+                            nodecloudAction
+                                .color
+                        )
+                        cloudModel.color = color
+                    }
+                } else {
+                    node?.cloud = null
+                }
+                exMapFeedback?.nodeChanged(node)
+            }
+        }
+    }
 }

@@ -17,26 +17,16 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: FileToolBar.java,v 1.7 2003/11/03 11:00:18 sviles Exp $*/
+package freemind.modes.filemode
 
-package freemind.modes.filemode;
+import javax.swing.JButton
+import javax.swing.JToolBar
 
-import javax.swing.JButton;
-import javax.swing.JToolBar;
-
-@SuppressWarnings("serial")
-public class FileToolBar extends JToolBar {
-
-	private FileController c;
-
-	public FileToolBar(FileController controller) {
-		this.c = controller;
-		this.setRollover(true);
-
-		JButton button;
-
-		button = add(c.newMap);
-		button.setText("");
-
-		button = add(c.center);
-	}
+class FileToolBar(private val c: FileController) : JToolBar() {
+    init {
+        this.isRollover = true
+        var button: JButton
+        button = add(c.newMap)
+        button.text = ""
+    }
 }

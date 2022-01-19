@@ -17,79 +17,75 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+package freemind.modes.mindmapmode.actions.xml.actors
 
-package freemind.modes.mindmapmode.actions.xml.actors;
-
-import freemind.controller.actions.generated.instance.FontSizeNodeAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.main.Tools;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
+import freemind.controller.actions.generated.instance.FontSizeNodeAction
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.main.Tools
+import freemind.modes.ExtendedMapFeedback
+import freemind.modes.MindMapNode
+import freemind.modes.mindmapmode.actions.xml.ActionPair
 
 /**
  * @author foltin
  * @date 26.03.2014
  */
-public class FontSizeActor extends XmlActorAdapter {
+class FontSizeActor
+/**
+ * @param pMapFeedback
+ */
+(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
+    override fun getDoActionClass(): Class<FontSizeNodeAction> {
+        return FontSizeNodeAction::class.java
+    }
 
-	/**
-	 * @param pMapFeedback
-	 */
-	public FontSizeActor(ExtendedMapFeedback pMapFeedback) {
-		super(pMapFeedback);
-	}
-
-	public Class<FontSizeNodeAction> getDoActionClass() {
-		return FontSizeNodeAction.class;
-	}
-
-	/**
+    /**
      */
-	public void setFontSize(MindMapNode node, String fontSizeValue) {
-		if (Tools.safeEquals(fontSizeValue, node.getFontSize())) {
-			return;
-		}
-		execute(getActionPair(node, fontSizeValue));
+    fun setFontSize(node: MindMapNode, fontSizeValue: String?) {
+        if (Tools.safeEquals(fontSizeValue, node.fontSize)) {
+            return
+        }
+        execute(getActionPair(node, fontSizeValue))
+    }
 
-	}
+    fun getActionPair(node: MindMapNode, fontSizeValue: String?): ActionPair {
+        val fontSizeAction = createFontSizeNodeAction(
+            node,
+            fontSizeValue
+        )
+        val undoFontSizeAction = createFontSizeNodeAction(
+            node,
+            node.fontSize
+        )
+        return ActionPair(fontSizeAction, undoFontSizeAction)
+    }
 
-	public ActionPair getActionPair(MindMapNode node, String fontSizeValue) {
-		FontSizeNodeAction fontSizeAction = createFontSizeNodeAction(node,
-				fontSizeValue);
-		FontSizeNodeAction undoFontSizeAction = createFontSizeNodeAction(node,
-				node.getFontSize());
-		return new ActionPair(fontSizeAction, undoFontSizeAction);
-	}
+    private fun createFontSizeNodeAction(
+        node: MindMapNode,
+        fontSizeValue: String?
+    ): FontSizeNodeAction {
+        val fontSizeAction = FontSizeNodeAction()
+        fontSizeAction.node = getNodeID(node)
+        fontSizeAction.size = fontSizeValue
+        return fontSizeAction
+    }
 
-	private FontSizeNodeAction createFontSizeNodeAction(MindMapNode node,
-			String fontSizeValue) {
-		FontSizeNodeAction fontSizeAction = new FontSizeNodeAction();
-		fontSizeAction.setNode(getNodeID(node));
-		fontSizeAction.setSize(fontSizeValue);
-		return fontSizeAction;
-
-	}
-
-	/**
+    /**
      *
      */
-
-	public void act(XmlAction action) {
-		if (action instanceof FontSizeNodeAction) {
-			FontSizeNodeAction fontSizeAction = (FontSizeNodeAction) action;
-			MindMapNode node = getNodeFromID(fontSizeAction.getNode());
-			try {
-				int size = Integer.valueOf(fontSizeAction.getSize()).intValue();
-				if (!node.getFontSize().equals(fontSizeAction.getSize())) {
-					node.setFontSize(size);
-					getExMapFeedback().nodeChanged(node);
-				}
-			} catch (NumberFormatException e) {
-				return;
-			}
-		}
-	}
-
-	
+    override fun act(action: XmlAction) {
+        if (action is FontSizeNodeAction) {
+            val fontSizeAction = action
+            val node = getNodeFromID(fontSizeAction.node)
+            try {
+                val size = Integer.valueOf(fontSizeAction.size).toInt()
+                if (node?.fontSize != fontSizeAction.size) {
+                    node?.setFontSize(size)
+                    exMapFeedback?.nodeChanged(node)
+                }
+            } catch (e: NumberFormatException) {
+                return
+            }
+        }
+    }
 }

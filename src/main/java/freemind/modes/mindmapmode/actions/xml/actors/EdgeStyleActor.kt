@@ -17,98 +17,99 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+package freemind.modes.mindmapmode.actions.xml.actors
 
-package freemind.modes.mindmapmode.actions.xml.actors;
-
-import freemind.controller.actions.generated.instance.EdgeStyleFormatAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.main.Tools;
-import freemind.modes.EdgeAdapter;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapEdge;
-import freemind.modes.MindMapNode;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
+import freemind.controller.actions.generated.instance.EdgeStyleFormatAction
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.main.Tools
+import freemind.modes.EdgeAdapter
+import freemind.modes.ExtendedMapFeedback
+import freemind.modes.MindMapNode
+import freemind.modes.mindmapmode.actions.xml.ActionPair
 
 /**
  * @author foltin
  * @date 26.03.2014
  */
-public class EdgeStyleActor extends XmlActorAdapter {
+class EdgeStyleActor
+/**
+ * @param pMapFeedback
+ */
+(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
+    override fun getDoActionClass(): Class<EdgeStyleFormatAction> {
+        return EdgeStyleFormatAction::class.java
+    }
 
-	/**
-	 * @param pMapFeedback
-	 */
-	public EdgeStyleActor(ExtendedMapFeedback pMapFeedback) {
-		super(pMapFeedback);
-	}
-	
-	public Class<EdgeStyleFormatAction> getDoActionClass() {
-		return EdgeStyleFormatAction.class;
-	}
+    /**
+     * @param node
+     * @param style use null to remove the style
+     */
+    fun setEdgeStyle(node: MindMapNode, style: String?) {
+        if (Tools.safeEquals(style, getStyle(node))) {
+            return
+        }
+        if (style != null) {
+            var found = false
+            // check style:
+            for (i in EdgeAdapter.EDGESTYLES.indices) {
+                val possibleStyle = EdgeAdapter.EDGESTYLES[i]
+                if (Tools.safeEquals(style, possibleStyle)) {
+                    found = true
+                    break
+                }
+            }
+            require(found) {
+                (
+                    "Style " + style +
+                        " is not known"
+                    )
+            }
+        }
+        execute(getActionPair(node, style))
+    }
 
-	/**
-	 * @param node
-	 * @param style use null to remove the style
-	 */
-	public void setEdgeStyle(MindMapNode node, String style) {
-		if (Tools.safeEquals(style, getStyle(node))) {
-			return;
-		}
-		if (style != null) {
-			boolean found = false;
-			// check style:
-			for (int i = 0; i < EdgeAdapter.EDGESTYLES.length; i++) {
-				String possibleStyle = EdgeAdapter.EDGESTYLES[i];
-				if (Tools.safeEquals(style, possibleStyle)) {
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				throw new IllegalArgumentException("Style " + style
-						+ " is not known");
-			}
-		}
-		execute(getActionPair(node, style));
-	}
+    fun getActionPair(selected: MindMapNode, style: String?): ActionPair {
+        val styleAction = createNodeStyleFormatAction(
+            selected, style
+        )
+        val undoStyleAction = createNodeStyleFormatAction(
+            selected, getStyle(selected)
+        )
+        return ActionPair(styleAction, undoStyleAction)
+    }
 
-	public ActionPair getActionPair(MindMapNode selected, String style) {
-		EdgeStyleFormatAction styleAction = createNodeStyleFormatAction(
-				selected, style);
-		EdgeStyleFormatAction undoStyleAction = createNodeStyleFormatAction(
-				selected, getStyle(selected));
-		return new ActionPair(styleAction, undoStyleAction);
-	}
+    fun getStyle(selected: MindMapNode): String? {
+        var oldStyle = selected.edge.style
+        if (!selected.edge.hasStyle()) {
+            oldStyle = null
+        }
+        return oldStyle
+    }
 
-	public String getStyle(MindMapNode selected) {
-		String oldStyle = selected.getEdge().getStyle();
-		if (!selected.getEdge().hasStyle()) {
-			oldStyle = null;
-		}
-		return oldStyle;
-	}
+    private fun createNodeStyleFormatAction(
+        selected: MindMapNode,
+        style: String?
+    ): EdgeStyleFormatAction {
+        val edgeStyleAction = EdgeStyleFormatAction()
+        edgeStyleAction.node = getNodeID(selected)
+        edgeStyleAction.style = style
+        return edgeStyleAction
+    }
 
-	private EdgeStyleFormatAction createNodeStyleFormatAction(
-			MindMapNode selected, String style) {
-		EdgeStyleFormatAction edgeStyleAction = new EdgeStyleFormatAction();
-		edgeStyleAction.setNode(getNodeID(selected));
-		edgeStyleAction.setStyle(style);
-		return edgeStyleAction;
-	}
-
-	public void act(XmlAction action) {
-		if (action instanceof EdgeStyleFormatAction) {
-			EdgeStyleFormatAction edgeStyleAction = (EdgeStyleFormatAction) action;
-			MindMapNode node = getNodeFromID(edgeStyleAction.getNode());
-			String newStyle = edgeStyleAction.getStyle();
-			MindMapEdge edge = node.getEdge();
-			if (!Tools.safeEquals(edge.hasStyle() ? edge.getStyle() : null,
-					newStyle)) {
-				((EdgeAdapter) edge).setStyle(newStyle);
-				getExMapFeedback().nodeChanged(node);
-			}
-		}
-	}
-
-
+    override fun act(action: XmlAction) {
+        if (action is EdgeStyleFormatAction) {
+            val edgeStyleAction = action
+            val node = getNodeFromID(edgeStyleAction.node)
+            val newStyle = edgeStyleAction.style
+            val edge = node?.edge
+            if (!Tools.safeEquals(
+                    if (edge != null && edge.hasStyle()) edge.style else null,
+                    newStyle
+                )
+            ) {
+                (edge as EdgeAdapter).style = newStyle
+                exMapFeedback?.nodeChanged(node)
+            }
+        }
+    }
 }

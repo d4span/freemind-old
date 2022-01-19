@@ -17,302 +17,322 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+package freemind.modes.mindmapmode.actions.xml.actors
 
-package freemind.modes.mindmapmode.actions.xml.actors;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Vector;
-
-import freemind.controller.actions.generated.instance.CompoundAction;
-import freemind.controller.actions.generated.instance.HookNodeAction;
-import freemind.controller.actions.generated.instance.NodeChildParameter;
-import freemind.controller.actions.generated.instance.NodeListMember;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.extensions.DontSaveMarker;
-import freemind.extensions.HookFactory;
-import freemind.extensions.HookInstanciationMethod;
-import freemind.extensions.NodeHook;
-import freemind.extensions.PermanentNodeHook;
-import freemind.extensions.PermanentNodeHookAdapter;
-import freemind.main.Tools;
-import freemind.main.XMLElement;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
-import freemind.modes.ViewAbstraction;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
-import freemind.view.mindmapview.NodeView;
+import freemind.controller.actions.generated.instance.CompoundAction
+import freemind.controller.actions.generated.instance.HookNodeAction
+import freemind.controller.actions.generated.instance.NodeChildParameter
+import freemind.controller.actions.generated.instance.NodeListMember
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.extensions.DontSaveMarker
+import freemind.extensions.HookFactory
+import freemind.extensions.HookInstanciationMethod
+import freemind.extensions.PermanentNodeHook
+import freemind.extensions.PermanentNodeHookAdapter
+import freemind.main.Resources
+import freemind.main.Tools
+import freemind.main.XMLElement
+import freemind.modes.ExtendedMapFeedback
+import freemind.modes.MindMapNode
+import freemind.modes.ViewAbstraction
+import freemind.modes.mindmapmode.actions.xml.ActionPair
+import freemind.view.mindmapview.NodeView
+import java.util.Properties
+import java.util.Vector
+import java.util.logging.Logger
 
 /**
  * @author foltin
  * @date 01.04.2014
  */
-public class AddHookActor extends XmlActorAdapter {
+class AddHookActor(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
+    /**
+     * @param pMapFeedback
+     */
+    init {
+        if (logger == null) {
+            logger = Resources.getInstance().getLogger(
+                this.javaClass.name
+            )
+        }
+    }
 
-	protected static java.util.logging.Logger logger = null;
-	/**
-	 * @param pMapFeedback
-	 */
-	public AddHookActor(ExtendedMapFeedback pMapFeedback) {
-		super(pMapFeedback);
-		if (logger == null) {
-			logger = freemind.main.Resources.getInstance().getLogger(
-					this.getClass().getName());
-		}
-	}
-	/**
-	 */
-	private HookFactory getHookFactory() {
-		return getExMapFeedback().getHookFactory();
-	}
-	
-	/**
-	 */
-	private HookInstanciationMethod getInstanciationMethod(String hookName) {
-		HookFactory factory = getHookFactory();
-		// determine instanciation method
-		HookInstanciationMethod instMethod = factory
-				.getInstanciationMethod(hookName);
-		return instMethod;
-	}
+    /**
+     */
+    private val hookFactory: HookFactory?
+        get() = exMapFeedback?.hookFactory
 
-	public void addHook(MindMapNode focussed, List<MindMapNode> selecteds, String hookName, Properties pHookProperties) {
-		HookNodeAction doAction = createHookNodeAction(focussed, selecteds,
-				hookName, pHookProperties);
+    /**
+     */
+    private fun getInstanciationMethod(hookName: String?): HookInstanciationMethod? {
+        val factory = hookFactory
+        // determine instanciation method
+        return factory?.getInstanciationMethod(hookName)
+    }
 
-		XmlAction undoAction = null;
-		// this is the non operation:
-		undoAction = new CompoundAction();
-		if (getInstanciationMethod(hookName).isPermanent()) {
-			// double application = remove.
-			undoAction = createHookNodeUndoAction(focussed, selecteds, hookName);
-		}
-		if (getInstanciationMethod(hookName).isUndoable()) {
-			execute(new ActionPair(doAction, undoAction));
-		} else {
-			// direct invocation without undo and such stuff.
-			invoke(focussed, selecteds, hookName, null);
-		}
-	}
+    fun addHook(focussed: MindMapNode?, selecteds: List<MindMapNode?>, hookName: String, pHookProperties: Properties?) {
+        val doAction = createHookNodeAction(
+            focussed, selecteds,
+            hookName, pHookProperties
+        )
+        var undoAction: XmlAction?
+        // this is the non operation:
+        undoAction = CompoundAction()
+        if (getInstanciationMethod(hookName)!!.isPermanent) {
+            // double application = remove.
+            undoAction = createHookNodeUndoAction(focussed, selecteds, hookName)
+        }
+        if (getInstanciationMethod(hookName)!!.isUndoable) {
+            execute(ActionPair(doAction, undoAction))
+        } else {
+            // direct invocation without undo and such stuff.
+            invoke(focussed, selecteds, hookName, null)
+        }
+    }
 
-	private XmlAction createHookNodeUndoAction(MindMapNode focussed,
-			List<MindMapNode> selecteds, String hookName) {
-		CompoundAction undoAction = new CompoundAction();
-		HookNodeAction hookNodeAction = createHookNodeAction(focussed,
-				selecteds, hookName, null);
-		undoAction.addChoice(hookNodeAction);
-		HookInstanciationMethod instMethod = getInstanciationMethod(hookName);
-		// get destination nodes
-		Collection<MindMapNode> destinationNodes = instMethod.getDestinationNodes(
-				getExMapFeedback(), focussed, selecteds);
-		MindMapNode adaptedFocussedNode = instMethod.getCenterNode(
-				getExMapFeedback(), focussed, selecteds);
-		// test if hook already present
-		if (instMethod.isAlreadyPresent(hookName, adaptedFocussedNode)) {
-			// remove the hook:
-			for (MindMapNode currentDestinationNode : destinationNodes) {
-				// find the hook in the current node, if present:
-				for (PermanentNodeHook hook : currentDestinationNode.getActivatedHooks()) {
-					if (hook.getName().equals(hookName)) {
-						XMLElement child = new XMLElement();
-						if(!(hook instanceof DontSaveMarker)) {
-							hook.save(child);
-							if (child.countChildren() == 1) {
-								XMLElement parameters = (XMLElement) child
-										.getChildren().firstElement();
-								if (Tools.safeEquals(parameters.getName(),
-										PermanentNodeHookAdapter.PARAMETERS)) {
-									// standard save mechanism
-									for (Iterator<String> it = parameters.enumerateAttributeNames(); it.hasNext();) {
-										String name =it.next();
-										NodeChildParameter nodeHookChild = new NodeChildParameter();
-										nodeHookChild.setKey(name);
-										nodeHookChild.setValue(parameters
-												.getStringAttribute(name));
-										hookNodeAction.addNodeChildParameter(nodeHookChild);
-									}
-	
-								} else {
-									logger.warning("Unusual save mechanism, implement me.");
-								}
-							} else {
-								logger.warning("Unusual save mechanism, implement me.");
-							}
-						}
-						/*
+    private fun createHookNodeUndoAction(
+        focussed: MindMapNode?,
+        selecteds: List<MindMapNode?>,
+        hookName: String
+    ): XmlAction {
+        val undoAction = CompoundAction()
+        val hookNodeAction = createHookNodeAction(
+            focussed,
+            selecteds, hookName, null
+        )
+        undoAction.addChoice(hookNodeAction)
+        val instMethod = getInstanciationMethod(hookName)
+        // get destination nodes
+        val destinationNodes = instMethod!!.getDestinationNodes(
+            exMapFeedback, focussed, selecteds
+        )
+        val adaptedFocussedNode = instMethod.getCenterNode(
+            exMapFeedback, focussed!!, selecteds
+        )
+        // test if hook already present
+        if (instMethod.isAlreadyPresent(hookName, adaptedFocussedNode)) {
+            // remove the hook:
+            for (currentDestinationNode in destinationNodes) {
+                // find the hook in the current node, if present:
+                for (hook in currentDestinationNode?.activatedHooks ?: emptyList()) {
+                    if (hook.name == hookName) {
+                        val child = XMLElement()
+                        if (hook !is DontSaveMarker) {
+                            hook.save(child)
+                            if (child.countChildren() == 1) {
+                                val parameters = child
+                                    .children.firstElement() as XMLElement
+                                if (Tools.safeEquals(
+                                        parameters.name,
+                                        PermanentNodeHookAdapter.PARAMETERS
+                                    )
+                                ) {
+                                    // standard save mechanism
+                                    val it = parameters.enumerateAttributeNames()
+                                    while (it.hasNext()) {
+                                        val name = it.next()
+                                        val nodeHookChild = NodeChildParameter()
+                                        nodeHookChild.key = name
+                                        nodeHookChild.value = parameters
+                                            .getStringAttribute(name)
+                                        hookNodeAction.addNodeChildParameter(nodeHookChild)
+                                    }
+                                } else {
+                                    logger!!.warning("Unusual save mechanism, implement me.")
+                                }
+                            } else {
+                                logger!!.warning("Unusual save mechanism, implement me.")
+                            }
+                        }
+                        /*
 						 * fc, 30.7.2004: we have to break. otherwise the
 						 * collection is modified at two points (i.e., the
 						 * collection is not valid anymore after removing one
 						 * element). But this is no problem, as there exist only
 						 * "once" plugins currently.
-						 */
-						break;
-					}
-				}
-			}
-		}
-		return undoAction;
-	}
-	public HookNodeAction createHookNodeAction(MindMapNode focussed,
-			List<MindMapNode> selecteds, String hookName, Properties pHookProperties) {
-		HookNodeAction hookNodeAction = new HookNodeAction();
-		hookNodeAction.setNode(getNodeID(focussed));
-		hookNodeAction.setHookName(hookName);
-		// selectedNodes list
-		for (MindMapNode node : selecteds) {
-			NodeListMember nodeListMember = new NodeListMember();
-			nodeListMember.setNode(getNodeID(node));
-			hookNodeAction.addNodeListMember(nodeListMember);
-		}
-		if(pHookProperties != null) {
-			for (Map.Entry<Object, Object> entry : pHookProperties.entrySet()) {
-				NodeChildParameter nodeChildParameter = new NodeChildParameter();
-				nodeChildParameter.setKey((String) entry.getKey());
-				nodeChildParameter.setValue((String) entry.getValue());
-				hookNodeAction.addNodeChildParameter(nodeChildParameter);
-			}
-		}
-		return hookNodeAction;
-	}
+						 */break
+                    }
+                }
+            }
+        }
+        return undoAction
+    }
 
-	public void act(XmlAction action) {
-		if (action instanceof HookNodeAction) {
-			HookNodeAction hookNodeAction = (HookNodeAction) action;
-			MindMapNode selected = getNodeFromID(
-					hookNodeAction.getNode());
-			Vector<MindMapNode> selecteds = new Vector<>();
-			for (Iterator<NodeListMember> i = hookNodeAction.getListNodeListMemberList().iterator(); i.hasNext();) {
-				NodeListMember node = (NodeListMember) i.next();
-				selecteds.add(getNodeFromID(node.getNode()));
-			}
-			// reconstruct child-xml:
-			XMLElement xmlParent = new XMLElement();
-			xmlParent.setName(hookNodeAction.getHookName());
-			XMLElement child = new XMLElement();
-			xmlParent.addChild(child);
-			child.setName(PermanentNodeHookAdapter.PARAMETERS);
-			for (Iterator<NodeChildParameter> it = hookNodeAction.getListNodeChildParameterList().iterator(); it.hasNext();) {
-				NodeChildParameter childParameter = it.next();
-				child.setAttribute(childParameter.getKey(),
-						childParameter.getValue());
-			}
-			invoke(selected, selecteds, hookNodeAction.getHookName(), xmlParent);
-		}
-	}
+    fun createHookNodeAction(
+        focussed: MindMapNode?,
+        selecteds: List<MindMapNode?>,
+        hookName: String?,
+        pHookProperties: Properties?
+    ): HookNodeAction {
+        val hookNodeAction = HookNodeAction()
+        hookNodeAction.node = getNodeID(focussed)
+        hookNodeAction.hookName = hookName
+        // selectedNodes list
+        for (node in selecteds) {
+            val nodeListMember = NodeListMember()
+            nodeListMember.node = getNodeID(node)
+            hookNodeAction.addNodeListMember(nodeListMember)
+        }
+        if (pHookProperties != null) {
+            for ((key, value) in pHookProperties) {
+                val nodeChildParameter = NodeChildParameter()
+                nodeChildParameter.key = key as String
+                nodeChildParameter.value = value as String
+                hookNodeAction.addNodeChildParameter(nodeChildParameter)
+            }
+        }
+        return hookNodeAction
+    }
 
-	public Class<HookNodeAction> getDoActionClass() {
-		return HookNodeAction.class;
-	}
-	public void removeHook(MindMapNode pFocussed, List<MindMapNode> pSelecteds, String pHookName) {
-		HookNodeAction undoAction = createHookNodeAction(pFocussed, pSelecteds, pHookName, null);
+    override fun act(action: XmlAction) {
+        if (action is HookNodeAction) {
+            val hookNodeAction = action
+            val selected = getNodeFromID(
+                hookNodeAction.node
+            )
+            val selecteds = Vector<MindMapNode?>()
+            val i = hookNodeAction.listNodeListMemberList.iterator()
+            while (i.hasNext()) {
+                selecteds.add(getNodeFromID(i.next()?.node))
+            }
+            // reconstruct child-xml:
+            val xmlParent = XMLElement()
+            xmlParent.name = hookNodeAction.hookName
+            val child = XMLElement()
+            xmlParent.addChild(child)
+            child.name = PermanentNodeHookAdapter.PARAMETERS
+            val it = hookNodeAction.listNodeChildParameterList.iterator()
+            while (it.hasNext()) {
+                val childParameter = it.next()
+                child.setAttribute(
+                    childParameter?.key,
+                    childParameter?.value
+                )
+            }
+            invoke(selected, selecteds, hookNodeAction.hookName, xmlParent)
+        }
+    }
 
-		XmlAction doAction = null;
-		// this is the non operation:
-		doAction = new CompoundAction();
-		if (getInstanciationMethod(pHookName).isPermanent()) {
-			// double application = remove.
-			doAction = createHookNodeUndoAction(pFocussed, pSelecteds,
-					pHookName);
-		}
-		execute(new ActionPair(undoAction, doAction));
-	}
+    override fun getDoActionClass(): Class<HookNodeAction> {
+        return HookNodeAction::class.java
+    }
 
-	private void invoke(MindMapNode focussed, List<MindMapNode> selecteds, String hookName,
-			XMLElement pXmlParent) {
-		logger.finest("invoke(selecteds) called.");
-		HookInstanciationMethod instMethod = getInstanciationMethod(hookName);
-		// get destination nodes
-		Collection<MindMapNode> destinationNodes = instMethod.getDestinationNodes(getExMapFeedback(), focussed, selecteds);
-		MindMapNode adaptedFocussedNode = instMethod.getCenterNode(
-				getExMapFeedback(), focussed, selecteds);
-		// test if hook already present
-		if (instMethod.isAlreadyPresent(hookName, adaptedFocussedNode)) {
-			// remove the hook:
-			for (Iterator<MindMapNode> i = destinationNodes.iterator(); i.hasNext();) {
-				MindMapNode currentDestinationNode = i.next();
-				// find the hook ini the current node, if present:
-				for (PermanentNodeHook hook : currentDestinationNode.getActivatedHooks()) {
-					if (hook.getName().equals(hookName)) {
-						currentDestinationNode.removeHook(hook);
-						getExMapFeedback().nodeChanged(currentDestinationNode);
-						/*
+    fun removeHook(pFocussed: MindMapNode?, pSelecteds: List<MindMapNode?>, pHookName: String) {
+        val undoAction = createHookNodeAction(pFocussed, pSelecteds, pHookName, null)
+        var doAction: XmlAction?
+        // this is the non operation:
+        doAction = CompoundAction()
+        if (getInstanciationMethod(pHookName)!!.isPermanent) {
+            // double application = remove.
+            doAction = createHookNodeUndoAction(
+                pFocussed, pSelecteds,
+                pHookName
+            )
+        }
+        execute(ActionPair(undoAction, doAction))
+    }
+
+    private operator fun invoke(
+        focussed: MindMapNode?,
+        selecteds: List<MindMapNode?>,
+        hookName: String?,
+        pXmlParent: XMLElement?
+    ) {
+        logger!!.finest("invoke(selecteds) called.")
+        val instMethod = getInstanciationMethod(hookName)
+        // get destination nodes
+        val destinationNodes = instMethod!!.getDestinationNodes(exMapFeedback, focussed, selecteds)
+        val adaptedFocussedNode = instMethod.getCenterNode(
+            exMapFeedback, focussed!!, selecteds
+        )
+        // test if hook already present
+        if (instMethod.isAlreadyPresent(hookName!!, adaptedFocussedNode)) {
+            // remove the hook:
+            val i = destinationNodes.iterator()
+            while (i.hasNext()) {
+                val currentDestinationNode = i.next()
+                // find the hook ini the current node, if present:
+                for (hook in currentDestinationNode?.activatedHooks ?: emptyList()) {
+                    if (hook.name == hookName) {
+                        currentDestinationNode?.removeHook(hook)
+                        exMapFeedback?.nodeChanged(currentDestinationNode)
+                        /*
 						 * fc, 30.7.2004: we have to break. otherwise the
 						 * collection is modified at two points (i.e., the
 						 * collection is not valid anymore after removing one
 						 * element). But this is no problem, as there exist only
 						 * "once" plugins currently.
-						 */
-						break;
-					}
-				}
-			}
-		} else {
-			// add the hook
-			for (MindMapNode currentDestinationNode : destinationNodes) {
-				NodeHook hook = getExMapFeedback().createNodeHook(hookName,
-						currentDestinationNode);
-				logger.finest("created hook " + hookName);
-				// set parameters, if present
-				if (pXmlParent != null && hook instanceof PermanentNodeHook) {
-					((PermanentNodeHook) hook).loadFrom(pXmlParent);
-				}
-				// call invoke.
-				currentDestinationNode.invokeHook(hook);
-				if (hook instanceof PermanentNodeHook) {
-					PermanentNodeHook permHook = (PermanentNodeHook) hook;
-					logger.finest("This is a permanent hook " + hookName);
-					// the focused receives the focus:
-					if (currentDestinationNode == adaptedFocussedNode) {
-						permHook.onFocusNode(getNodeView(currentDestinationNode));
-					}
-					// using this method, the map is dirty now. This is
-					// important to
-					// guarantee, that the hooks are saved.
-					getExMapFeedback().nodeChanged(currentDestinationNode);
-				}
-			}
-			finishInvocation(focussed, selecteds, adaptedFocussedNode,
-					destinationNodes);
-		}
-	}
+						 */break
+                    }
+                }
+            }
+        } else {
+            // add the hook
+            for (currentDestinationNode in destinationNodes) {
+                val hook = exMapFeedback?.createNodeHook(
+                    hookName,
+                    currentDestinationNode
+                )
+                logger!!.finest("created hook $hookName")
+                // set parameters, if present
+                if (pXmlParent != null && hook is PermanentNodeHook) {
+                    hook.loadFrom(pXmlParent)
+                }
+                // call invoke.
+                currentDestinationNode?.invokeHook(hook)
+                if (hook is PermanentNodeHook) {
+                    logger!!.finest("This is a permanent hook $hookName")
+                    // the focused receives the focus:
+                    if (currentDestinationNode === adaptedFocussedNode) {
+                        hook.onFocusNode(getNodeView(currentDestinationNode))
+                    }
+                    // using this method, the map is dirty now. This is
+                    // important to
+                    // guarantee, that the hooks are saved.
+                    exMapFeedback?.nodeChanged(currentDestinationNode)
+                }
+            }
+            finishInvocation(
+                focussed, selecteds
+            )
+        }
+    }
 
-	/**
-	 * @param pNode
-	 * @return
-	 */
-	private NodeView getNodeView(MindMapNode pNode) {
-		return getViewAbstraction().getNodeView(pNode);
-	}
+    /**
+     * @param pNode
+     * @return
+     */
+    private fun getNodeView(pNode: MindMapNode?): NodeView {
+        return viewAbstraction.getNodeView(pNode)
+    }
 
-	protected ViewAbstraction getViewAbstraction() {
-		ViewAbstraction viewAbstraction = getExMapFeedback().getViewAbstraction();
-		if(viewAbstraction==null) {
-			throw new IllegalArgumentException("View abstraction not available.");
-		}
-		return viewAbstraction;
-	}
-	/**
-	 * @param focussed
-	 *            The real focussed node
-	 * @param selecteds
-	 *            The list of selected nodes
-	 * @param adaptedFocussedNode
-	 *            The calculated focussed node (if the hook specifies, that the
-	 *            hook should apply to root, then this is the root node).
-	 * @param destinationNodes
-	 *            The calculated list of selected nodes (see last)
-	 */
-	private void finishInvocation(MindMapNode focussed, List<MindMapNode> selecteds, MindMapNode adaptedFocussedNode, Collection<MindMapNode> destinationNodes) {
-		// restore selection only, if nothing selected.
-		if (getViewAbstraction().getSelecteds().size() == 0) {
-			// select all destination nodes:
-			getExMapFeedback().select(focussed, selecteds);
-		}
-	}
+    protected val viewAbstraction: ViewAbstraction
+        get() = exMapFeedback?.viewAbstraction
+            ?: throw IllegalArgumentException("View abstraction not available.")
 
+    /**
+     * @param focussed
+     * The real focussed node
+     * @param selecteds
+     * The list of selected nodes
+     * @param adaptedFocussedNode
+     * The calculated focussed node (if the hook specifies, that the
+     * hook should apply to root, then this is the root node).
+     * @param destinationNodes
+     * The calculated list of selected nodes (see last)
+     */
+    private fun finishInvocation(
+        focussed: MindMapNode?,
+        selecteds: List<MindMapNode?>
+    ) {
+        // restore selection only, if nothing selected.
+        if (viewAbstraction.selecteds.size == 0) {
+            // select all destination nodes:
+            exMapFeedback?.select(focussed, selecteds)
+        }
+    }
 
-
+    companion object {
+        protected var logger: Logger? = null
+    }
 }

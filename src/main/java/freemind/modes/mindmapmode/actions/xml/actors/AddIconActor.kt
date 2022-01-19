@@ -17,122 +17,134 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+package freemind.modes.mindmapmode.actions.xml.actors
 
-package freemind.modes.mindmapmode.actions.xml.actors;
-
-import freemind.controller.actions.generated.instance.AddIconAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.main.Tools;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindIcon;
-import freemind.modes.MindMapNode;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
+import freemind.controller.actions.generated.instance.AddIconAction
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.main.Tools
+import freemind.modes.ExtendedMapFeedback
+import freemind.modes.MindIcon
+import freemind.modes.MindMapNode
+import freemind.modes.mindmapmode.actions.xml.ActionPair
 
 /**
  * @author foltin
  * @date 25.03.2014
  */
-public class AddIconActor extends XmlActorAdapter {
+class AddIconActor
+/**
+ * @param pMapFeedback
+ */
+(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
+    fun addIcon(node: MindMapNode, icon: MindIcon) {
+        execute(getAddLastIconActionPair(node, icon))
+    }
 
-	/**
-	 * @param pMapFeedback
-	 */
-	public AddIconActor(ExtendedMapFeedback pMapFeedback) {
-		super(pMapFeedback);
-	}
-	
-	public void addIcon(MindMapNode node, MindIcon icon) {
-		execute(getAddLastIconActionPair(node, icon));
-	}
+    override fun act(action: XmlAction) {
+        if (action is AddIconAction) {
+            val iconAction = action
+            val node = getNodeFromID(
+                iconAction
+                    .node
+            )
+            val iconName = iconAction.iconName
+            val position = iconAction.iconPosition
+            val icon = MindIcon.factory(iconName)
+            node?.addIcon(icon, position)
+            exMapFeedback?.nodeChanged(node)
+        }
+    }
 
-	public void act(XmlAction action) {
-		if (action instanceof AddIconAction) {
-			AddIconAction iconAction = (AddIconAction) action;
-			MindMapNode node = getNodeFromID(iconAction
-					.getNode());
-			String iconName = iconAction.getIconName();
-			int position = iconAction.getIconPosition();
-			MindIcon icon = MindIcon.factory(iconName);
-			node.addIcon(icon, position);
-			getExMapFeedback().nodeChanged(node);
-		}
-	}
+    override fun getDoActionClass(): Class<AddIconAction> {
+        return AddIconAction::class.java
+    }
 
-	public Class<AddIconAction> getDoActionClass() {
-		return AddIconAction.class;
-	}
+    fun createAddIconAction(
+        node: MindMapNode?,
+        icon: MindIcon,
+        iconPosition: Int
+    ): AddIconAction {
+        val action = AddIconAction()
+        action.node = getNodeID(node)
+        action.iconName = icon.name
+        action.iconPosition = iconPosition
+        return action
+    }
 
-	public AddIconAction createAddIconAction(MindMapNode node, MindIcon icon,
-			int iconPosition) {
-		AddIconAction action = new AddIconAction();
-		action.setNode(getNodeID(node));
-		action.setIconName(icon.getName());
-		action.setIconPosition(iconPosition);
-		return action;
-	}
-	
-	/**
+    /**
      */
-	private ActionPair getAddLastIconActionPair(MindMapNode node, MindIcon icon) {
-		int iconIndex = MindIcon.LAST;
-		return getAddIconActionPair(node, icon, iconIndex);
-	}
+    private fun getAddLastIconActionPair(node: MindMapNode, icon: MindIcon): ActionPair {
+        val iconIndex = MindIcon.LAST
+        return getAddIconActionPair(node, icon, iconIndex)
+    }
 
-	private ActionPair getAddIconActionPair(MindMapNode node, MindIcon icon,
-			int iconIndex) {
-		AddIconAction doAction = createAddIconAction(node, icon, iconIndex);
-		XmlAction undoAction = getXmlActorFactory().getRemoveIconActor().createRemoveIconXmlAction(
-				node, iconIndex);
-		return new ActionPair(doAction, undoAction);
-	}
+    private fun getAddIconActionPair(
+        node: MindMapNode,
+        icon: MindIcon,
+        iconIndex: Int
+    ): ActionPair {
+        val doAction = createAddIconAction(node, icon, iconIndex)
+        val undoAction = xmlActorFactory?.removeIconActor?.createRemoveIconXmlAction(
+            node, iconIndex
+        )
+        return ActionPair(doAction, undoAction)
+    }
 
-	/**
+    /**
      */
-	private ActionPair getToggleIconActionPair(MindMapNode node, MindIcon icon) {
-		int iconIndex = Tools.iconFirstIndex(node,
-				icon.getName());
-		if (iconIndex == -1) {
-			return getAddLastIconActionPair(node, icon);
-		} else {
-			return getRemoveIconActionPair(node, icon, iconIndex);
-		}
-	}
+    private fun getToggleIconActionPair(node: MindMapNode, icon: MindIcon): ActionPair {
+        val iconIndex = Tools.iconFirstIndex(
+            node,
+            icon.name
+        )
+        return if (iconIndex == -1) {
+            getAddLastIconActionPair(node, icon)
+        } else {
+            getRemoveIconActionPair(node, icon, iconIndex)
+        }
+    }
 
-	/**
-	 * @param removeFirst
-	 */
-	private ActionPair getRemoveIconActionPair(MindMapNode node, MindIcon icon,
-			boolean removeFirst) {
-		int iconIndex = removeFirst ? Tools.iconFirstIndex(
-				node, icon.getName()) : Tools.iconLastIndex(
-				node, icon.getName());
-		return iconIndex >= 0 ? getRemoveIconActionPair(node, icon, iconIndex)
-				: null;
-	}
+    /**
+     * @param removeFirst
+     */
+    private fun getRemoveIconActionPair(
+        node: MindMapNode,
+        icon: MindIcon,
+        removeFirst: Boolean
+    ): ActionPair? {
+        val iconIndex = if (removeFirst) Tools.iconFirstIndex(
+            node, icon.name
+        ) else Tools.iconLastIndex(
+            node, icon.name
+        )
+        return if (iconIndex >= 0) getRemoveIconActionPair(node, icon, iconIndex) else null
+    }
 
-	private ActionPair getRemoveIconActionPair(MindMapNode node, MindIcon icon,
-			int iconIndex) {
-		XmlAction doAction = getXmlActorFactory().getRemoveIconActor().createRemoveIconXmlAction(
-				node, iconIndex);
-		XmlAction undoAction = createAddIconAction(node, icon, iconIndex);
-		return new ActionPair(doAction, undoAction);
-	}
+    private fun getRemoveIconActionPair(
+        node: MindMapNode,
+        icon: MindIcon,
+        iconIndex: Int
+    ): ActionPair {
+        val doAction = xmlActorFactory?.removeIconActor?.createRemoveIconXmlAction(
+            node, iconIndex
+        )
+        val undoAction: XmlAction = createAddIconAction(node, icon, iconIndex)
+        return ActionPair(doAction, undoAction)
+    }
 
-	public void toggleIcon(MindMapNode node, MindIcon icon) {
-		getExMapFeedback().doTransaction(
-				this.getClass().getName()+"/toggle", getToggleIconActionPair(node, icon));
-	}
+    fun toggleIcon(node: MindMapNode, icon: MindIcon) {
+        exMapFeedback?.doTransaction(
+            this.javaClass.name + "/toggle", getToggleIconActionPair(node, icon)
+        )
+    }
 
-	public void removeIcon(MindMapNode node, MindIcon icon, boolean removeFirst) {
-		final ActionPair removeIconActionPair = getRemoveIconActionPair(node,
-				icon, removeFirst);
-		if (removeIconActionPair == null) {
-			return;
-		}
-		getExMapFeedback().doTransaction(
-				this.getClass().getName()+"/remove", removeIconActionPair);
-	}
-
-
-
+    fun removeIcon(node: MindMapNode, icon: MindIcon, removeFirst: Boolean) {
+        val removeIconActionPair = getRemoveIconActionPair(
+            node,
+            icon, removeFirst
+        ) ?: return
+        exMapFeedback?.doTransaction(
+            this.javaClass.name + "/remove", removeIconActionPair
+        )
+    }
 }

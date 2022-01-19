@@ -17,156 +17,144 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: FileNodeModel.java,v 1.11.18.1.4.5 2008/11/01 21:11:43 christianfoltin Exp $*/
+package freemind.modes.filemode
 
-package freemind.modes.filemode;
-
-import java.awt.Color;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.ListIterator;
-
-import freemind.main.Tools;
-import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
-import freemind.modes.NodeAdapter;
+import freemind.main.Resources
+import freemind.main.Tools
+import freemind.modes.MindMap
+import freemind.modes.MindMapNode
+import freemind.modes.NodeAdapter
+import java.awt.Color
+import java.io.File
+import java.net.MalformedURLException
+import java.util.Collections
+import java.util.LinkedList
 
 /**
  * This class represents a single Node of a Tree. It contains direct handles to
  * its parent and children and to its view.
  */
-public class FileNodeModel extends NodeAdapter {
-	private File file;
-	private Color color;
-
-	//
-	// Constructors
-	//
-
-	public FileNodeModel(File file, MindMap map) {
-		super(null, map);
-		setEdge(new FileEdgeModel(this, getMapFeedback()));
-		this.file = file;
-		setFolded(!file.isFile());
-	}
-
-	// Overwritten get Methods
-	public String getStyle() {
-		return MindMapNode.STYLE_FORK;
-		// // This condition shows the code is not quite logical:
-		// // ordinary file should not be considered folded and
-		// // therefore the clause !isLeaf() should not be necessary.
-		// if (isFolded()) { // && !isLeaf()) {
-		// return MindMapNode.STYLE_BUBBLE;
-		// } else {
-		// return MindMapNode.STYLE_FORK;
-		// }
-	}
-
-	/*
+class FileNodeModel(file: File?, map: MindMap?) : NodeAdapter(null, map) {
+    /*
 	 * if (file.isFile()) { return MindMapNode.STYLE_FORK; } else { return
 	 * MindMapNode.STYLE_BUBBLE; } }
-	 */
+	 */ val file: File?
+    private val color: Color? = null
 
-	File getFile() {
-		return file;
-	}
+    //
+    // Constructors
+    //
+    init {
+        edge = FileEdgeModel(this, mapFeedback)
+        this.file = file
+        isFolded = if (file != null) !file.isFile else false
+    }
 
-	/**
-	 * This could be a nice feature. Improve it!
-	 */
-	public Color getColor() {
-		if (color == null) {
+    // Overwritten get Methods
+    override fun getStyle(): String {
+        return STYLE_FORK
+        // // This condition shows the code is not quite logical:
+        // // ordinary file should not be considered folded and
+        // // therefore the clause !isLeaf() should not be necessary.
+        // if (isFolded()) { // && !isLeaf()) {
+        // return MindMapNode.STYLE_BUBBLE;
+        // } else {
+        // return MindMapNode.STYLE_FORK;
+        // }
+    }
 
-			// float hue = (float)getFile().length() / 100000;
-			// float hue = 6.3F;
-			// if (hue > 1) {
-			// hue = 1;
-			// }
-			// color = Color.getHSBColor(hue,0.5F, 0.5F);
-			// int red = (int)(1 / (getFile().length()+1) * 255);
-			// color = new Color(red,0,0);
-			color = isLeaf() ? Color.BLACK : Color.GRAY;
-		}
-		return color;
-	}
-
-	// void setFile(File file) {
-	// this.file = file;
-	// }
-
-	public String toString() {
-		String name = file.getName();
-		if (name.equals("")) {
-			name = "Root";
-		}
-		return name;
-	}
-
-	public String getText() {
-		return toString();
-	}
-
-	public boolean hasChildren() {
-		return !file.isFile() || (children != null && !children.isEmpty());
-	}
-
-	/**
-     * 
+    /**
+     * This could be a nice feature. Improve it!
      */
-	public ListIterator<MindMapNode> childrenFolded() {
-		if (!isRoot()) {
-			if (isFolded() || isLeaf()) {
-				return Collections.emptyListIterator();
-				// return null;//Empty Enumeration
-			}
-		}
-		return childrenUnfolded();
-	}
+    override fun getColor(): Color {
+        if (color == null) {
 
-	public ListIterator<MindMapNode> childrenUnfolded() {
-		if (children != null) {
-			return children.listIterator();
-		}
-		// Create new nodes by reading children from file system
-		try {
-			String[] files = file.list();
-			if (files != null) {
-				children = new LinkedList<>();
+            // float hue = (float)getFile().length() / 100000;
+            // float hue = 6.3F;
+            // if (hue > 1) {
+            // hue = 1;
+            // }
+            // color = Color.getHSBColor(hue,0.5F, 0.5F);
+            // int red = (int)(1 / (getFile().length()+1) * 255);
+            // color = new Color(red,0,0);
+            color = if (isLeaf) Color.BLACK else Color.GRAY
+        }
+        return color
+    }
 
-				String path = file.getPath();
-				for (int i = 0; i < files.length; i++) {
-					File childFile = new File(path, files[i]);
-					if (!childFile.isHidden()) {
-						final FileNodeModel fileNodeModel = new FileNodeModel(
-								childFile, getMap());
-						fileNodeModel.setLeft(isNewChildLeft());
-						insert(fileNodeModel, getChildCount());
-					}
-				}
-			}
-		} catch (SecurityException se) {
-		}
-		// return children.listIterator();
-		return children != null ? children.listIterator() : Collections.<MindMapNode>emptyListIterator();
-	}
+    // void setFile(File file) {
+    // this.file = file;
+    // }
+    override fun toString(): String {
+        var name = file?.name
+        if (name == "") {
+            name = "Root"
+        }
+        return name ?: "null"
+    }
 
-	public boolean isLeaf() {
-		return file.isFile();
-	}
+    override fun getText(): String {
+        return toString()
+    }
 
-	public String getLink() {
-		try {
-			return Tools.fileToUrl(file).toString();
-		} catch (MalformedURLException e) {
-			freemind.main.Resources.getInstance().logException(e);
-		}
-		return file.toString();
-	}
+    override fun hasChildren(): Boolean {
+        return if (file != null) !file.isFile else false || children != null && !children.isEmpty()
+    }
 
-	public boolean isWriteable() {
-		return false;
-	}
+    /**
+     *
+     */
+    override fun childrenFolded(): ListIterator<MindMapNode?> {
+        if (!isRoot) {
+            if (isFolded || isLeaf) {
+                return Collections.emptyListIterator()
+                // return null;//Empty Enumeration
+            }
+        }
+        return childrenUnfolded()
+    }
 
+    override fun childrenUnfolded(): ListIterator<MindMapNode?> {
+        if (children != null) {
+            return children.listIterator()
+        }
+        // Create new nodes by reading children from file system
+        try {
+            val files = file?.list()
+            if (files != null) {
+                children = LinkedList()
+                val path = file?.path
+                for (i in files.indices) {
+                    val childFile = File(path, files[i])
+                    if (!childFile.isHidden) {
+                        val fileNodeModel = FileNodeModel(
+                            childFile, map
+                        )
+                        fileNodeModel.isLeft = isNewChildLeft
+                        insert(fileNodeModel, childCount)
+                    }
+                }
+            }
+        } catch (se: SecurityException) {
+        }
+        // return children.listIterator();
+        return if (children != null) children.listIterator() else Collections.emptyListIterator()
+    }
+
+    override fun isLeaf(): Boolean {
+        return file?.isFile ?: false
+    }
+
+    override fun getLink(): String {
+        try {
+            return Tools.fileToUrl(file).toString()
+        } catch (e: MalformedURLException) {
+            Resources.getInstance().logException(e)
+        }
+        return file.toString()
+    }
+
+    override fun isWriteable(): Boolean {
+        return false
+    }
 }

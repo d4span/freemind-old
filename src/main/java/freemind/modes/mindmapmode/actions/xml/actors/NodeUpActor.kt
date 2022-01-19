@@ -17,168 +17,167 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+package freemind.modes.mindmapmode.actions.xml.actors
 
-package freemind.modes.mindmapmode.actions.xml.actors;
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.TreeSet;
-import java.util.Vector;
-
-import freemind.controller.actions.generated.instance.MoveNodesAction;
-import freemind.controller.actions.generated.instance.NodeListMember;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
+import freemind.controller.actions.generated.instance.MoveNodesAction
+import freemind.controller.actions.generated.instance.NodeListMember
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.modes.ExtendedMapFeedback
+import freemind.modes.MindMapNode
+import freemind.modes.mindmapmode.actions.xml.ActionPair
+import java.util.Collections
+import java.util.TreeSet
+import java.util.Vector
 
 /**
  * @author foltin
  * @date 08.04.2014
  */
-public class NodeUpActor extends XmlActorAdapter {
-
-	/**
-	 * @param pMapFeedback
-	 */
-	public NodeUpActor(ExtendedMapFeedback pMapFeedback) {
-		super(pMapFeedback);
-	}
-
-	/**
+class NodeUpActor
+/**
+ * @param pMapFeedback
+ */
+(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
+    /**
      */
-	public void moveNodes(MindMapNode selected, List<MindMapNode> selecteds, int direction) {
-		MoveNodesAction doAction = createMoveNodesAction(selected, selecteds,
-				direction);
-		MoveNodesAction undoAction = createMoveNodesAction(selected, selecteds,
-				-direction);
-		execute(new ActionPair(
-				doAction, undoAction));
-	}
+    fun moveNodes(selected: MindMapNode, selecteds: List<MindMapNode>, direction: Int) {
+        val doAction = createMoveNodesAction(
+            selected, selecteds,
+            direction
+        )
+        val undoAction = createMoveNodesAction(
+            selected, selecteds,
+            -direction
+        )
+        execute(
+            ActionPair(
+                doAction, undoAction
+            )
+        )
+    }
 
-	private void _moveNodes(MindMapNode selected, List<MindMapNode> selecteds, int direction) {
-		Comparator<Integer> comparator = (direction == -1) ? null : new Comparator<Integer>() {
-			public int compare(Integer i1, Integer i2) {
-				return i2 - i1;
-			}
-		};
-		if (!selected.isRoot()) {
-			MindMapNode parent = selected.getParentNode();
-			// multiple move:
-			Vector<MindMapNode> sortedChildren = getSortedSiblings(parent);
-			TreeSet<Integer> range = new TreeSet<Integer>(comparator);
-			for (MindMapNode node : selecteds) {
-				if (node.getParent() != parent) {
-					logger.warning("Not all selected nodes (here: "
-							+ node.getText() + ") have the same parent "
-							+ parent.getText() + ".");
-					return;
-				}
-				range.add(new Integer(sortedChildren.indexOf(node)));
-			}
-			// test range for adjacent nodes:
-			Integer last = (Integer) range.iterator().next();
-			for (Integer newInt : range) {
-				if (Math.abs(newInt.intValue() - last.intValue()) > 1) {
-					logger.warning("Not adjacent nodes. Skipped. ");
-					return;
-				}
-				last = newInt;
-			}
-			for (Integer position : range) {
-				// from above:
-				MindMapNode node = (MindMapNode) sortedChildren.get(position.intValue());
-				moveNodeTo(node, parent, direction);
-			}
-		}
-	}
+    private fun _moveNodes(selected: MindMapNode?, selecteds: List<MindMapNode>, direction: Int) {
+        val comparator = if (direction == -1) null else java.util.Comparator<Int> { i1, i2 -> i2 - i1 }
+        if (selected != null && !selected.isRoot) {
+            val parent = selected.parentNode
+            // multiple move:
+            val sortedChildren = getSortedSiblings(parent)
+            val range = TreeSet(comparator)
+            for (node in selecteds) {
+                if (node.parent !== parent) {
+                    logger!!.warning(
+                        "Not all selected nodes (here: " +
+                            node.text + ") have the same parent " +
+                            parent?.text + "."
+                    )
+                    return
+                }
+                range.add(sortedChildren.indexOf(node))
+            }
+            // test range for adjacent nodes:
+            var last = range.iterator().next() as Int
+            for (newInt in range) {
+                if (Math.abs(newInt - last) > 1) {
+                    logger!!.warning("Not adjacent nodes. Skipped. ")
+                    return
+                }
+                last = newInt
+            }
+            for (position in range) {
+                // from above:
+                val node = sortedChildren[position] as MindMapNode
+                moveNodeTo(node, parent, direction)
+            }
+        }
+    }
 
-	/**
-	 * The direction is used if side left and right are present. then the next
-	 * suitable place on the same side# is searched. if there is no such place,
-	 * then the side is changed.
-	 * 
-	 * @return returns the new index.
-	 */
-	private int moveNodeTo(MindMapNode newChild, MindMapNode parent,
-			int direction) {
-		MindMap model = getExMapFeedback().getMap();
-		int index = model.getIndexOfChild(parent, newChild);
-		int newIndex = index;
-		int maxIndex = parent.getChildCount();
-		Vector<MindMapNode> sortedNodesIndices = getSortedSiblings(parent);
-		int newPositionInVector = sortedNodesIndices.indexOf(newChild)
-				+ direction;
-		if (newPositionInVector < 0) {
-			newPositionInVector = maxIndex - 1;
-		}
-		if (newPositionInVector >= maxIndex) {
-			newPositionInVector = 0;
-		}
-		MindMapNode destinationNode = (MindMapNode) sortedNodesIndices
-				.get(newPositionInVector);
-		newIndex = model.getIndexOfChild(parent, destinationNode);
-		getExMapFeedback().removeNodeFromParent(newChild);
-		getExMapFeedback().insertNodeInto(newChild, parent, newIndex);
-		getExMapFeedback().nodeChanged(newChild);
-		return newIndex;
-	}
+    /**
+     * The direction is used if side left and right are present. then the next
+     * suitable place on the same side# is searched. if there is no such place,
+     * then the side is changed.
+     *
+     * @return returns the new index.
+     */
+    private fun moveNodeTo(
+        newChild: MindMapNode,
+        parent: MindMapNode,
+        direction: Int
+    ): Int? {
+        val model = exMapFeedback?.map
+        var newIndex: Int?
+        val maxIndex = parent.childCount
+        val sortedNodesIndices = getSortedSiblings(parent)
+        var newPositionInVector = (
+            sortedNodesIndices.indexOf(newChild) +
+                direction
+            )
+        if (newPositionInVector < 0) {
+            newPositionInVector = maxIndex - 1
+        }
+        if (newPositionInVector >= maxIndex) {
+            newPositionInVector = 0
+        }
+        val destinationNode = sortedNodesIndices[newPositionInVector] as MindMapNode
+        newIndex = model?.getIndexOfChild(parent, destinationNode)
+        exMapFeedback?.removeNodeFromParent(newChild)
+        exMapFeedback?.insertNodeInto(newChild, parent, newIndex ?: 0)
+        exMapFeedback?.nodeChanged(newChild)
+        return newIndex
+    }
 
-	/**
-	 * Sorts nodes by their left/right status. The left are first.
-	 */
-	private Vector<MindMapNode> getSortedSiblings(MindMapNode node) {
-		Vector<MindMapNode> nodes = new Vector<>();
-		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
-			nodes.add(i.next());
-		}
-		Collections.sort(nodes, new Comparator<MindMapNode>() {
+    /**
+     * Sorts nodes by their left/right status. The left are first.
+     */
+    private fun getSortedSiblings(node: MindMapNode?): Vector<MindMapNode> {
+        val nodes = Vector<MindMapNode>()
+        val i = node?.childrenUnfolded()
+        while (i?.hasNext() ?: false) {
+            nodes.add(i?.next())
+        }
+        Collections.sort(nodes) { n1, n2 ->
+            val b1 = if (n1.isLeft) 0 else 1
+            val b2 = if (n2.isLeft) 0 else 1
+            b1 - b2
+        }
+        // logger.finest("Sorted nodes "+ nodes);
+        return nodes
+    }
 
-			public int compare(MindMapNode n1, MindMapNode n2) {
-				int b1 = n1.isLeft() ? 0 : 1;
-				int b2 = n2.isLeft() ? 0 : 1;
-				return b1 - b2;
-			}
-		});
-		// logger.finest("Sorted nodes "+ nodes);
-		return nodes;
-	}
+    override fun act(action: XmlAction) {
+        if (action is MoveNodesAction) {
+            val moveAction = action
+            val selected = getNodeFromID(
+                moveAction
+                    .node
+            )
+            val selecteds = Vector<MindMapNode>()
+            val i = moveAction.listNodeListMemberList.iterator()
+            while (i.hasNext()) {
+                val node = i.next()
+                selecteds.add(getNodeFromID(node?.node))
+            }
+            _moveNodes(selected, selecteds, moveAction.direction)
+        }
+    }
 
-	public void act(XmlAction action) {
-		if (action instanceof MoveNodesAction) {
-			MoveNodesAction moveAction = (MoveNodesAction) action;
-			MindMapNode selected = getNodeFromID(moveAction
-					.getNode());
-			Vector<MindMapNode> selecteds = new Vector<>();
-			for (Iterator<NodeListMember> i = moveAction.getListNodeListMemberList().iterator(); i.hasNext();) {
-				NodeListMember node = i.next();
-				selecteds.add(getNodeFromID(node.getNode()));
-			}
-			_moveNodes(selected, selecteds, moveAction.getDirection());
-		}
-	}
+    override fun getDoActionClass(): Class<MoveNodesAction> {
+        return MoveNodesAction::class.java
+    }
 
-	public Class<MoveNodesAction> getDoActionClass() {
-		return MoveNodesAction.class;
-	}
-
-	private MoveNodesAction createMoveNodesAction(MindMapNode selected,
-			List<MindMapNode> selecteds, int direction) {
-		MoveNodesAction moveAction = new MoveNodesAction();
-		moveAction.setDirection(direction);
-		moveAction.setNode(getNodeID(selected));
-		// selectedNodes list
-		for (MindMapNode node : selecteds) {
-
-			NodeListMember nodeListMember = new NodeListMember();
-			nodeListMember.setNode(getNodeID(node));
-			moveAction.addNodeListMember(nodeListMember);
-		}
-		return moveAction;
-
-	}
-
+    private fun createMoveNodesAction(
+        selected: MindMapNode,
+        selecteds: List<MindMapNode>,
+        direction: Int
+    ): MoveNodesAction {
+        val moveAction = MoveNodesAction()
+        moveAction.direction = direction
+        moveAction.node = getNodeID(selected)
+        // selectedNodes list
+        for (node in selecteds) {
+            val nodeListMember = NodeListMember()
+            nodeListMember.node = getNodeID(node)
+            moveAction.addNodeListMember(nodeListMember)
+        }
+        return moveAction
+    }
 }

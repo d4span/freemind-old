@@ -17,71 +17,70 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+package freemind.modes.mindmapmode.actions.xml.actors
 
-package freemind.modes.mindmapmode.actions.xml.actors;
-
-import java.awt.Color;
-
-import freemind.controller.actions.generated.instance.CloudColorXmlAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.main.Tools;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.LineAdapter;
-import freemind.modes.MindMapNode;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
+import freemind.controller.actions.generated.instance.CloudColorXmlAction
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.main.Tools
+import freemind.modes.ExtendedMapFeedback
+import freemind.modes.LineAdapter
+import freemind.modes.MindMapNode
+import freemind.modes.mindmapmode.actions.xml.ActionPair
+import java.awt.Color
 
 /**
  * @author foltin
  * @date 01.04.2014
  */
-public class CloudColorActor extends XmlActorAdapter {
+class CloudColorActor
+/**
+ * @param pMapFeedback
+ */
+(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
+    fun setCloudColor(node: MindMapNode, color: Color?) {
+        val doAction = createCloudColorXmlAction(node, color)
+        val undoAction = createCloudColorXmlAction(
+            node,
+            if (node.cloud == null) null else node.cloud.color
+        )
+        execute(ActionPair(doAction, undoAction))
+    }
 
-	/**
-	 * @param pMapFeedback
-	 */
-	public CloudColorActor(ExtendedMapFeedback pMapFeedback) {
-		super(pMapFeedback);
-	}
+    fun createCloudColorXmlAction(
+        node: MindMapNode?,
+        color: Color?
+    ): CloudColorXmlAction {
+        val nodeAction = CloudColorXmlAction()
+        nodeAction.node = getNodeID(node)
+        nodeAction.color = Tools.colorToXml(color)
+        return nodeAction
+    }
 
-	public void setCloudColor(MindMapNode node, Color color) {
-		CloudColorXmlAction doAction = createCloudColorXmlAction(node, color);
-		CloudColorXmlAction undoAction = createCloudColorXmlAction(node,
-				(node.getCloud() == null) ? null : node.getCloud().getColor());
-		execute(new ActionPair(doAction, undoAction));
-	}
+    override fun act(action: XmlAction) {
+        if (action is CloudColorXmlAction) {
+            val nodeColorAction = action
+            val color = Tools.xmlToColor(nodeColorAction.color)
+            val node = getNodeFromID(
+                nodeColorAction
+                    .node
+            )
+            // this is not necessary, as this action is not enabled if there is
+            // no cloud.
+            if (node?.cloud == null) {
+                exMapFeedback?.actorFactory?.cloudActor?.setCloud(node, true)
+            }
+            var selectedColor: Color? = null
+            if (node?.cloud != null) {
+                selectedColor = node.cloud.color
+            }
+            if (!Tools.safeEquals(color, selectedColor)) {
+                (node?.cloud as LineAdapter).color = color // null
+                exMapFeedback?.nodeChanged(node)
+            }
+        }
+    }
 
-	public CloudColorXmlAction createCloudColorXmlAction(MindMapNode node,
-			Color color) {
-		CloudColorXmlAction nodeAction = new CloudColorXmlAction();
-		nodeAction.setNode(getNodeID(node));
-		nodeAction.setColor(Tools.colorToXml(color));
-		return nodeAction;
-	}
-
-	public void act(XmlAction action) {
-		if (action instanceof CloudColorXmlAction) {
-			CloudColorXmlAction nodeColorAction = (CloudColorXmlAction) action;
-			Color color = Tools.xmlToColor(nodeColorAction.getColor());
-			MindMapNode node = getNodeFromID(nodeColorAction
-					.getNode());
-			// this is not necessary, as this action is not enabled if there is
-			// no cloud.
-			if (node.getCloud() == null) {
-				getExMapFeedback().getActorFactory().getCloudActor().setCloud(node, true);
-			}
-			Color selectedColor = null;
-			if (node.getCloud() != null) {
-				selectedColor = node.getCloud().getColor();
-			}
-			if (!Tools.safeEquals(color, selectedColor)) {
-				((LineAdapter) node.getCloud()).setColor(color); // null
-				getExMapFeedback().nodeChanged(node);
-			}
-		}
-	}
-
-	public Class<CloudColorXmlAction> getDoActionClass() {
-		return CloudColorXmlAction.class;
-	}
-
+    override fun getDoActionClass(): Class<CloudColorXmlAction> {
+        return CloudColorXmlAction::class.java
+    }
 }

@@ -39,7 +39,7 @@ class BrowseReminderHook :
 	 * freemind.modes.common.plugins.ReminderHookBase#nodeRefresh(freemind.modes
 	 * .MindMapNode)
 	 */
-        override fun nodeRefresh(node: MindMapNode) {
+        override fun nodeRefresh(node: MindMapNode?) {
             controller!!.nodeChanged(node)
         }
 

@@ -16,20 +16,18 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-package freemind.modes.common.plugins;
+package freemind.modes.common.plugins
 
 /**
  * Not used anymore.
- * 
+ *
  * @author foltin
- * 
  */
-public abstract class NodeNoteBase {
-
-	/**
-	 * 
-	 */
-	public static final String NODE_NOTE_ICON = "accessories.plugins.NodeNoteIcon";
-
+abstract class NodeNoteBase {
+    companion object {
+        /**
+         *
+         */
+        const val NODE_NOTE_ICON = "accessories.plugins.NodeNoteIcon"
+    }
 }

@@ -19,55 +19,46 @@
  *
  * Created on 09.05.2004
  */
+package freemind.modes.mindmapmode.actions.xml.actors
 
-
-package freemind.modes.mindmapmode.actions.xml.actors;
-
-import freemind.controller.actions.generated.instance.CompoundAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.mindmapmode.actions.xml.ActorXml;
+import freemind.controller.actions.generated.instance.CompoundAction
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.modes.ExtendedMapFeedback
 
 /**
  * @author foltin
- * 
  */
-public class CompoundActor extends XmlActorAdapter {
-
-	/**
-	 * @param pMapFeedback
-	 */
-	public CompoundActor(ExtendedMapFeedback pMapFeedback) {
-		super(pMapFeedback);
-	}
-
-	/*
+class CompoundActor
+/**
+ * @param pMapFeedback
+ */
+(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * freemind.controller.actions.ActorXml#act(freemind.controller.actions.
 	 * generated.instance.XmlAction)
 	 */
-	public void act(XmlAction action) {
-		CompoundAction compound = (CompoundAction) action;
-		Object[] actions = compound.getListChoiceList().toArray();
-		for (int i = 0; i < actions.length; i++) {
-			Object obj = actions[i];
-			if (obj instanceof XmlAction) {
-				XmlAction xmlAction = (XmlAction) obj;
-				ActorXml actor = getExMapFeedback().getActionRegistry().getActor(xmlAction);
-				actor.act(xmlAction);
-			}
-		}
-	}
+    override fun act(action: XmlAction) {
+        val compound = action as CompoundAction
+        val actions = compound.listChoiceList.toTypedArray()
+        for (i in actions.indices) {
+            val obj = actions[i]
+            if (obj is XmlAction) {
+                val xmlAction = obj
+                val actor = exMapFeedback?.actionRegistry?.getActor(xmlAction)
+                actor?.act(xmlAction)
+            }
+        }
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.controller.actions.ActorXml#getDoActionClass()
 	 */
-	public Class<CompoundAction> getDoActionClass() {
-		return CompoundAction.class;
-	}
-
+    override fun getDoActionClass(): Class<CompoundAction> {
+        return CompoundAction::class.java
+    }
 }

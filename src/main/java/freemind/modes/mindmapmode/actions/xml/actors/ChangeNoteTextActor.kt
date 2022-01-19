@@ -17,74 +17,73 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+package freemind.modes.mindmapmode.actions.xml.actors
 
-package freemind.modes.mindmapmode.actions.xml.actors;
-
-import freemind.controller.actions.generated.instance.EditNoteToNodeAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.main.HtmlTools;
-import freemind.main.Tools;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
+import freemind.controller.actions.generated.instance.EditNoteToNodeAction
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.main.HtmlTools
+import freemind.main.Tools
+import freemind.modes.ExtendedMapFeedback
+import freemind.modes.MindMapNode
+import freemind.modes.mindmapmode.actions.xml.ActionPair
 
 /**
  * @author foltin
  * @date 23.04.2014
  */
-public class ChangeNoteTextActor extends XmlActorAdapter {
+class ChangeNoteTextActor(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
+    override fun act(action: XmlAction) {
+        if (action is EditNoteToNodeAction) {
+            val noteTextAction = action
+            val node = getNodeFromID(
+                noteTextAction
+                    .node
+            )
+            val newText = noteTextAction.text
+            val oldText = node?.noteText
+            if (!Tools.safeEquals(newText, oldText)) {
+                node?.noteText = newText
+                exMapFeedback?.nodeChanged(node)
+            }
+        }
+    }
 
+    override fun getDoActionClass(): Class<EditNoteToNodeAction> {
+        return EditNoteToNodeAction::class.java
+    }
 
-	public ChangeNoteTextActor(ExtendedMapFeedback pMapFeedback) {
-		super(pMapFeedback);
-	}
+    fun createEditNoteToNodeAction(
+        node: MindMapNode?,
+        text: String?
+    ): EditNoteToNodeAction {
+        val nodeAction = EditNoteToNodeAction()
+        nodeAction.node = getNodeID(node)
+        if (text != null &&
+            (
+                HtmlTools.htmlToPlain(text).length != 0 || text
+                    .indexOf("<img") >= 0
+                )
+        ) {
+            nodeAction.text = text
+        } else {
+            nodeAction.text = null
+        }
+        return nodeAction
+    }
 
-	public void act(XmlAction action) {
-		if (action instanceof EditNoteToNodeAction) {
-			EditNoteToNodeAction noteTextAction = (EditNoteToNodeAction) action;
-			MindMapNode node = getNodeFromID(noteTextAction
-					.getNode());
-			String newText = noteTextAction.getText();
-			String oldText = node.getNoteText();
-			if (!Tools.safeEquals(newText, oldText)) {
-				node.setNoteText(newText);
-				getExMapFeedback().nodeChanged(node);
-			}
-		}
-	}
-
-	public Class<EditNoteToNodeAction> getDoActionClass() {
-		return EditNoteToNodeAction.class;
-	}
-
-	public EditNoteToNodeAction createEditNoteToNodeAction(MindMapNode node,
-			String text) {
-		EditNoteToNodeAction nodeAction = new EditNoteToNodeAction();
-		nodeAction.setNode(getNodeID(node));
-		if (text != null
-				&& (HtmlTools.htmlToPlain(text).length() != 0 || text
-						.indexOf("<img") >= 0)) {
-			nodeAction.setText(text);
-		} else {
-			nodeAction.setText(null);
-		}
-		return nodeAction;
-	}
-
-	public void setNoteText(MindMapNode node, String text) {
-		String oldNoteText = node.getNoteText();
-		if (Tools.safeEquals(text, oldNoteText)) {
-			// they are equal.
-			return;
-		}
-		logger.fine("Old Note Text:'" + oldNoteText + ", new:'" + text + "'.");
-		logger.fine(Tools.compareText(oldNoteText, text));
-		EditNoteToNodeAction doAction = createEditNoteToNodeAction(node, text);
-		EditNoteToNodeAction undoAction = createEditNoteToNodeAction(node,
-				oldNoteText);
-		execute(new ActionPair(doAction, undoAction));
-	}
-
-
-
+    fun setNoteText(node: MindMapNode, text: String) {
+        val oldNoteText = node.noteText
+        if (Tools.safeEquals(text, oldNoteText)) {
+            // they are equal.
+            return
+        }
+        logger!!.fine("Old Note Text:'$oldNoteText, new:'$text'.")
+        logger!!.fine(Tools.compareText(oldNoteText, text))
+        val doAction = createEditNoteToNodeAction(node, text)
+        val undoAction = createEditNoteToNodeAction(
+            node,
+            oldNoteText
+        )
+        execute(ActionPair(doAction, undoAction))
+    }
 }

@@ -17,79 +17,88 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+package freemind.modes.mindmapmode.actions.xml.actors
 
-package freemind.modes.mindmapmode.actions.xml.actors;
-
-import freemind.controller.actions.generated.instance.ArrowLinkArrowXmlAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.modes.ArrowLinkAdapter;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapArrowLink;
-import freemind.modes.MindMapLink;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
+import freemind.controller.actions.generated.instance.ArrowLinkArrowXmlAction
+import freemind.controller.actions.generated.instance.XmlAction
+import freemind.modes.ArrowLinkAdapter
+import freemind.modes.ExtendedMapFeedback
+import freemind.modes.MindMapArrowLink
+import freemind.modes.mindmapmode.actions.xml.ActionPair
 
 /**
  * @author foltin
  * @date 01.04.2014
  */
-public class ChangeArrowsInArrowLinkActor extends XmlActorAdapter {
+class ChangeArrowsInArrowLinkActor
+/**
+ * @param pMapFeedback
+ */
+(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
+    fun changeArrowsOfArrowLink(
+        arrowLink: MindMapArrowLink,
+        hasStartArrow: Boolean,
+        hasEndArrow: Boolean
+    ) {
+        execute(getActionPair(arrowLink, hasStartArrow, hasEndArrow))
+    }
 
-	/**
-	 * @param pMapFeedback
-	 */
-	public ChangeArrowsInArrowLinkActor(ExtendedMapFeedback pMapFeedback) {
-		super(pMapFeedback);
-	}
-	
-	public void changeArrowsOfArrowLink(MindMapArrowLink arrowLink,
-			boolean hasStartArrow, boolean hasEndArrow) {
-		execute(getActionPair(arrowLink, hasStartArrow, hasEndArrow));
-	}
-
-	/**
+    /**
      */
-	private ActionPair getActionPair(MindMapArrowLink arrowLink2,
-			boolean hasStartArrow2, boolean hasEndArrow2) {
-		return new ActionPair(createArrowLinkArrowXmlAction(arrowLink2,
-				hasStartArrow2, hasEndArrow2), createArrowLinkArrowXmlAction(
-				arrowLink2, arrowLink2.getStartArrow(),
-				arrowLink2.getEndArrow()));
-	}
+    private fun getActionPair(
+        arrowLink2: MindMapArrowLink,
+        hasStartArrow2: Boolean,
+        hasEndArrow2: Boolean
+    ): ActionPair {
+        return ActionPair(
+            createArrowLinkArrowXmlAction(
+                arrowLink2,
+                hasStartArrow2, hasEndArrow2
+            ),
+            createArrowLinkArrowXmlAction(
+                arrowLink2, arrowLink2.startArrow,
+                arrowLink2.endArrow
+            )
+        )
+    }
 
-	public void act(XmlAction action) {
-		if (action instanceof ArrowLinkArrowXmlAction) {
-			ArrowLinkArrowXmlAction arrowAction = (ArrowLinkArrowXmlAction) action;
-			MindMapLink link = getLinkRegistry().getLinkForId(
-					arrowAction.getId());
-			((ArrowLinkAdapter) link)
-					.setStartArrow(arrowAction.getStartArrow());
-			((ArrowLinkAdapter) link).setEndArrow(arrowAction.getEndArrow());
-			getExMapFeedback().nodeChanged(link.getSource());
-			getExMapFeedback().nodeChanged(link.getTarget());
-		}
-	}
+    override fun act(action: XmlAction) {
+        if (action is ArrowLinkArrowXmlAction) {
+            val arrowAction = action
+            val link = linkRegistry!!.getLinkForId(
+                arrowAction.id
+            )
+            (link as ArrowLinkAdapter).startArrow = arrowAction.startArrow
+            link.endArrow = arrowAction.endArrow
+            exMapFeedback?.nodeChanged(link.getSource())
+            exMapFeedback?.nodeChanged(link.getTarget())
+        }
+    }
 
-	public Class<ArrowLinkArrowXmlAction> getDoActionClass() {
-		return ArrowLinkArrowXmlAction.class;
-	}
+    override fun getDoActionClass(): Class<ArrowLinkArrowXmlAction> {
+        return ArrowLinkArrowXmlAction::class.java
+    }
 
-	private ArrowLinkArrowXmlAction createArrowLinkArrowXmlAction(
-			MindMapArrowLink arrowLink, boolean hasStartArrow,
-			boolean hasEndArrow) {
-		return createArrowLinkArrowXmlAction(arrowLink,
-				(hasStartArrow) ? "Default" : "None", (hasEndArrow) ? "Default"
-						: "None");
-	}
+    private fun createArrowLinkArrowXmlAction(
+        arrowLink: MindMapArrowLink,
+        hasStartArrow: Boolean,
+        hasEndArrow: Boolean
+    ): ArrowLinkArrowXmlAction {
+        return createArrowLinkArrowXmlAction(
+            arrowLink,
+            if (hasStartArrow) "Default" else "None", if (hasEndArrow) "Default" else "None"
+        )
+    }
 
-	private ArrowLinkArrowXmlAction createArrowLinkArrowXmlAction(
-			MindMapArrowLink arrowLink, String hasStartArrow,
-			String hasEndArrow) {
-		ArrowLinkArrowXmlAction action = new ArrowLinkArrowXmlAction();
-		action.setStartArrow(hasStartArrow);
-		action.setEndArrow(hasEndArrow);
-		action.setId(arrowLink.getUniqueId());
-		return action;
-	}
-
-
+    private fun createArrowLinkArrowXmlAction(
+        arrowLink: MindMapArrowLink,
+        hasStartArrow: String,
+        hasEndArrow: String
+    ): ArrowLinkArrowXmlAction {
+        val action = ArrowLinkArrowXmlAction()
+        action.startArrow = hasStartArrow
+        action.endArrow = hasEndArrow
+        action.id = arrowLink.uniqueId
+        return action
+    }
 }

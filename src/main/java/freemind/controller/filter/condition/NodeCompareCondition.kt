@@ -21,59 +21,57 @@
  * Created on 17.05.2005
  *
  */
-package freemind.controller.filter.condition
+package freemind.controller.filter.condition;
 
-import freemind.controller.Controller
-import freemind.main.Tools
-import freemind.main.XMLElement
-import freemind.modes.MindMapNode
+import freemind.controller.Controller;
+import freemind.main.Tools;
+import freemind.main.XMLElement;
+import freemind.modes.MindMapNode;
 
-internal class NodeCompareCondition(
-    value: String?, ignoreCase: Boolean,
-    private val comparationResult: Int, private val succeed: Boolean
-) : CompareConditionAdapter(
-    value!!, ignoreCase
-) {
-    override fun checkNode(c: Controller?, node: MindMapNode?): Boolean {
-        return try {
-            succeed == (compareTo(node!!.text) == comparationResult)
-        } catch (fne: NumberFormatException) {
-            false
-        }
-    }
+class NodeCompareCondition extends CompareConditionAdapter {
 
-    override fun save(element: XMLElement?) {
-        val child = XMLElement()
-        child.name = NAME
-        super.saveAttributes(child)
-        child.setIntAttribute(COMPARATION_RESULT, comparationResult)
-        child.setAttribute(SUCCEED, Tools.BooleanToXml(succeed))
-        element!!.addChild(child)
-    }
+	static final String COMPARATION_RESULT = "comparation_result";
+	static final String VALUE = "value";
+	static final String NAME = "node_compare_condition";
+	static final String SUCCEED = "succeed";
+	private int comparationResult;
+	private boolean succeed;
 
-    override fun createDesctiption(): String? {
-        val nodeCondition = ConditionFactory.FILTER_NODE.name
-        return super.createDescription(
-            nodeCondition, comparationResult,
-            succeed
-        )
-    }
+	NodeCompareCondition(String value, boolean ignoreCase,
+			int comparationResult, boolean succeed) {
+		super(value, ignoreCase);
+		this.comparationResult = comparationResult;
+		this.succeed = succeed;
+	}
 
-    companion object {
-        const val COMPARATION_RESULT = "comparation_result"
-        const val VALUE = "value"
-        const val NAME = "node_compare_condition"
-        const val SUCCEED = "succeed"
-        fun load(element: XMLElement): Condition {
-            return NodeCompareCondition(
-                element.getStringAttribute(VALUE),
-                Tools.xmlToBoolean(
-                    element
-                        .getStringAttribute(IGNORE_CASE)
-                ),
-                element.getIntAttribute(COMPARATION_RESULT),
-                Tools.xmlToBoolean(element.getStringAttribute(SUCCEED))
-            )
-        }
-    }
+	public boolean checkNode(Controller c, MindMapNode node) {
+		try {
+			return succeed == (compareTo(node.getText()) == comparationResult);
+		} catch (NumberFormatException fne) {
+			return false;
+		}
+	}
+
+	public void save(XMLElement element) {
+		XMLElement child = new XMLElement();
+		child.setName(NAME);
+		super.saveAttributes(child);
+		child.setIntAttribute(COMPARATION_RESULT, comparationResult);
+		child.setAttribute(SUCCEED, Tools.BooleanToXml(succeed));
+		element.addChild(child);
+	}
+
+	static Condition load(XMLElement element) {
+		return new NodeCompareCondition(element.getStringAttribute(VALUE),
+				Tools.xmlToBoolean(element
+						.getStringAttribute(NodeCompareCondition.IGNORE_CASE)),
+				element.getIntAttribute(COMPARATION_RESULT),
+				Tools.xmlToBoolean(element.getStringAttribute(SUCCEED)));
+	}
+
+	protected String createDesctiption() {
+		final String nodeCondition = ConditionFactory.FILTER_NODE.getName();
+		return super.createDescription(nodeCondition, comparationResult,
+				succeed);
+	}
 }

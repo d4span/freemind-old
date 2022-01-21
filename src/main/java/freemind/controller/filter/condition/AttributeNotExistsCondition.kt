@@ -21,59 +21,62 @@
  * Created on 12.07.2005
  * Copyright (C) 2005 Dimitri Polivaev
  */
-package freemind.controller.filter.condition
+package freemind.controller.filter.condition;
 
-import freemind.controller.Controller
-import freemind.main.Resources
-import freemind.main.XMLElement
-import freemind.modes.MindMapNode
+import freemind.controller.Controller;
+import freemind.main.Resources;
+import freemind.main.XMLElement;
+import freemind.modes.MindMapNode;
+import freemind.modes.attributes.Attribute;
 
 /**
  * @author Dimitri Polivaev 12.07.2005
  */
-class AttributeNotExistsCondition
-/**
- */(private val attribute: String) : NodeCondition() {
-    /*
+public class AttributeNotExistsCondition extends NodeCondition {
+	static final String ATTRIBUTE = "attribute";
+	static final String NAME = "attribute_not_exists_condition";
+	private String attribute;
+
+	/**
+     */
+	public AttributeNotExistsCondition(String attribute) {
+		super();
+		this.attribute = attribute;
+	}
+
+	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * freemind.controller.filter.condition.Condition#checkNode(freemind.modes
 	 * .MindMapNode)
 	 */
-    override fun checkNode(c: Controller?, node: MindMapNode?): Boolean {
-        for (i in 0 until node!!.attributeTableLength) {
-            val attribute2 = node.getAttribute(i)
-            if (attribute2.name == attribute) return true
-        }
-        return false
-    }
+	public boolean checkNode(Controller c, MindMapNode node) {
+		for (int i = 0; i < node.getAttributeTableLength(); i++) {
+			Attribute attribute2 = node.getAttribute(i);
+			if (attribute2.getName().equals(attribute))
+				return true;
+		}
+		return false;
+	}
 
-    override fun save(element: XMLElement?) {
-        val child = XMLElement()
-        child.name = NAME
-        super.saveAttributes(child)
-        child.setAttribute(ATTRIBUTE, attribute)
-        element!!.addChild(child)
-    }
+	public void save(XMLElement element) {
+		XMLElement child = new XMLElement();
+		child.setName(NAME);
+		super.saveAttributes(child);
+		child.setAttribute(ATTRIBUTE, attribute);
+		element.addChild(child);
+	}
 
-    override fun createDesctiption(): String? {
-        val simpleCondition = Resources.getInstance()
-            .getResourceString(ConditionFactory.FILTER_DOES_NOT_EXIST)
-        return ConditionFactory.createDescription(
-            attribute, simpleCondition,
-            null, false
-        )
-    }
+	static Condition load(XMLElement element) {
+		return new AttributeNotExistsCondition(
+				element.getStringAttribute(ATTRIBUTE));
+	}
 
-    companion object {
-        const val ATTRIBUTE = "attribute"
-        const val NAME = "attribute_not_exists_condition"
-        @JvmStatic
-        fun load(element: XMLElement): Condition {
-            return AttributeNotExistsCondition(
-                element.getStringAttribute(ATTRIBUTE)
-            )
-        }
-    }
+	protected String createDesctiption() {
+		final String simpleCondition = Resources.getInstance()
+				.getResourceString(ConditionFactory.FILTER_DOES_NOT_EXIST);
+		return ConditionFactory.createDescription(attribute, simpleCondition,
+				null, false);
+	}
 }

@@ -21,40 +21,42 @@
  * Created on 17.05.2005
  *
  */
-package freemind.controller.filter.condition
+package freemind.controller.filter.condition;
 
-import freemind.controller.Controller
-import freemind.controller.filter.condition.ConditionFactory.Companion.createDescription
-import freemind.main.XMLElement
-import freemind.modes.MindMapNode
+import freemind.controller.Controller;
+import freemind.main.XMLElement;
+import freemind.modes.MindMapNode;
 
-internal class NodeContainsCondition(private val value: String) : NodeCondition() {
-    override fun checkNode(c: Controller?, node: MindMapNode?): Boolean {
-        return node!!.text.indexOf(value) > -1
-    }
+class NodeContainsCondition extends NodeCondition {
+	static final String VALUE = "value";
+	static final String NAME = "node_contains_condition";
+	private String value;
 
-    override fun save(element: XMLElement?) {
-        val child = XMLElement()
-        child.name = NAME
-        super.saveAttributes(child)
-        child.setAttribute(VALUE, value)
-        element!!.addChild(child)
-    }
+	NodeContainsCondition(String value) {
+		super();
+		this.value = value;
+	}
 
-    override fun createDesctiption(): String? {
-        val nodeCondition = ConditionFactory.FILTER_NODE.name
-        val simpleCondition = ConditionFactory.FILTER_CONTAINS.name
-        return createDescription(
-            nodeCondition,
-            simpleCondition, value, false
-        )
-    }
+	public boolean checkNode(Controller c, MindMapNode node) {
+		return node.getText().indexOf(value) > -1;
+	}
 
-    companion object {
-        const val VALUE = "value"
-        const val NAME = "node_contains_condition"
-        fun load(element: XMLElement): Condition {
-            return NodeContainsCondition(element.getStringAttribute(VALUE))
-        }
-    }
+	public void save(XMLElement element) {
+		XMLElement child = new XMLElement();
+		child.setName(NAME);
+		super.saveAttributes(child);
+		child.setAttribute(VALUE, value);
+		element.addChild(child);
+	}
+
+	static Condition load(XMLElement element) {
+		return new NodeContainsCondition(element.getStringAttribute(VALUE));
+	}
+
+	protected String createDesctiption() {
+		final String nodeCondition = ConditionFactory.FILTER_NODE.getName();
+		final String simpleCondition = ConditionFactory.FILTER_CONTAINS.getName();
+		return ConditionFactory.createDescription(nodeCondition,
+				simpleCondition, value, false);
+	}
 }

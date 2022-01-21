@@ -21,50 +21,55 @@
  * Created on 18.04.2006
  * Created by Dimitri Polivaev
  */
-package freemind.controller.filter.condition
+package freemind.controller.filter.condition;
 
-import freemind.controller.Controller
-import freemind.controller.filter.condition.ConditionFactory.Companion.createCellRendererComponent
-import freemind.main.Resources
-import freemind.main.XMLElement
-import freemind.modes.MindMapNode
-import javax.swing.JComponent
+import javax.swing.JComponent;
 
-class SelectedViewCondition : Condition {
-    override fun toString(): String {
-        if (description == null) {
-            description = Resources.getInstance().getResourceString(
-                "filter_selected_node_view"
-            )
-        }
-        return description!!
-    }
+import freemind.controller.Controller;
+import freemind.main.Resources;
+import freemind.main.XMLElement;
+import freemind.modes.MindMapNode;
+import freemind.view.mindmapview.NodeView;
 
-    override fun checkNode(c: Controller?, node: MindMapNode?): Boolean {
-        val viewer = c!!.modeController.getNodeView(node)
-        return viewer != null && viewer.isSelected
-    }
+public class SelectedViewCondition implements Condition {
 
-    override val listCellRendererComponent: JComponent?
-        get() {
-            if (renderer == null) {
-                renderer = createCellRendererComponent(description)
-            }
-            return renderer
-        }
+	private static String description;
+	private static JComponent renderer;
+	private static Condition condition;
 
-    override fun save(element: XMLElement?) {}
+	public SelectedViewCondition() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-    companion object {
-        private var description: String? = null
-        private var renderer: JComponent? = null
-        private var condition: Condition? = null
-        @JvmStatic
-        fun CreateCondition(): Condition? {
-            if (condition == null) {
-                condition = SelectedViewCondition()
-            }
-            return condition
-        }
-    }
+	public String toString() {
+		if (description == null) {
+			description = Resources.getInstance().getResourceString(
+					"filter_selected_node_view");
+		}
+		return description;
+	}
+
+	public boolean checkNode(Controller c, MindMapNode node) {
+		NodeView viewer = c.getModeController().getNodeView(node);
+		return viewer != null && viewer.isSelected();
+	}
+
+	public JComponent getListCellRendererComponent() {
+		if (renderer == null) {
+			renderer = ConditionFactory
+					.createCellRendererComponent(description);
+		}
+		return renderer;
+	}
+
+	public static Condition CreateCondition() {
+		if (condition == null) {
+			condition = new SelectedViewCondition();
+		}
+		return condition;
+	}
+
+	public void save(XMLElement element) {
+	}
 }

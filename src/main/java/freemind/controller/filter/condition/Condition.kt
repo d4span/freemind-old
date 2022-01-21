@@ -21,15 +21,18 @@
  * Created on 05.05.2005
  * Copyright (C) 2005 Dimitri Polivaev
  */
-package freemind.controller.filter.condition
+package freemind.controller.filter.condition;
 
-import freemind.controller.Controller
-import freemind.main.XMLElement
-import freemind.modes.MindMapNode
-import javax.swing.JComponent
+import javax.swing.JComponent;
 
-interface Condition {
-    fun checkNode(c: Controller?, node: MindMapNode?): Boolean
-    val listCellRendererComponent: JComponent?
-    fun save(element: XMLElement?)
+import freemind.controller.Controller;
+import freemind.main.XMLElement;
+import freemind.modes.MindMapNode;
+
+public interface Condition {
+	boolean checkNode(Controller c, MindMapNode node);
+
+	public JComponent getListCellRendererComponent();
+
+	void save(XMLElement element);
 }

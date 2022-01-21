@@ -152,7 +152,7 @@ class OptionalDontShowMeAgainDialog(
             )
         )
         // TODO: Replace by usual java question mark.
-        val questionMark = ImageFactory.instance?.createIcon(
+        val questionMark = ImageFactory.getInstance().createIcon(
             Resources.getInstance()
                 .getResource("images/icons/help.png")
         )

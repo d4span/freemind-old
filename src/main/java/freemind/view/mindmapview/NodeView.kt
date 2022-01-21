@@ -951,7 +951,7 @@ class NodeView(
         }
         if (SHOW_ATTRIBUTE_ICON && model.attributeTableLength > 0) {
             if (sAttributeIcon == null) {
-                sAttributeIcon = ImageFactory.instance?.createUnscaledIcon(
+                sAttributeIcon = ImageFactory.getInstance().createUnscaledIcon(
                     Resources.getInstance().getResource(
                         "images/showAttributes.gif"
                     )
@@ -977,8 +977,8 @@ class NodeView(
             } else if (Tools.executableByExtension(link)) {
                 iconPath = "images/Executable.png"
             }
-            val icon = ImageFactory.instance?.createUnscaledIcon(Resources.getInstance().getResource(iconPath))
-            if (icon != null) iconImages.addImage(icon)
+            val icon = ImageFactory.getInstance().createUnscaledIcon(Resources.getInstance().getResource(iconPath))
+            iconImages.addImage(icon)
         }
         // /* Folded icon by Matthias Schade (mascha2), fc, 20.12.2003*/
         // if (((NodeAdapter)getModel()).isFolded()) {

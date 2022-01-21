@@ -221,10 +221,7 @@ class MapModuleManager internal constructor() {
         get() {
             val returnValue = HashMap<String, MapModule?>()
             for (module in mapModuleVector) {
-                val displayName = module!!.displayName
-                if (displayName != null) {
-                    returnValue[displayName] = module
-                }
+                returnValue[module!!.displayName] = module
             }
             return Collections.unmodifiableMap(returnValue)
         }
@@ -235,9 +232,9 @@ class MapModuleManager internal constructor() {
 
     /** @return an unmodifiable set of all display names of current opened maps.
      */
-    val mapKeys: List<String?>
+    val mapKeys: List<String>
         get() {
-            val returnValue = LinkedList<String?>()
+            val returnValue = LinkedList<String>()
             for (module in mapModuleVector) {
                 returnValue.add(module!!.displayName)
             }
@@ -324,7 +321,7 @@ class MapModuleManager internal constructor() {
     fun checkIfFileIsAlreadyOpened(urlToCheck: URL): String? {
         for (module in mapModuleVector) {
             if (module!!.model != null) {
-                val moduleUrl = module.model?.url
+                val moduleUrl = module.model.url
                 if (sameFile(urlToCheck, moduleUrl)) return module.displayName
             }
         }
@@ -343,7 +340,7 @@ class MapModuleManager internal constructor() {
         } else urlToCheck.sameFile(moduleUrl)
     }
 
-    fun changeToMapModule(mapModuleDisplayName: String?): Boolean {
+    fun changeToMapModule(mapModuleDisplayName: String): Boolean {
         var mapModuleCandidate: MapModule? = null
         for (mapMod in mapModuleVector) {
             if (Tools.safeEquals(mapModuleDisplayName, mapMod!!.displayName)) {
@@ -458,7 +455,7 @@ class MapModuleManager internal constructor() {
         if (!closingNotCancelled) {
             return false
         }
-        pRestorable?.append(module.model?.restorable)
+        pRestorable?.append(module.model.restorable)
         var index = mapModuleVector.indexOf(module)
         mapModuleVector.remove(module)
         if (mapModuleVector.isEmpty()) {

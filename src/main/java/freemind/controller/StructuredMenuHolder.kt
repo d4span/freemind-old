@@ -60,7 +60,7 @@ class StructuredMenuHolder {
         val order = Vector<String>()
         menuMap[ORDER_NAME] = order
         if (sSelectedIcon == null) {
-            sSelectedIcon = ImageFactory.instance?.createIcon(
+            sSelectedIcon = ImageFactory.getInstance().createIcon(
                 Resources.getInstance().getResource(
                     SELECTED_ICON_PATH
                 )

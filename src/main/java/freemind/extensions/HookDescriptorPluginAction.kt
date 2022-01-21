@@ -41,8 +41,7 @@ import java.util.Vector
  */
 class HookDescriptorPluginAction(
     xmlPluginFile: String?,
-    pluginBase: Plugin?,
-    private val pluginAction: PluginAction
+    pluginBase: Plugin?, private val pluginAction: PluginAction
 ) : HookDescriptorBase(pluginBase!!, xmlPluginFile!!) {
     /**
      */
@@ -73,10 +72,8 @@ class HookDescriptorPluginAction(
     }
 
     override fun toString(): String {
-        return (
-            "[HookDescriptor props=" + properties + ", menu positions=" +
-                menuPositions + "]"
-            )
+        return ("[HookDescriptor props=" + properties + ", menu positions="
+                + menuPositions + "]")
     }
 
     // this is an error case?

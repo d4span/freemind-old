@@ -35,4 +35,4 @@ package freemind.extensions
  *
  * @author foltin
  */
-interface UndoEventReceiver
+interface UndoEventReceiver 

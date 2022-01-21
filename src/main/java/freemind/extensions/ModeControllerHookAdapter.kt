@@ -31,8 +31,8 @@ package freemind.extensions
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-open class ModeControllerHookAdapter : // Logging:
+open class ModeControllerHookAdapter  // Logging:
 // private static java.util.logging.Logger logger;
 /**
-     */
-        HookAdapter(), ModeControllerHook
+ */
+    : HookAdapter(), ModeControllerHook

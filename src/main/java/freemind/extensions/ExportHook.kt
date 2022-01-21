@@ -51,8 +51,7 @@ open class ExportHook : ModeControllerHookAdapter() {
      * @return
      */
     protected fun chooseFile(
-        type: String,
-        description: String?,
+        type: String, description: String?,
         nameExtension: String?
     ): File? {
         val controller = controller
@@ -130,8 +129,7 @@ open class ExportHook : ModeControllerHookAdapter() {
     /**
      */
     protected fun copyFromResource(
-        prefix: String,
-        fileName: String,
+        prefix: String, fileName: String,
         destinationDirectory: String
     ) {
         // adapted from http://javaalmanac.com/egs/java.io/CopyFile.html
@@ -142,17 +140,17 @@ open class ExportHook : ModeControllerHookAdapter() {
             val resource = getResource(prefix + fileName)
             val `in` = resource.openStream()
             val out: OutputStream = FileOutputStream(
-                destinationDirectory + "/" +
-                    fileName
+                destinationDirectory + "/"
+                        + fileName
             )
 
             // Transfer bytes from in to out
             Tools.copyStream(`in`, out, true)
         } catch (e: Exception) {
             logger?.severe(
-                "File not found or could not be copied. " +
-                    "Was earching for " + prefix + fileName +
-                    " and should go to " + destinationDirectory
+                "File not found or could not be copied. "
+                        + "Was earching for " + prefix + fileName
+                        + " and should go to " + destinationDirectory
             )
             Resources.getInstance().logException(e)
         }
@@ -161,8 +159,7 @@ open class ExportHook : ModeControllerHookAdapter() {
     /**
      */
     protected fun copyFromFile(
-        dir: String,
-        fileName: String,
+        dir: String, fileName: String,
         destinationDirectory: String
     ) {
         // adapted from http://javaalmanac.com/egs/java.io/CopyFile.html
@@ -173,17 +170,17 @@ open class ExportHook : ModeControllerHookAdapter() {
             val resource = File(dir, fileName)
             val `in`: InputStream = FileInputStream(resource)
             val out: OutputStream = FileOutputStream(
-                destinationDirectory + "/" +
-                    fileName
+                destinationDirectory + "/"
+                        + fileName
             )
 
             // Transfer bytes from in to out
             Tools.copyStream(`in`, out, true)
         } catch (e: Exception) {
             logger?.severe(
-                "File not found or could not be copied. " +
-                    "Was earching for " + dir + fileName +
-                    " and should go to " + destinationDirectory
+                "File not found or could not be copied. "
+                        + "Was earching for " + dir + fileName
+                        + " and should go to " + destinationDirectory
             )
             Resources.getInstance().logException(e)
         }
@@ -192,10 +189,8 @@ open class ExportHook : ModeControllerHookAdapter() {
     companion object {
         @JvmStatic
         fun chooseImageFile(
-            type: String,
-            description: String?,
-            nameExtension: String?,
-            controller: ModeController?
+            type: String, description: String?,
+            nameExtension: String?, controller: ModeController?
         ): File? {
             val component = controller?.frame?.contentPane
             val filter = ImageFilter(type, description)
@@ -203,14 +198,12 @@ open class ExportHook : ModeControllerHookAdapter() {
             chooser = controller?.getFileChooser(filter)
             val mmFile = controller?.map?.file
             if (mmFile != null) {
-                val proposedName = (
-                    mmFile.absolutePath.replaceFirst(
-                        "\\.[^.]*?$".toRegex(), ""
-                    ) +
-                        (nameExtension ?: "") +
-                        "." +
-                        type
-                    )
+                val proposedName = (mmFile.absolutePath.replaceFirst(
+                    "\\.[^.]*?$".toRegex(), ""
+                )
+                        + (nameExtension ?: "")
+                        + "."
+                        + type)
                 chooser?.selectedFile = File(proposedName)
             }
             val returnVal = chooser?.showSaveDialog(component)
@@ -223,16 +216,14 @@ open class ExportHook : ModeControllerHookAdapter() {
             val ext = Tools.getExtension(chosenFile?.name)
             if (!Tools.safeEqualsIgnoreCase(ext, type)) {
                 chosenFile = File(
-                    chosenFile?.parent,
-                    chosenFile?.name +
-                        "." + type
+                    chosenFile?.parent, chosenFile?.name
+                            + "." + type
                 )
             }
             if (chosenFile?.exists() ?: false) { // If file exists, ask before overwriting.
                 val overwriteText = MessageFormat.format(
                     controller
-                        ?.getText("file_already_exists"),
-                    *arrayOf<Any>(
+                        ?.getText("file_already_exists"), *arrayOf<Any>(
                         chosenFile
                             .toString()
                     )

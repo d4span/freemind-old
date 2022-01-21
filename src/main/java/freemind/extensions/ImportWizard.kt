@@ -19,8 +19,8 @@
 // adapted to freemind by christianfoltin, 29.2.2004.
 // taken from /usr/share/xemacs/xemacs-packages/etc/jde/java/src/jde/wizards/ImportWizard.java
 // changed: package name, commented out the static method.
-// 			if (current.toLowerCase().endsWith(".properties")) {
-// 											   // formerly ".class"
+//			if (current.toLowerCase().endsWith(".properties")) {
+//											   // formerly ".class"
 // and related changes.
 // commented out: // For Java 2! ...
 package freemind.extensions
@@ -71,10 +71,8 @@ class ImportWizard {
         var classPath = System.getProperty("java.class.path")
         val classPathSeparator = File.pathSeparator
         // add the current dir to find more plugins
-        classPath = (
-            Resources.getInstance().freemindBaseDir + classPathSeparator +
-                classPath
-            )
+        classPath = (Resources.getInstance().freemindBaseDir + classPathSeparator
+                + classPath)
         logger!!.info("Classpath for plugins:$classPath")
         // to remove duplicates
         val foundPlugins = HashSet<String>()
@@ -165,10 +163,8 @@ class ImportWizard {
      * search stops
      */
     fun addClassesFromDir(
-        classList: Vector<String>,
-        rootDir: File,
-        currentDir: File,
-        recursionLevel: Int
+        classList: Vector<String>, rootDir: File,
+        currentDir: File, recursionLevel: Int
     ) {
         if (recursionLevel >= 6) {
             // search only the first levels
@@ -189,13 +185,12 @@ class ImportWizard {
     rootPath: $rootPath
     currentPath: $currentPath
     
-                            """.trimIndent()
+    """.trimIndent()
                         )
                     } else {
                         current = current.substring(
-                            0,
-                            current.length -
-                                lookFor.length
+                            0, current.length
+                                    - lookFor.length
                         )
                         val packageName = currentPath.substring(
                             rootPath
@@ -204,10 +199,8 @@ class ImportWizard {
                         var fileName: String
                         fileName = if (packageName.length > 0) {
                             // Not the current directory
-                            (
-                                packageName.substring(1) +
-                                    File.separator + current
-                                )
+                            (packageName.substring(1)
+                                    + File.separator + current)
                         } else {
                             // The current directory
                             current

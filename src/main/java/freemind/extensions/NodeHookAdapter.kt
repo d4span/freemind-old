@@ -28,53 +28,53 @@ import freemind.modes.MindMapNode
  * @author foltin
  *
  */
-abstract class NodeHookAdapter :
+abstract class NodeHookAdapter
 /**
-     *
-     */
-        HookAdapter(), NodeHook {
-        private var map: MindMap? = null
-        private var node: MindMapNode? = null
+ *
+ */
+    : HookAdapter(), NodeHook {
+    private var map: MindMap? = null
+    private var node: MindMapNode? = null
 
     /*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see freemind.modes.NodeHook#invoke()
 	 */
-        override fun invoke(node: MindMapNode?) {
-            logger?.finest("invoke(node) called.")
-        }
-
-        /**
-         */
-        open fun getNode(): MindMapNode? {
-            return node
-        }
-
-        /**
-         */
-        override fun setNode(node: MindMapNode?) {
-            this.node = node
-        }
-
-        /**
-         */
-        protected fun getMap(): MindMap? {
-            return map
-        }
-
-        /**
-         */
-        protected fun nodeChanged(node: MindMapNode?) {
-            controller?.nodeChanged(node)
-        }
-
-        /**
-         */
-        override fun setMap(map: MindMap?) {
-            this.map = map
-        }
-
-        open val nodeId: String?
-            get() = controller?.getNodeID(getNode())
+    override fun invoke(node: MindMapNode?) {
+        logger?.finest("invoke(node) called.")
     }
+
+    /**
+     */
+    open fun getNode(): MindMapNode? {
+        return node
+    }
+
+    /**
+     */
+    override fun setNode(node: MindMapNode?) {
+        this.node = node
+    }
+
+    /**
+     */
+    protected fun getMap(): MindMap? {
+        return map
+    }
+
+    /**
+     */
+    protected fun nodeChanged(node: MindMapNode?) {
+        controller?.nodeChanged(node)
+    }
+
+    /**
+     */
+    override fun setMap(map: MindMap?) {
+        this.map = map
+    }
+
+    open val nodeId: String?
+        get() = controller?.getNodeID(getNode())
+}

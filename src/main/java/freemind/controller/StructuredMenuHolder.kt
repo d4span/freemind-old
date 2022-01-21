@@ -122,8 +122,8 @@ class StructuredMenuHolder {
                 val toolTipTextWithoutTags = HtmlTools
                     .removeHtmlTagsFromString(toolTipText)
                 logger!!.finest(
-                    "Old tool tip: " + toolTipText +
-                        ", New tool tip: " + toolTipTextWithoutTags
+                    "Old tool tip: " + toolTipText
+                            + ", New tool tip: " + toolTipTextWithoutTags
                 )
                 holder.menuItem!!.toolTipText = toolTipTextWithoutTags
             }
@@ -214,56 +214,50 @@ class StructuredMenuHolder {
     fun updateMenus(myItem: JMenuBar) {
         val pair = getCategoryMap()
         val myMap = pair!!.map!![pair.token] as Map<*, *>?
-        updateMenus(
-            object : MenuAdder {
-                override fun addMenuItem(holder: StructuredMenuItemHolder) {
-                    Tools.setLabelAndMnemonic(holder.menuItem, null)
-                    myItem.add(holder.menuItem)
-                }
+        updateMenus(object : MenuAdder {
+            override fun addMenuItem(holder: StructuredMenuItemHolder) {
+                Tools.setLabelAndMnemonic(holder.menuItem, null)
+                myItem.add(holder.menuItem)
+            }
 
-                override fun addSeparator() {
-                    throw NoSuchMethodError("addSeparator for JMenuBar")
-                }
+            override fun addSeparator() {
+                throw NoSuchMethodError("addSeparator for JMenuBar")
+            }
 
-                // public void addAction(Action action) {
-                // throw new NoSuchMethodError("addAction for JMenuBar");
-                // }
-                override fun addCategory(category: String) {}
-            },
-            myMap, DefaultMenuAdderCreator()
-        )
+            // public void addAction(Action action) {
+            // throw new NoSuchMethodError("addAction for JMenuBar");
+            // }
+            override fun addCategory(category: String) {}
+        }, myMap, DefaultMenuAdderCreator())
     }
 
     fun updateMenus(myItem: JPopupMenu) {
         val pair = getCategoryMap()
         val myMap = pair!!.map!![pair.token] as Map<*, *>?
-        updateMenus(
-            object : MenuAdder {
-                var listener = StructuredMenuListener()
-                override fun addMenuItem(holder: StructuredMenuItemHolder) {
-                    Tools.setLabelAndMnemonic(holder.menuItem, null)
-                    val menuItem = holder.menuItem
-                    adjustMenuItem(menuItem)
-                    myItem.add(menuItem)
-                    if (myItem is MenuEventSupplier) {
-                        val receiver = myItem as MenuEventSupplier
-                        receiver.addMenuListener(listener)
-                        listener.addItem(holder)
-                    }
+        updateMenus(object : MenuAdder {
+            var listener = StructuredMenuListener()
+            override fun addMenuItem(holder: StructuredMenuItemHolder) {
+                Tools.setLabelAndMnemonic(holder.menuItem, null)
+                val menuItem = holder.menuItem
+                adjustMenuItem(menuItem)
+                myItem.add(menuItem)
+                if (myItem is MenuEventSupplier) {
+                    val receiver = myItem as MenuEventSupplier
+                    receiver.addMenuListener(listener)
+                    listener.addItem(holder)
                 }
+            }
 
-                override fun addSeparator() {
-                    if (lastItemIsASeparator(myItem)) return
-                    myItem.addSeparator()
-                }
+            override fun addSeparator() {
+                if (lastItemIsASeparator(myItem)) return
+                myItem.addSeparator()
+            }
 
-                // public void addAction(Action action) {
-                // myItem.add(action);
-                // }
-                override fun addCategory(category: String) {}
-            },
-            myMap, DefaultMenuAdderCreator()
-        )
+            // public void addAction(Action action) {
+            // myItem.add(action);
+            // }
+            override fun addCategory(category: String) {}
+        }, myMap, DefaultMenuAdderCreator())
     }
 
     /**
@@ -271,25 +265,22 @@ class StructuredMenuHolder {
     fun updateMenus(bar: JToolBar) {
         val pair = getCategoryMap()
         val myMap = pair!!.map!![pair.token] as Map<*, *>?
-        updateMenus(
-            object : MenuAdder {
-                override fun addMenuItem(holder: StructuredMenuItemHolder) {
-                    bar.add(holder.action)
-                }
+        updateMenus(object : MenuAdder {
+            override fun addMenuItem(holder: StructuredMenuItemHolder) {
+                bar.add(holder.action)
+            }
 
-                override fun addSeparator() {
-                    // no separators to save place. But they look good. fc,
-                    // 16.6.2005.
-                    bar.addSeparator()
-                }
+            override fun addSeparator() {
+                // no separators to save place. But they look good. fc,
+                // 16.6.2005.
+                bar.addSeparator()
+            }
 
-                // public void addAction(Action action) {
-                // bar.add(action);
-                // }
-                override fun addCategory(category: String) {}
-            },
-            myMap, DefaultMenuAdderCreator()
-        )
+            // public void addAction(Action action) {
+            // bar.add(action);
+            // }
+            override fun addCategory(category: String) {}
+        }, myMap, DefaultMenuAdderCreator())
     }
 
     private interface MenuAdder {
@@ -357,7 +348,7 @@ class StructuredMenuHolder {
     private inner class DefaultMenuAdderCreator : MenuAdderCreator {
         /*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see
 		 * freemind.controller.StructuredMenuHolder.MenuAdderCreator#createAdder
 		 * (javax.swing.JMenu)
@@ -370,8 +361,7 @@ class StructuredMenuHolder {
     private inner class SeparatorHolder
 
     private fun updateMenus(
-        menuAdder: MenuAdder,
-        thisMap: Map<*, *>?,
+        menuAdder: MenuAdder, thisMap: Map<*, *>?,
         factory: MenuAdderCreator
     ) {
         // System.out.println(thisMap);
@@ -419,7 +409,7 @@ class StructuredMenuHolder {
 
     /*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
     override fun toString(): String {
@@ -432,7 +422,7 @@ class StructuredMenuHolder {
     private inner class PrintMenuAdderCreator : MenuAdderCreator {
         /*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see
 		 * freemind.controller.StructuredMenuHolder.MenuAdderCreator#createAdder
 		 * (javax.swing.JMenu)
@@ -449,7 +439,7 @@ class StructuredMenuHolder {
         mOutputString += """
             $string
             
-        """.trimIndent()
+            """.trimIndent()
     }
 
     interface MenuEventSupplier {
@@ -460,7 +450,7 @@ class StructuredMenuHolder {
     class StructuredMenuListener : MenuListener {
         private val menuItemHolder = Vector<StructuredMenuItemHolder>()
         override fun menuSelected(arg0: MenuEvent) {
-// 			System.out.println("Selected menu items " + arg0);
+//			System.out.println("Selected menu items " + arg0);
             for (holder in menuItemHolder) {
                 val action = holder.action
                 var isEnabled = false
@@ -474,7 +464,7 @@ class StructuredMenuHolder {
                         Resources.getInstance().logException(e)
                     }
                     action!!.isEnabled = isEnabled
-                    // 					menuItem.setEnabled(isEnabled);
+                    //					menuItem.setEnabled(isEnabled);
                 }
                 isEnabled = menuItem!!.isEnabled
                 if (isEnabled && holder.selectionListener != null) {
@@ -524,10 +514,8 @@ class StructuredMenuHolder {
             } else {
                 // align
                 if (item.icon.iconWidth < ICON_SIZE) {
-                    item.iconTextGap = (
-                        item.iconTextGap +
-                            (ICON_SIZE - item.icon.iconWidth)
-                        )
+                    item.iconTextGap = (item.iconTextGap
+                            + (ICON_SIZE - item.icon.iconWidth))
                 }
             }
         }

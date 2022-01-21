@@ -29,15 +29,11 @@ import java.awt.datatransfer.Transferable
 import java.awt.datatransfer.UnsupportedFlavorException
 import java.io.ByteArrayInputStream
 
-class MindMapNodesSelection(
-    private val nodesContent: String,
-    private val imageContent: String,
-    private val stringContent: String,
-    private val rtfContent: String?,
-    private val htmlContent: String?,
-    private var dropActionContent: String,
-    private val fileList: List<*>,
-    private val nodeIdsContent: List<String>
+class MindMapNodesSelection     //
+    (
+    private val nodesContent: String, private val imageContent: String,
+    private val stringContent: String, private val rtfContent: String?, private val htmlContent: String?,
+    private var dropActionContent: String, private val fileList: List<*>, private val nodeIdsContent: List<String>
 ) : Transferable, ClipboardOwner {
     @Throws(UnsupportedFlavorException::class)
     override fun getTransferData(flavor: DataFlavor): Any {

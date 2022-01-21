@@ -48,7 +48,7 @@ internal class Preview(protected var view: MapView, zoom: Double, private val pa
             previewPageImage = createImage(
                 getPageWidth(format) - 1, getPageHeight(format) - 1
             ) as BufferedImage
-            val imageGraphics = previewPageImage!!.createGraphics()
+            imageGraphics = previewPageImage!!.createGraphics()
             imageGraphics?.scale(zoom, zoom)
             while (Printable.NO_SUCH_PAGE == view.print(
                     imageGraphics, format,

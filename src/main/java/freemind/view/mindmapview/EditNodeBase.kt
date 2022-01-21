@@ -51,17 +51,15 @@ import javax.swing.text.JTextComponent
  * @author foltin
  */
 open class EditNodeBase internal constructor(
-    protected var node: NodeView,
-    protected var text: String,
-    protected val modeController: ModeController,
-    val editControl: EditControl
+    protected var node: NodeView, protected var text: String,
+    protected val modeController: ModeController, val editControl: EditControl
 ) {
     // this enables from outside close the edit mode
     @JvmField
     var textFieldListener: FocusListener? = null
 
     internal abstract class EditDialog(base: EditNodeBase) : JDialog(
-        base.frame as JFrame, base.getText("edit_long_node"), /*modal = */
+        base.frame as JFrame, base.getText("edit_long_node"),  /*modal = */
         true
     ) {
         /**
@@ -76,7 +74,7 @@ open class EditNodeBase internal constructor(
         internal inner class DialogWindowListener : WindowAdapter() {
             /*
 			 * (non-Javadoc)
-			 *
+			 * 
 			 * @see
 			 * java.awt.event.WindowAdapter#windowClosing(java.awt.event.WindowEvent
 			 * )
@@ -215,10 +213,10 @@ open class EditNodeBase internal constructor(
         get() = Tools.getClipboard()
 
     protected fun redispatchKeyEvents(
-        textComponent: JTextComponent?,
+        textComponent: JTextComponent,
         firstKeyEvent: KeyEvent?
     ) {
-        if (textComponent?.hasFocus() ?: false) {
+        if (textComponent.hasFocus()) {
             return
         }
         val currentKeyboardFocusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager()
@@ -237,7 +235,7 @@ open class EditNodeBase internal constructor(
                 while (iterator.hasNext()) {
                     val ke = iterator.next()
                     ke.source = textComponent
-                    textComponent?.dispatchEvent(ke)
+                    textComponent.dispatchEvent(ke)
                 }
             }
 
@@ -246,19 +244,20 @@ open class EditNodeBase internal constructor(
 
         val keyEventDispatcher = KeyEventQueue()
         currentKeyboardFocusManager.addKeyEventDispatcher(keyEventDispatcher)
-        textComponent?.addFocusListener(keyEventDispatcher)
+        textComponent.addFocusListener(keyEventDispatcher)
         if (firstKeyEvent == null) {
             return
         }
         if (firstKeyEvent.keyChar == KeyEvent.CHAR_UNDEFINED) {
             when (firstKeyEvent.keyCode) {
-                KeyEvent.VK_HOME -> textComponent?.caretPosition = 0
-                KeyEvent.VK_END -> textComponent?.caretPosition = textComponent?.document?.length ?: 0
+                KeyEvent.VK_HOME -> textComponent.caretPosition = 0
+                KeyEvent.VK_END -> textComponent.caretPosition = textComponent.document
+                    .length
             }
         } else {
-            textComponent?.selectAll() // to enable overwrite
+            textComponent.selectAll() // to enable overwrite
             // redispath all key events
-            textComponent?.dispatchEvent(firstKeyEvent)
+            textComponent.dispatchEvent(firstKeyEvent)
         }
     }
 

@@ -56,20 +56,19 @@ abstract class MainView internal constructor() : JLabel() {
 
     /*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.swing.JComponent#getPreferredSize()
 	 */
     override fun getPreferredSize(): Dimension {
         val text = text
-        val isEmpty = (
-            text.length == 0 ||
-                HtmlTools.isHtmlNode(text) && text.indexOf("<img") < 0 && HtmlTools.htmlToPlain(text).length == 0
-            )
+        val isEmpty = (text.length == 0
+                || HtmlTools.isHtmlNode(text) && text.indexOf("<img") < 0 && HtmlTools
+            .htmlToPlain(text).length == 0)
         if (isEmpty) {
             setText("!")
         }
         val prefSize = super.getPreferredSize()
-        val zoom = nodeView.map.getZoom()
+        val zoom = nodeView.map.zoom
         if (zoom != 1f) {
             // TODO: Why 0.99? fc, 23.4.2011
             prefSize.width = (0.99 + prefSize.width * zoom).toInt()
@@ -114,7 +113,7 @@ abstract class MainView internal constructor() : JLabel() {
     protected val isCurrentlyPrinting: Boolean
         get() = nodeView.map.isCurrentlyPrinting
     private val zoom: Float
-        get() = nodeView.map.getZoom()
+        get() = nodeView.map.zoom
 
     override fun printComponent(g: Graphics) {
         super.paintComponent(g)
@@ -122,9 +121,9 @@ abstract class MainView internal constructor() : JLabel() {
 
     open fun paintSelected(graphics: Graphics2D) {
         if (nodeView.useSelectionColors()) {
-            paintBackground(graphics, NodeView.selectedColor)
+            paintBackground(graphics, nodeView.selectedColor)
         } else {
-            val backgroundColor = nodeView.model
+            val backgroundColor = nodeView.getModel()
                 .backgroundColor
             backgroundColor?.let { paintBackground(graphics, it) }
         }
@@ -168,7 +167,7 @@ abstract class MainView internal constructor() : JLabel() {
 
     /*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.swing.JComponent#getHeight()
 	 */
     override fun getHeight(): Int {
@@ -183,7 +182,7 @@ abstract class MainView internal constructor() : JLabel() {
 
     /*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.swing.JComponent#getWidth()
 	 */
     override fun getWidth(): Int {
@@ -197,8 +196,8 @@ abstract class MainView internal constructor() : JLabel() {
     }
 
     protected abstract val centerPoint: Point?
-    abstract val leftPoint: Point?
-    abstract val rightPoint: Point?
+    protected abstract val leftPoint: Point?
+    protected abstract val rightPoint: Point?
 
     /** get x coordinate including folding symbol  */
     open val deltaX: Int
@@ -285,15 +284,11 @@ abstract class MainView internal constructor() : JLabel() {
         }
 
     fun isInFollowLinkRegion(xCoord: Double): Boolean {
-        val model = nodeView.model
-        return (
-            model.link != null &&
-                (
-                    model.isRoot || !model.hasChildren() || isInVerticalRegion(
-                        xCoord, 1.0 / 2
-                    )
-                    )
-            )
+        val model = nodeView.getModel()
+        return (model.link != null
+                && (model.isRoot || !model.hasChildren() || isInVerticalRegion(
+            xCoord, 1.0 / 2
+        )))
     }
 
     /**

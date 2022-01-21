@@ -38,7 +38,6 @@ package "Third-party libs" {
 }
 
 [Swing] --> [Java Swing]
-[Swing] --> [Jetbrains Annotations]
 
 [Common] --> [Main]
 [Common] --> [Modes]
@@ -76,7 +75,6 @@ package "Third-party libs" {
 [Views] --> [Preferences]
 [Views] --> [JOrtho]
 [Views] --> [SimplyHTML]
-[Views] --> [Jetbrains Annotations]
 
 [Preferences] --> [Common]
 [Preferences] --> [Main]

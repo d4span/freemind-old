@@ -17,7 +17,7 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 // ConvexHull.java (c) fc
-//
+// 
 // Adapted from Sedgewick, Algorithms
 //
 package freemind.view.mindmapview
@@ -107,8 +107,8 @@ class ConvexHull {
         // continue along the values with same y component
         i = 0
         while (i < p.size) {
-            if ((p[i] as Point).y == (p[min] as Point).y &&
-                (p[i] as Point).x > (p[min] as Point).x
+            if ((p[i] as Point).y == (p[min] as Point).y
+                && (p[i] as Point).x > (p[min] as Point).x
             ) {
                 min = i
             }

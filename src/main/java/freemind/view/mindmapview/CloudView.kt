@@ -136,13 +136,8 @@ class CloudView(protected var model: MindMapCloud?, protected var source: NodeVi
     }
 
     private fun paintClouds(
-        g: Graphics2D,
-        gstroke: Graphics2D,
-        x0: Double,
-        y0: Double,
-        x1: Double,
-        y1: Double,
-        distanceToConvexHull: Double
+        g: Graphics2D, gstroke: Graphics2D, x0: Double,
+        y0: Double, x1: Double, y1: Double, distanceToConvexHull: Double
     ) {
         // System.out.println("double=" + x0+ ", double=" + y0+ ", double=" +
         // x1+ ", double=" + y1);
@@ -199,7 +194,7 @@ class CloudView(protected var model: MindMapCloud?, protected var source: NodeVi
     protected val map: MapView
         get() = source!!.map
     protected val zoom: Double
-        get() = map.getZoom().toDouble()
+        get() = map.zoom.toDouble()
 
     companion object {
         val DEF_STROKE: Stroke = BasicStroke(1F)

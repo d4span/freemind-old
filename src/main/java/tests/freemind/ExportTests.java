@@ -20,13 +20,6 @@
 
 package tests.freemind;
 
-import freemind.main.XMLParseException;
-import freemind.view.mindmapview.IndependantMapViewCreator;
-import freemind.view.mindmapview.MapView;
-
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
 import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -35,6 +28,14 @@ import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
+
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.WindowConstants;
+
+import freemind.main.XMLParseException;
+import freemind.view.mindmapview.IndependantMapViewCreator;
+import freemind.view.mindmapview.MapView;
 
 /**
  * @author foltin
@@ -46,7 +47,7 @@ public class ExportTests extends FreeMindTestBase {
 	public void testExportPng() throws Exception {
 		System.setProperty("java.awt.headless", "true");
 		IndependantMapViewCreator creator = new IndependantMapViewCreator();
-		creator.exportFileToPng(TESTMAP_MM, "/tmp/test.png");
+		creator.exportFileToPng(TESTMAP_MM, "/tmp/test.png", mFreeMindMain);
 
 		System.out.println("Done.");
 	}
@@ -68,7 +69,8 @@ public class ExportTests extends FreeMindTestBase {
 		};
 		fm.add(parent, BorderLayout.CENTER);
 		IndependantMapViewCreator creator = new IndependantMapViewCreator();
-		MapView mapView = creator.createMapViewForFile(TESTMAP_MM, parent);
+		MapView mapView = creator.createMapViewForFile(TESTMAP_MM, parent,
+				mFreeMindMain);
 		parent.add(mapView, BorderLayout.CENTER);
 		mapView.doLayout();
 		Rectangle innerBounds = mapView.getInnerBounds();

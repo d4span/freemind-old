@@ -198,7 +198,7 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 	
 	public void update(StructuredMenuHolder holder) {
 		this.removeAll();
-		holder.updateMenus(this);
+		holder.updateMenus(this, "mindmapmode_toolbar/");
 		
 		addIcon("images/list-add-font.png");
 		fonts.setMaximumRowCount(30);

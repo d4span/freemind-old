@@ -51,7 +51,7 @@ public class MindMapPopupMenu extends FreeMindPopupMenu {
 		this.removeAll();
 		c.createPatternSubMenu(holder, MINDMAPMODE_POPUP);
 		c.addIconsToMenu(holder, MINDMAPMODE_POPUP + "icons/");
-		holder.updateMenus(this);
+		holder.updateMenus(this, MINDMAPMODE_POPUP);
 
 	}
 

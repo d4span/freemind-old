@@ -174,10 +174,8 @@ class MenuBar(var c: Controller) : JMenuBar() {
         addAdditionalPopupActions()
         // the modes:
         newModeController?.updateMenus(menuHolder)
-        menuHolder!!.updateMenus(this)
-
-        val currentPopupMenu = mapsPopupMenu
-        if (currentPopupMenu is FreeMindPopupMenu) menuHolder!!.updateMenus(currentPopupMenu)
+        menuHolder!!.updateMenus(this, MENU_BAR_PREFIX)
+        menuHolder!!.updateMenus(mapsPopupMenu, GENERAL_POPUP_PREFIX)
     }
 
     private fun updateModeMenu() {
@@ -209,7 +207,7 @@ class MenuBar(var c: Controller) : JMenuBar() {
 
     private fun addAdditionalPopupActions() {
         menuHolder!!.addSeparator(POPUP_MENU)
-        var newPopupItem: JMenuItem?
+        var newPopupItem: JMenuItem
         if (c.frame.isApplet) {
             // We have enabled hiding of menubar only in applets. It it because
             // when we hide menubar in application, the key accelerators from
@@ -218,18 +216,18 @@ class MenuBar(var c: Controller) : JMenuBar() {
                 c.toggleMenubar, (POPUP_MENU
                         + "toggleMenubar")
             )
-            newPopupItem?.foreground = Color(100, 80, 80)
+            newPopupItem.foreground = Color(100, 80, 80)
         }
         newPopupItem = menuHolder!!.addAction(
             c.toggleToolbar, (POPUP_MENU
                     + "toggleToolbar")
         )
-        newPopupItem?.foreground = Color(100, 80, 80)
+        newPopupItem.foreground = Color(100, 80, 80)
         newPopupItem = menuHolder!!.addAction(
             c.toggleLeftToolbar, (POPUP_MENU
                     + "toggleLeftToolbar")
         )
-        newPopupItem?.foreground = Color(100, 80, 80)
+        newPopupItem.foreground = Color(100, 80, 80)
     }
 
     private fun updateMapsMenu(holder: StructuredMenuHolder, basicKey: String) {
@@ -259,7 +257,7 @@ class MenuBar(var c: Controller) : JMenuBar() {
             c.print, (FILE_MENU
                     + "print/print")
         )
-        print?.accelerator = KeyStroke.getKeyStroke(
+        print.accelerator = KeyStroke.getKeyStroke(
             c.frame
                 .getAdjustableProperty("keystroke_print")
         )
@@ -267,7 +265,7 @@ class MenuBar(var c: Controller) : JMenuBar() {
             c.printPreview, (FILE_MENU
                     + "print/printPreview")
         )
-        printPreview?.accelerator = KeyStroke.getKeyStroke(
+        printPreview.accelerator = KeyStroke.getKeyStroke(
             c.frame
                 .getAdjustableProperty("keystroke_print_preview")
         )
@@ -275,12 +273,12 @@ class MenuBar(var c: Controller) : JMenuBar() {
             c.close, (FILE_MENU
                     + "close/close")
         )
-        close?.accelerator = KeyStroke.getKeyStroke(
+        close.accelerator = KeyStroke.getKeyStroke(
             c.frame
                 .getAdjustableProperty("keystroke_close")
         )
         val quit = menuHolder!!.addAction(c.quit, FILE_MENU + "quit/quit")
-        quit?.accelerator = KeyStroke.getKeyStroke(
+        quit.accelerator = KeyStroke.getKeyStroke(
             c.frame
                 .getAdjustableProperty("keystroke_quit")
         )
@@ -320,7 +318,7 @@ class MenuBar(var c: Controller) : JMenuBar() {
             c.moveToRoot, (NAVIGATE_MENU
                     + "nodes/moveToRoot")
         )
-        moveToRoot?.accelerator = KeyStroke.getKeyStroke(
+        moveToRoot.accelerator = KeyStroke.getKeyStroke(
             c.frame
                 .getAdjustableProperty("keystroke_moveToRoot")
         )
@@ -328,7 +326,7 @@ class MenuBar(var c: Controller) : JMenuBar() {
             c.navigationPreviousMap,
             MINDMAP_MENU + "navigate/navigationPreviousMap"
         )
-        previousMap?.accelerator = KeyStroke.getKeyStroke(
+        previousMap.accelerator = KeyStroke.getKeyStroke(
             c.frame
                 .getAdjustableProperty(FreeMind.KEYSTROKE_PREVIOUS_MAP)
         )
@@ -336,7 +334,7 @@ class MenuBar(var c: Controller) : JMenuBar() {
             c.navigationNextMap,
             MINDMAP_MENU + "navigate/navigationNextMap"
         )
-        nextMap?.accelerator = KeyStroke.getKeyStroke(
+        nextMap.accelerator = KeyStroke.getKeyStroke(
             c.frame
                 .getAdjustableProperty(FreeMind.KEYSTROKE_NEXT_MAP)
         )
@@ -344,7 +342,7 @@ class MenuBar(var c: Controller) : JMenuBar() {
             c.navigationMoveMapLeftAction, (MINDMAP_MENU
                     + "navigate/navigationMoveMapLeft")
         )
-        MoveMapLeft?.accelerator = KeyStroke.getKeyStroke(
+        MoveMapLeft.accelerator = KeyStroke.getKeyStroke(
             c.frame
                 .getAdjustableProperty(FreeMind.KEYSTROKE_MOVE_MAP_LEFT)
         )
@@ -352,7 +350,7 @@ class MenuBar(var c: Controller) : JMenuBar() {
             c.navigationMoveMapRightAction, (MINDMAP_MENU
                     + "navigate/navigationMoveMapRight")
         )
-        MoveMapRight?.accelerator = KeyStroke.getKeyStroke(
+        MoveMapRight.accelerator = KeyStroke.getKeyStroke(
             c.frame
                 .getAdjustableProperty(FreeMind.KEYSTROKE_MOVE_MAP_RIGHT)
         )
@@ -377,7 +375,7 @@ class MenuBar(var c: Controller) : JMenuBar() {
         menuHolder!!.addSeparator(VIEW_MENU)
         menuHolder!!.addAction(c.showSelectionAsRectangle, VIEW_MENU + "general/selectionAsRectangle")
         val zoomIn = menuHolder!!.addAction(c.zoomIn, VIEW_MENU + "zoom/zoomIn")
-        zoomIn?.accelerator = KeyStroke.getKeyStroke(
+        zoomIn.accelerator = KeyStroke.getKeyStroke(
             c.frame
                 .getAdjustableProperty("keystroke_zoom_in")
         )
@@ -385,7 +383,7 @@ class MenuBar(var c: Controller) : JMenuBar() {
             c.zoomOut, (VIEW_MENU
                     + "zoom/zoomOut")
         )
-        zoomOut?.accelerator = KeyStroke.getKeyStroke(
+        zoomOut.accelerator = KeyStroke.getKeyStroke(
             c.frame
                 .getAdjustableProperty("keystroke_zoom_out")
         )

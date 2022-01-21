@@ -305,7 +305,7 @@ public class ManagePatternsPopupDialog extends JDialog implements
 			menuItemPatternFromNodes.addActionListener(fromNodesActionListener);
 			menuHolder.addMenuItem(menuItemPatternFromNodes,
 					"main/actions/from_nodes");
-			menuHolder.updateMenus(menu);
+			menuHolder.updateMenus(menu, "main/");
 			this.setJMenuBar(menu);
 			/* Popup menu */
 			popupMenu = new JPopupMenu();
@@ -339,7 +339,7 @@ public class ManagePatternsPopupDialog extends JDialog implements
 				}
 			});
 			menuHolder.addMenuItem(menuItemRemove, "popup/remove");
-			menuHolder.updateMenus(popupMenu);
+			menuHolder.updateMenus(popupMenu, "popup/");
 			mList.addMouseListener(new MouseAdapter() {
 				public void mouseReleased(MouseEvent me) {
 					showPopup(mList, me);

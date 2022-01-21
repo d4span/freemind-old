@@ -20,31 +20,6 @@
 
 package freemind.main;
 
-import com.inet.jortho.SpellChecker;
-import freemind.controller.Controller;
-import freemind.controller.LastStateStorageManagement;
-import freemind.controller.MenuBar;
-import freemind.controller.actions.generated.instance.MindmapLastStateStorage;
-import freemind.main.FreeMindStarter.ProxyAuthenticator;
-import freemind.modes.ModeController;
-import freemind.preferences.FreemindPropertyListener;
-import freemind.view.MapModule;
-import freemind.view.mindmapview.MapView;
-
-import javax.swing.ImageIcon;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import javax.swing.UIManager;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Desktop;
@@ -90,6 +65,33 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+
+import javax.swing.ImageIcon;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.swing.UIManager;
+
+import com.inet.jortho.SpellChecker;
+
+import freemind.controller.Controller;
+import freemind.controller.LastStateStorageManagement;
+import freemind.controller.MenuBar;
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage;
+import freemind.main.FreeMindStarter.ProxyAuthenticator;
+import freemind.modes.ModeController;
+import freemind.preferences.FreemindPropertyListener;
+import freemind.view.MapModule;
+import freemind.view.mindmapview.MapView;
 
 @SuppressWarnings("serial")
 public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
@@ -920,7 +922,7 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				controller.getQuit()
+				controller.quit
 						.actionPerformed(new ActionEvent(this, 0, "quit"));
 			}
 

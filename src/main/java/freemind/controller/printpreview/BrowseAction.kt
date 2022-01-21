@@ -18,38 +18,48 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package freemind.controller.printpreview
+package freemind.controller.printpreview;
 
-import java.awt.EventQueue
-import java.awt.event.ActionEvent
-import javax.swing.AbstractAction
-import javax.swing.JLabel
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
 
-internal class BrowseAction(
-    protected var preview: Preview,
-    private val pageNumber: JLabel,
-    protected var pageStep: Int
-) : AbstractAction() {
-    override fun actionPerformed(e: ActionEvent) {
-        preview.moveIndex(pageStep)
-        paintPageIndex()
-        preview.repaint()
-        EventQueue.invokeLater(pageIndexPainter)
-    }
+import javax.swing.AbstractAction;
+import javax.swing.JLabel;
 
-    private fun paintPageIndex() {
-        pageNumber.text = pageIndexText
-        pageNumber.paintImmediately(
-            0, 0, pageNumber.width,
-            pageNumber.height
-        )
-    }
+@SuppressWarnings("serial")
+class BrowseAction extends AbstractAction {
+	private JLabel pageNumber;
 
-    private val pageIndexText: String
-        get() = "- " + (1 + preview.pageIndex).toString() + " -"
-    private val pageIndexPainter: Runnable
+	public BrowseAction(Preview preview, JLabel pageNumber, int pageStep) {
+		super();
+		this.preview = preview;
+		this.pageStep = pageStep;
+		this.pageNumber = pageNumber;
+		pageIndexPainter = new Runnable() {
+			public void run() {
+				paintPageIndex();
+			}
+		};
+	}
 
-    init {
-        pageIndexPainter = Runnable { paintPageIndex() }
-    }
+	public void actionPerformed(ActionEvent e) {
+		preview.moveIndex(pageStep);
+		paintPageIndex();
+		preview.repaint();
+		EventQueue.invokeLater(pageIndexPainter);
+	}
+
+	private void paintPageIndex() {
+		pageNumber.setText(getPageIndexText());
+		pageNumber.paintImmediately(0, 0, pageNumber.getWidth(),
+				pageNumber.getHeight());
+	}
+
+	private String getPageIndexText() {
+		return "- " + String.valueOf(1 + preview.getPageIndex()) + " -";
+	}
+
+	protected Preview preview;
+	protected int pageStep;
+	private final Runnable pageIndexPainter;
 }

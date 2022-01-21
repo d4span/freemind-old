@@ -18,14 +18,25 @@
  *  License along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package freemind.controller.printpreview
+package freemind.controller.printpreview;
 
-import java.awt.event.ActionEvent
-import javax.swing.AbstractAction
+import java.awt.event.ActionEvent;
 
-internal class ZoomAction(protected var preview: Preview, protected var zoomStep: Double) : AbstractAction() {
-    override fun actionPerformed(e: ActionEvent) {
-        preview.changeZoom(zoomStep)
-        preview.repaint()
-    }
+import javax.swing.AbstractAction;
+
+@SuppressWarnings("serial")
+class ZoomAction extends AbstractAction {
+	public ZoomAction(Preview preview, double zoomStep) {
+		super();
+		this.preview = preview;
+		this.zoomStep = zoomStep;
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		preview.changeZoom(zoomStep);
+		preview.repaint();
+	}
+
+	protected Preview preview;
+	protected double zoomStep;
 }

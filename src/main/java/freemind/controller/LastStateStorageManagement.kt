@@ -17,142 +17,152 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package freemind.controller
 
-import freemind.controller.actions.generated.instance.MindmapLastStateMapStorage
-import freemind.controller.actions.generated.instance.MindmapLastStateStorage
-import freemind.main.Resources
-import freemind.main.Tools
-import java.util.Collections
-import java.util.TreeMap
-import java.util.Vector
-import java.util.logging.Logger
+package freemind.controller;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.Vector;
+
+import freemind.controller.actions.generated.instance.MindmapLastStateMapStorage;
+import freemind.controller.actions.generated.instance.MindmapLastStateStorage;
+import freemind.controller.actions.generated.instance.NodeListMember;
+import freemind.controller.actions.generated.instance.XmlAction;
+import freemind.main.Tools;
 
 /**
  * @author foltin
+ * 
  */
-class LastStateStorageManagement(pXml: String?) {
-    var lastFocussedTab: Int = 0
-    private var mLastStatesMap: MindmapLastStateMapStorage? = null
+public class LastStateStorageManagement {
+	public static final int LIST_AMOUNT_LIMIT = 50;
+	private MindmapLastStateMapStorage mLastStatesMap = null;
+	protected static java.util.logging.Logger logger = null;
 
-    init {
-        if (logger == null) {
-            logger = Resources.getInstance().getLogger(
-                this.javaClass.name
-            )
-        }
-        try {
-            val action = Tools.unMarshall(pXml)
-            if (action != null) {
-                if (action is MindmapLastStateMapStorage) {
-                    mLastStatesMap = action
-                }
-            }
-        } catch (e: Exception) {
-            Resources.getInstance().logException(e)
-        }
-        if (mLastStatesMap == null) {
-            logger!!.warning("Creating a new last state map storage as there was no old one or it was corrupt.")
-            mLastStatesMap = MindmapLastStateMapStorage()
-        }
-    }
+	public LastStateStorageManagement(String pXml) {
+		if (logger == null) {
+			logger = freemind.main.Resources.getInstance().getLogger(
+					this.getClass().getName());
+		}
+		try {
+			XmlAction action = Tools.unMarshall(pXml);
+			if (action != null) {
+				if (action instanceof MindmapLastStateMapStorage) {
+					mLastStatesMap = (MindmapLastStateMapStorage) action;
 
-    val xml: String
-        get() = Tools.marshall(mLastStatesMap)
+				}
+			}
+		} catch (Exception e) {
+			freemind.main.Resources.getInstance().logException(e);
+		}
+		if (mLastStatesMap == null) {
+			logger.warning("Creating a new last state map storage as there was no old one or it was corrupt.");
+			mLastStatesMap = new MindmapLastStateMapStorage();
+		}
+	}
 
-    fun clearTabIndices() {
-        val it = mLastStatesMap!!.listMindmapLastStateStorageList.iterator()
-        while (it.hasNext()) {
-            val store = it.next()
-            store?.tabIndex = -1
-        }
-    }
+	public String getXml() {
+		return Tools.marshall(mLastStatesMap);
+	}
 
-    fun changeOrAdd(pStore: MindmapLastStateStorage) {
-        var found = false
-        val it = mLastStatesMap!!.listMindmapLastStateStorageList.iterator()
-        while (it.hasNext()) {
-            val store = it.next()
-            if (Tools.safeEquals(
-                    pStore.restorableName,
-                    store?.restorableName
-                )
-            ) {
-                // deep copy
-                store?.lastZoom = pStore.lastZoom
-                store?.lastSelected = pStore.lastSelected
-                store?.x = pStore.x
-                store?.y = pStore.y
-                val listCopy = Vector(pStore.listNodeListMemberList)
-                store?.clearNodeListMemberList()
-                for (member in listCopy) {
-                    store?.addNodeListMember(member)
-                }
-                found = true
-                setLastChanged(store)
-                break
-            }
-        }
-        if (!found) {
-            setLastChanged(pStore)
-            mLastStatesMap!!.addMindmapLastStateStorage(pStore)
-        }
-        // size limit
-        if (mLastStatesMap!!.sizeMindmapLastStateStorageList() > LIST_AMOUNT_LIMIT) {
-            // make map from date to object:
-            val dateToStoreMap = TreeMap<Long, MindmapLastStateStorage?>()
-            val iterator = mLastStatesMap!!.listMindmapLastStateStorageList.iterator()
-            while (iterator.hasNext()) {
-                val store = iterator.next()
-                dateToStoreMap[java.lang.Long.valueOf(-(store?.lastChanged ?: 0))] = store
-            }
-            // clear list
-            mLastStatesMap!!.clearMindmapLastStateStorageList()
-            // rebuild
-            var counter = 0
-            for ((_, value) in dateToStoreMap) {
-                mLastStatesMap!!.addMindmapLastStateStorage(value)
-                counter++
-                if (counter >= LIST_AMOUNT_LIMIT) {
-                    // drop the rest of the elements.
-                    break
-                }
-            }
-        }
-    }
+	public void clearTabIndices() {
+		for (Iterator<MindmapLastStateStorage> it = mLastStatesMap.getListMindmapLastStateStorageList().iterator(); it.hasNext();) {
+			MindmapLastStateStorage store = it.next();
+			store.setTabIndex(-1);
+		}
+	}
 
-    private fun setLastChanged(pStore: MindmapLastStateStorage?) {
-        pStore?.lastChanged = System.currentTimeMillis()
-    }
+	public void changeOrAdd(MindmapLastStateStorage pStore) {
+		boolean found = false;
+		for (Iterator<MindmapLastStateStorage> it = mLastStatesMap.getListMindmapLastStateStorageList().iterator(); it.hasNext();) {
+			MindmapLastStateStorage store = it.next();
+			if (Tools.safeEquals(pStore.getRestorableName(),
+					store.getRestorableName())) {
+				// deep copy
+				store.setLastZoom(pStore.getLastZoom());
+				store.setLastSelected(pStore.getLastSelected());
+				store.setX(pStore.getX());
+				store.setY(pStore.getY());
+				Vector<NodeListMember> listCopy = new Vector<>(pStore.getListNodeListMemberList());
+				store.clearNodeListMemberList();
+				for (NodeListMember member : listCopy) {
+					store.addNodeListMember(member);
+				}
+				found = true;
+				setLastChanged(store);
+				break;
+			}
+		}
+		if (!found) {
+			setLastChanged(pStore);
+			mLastStatesMap.addMindmapLastStateStorage(pStore);
+		}
+		// size limit
+		if (mLastStatesMap.sizeMindmapLastStateStorageList() > LIST_AMOUNT_LIMIT) {
+			// make map from date to object:
+			TreeMap<Long, MindmapLastStateStorage> dateToStoreMap = new TreeMap<>();
+			for (Iterator<MindmapLastStateStorage> it = mLastStatesMap.getListMindmapLastStateStorageList().iterator(); it.hasNext();) {
+				MindmapLastStateStorage store =  it.next();
+				dateToStoreMap
+						.put(Long.valueOf(-store.getLastChanged()), store);
+			}
+			// clear list
+			mLastStatesMap.clearMindmapLastStateStorageList();
+			// rebuild
+			int counter = 0;
+			for (Entry<Long, MindmapLastStateStorage> entry : dateToStoreMap.entrySet()) {
+				mLastStatesMap.addMindmapLastStateStorage(entry.getValue());
+				counter++;
+				if (counter >= LIST_AMOUNT_LIMIT) {
+					// drop the rest of the elements.
+					break;
+				}
+			}
+		}
+	}
 
-    fun getStorage(pRestorableName: String?): MindmapLastStateStorage? {
-        val it = mLastStatesMap!!.listMindmapLastStateStorageList.iterator()
-        while (it.hasNext()) {
-            val store = it.next()
-            if (Tools.safeEquals(pRestorableName, store?.restorableName)) {
-                setLastChanged(store)
-                return store
-            }
-        }
-        return null
-    }
+	private void setLastChanged(MindmapLastStateStorage pStore) {
+		pStore.setLastChanged(System.currentTimeMillis());
+	}
 
-    val lastOpenList: List<MindmapLastStateStorage>
-        get() {
-            val ret = Vector<MindmapLastStateStorage>()
-            val it = mLastStatesMap!!.listMindmapLastStateStorageList.iterator()
-            while (it.hasNext()) {
-                val store = it.next()
-                if ((store?.tabIndex ?: -1) >= 0) {
-                    ret.add(store)
-                }
-            }
-            Collections.sort(ret) { store0, store1 -> store0.tabIndex - store1.tabIndex }
-            return ret
-        }
+	public MindmapLastStateStorage getStorage(String pRestorableName) {
+		for (Iterator<MindmapLastStateStorage> it = mLastStatesMap.getListMindmapLastStateStorageList().iterator(); it.hasNext();) {
+			MindmapLastStateStorage store = it.next();
+			if (Tools.safeEquals(pRestorableName, store.getRestorableName())) {
+				setLastChanged(store);
+				return store;
+			}
+		}
+		return null;
+	}
 
-    companion object {
-        const val LIST_AMOUNT_LIMIT = 50
-        protected var logger: Logger? = null
-    }
+	public List<MindmapLastStateStorage> getLastOpenList() {
+		Vector<MindmapLastStateStorage> ret = new Vector<>();
+		for (Iterator<MindmapLastStateStorage> it = mLastStatesMap.getListMindmapLastStateStorageList().iterator(); it.hasNext();) {
+			MindmapLastStateStorage store = it.next();
+			if (store.getTabIndex() >= 0) {
+				ret.add(store);
+			}
+		}
+		Collections.sort(ret, new Comparator<MindmapLastStateStorage>() {
+
+			public int compare(MindmapLastStateStorage store0, MindmapLastStateStorage store1) {
+				return store0.getTabIndex() - store1.getTabIndex();
+			}
+		});
+		return ret;
+	}
+
+	public int getLastFocussedTab() {
+		return mLastStatesMap.getLastFocusedTab();
+	}
+
+	public void setLastFocussedTab(int pIndex) {
+		mLastStatesMap.setLastFocusedTab(pIndex);
+	}
+
 }

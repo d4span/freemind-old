@@ -17,25 +17,32 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: MapMouseWheelListener.java,v 1.8.18.1 2006/01/12 23:10:12 christianfoltin Exp $*/
-package freemind.controller
 
-import java.awt.event.MouseWheelEvent
-import java.awt.event.MouseWheelListener
+package freemind.controller;
+
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 /**
  * The MouseListener which belongs to MapView
  */
-class MapMouseWheelListener : MouseWheelListener {
-    private var mListener: MouseWheelListener? = null
-    override fun mouseWheelMoved(e: MouseWheelEvent) {
-        if (mListener != null) mListener!!.mouseWheelMoved(e)
-    }
+public class MapMouseWheelListener implements MouseWheelListener {
 
-    fun register(handler: MouseWheelListener?) {
-        mListener = handler
-    }
+	private MouseWheelListener mListener;
 
-    fun deregister() {
-        mListener = null
-    }
+	public MapMouseWheelListener(Controller controller) {
+	}
+
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		if (mListener != null)
+			mListener.mouseWheelMoved(e);
+	}
+
+	public void register(MouseWheelListener handler) {
+		mListener = handler;
+	}
+
+	public void deregister() {
+		mListener = null;
+	}
 }

@@ -21,60 +21,72 @@
  * Created on 28.03.2004
  *
  */
-package freemind.controller
+package freemind.controller;
 
-import freemind.main.Tools
-import java.awt.Insets
-import javax.swing.Action
-import javax.swing.JButton
-import javax.swing.JToolBar
+import java.awt.Insets;
+
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JToolBar;
+
+import freemind.main.Tools;
 
 /**
  * @author Stefan Zechmeister
  */
-open class FreeMindToolBar @JvmOverloads constructor(arg0: String? = "", arg1: Int = HORIZONTAL) :
-    JToolBar(arg0, arg1) {
-    /**
-     */
-    constructor(arg0: Int) : this("", arg0) {}
-    /**
-     */
-    /**
-     *
-     */
-    /**
-     */
-    init {
-        margin = nullInsets
-        isFloatable = false
-    }
+@SuppressWarnings("serial")
+public class FreeMindToolBar extends JToolBar {
+	private static Insets nullInsets = new Insets(0, 0, 0, 0);
 
-    /*
+	/**
+	 * 
+	 */
+	public FreeMindToolBar() {
+		this("", JToolBar.HORIZONTAL);
+	}
+
+	/**
+	 */
+	public FreeMindToolBar(int arg0) {
+		this("", arg0);
+	}
+
+	/**
+	 */
+	public FreeMindToolBar(String arg0) {
+		this(arg0, JToolBar.HORIZONTAL);
+	}
+
+	/**
+	 */
+	public FreeMindToolBar(String arg0, int arg1) {
+		super(arg0, arg1);
+		this.setMargin(nullInsets);
+		setFloatable(false);
+	}
+
+	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see javax.swing.JToolBar#add(javax.swing.Action)
 	 */
-    override fun add(arg0: Action): JButton {
-        val actionName = arg0.getValue(Action.NAME)
-        arg0.putValue(
-            Action.SHORT_DESCRIPTION,
-            Tools.removeMnemonic(actionName.toString())
-        )
-        val returnValue = super.add(arg0)
-        returnValue.name = actionName.toString()
-        returnValue.text = ""
-        returnValue.margin = nullInsets
-        returnValue.isFocusable = false
+	public JButton add(Action arg0) {
+		final Object actionName = arg0.getValue(Action.NAME);
+		arg0.putValue(Action.SHORT_DESCRIPTION,
+				Tools.removeMnemonic(actionName.toString()));
+		JButton returnValue = super.add(arg0);
+		returnValue.setName(actionName.toString());
+		returnValue.setText("");
+		returnValue.setMargin(nullInsets);
+		returnValue.setFocusable(false);
 
-        // fc, 20.6.2004: try to make the toolbar looking good under Mac OS X.
-        if (Tools.isMacOsX()) {
-            returnValue.isBorderPainted = false
-        }
-        returnValue.isContentAreaFilled = false
-        return returnValue
-    }
+		// fc, 20.6.2004: try to make the toolbar looking good under Mac OS X.
+		if (Tools.isMacOsX()) {
+			returnValue.setBorderPainted(false);
+		}
+		returnValue.setContentAreaFilled(false);
 
-    companion object {
-        private val nullInsets = Insets(0, 0, 0, 0)
-    }
+		return returnValue;
+	}
+
 }

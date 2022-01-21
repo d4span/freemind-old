@@ -17,16 +17,17 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-package freemind.controller
+
+package freemind.controller;
 
 /**
  * @author foltin
  * @date 16.04.2012
  */
-interface ZoomListener {
-    /**
-     * On each zoom change, this method is called, if registered.
-     * @param f the effective zoom value (1.25 means 125%)
-     */
-    fun setZoom(f: Float?)
+public interface ZoomListener {
+	/**
+	 * On each zoom change, this method is called, if registered.
+	 * @param f the effective zoom value (1.25 means 125%)
+	 */
+	public void setZoom(float f);
 }

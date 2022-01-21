@@ -20,33 +20,36 @@
  * Created on 25.02.2006
  */
 /*$Id: PropertyBean.java,v 1.1.2.2 2006/02/28 18:56:50 christianfoltin Exp $*/
-package freemind.common
+package freemind.common;
 
-import java.beans.PropertyChangeEvent
-import java.beans.PropertyChangeListener
-import java.util.Vector
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Vector;
 
-abstract class PropertyBean {
-    private val mPropertyChangeListeners = Vector<PropertyChangeListener>()
+public abstract class PropertyBean {
 
-    /** The key of the property.  */
-    abstract val label: String?
-    abstract var value: String?
-    fun addPropertyChangeListener(listener: PropertyChangeListener) {
-        mPropertyChangeListeners.add(listener)
-    }
+	private Vector<PropertyChangeListener> mPropertyChangeListeners = new Vector<>();
 
-    fun removePropertyChangeListener(listener: PropertyChangeListener) {
-        mPropertyChangeListeners.remove(listener)
-    }
+	/** The key of the property. */
+	public abstract String getLabel();
 
-    protected fun firePropertyChangeEvent() {
-        val evt = PropertyChangeEvent(
-            this, label,
-            null, value
-        )
-        for (listener in mPropertyChangeListeners) {
-            listener.propertyChange(evt)
-        }
-    }
+	public abstract void setValue(String value);
+
+	public abstract String getValue();
+
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		mPropertyChangeListeners.add(listener);
+	}
+
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		mPropertyChangeListeners.remove(listener);
+	}
+
+	protected void firePropertyChangeEvent() {
+		PropertyChangeEvent evt = new PropertyChangeEvent(this, getLabel(),
+				null, getValue());
+		for (PropertyChangeListener listener : mPropertyChangeListeners) {
+			listener.propertyChange(evt);
+		}
+	}
 }

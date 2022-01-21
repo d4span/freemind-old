@@ -11,6 +11,7 @@ import java.net.URL
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 
+
 @Suppress("INACCESSIBLE_TYPE")
 class ArchitectureTest() {
 
@@ -25,13 +26,13 @@ class ArchitectureTest() {
             adhereToPlantUmlDiagram(componentDiagram, consideringAllDependencies())
                 .ignoreDependencies(object : DescribedPredicate<Dependency>("Dependencies to standard libs") {
                     override fun apply(dependency: Dependency?): Boolean =
-                        dependency?.targetClass?.packageName?.startsWith("java.") ?: false ||
-                            dependency?.targetClass?.packageName?.startsWith("kotlin") ?: false ||
-                            dependency?.targetClass?.name?.startsWith("[C") ?: false ||
-                            dependency?.targetClass?.name?.startsWith("[F") ?: false ||
-                            dependency?.targetClass?.name?.startsWith("[B") ?: false ||
-                            dependency?.targetClass?.name?.startsWith("[I") ?: false ||
-                            dependency?.targetClass?.name?.startsWith("[D") ?: false
+                        dependency?.targetClass?.packageName?.startsWith("java.") ?: false
+                                || dependency?.targetClass?.packageName == "kotlin"
+                                || dependency?.targetClass?.name?.startsWith("[C") ?: false
+                                || dependency?.targetClass?.name?.startsWith("[F") ?: false
+                                || dependency?.targetClass?.name?.startsWith("[B") ?: false
+                                || dependency?.targetClass?.name?.startsWith("[I") ?: false
+                                || dependency?.targetClass?.name?.startsWith("[D") ?: false
                 })
         ).check(classes)
     }

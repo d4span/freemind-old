@@ -17,143 +17,181 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package freemind.common
 
-import freemind.main.Resources
-import java.awt.Component
-import java.awt.EventQueue
-import java.awt.GridLayout
-import java.awt.event.KeyAdapter
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseMotionAdapter
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.RootPaneContainer
+package freemind.common;
+
+import java.awt.Component;
+import java.awt.EventQueue;
+import java.awt.GridLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseMotionAdapter;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.RootPaneContainer;
 
 /**
  * Long running tasks inside FreeMind should derive from this class.
- *
+ * 
  * @author foltin
  * @date 08.04.2013
  */
-abstract class FreeMindTask(private val mFrame: RootPaneContainer, var amountOfSteps: Int, pName: String?) :
-    Thread(pName) {
-    private var mInterrupted = false
-    var isFinished = false
-    private var mProgressMonitor: FreeMindProgressMonitor? = null
-    var rounds = 0
-        private set
+public abstract class FreeMindTask extends Thread {
 
-    @JvmField
-    protected var mProgressDescription: ProgressDescription? = null
-    private val mGlass: JPanel
-    private val mOldGlassPane: Component
+	private static final long TIME_TO_DISPLAY_PROGRESS_BAR_IN_MILLIS = 1000;
+	private boolean mInterrupted = false;
+	private boolean mFinished = false;
+	private int mAmountOfSteps;
+	private FreeMindProgressMonitor mProgressMonitor = null;
+	private int mRounds;
+	protected ProgressDescription mProgressDescription;
+	private RootPaneContainer mFrame;
+	private JPanel mGlass;
+	private Component mOldGlassPane;
 
-    protected class ProgressDescription(
-        var mProgressString: String,
-        var mProgressParameters: Array<Any>
-    )
+	protected class ProgressDescription {
+		/**
+		 * @param pProgressString
+		 * @param pProgressParameters
+		 */
+		public ProgressDescription(String pProgressString,
+				Object[] pProgressParameters) {
+			super();
+			mProgressString = pProgressString;
+			mProgressParameters = pProgressParameters;
+		}
 
-    init {
-        mProgressMonitor = FreeMindProgressMonitor(name)
-        mGlass = JPanel(GridLayout(0, 1))
-        val padding = JLabel()
-        mGlass.isOpaque = false
-        mGlass.add(padding)
+		public String mProgressString;
+		/**
+		 * To be inserted into mProgressString;
+		 */
+		public Object[] mProgressParameters;
+	}
 
-        // trap both mouse and key events. Could provide a smarter
-        // key handler if you wanted to allow things like a keystroke
-        // that would cancel the long-running operation.
-        mGlass.addMouseListener(object : MouseAdapter() {})
-        mGlass.addMouseMotionListener(object : MouseMotionAdapter() {})
-        mGlass.addKeyListener(object : KeyAdapter() {})
+	public FreeMindTask(RootPaneContainer pRootPaneContainer, int pAmountOfSteps, String pName) {
+		super(pName);
+		mFrame = pRootPaneContainer;
+		mAmountOfSteps = pAmountOfSteps;
+		mProgressMonitor = new FreeMindProgressMonitor(getName());
+		mGlass = new JPanel(new GridLayout(0, 1));
+		JLabel padding = new JLabel();
+		mGlass.setOpaque(false);
+		mGlass.add(padding);
 
-        // make sure the focus won't leave the glass pane
-        mGlass.isFocusCycleRoot = true // 1.4
-        mOldGlassPane = mFrame.glassPane
-        mFrame.glassPane = mGlass
-        mGlass.isVisible = true
-        padding.requestFocus() // required to trap key events
-    }
+		// trap both mouse and key events. Could provide a smarter
+		// key handler if you wanted to allow things like a keystroke
+		// that would cancel the long-running operation.
+		mGlass.addMouseListener(new MouseAdapter() {
+		});
+		mGlass.addMouseMotionListener(new MouseMotionAdapter() {
+		});
+		mGlass.addKeyListener(new KeyAdapter() {
+		});
 
-    /*
+		// make sure the focus won't leave the glass pane
+		mGlass.setFocusCycleRoot(true); // 1.4
+		mOldGlassPane = pRootPaneContainer.getGlassPane();
+		pRootPaneContainer.setGlassPane(mGlass);
+		mGlass.setVisible(true);
+		padding.requestFocus();  // required to trap key events
+	}
+
+	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Thread#run()
 	 */
-    override fun run() {
-        val startTime = System.currentTimeMillis()
-        rounds = 0
-        var again = true
-        while (again) {
-            try {
-                again = processAction()
-                rounds++
-                if (!again) {
-                    // already ready!!
-                    rounds = amountOfSteps
-                }
-                if (rounds == amountOfSteps) {
-                    again = false
-                }
-            } catch (e: Exception) {
-                Resources.getInstance().logException(e)
-                again = false
-            }
-            if (isInterrupted) {
-                again = false
-            }
-            if (System.currentTimeMillis() - startTime > TIME_TO_DISPLAY_PROGRESS_BAR_IN_MILLIS) {
-                // mProgressMonitor.setModal(true);
-                EventQueue.invokeLater { mProgressMonitor!!.isVisible = true }
-            }
-            if (mProgressMonitor!!.isVisible) {
-                var progressDescription = mProgressDescription
-                if (mProgressDescription == null) {
-                    progressDescription = ProgressDescription(
-        "FreeMindTask.Default",
-        arrayOf(
-            rounds
-        )
-    )
-                }
-                val canceled = mProgressMonitor!!.showProgress(
-                    rounds,
-                    amountOfSteps, progressDescription!!.mProgressString,
-                    progressDescription.mProgressParameters
-                )
-                if (canceled) {
-                    mInterrupted = true
-                    again = false
-                }
-            }
-        }
-        isFinished = true
-        EventQueue.invokeLater {
-            mGlass.isVisible = false
-            mFrame.glassPane = mOldGlassPane
-            mProgressMonitor!!.dismiss()
-        }
-    }
+	public void run() {
+		long startTime = System.currentTimeMillis();
+		mRounds = 0;
+		boolean again = true;
+		while (again) {
+			try {
+				again = processAction();
+				mRounds++;
+				if (!again) {
+					// already ready!!
+					mRounds = mAmountOfSteps;
+				}
+				if (mRounds == mAmountOfSteps) {
+					again = false;
+				}
+			} catch (Exception e) {
+				freemind.main.Resources.getInstance().logException(e);
+				again = false;
+			}
+			if (isInterrupted()) {
+				again = false;
+			}
+			if (System.currentTimeMillis() - startTime > TIME_TO_DISPLAY_PROGRESS_BAR_IN_MILLIS) {
+				// mProgressMonitor.setModal(true);
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						mProgressMonitor.setVisible(true);
+					}});
+			}
+			if (mProgressMonitor.isVisible()) {
+				ProgressDescription progressDescription = mProgressDescription;
+				if (mProgressDescription == null) {
+					progressDescription = new ProgressDescription(
+							"FreeMindTask.Default", new Object[] { new Integer(
+									mRounds) });
+				}
+				boolean canceled = mProgressMonitor.showProgress(mRounds,
+						mAmountOfSteps, progressDescription.mProgressString,
+						progressDescription.mProgressParameters);
+				if (canceled) {
+					mInterrupted = true;
+					again = false;
+				}
+			}
+		}
+		setFinished(true);
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				mGlass.setVisible(false);
+				mFrame.setGlassPane(mOldGlassPane);
+				mProgressMonitor.dismiss();
+			}
+		});
+	}
 
-    /**
-     * Subclasses should process one single action out of the set of its actions
-     * and then return. The method is directly called again by the task
-     * controller until it returns false.
-     *
-     * @return true, if further actions follow. False, if done.
-     */
-    @Throws(Exception::class)
-    protected abstract fun processAction(): Boolean
-    override fun isInterrupted(): Boolean {
-        return mInterrupted
-    }
+	/**
+	 * Subclasses should process one single action out of the set of its actions
+	 * and then return. The method is directly called again by the task
+	 * controller until it returns false.
+	 * 
+	 * @return true, if further actions follow. False, if done.
+	 */
+	protected abstract boolean processAction() throws Exception;
 
-    fun setInterrupted(pInterrupted: Boolean) {
-        mInterrupted = pInterrupted
-    }
+	public boolean isInterrupted() {
+		return mInterrupted;
+	}
 
-    companion object {
-        private const val TIME_TO_DISPLAY_PROGRESS_BAR_IN_MILLIS: Long = 1000
-    }
+	public void setInterrupted(boolean pInterrupted) {
+		mInterrupted = pInterrupted;
+	}
+
+	public boolean isFinished() {
+		return mFinished;
+	}
+
+	public void setFinished(boolean pFinished) {
+		mFinished = pFinished;
+	}
+
+	public int getAmountOfSteps() {
+		return mAmountOfSteps;
+	}
+
+	public void setAmountOfSteps(int pAmountOfSteps) {
+		mAmountOfSteps = pAmountOfSteps;
+	}
+
+	public int getRounds() {
+		return mRounds;
+	}
+
 }

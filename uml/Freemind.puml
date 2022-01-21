@@ -34,7 +34,6 @@ package "Third-party libs" {
     [JIBX] <<org.jibx..>>
     [JGoodies] <<com.jgoodies..>>
     [Core SAX API] <<org.xml.sax..>>
-    [Jetbrains Annotations] <<org.jetbrains.annotations..>>
 }
 
 [Swing] --> [Java Swing]
@@ -47,7 +46,6 @@ package "Third-party libs" {
 [Common] --> [Java Swing]
 [Common] --> [JIBX]
 [Common] --> [JGoodies]
-[Common] --> [Jetbrains Annotations]
 
 [Controllers] --> [Views]
 [Controllers] --> [Common]

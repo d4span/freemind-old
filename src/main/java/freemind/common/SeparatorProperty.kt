@@ -20,18 +20,33 @@
  * Created on 25.02.2006
  */
 /*$Id: SeparatorProperty.java,v 1.1.2.2 2006/03/14 21:56:27 christianfoltin Exp $*/
-package freemind.common
+package freemind.common;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 
-class SeparatorProperty(override var label: String) : PropertyControl {
+public class SeparatorProperty implements PropertyControl {
 
-    override val description: String?
-        get() = null
+	String label;
 
-    override fun layout(builder: DefaultFormBuilder?, pTranslator: TextTranslator?) {
-        builder!!.appendSeparator(pTranslator!!.getText("separator.$label"))
-    }
+	public SeparatorProperty(String label) {
+		super();
+		this.label = label;
+	}
 
-    override fun setEnabled(pEnabled: Boolean) {}
+	public String getDescription() {
+		return null;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void layout(DefaultFormBuilder builder, TextTranslator pTranslator) {
+		builder.appendSeparator(pTranslator.getText("separator." + getLabel()));
+	}
+
+	public void setEnabled(boolean pEnabled) {
+
+	}
+
 }

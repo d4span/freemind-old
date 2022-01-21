@@ -17,29 +17,38 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-package freemind.common
 
-import freemind.main.Tools
-import javax.swing.JPasswordField
+package freemind.common;
+
+import javax.swing.JPasswordField;
+
+import freemind.main.Tools;
 
 /**
  * @author foltin
  * @date 06.08.2012
  */
-class PasswordProperty
-/**
- * @param pDescription
- * @param pLabel
- */
-    (pDescription: String?, pLabel: String?) : StringProperty(pDescription, pLabel) {
-    override fun initializeTextfield() {
-        mTextField = JPasswordField()
-    }
+public class PasswordProperty extends StringProperty {
 
-    override var value: String?
-        get() = Tools.compress(mTextField?.text)
-        set(value) {
-            val pwInPlain = Tools.decompress(value)
-            super.value = pwInPlain
-        }
+	/**
+	 * @param pDescription
+	 * @param pLabel
+	 */
+	public PasswordProperty(String pDescription, String pLabel) {
+		super(pDescription, pLabel);
+	}
+
+	protected void initializeTextfield() {
+		mTextField = new JPasswordField();
+	}
+
+	public String getValue() {
+		return Tools.compress(mTextField.getText());
+	}
+
+	public void setValue(String value) {
+		String pwInPlain = Tools.decompress(value);
+		super.setValue(pwInPlain);
+	}
+	
 }

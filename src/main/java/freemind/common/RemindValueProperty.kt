@@ -20,35 +20,39 @@
  * Created on 07.08.2007
  */
 /*$Id: RemindValueProperty.java,v 1.1.2.2 2007/12/16 22:05:13 dpolivaev Exp $*/
-package freemind.common
+
+package freemind.common;
+
 
 /**
  * @author foltin
+ * 
  */
-class RemindValueProperty(
-    pDescription: String?, pLabel: String?,
-    private val mTextTranslator: TextTranslator
-) : ThreeCheckBoxProperty(pDescription, pLabel) {
-    init {
-        mDontTouchValue = ""
-    }
+public class RemindValueProperty extends ThreeCheckBoxProperty {
 
-    /**
-     *
+	private final TextTranslator mTextTranslator;
+
+	public RemindValueProperty(String pDescription, String pLabel,
+			TextTranslator pTextTranslator) {
+		super(pDescription, pLabel);
+		mTextTranslator = pTextTranslator;
+		mDontTouchValue = "";
+	}
+
+	/**
+     * 
      */
-    override fun setState(newState: Int) {
-        setState(newState)
-        val strings: Array<String?>
-        strings = arrayOfNulls(3) // {MINUS_IMAGE, PLUS_IMAGE, NO_IMAGE};
-        strings[TRUE_VALUE_INT] = mTextTranslator.getText(
-            "OptionalDontShowMeAgainDialog.ok"
-        )!!.replaceFirst("&".toRegex(), "")
-        strings[FALSE_VALUE_INT] = mTextTranslator.getText(
-            "OptionalDontShowMeAgainDialog.cancel"
-        )!!.replaceFirst("&".toRegex(), "")
-        strings[DON_T_TOUCH_VALUE_INT] = mTextTranslator.getText(
-            "OptionPanel.ask"
-        )!!.replaceFirst("&".toRegex(), "")
-        mButton.text = strings[getState()]
-    }
+	protected void setState(int newState) {
+		state = newState;
+		String[] strings;
+		strings = new String[3]; // {MINUS_IMAGE, PLUS_IMAGE, NO_IMAGE};
+		strings[TRUE_VALUE_INT] = mTextTranslator.getText(
+				"OptionalDontShowMeAgainDialog.ok").replaceFirst("&", "");
+		strings[FALSE_VALUE_INT] = mTextTranslator.getText(
+				"OptionalDontShowMeAgainDialog.cancel").replaceFirst("&", "");
+		strings[DON_T_TOUCH_VALUE_INT] = mTextTranslator.getText(
+				"OptionPanel.ask").replaceFirst("&", "");
+		mButton.setText(strings[state]);
+	}
+
 }

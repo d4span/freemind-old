@@ -18,38 +18,48 @@
  * this program; if not, write to the Free SoftwareFoundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package freemind.common
+package freemind.common;
 
-import freemind.main.Resources
-import java.awt.event.ComponentEvent
-import java.awt.event.ComponentListener
-import java.util.logging.Logger
-import javax.swing.JButton
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+
+import javax.swing.JButton;
 
 /**
  * @author foltin
  * @date 19.06.2015
- * @see http://stackoverflow.com/questions/8183949/swing-scale-a-text-font-of-component
+ * @see http://stackoverflow.com/questions/8183949/swing-scale-a-text-font-of-component 
  */
-open class ScalableJButton : JButton, ComponentListener {
-    constructor(pString: String?) : super(pString) {
-        init()
-    }
+public class ScalableJButton extends JButton implements ComponentListener {
+	protected static java.util.logging.Logger logger = null;
+//	int mCurrentSize = 0;
+//	Font mInitialFont = null;
+//	int mInitialHeight;
+	
+	private static final long serialVersionUID = 1L;
 
-    constructor() : super() {
-        init()
-    }
+	public ScalableJButton(String pString) {
+		super(pString);
+		init();
+	}
 
-    private fun init() {
-        if (logger == null) {
-            logger = Resources.getInstance().getLogger(this.javaClass.name)
-        }
+	public ScalableJButton() {
+		super();
+		init();
+	}
+
+	private void init() {
+		if (logger == null) {
+			logger = freemind.main.Resources.getInstance().getLogger(this.getClass().getName());
+		}
 
 //		mInitialFont = getFont();
 //		addComponentListener(this);
-    }
+		
+	}
 
-    override fun componentResized(pE: ComponentEvent) {
+	@Override
+	public void componentResized(ComponentEvent pE) {
 //		// FIXME: This doesn't work in GridBagLayout and GroupLayout.
 //		if (mInitialHeight == 0) {
 //			mInitialHeight = getHeight();
@@ -59,18 +69,17 @@ open class ScalableJButton : JButton, ComponentListener {
 //			setFont(mInitialFont.deriveFont((float) resizal));
 //			mCurrentSize = resizal;
 //		}
-    }
+	}
 
-    override fun componentMoved(pE: ComponentEvent) {}
-    override fun componentShown(pE: ComponentEvent) {}
-    override fun componentHidden(pE: ComponentEvent) {}
+	@Override
+	public void componentMoved(ComponentEvent pE) {
+	}
 
-    companion object {
-        protected var logger: Logger? = null
+	@Override
+	public void componentShown(ComponentEvent pE) {
+	}
 
-        //	int mCurrentSize = 0;
-        //	Font mInitialFont = null;
-        //	int mInitialHeight;
-        private const val serialVersionUID = 1L
-    }
+	@Override
+	public void componentHidden(ComponentEvent pE) {
+	}
 }

@@ -17,19 +17,22 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package freemind.common
 
-import freemind.main.FreeMind
-import freemind.main.Resources
-import javax.swing.JTable
+package freemind.common;
+
+import javax.swing.JTable;
+
+import freemind.main.FreeMind;
+import freemind.main.Resources;
 
 /**
  * @author foltin
  * @date 18.06.2015
  */
-open class ScalableJTable : JTable() {
-    init {
-        val scale = Resources.getInstance().getIntProperty(FreeMind.SCALING_FACTOR_PROPERTY, 100)
-        setRowHeight(getRowHeight() * scale / 100)
-    }
+@SuppressWarnings("serial")
+public class ScalableJTable extends JTable {
+	public ScalableJTable() {
+		int scale = Resources.getInstance().getIntProperty(FreeMind.SCALING_FACTOR_PROPERTY, 100);
+		setRowHeight(getRowHeight()*scale/100);
+	}
 }

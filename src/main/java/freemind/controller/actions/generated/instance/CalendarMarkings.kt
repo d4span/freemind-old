@@ -1,34 +1,35 @@
-package freemind.controller.actions.generated.instance
+package freemind.controller.actions.generated.instance;
+/* CalendarMarkings...*/
+import java.util.ArrayList;
+public class CalendarMarkings extends XmlAction {
+  /* constants from enums*/
+  public void addCalendarMarking(CalendarMarking calendarMarking) {
+    calendarMarkingList.add(calendarMarking);
+  }
 
-import java.util.Collections
+  public void addAtCalendarMarking(int position, CalendarMarking calendarMarking) {
+    calendarMarkingList.add(position, calendarMarking);
+  }
 
-/* CalendarMarkings...*/   class CalendarMarkings : XmlAction() {
-    /* constants from enums*/
-    fun addCalendarMarking(calendarMarking: CalendarMarking?) {
-        calendarMarkingList.add(calendarMarking)
-    }
+  public CalendarMarking getCalendarMarking(int index) {
+    return (CalendarMarking)calendarMarkingList.get( index );
+  }
 
-    fun addAtCalendarMarking(position: Int, calendarMarking: CalendarMarking?) {
-        calendarMarkingList.add(position, calendarMarking)
-    }
+  public void removeFromCalendarMarkingElementAt(int index) {
+    calendarMarkingList.remove( index );
+  }
 
-    fun getCalendarMarking(index: Int): CalendarMarking {
-        return calendarMarkingList[index] as CalendarMarking
-    }
+  public int sizeCalendarMarkingList() {
+    return calendarMarkingList.size();
+  }
 
-    fun removeFromCalendarMarkingElementAt(index: Int) {
-        calendarMarkingList.removeAt(index)
-    }
+  public void clearCalendarMarkingList() {
+    calendarMarkingList.clear();
+  }
 
-    fun sizeCalendarMarkingList(): Int {
-        return calendarMarkingList.size
-    }
+  public java.util.List getListCalendarMarkingList() {
+    return java.util.Collections.unmodifiableList(calendarMarkingList);
+  }
+    protected ArrayList calendarMarkingList = new ArrayList();
 
-    fun clearCalendarMarkingList() {
-        calendarMarkingList.clear()
-    }
-
-    val listCalendarMarkingList: List<CalendarMarking?>
-        get() = Collections.unmodifiableList(calendarMarkingList)
-    protected var calendarMarkingList: ArrayList<CalendarMarking?> = ArrayList()
 } /* CalendarMarkings*/

@@ -1,35 +1,42 @@
-package freemind.controller.actions.generated.instance
+package freemind.controller.actions.generated.instance;
+/* MindmapLastStateMapStorage...*/
+import java.util.ArrayList;
+public class MindmapLastStateMapStorage extends XmlAction {
+  /* constants from enums*/
+  protected int lastFocusedTab;
+  public int getLastFocusedTab(){
+    return lastFocusedTab;
+  }
+  public void setLastFocusedTab(int value){
+    this.lastFocusedTab = value;
+  }
+  public void addMindmapLastStateStorage(MindmapLastStateStorage mindmapLastStateStorage) {
+    mindmapLastStateStorageList.add(mindmapLastStateStorage);
+  }
 
-import java.util.Collections
+  public void addAtMindmapLastStateStorage(int position, MindmapLastStateStorage mindmapLastStateStorage) {
+    mindmapLastStateStorageList.add(position, mindmapLastStateStorage);
+  }
 
-/* MindmapLastStateMapStorage...*/   class MindmapLastStateMapStorage : XmlAction() {
-    /* constants from enums*/
-    var lastFocusedTab = 0
-    fun addMindmapLastStateStorage(mindmapLastStateStorage: MindmapLastStateStorage?) {
-        mindmapLastStateStorageList.add(mindmapLastStateStorage)
-    }
+  public MindmapLastStateStorage getMindmapLastStateStorage(int index) {
+    return (MindmapLastStateStorage)mindmapLastStateStorageList.get( index );
+  }
 
-    fun addAtMindmapLastStateStorage(position: Int, mindmapLastStateStorage: MindmapLastStateStorage?) {
-        mindmapLastStateStorageList.add(position, mindmapLastStateStorage)
-    }
+  public void removeFromMindmapLastStateStorageElementAt(int index) {
+    mindmapLastStateStorageList.remove( index );
+  }
 
-    fun getMindmapLastStateStorage(index: Int): MindmapLastStateStorage {
-        return mindmapLastStateStorageList[index] as MindmapLastStateStorage
-    }
+  public int sizeMindmapLastStateStorageList() {
+    return mindmapLastStateStorageList.size();
+  }
 
-    fun removeFromMindmapLastStateStorageElementAt(index: Int) {
-        mindmapLastStateStorageList.removeAt(index)
-    }
+  public void clearMindmapLastStateStorageList() {
+    mindmapLastStateStorageList.clear();
+  }
 
-    fun sizeMindmapLastStateStorageList(): Int {
-        return mindmapLastStateStorageList.size
-    }
+  public java.util.List getListMindmapLastStateStorageList() {
+    return java.util.Collections.unmodifiableList(mindmapLastStateStorageList);
+  }
+    protected ArrayList mindmapLastStateStorageList = new ArrayList();
 
-    fun clearMindmapLastStateStorageList() {
-        mindmapLastStateStorageList.clear()
-    }
-
-    val listMindmapLastStateStorageList: List<MindmapLastStateStorage?>
-        get() = Collections.unmodifiableList(mindmapLastStateStorageList)
-    protected var mindmapLastStateStorageList: ArrayList<MindmapLastStateStorage?> = ArrayList()
 } /* MindmapLastStateMapStorage*/

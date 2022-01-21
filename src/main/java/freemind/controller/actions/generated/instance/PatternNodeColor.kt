@@ -1,4 +1,5 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* PatternNodeColor...*/
-class PatternNodeColor : PatternPropertyBase() { /* constants from enums*/ } /* PatternNodeColor*/
+public class PatternNodeColor extends PatternPropertyBase {
+  /* constants from enums*/
+} /* PatternNodeColor*/

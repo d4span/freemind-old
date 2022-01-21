@@ -1,27 +1,65 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* CalendarMarking...*/
-class CalendarMarking {
-    var name: String? = null
-    var color: String? = null
-    var startDate: Long = 0
-    var endDate: Long = 0
-    var repeatType: String? = null
-    var repeatEachNOccurence = 0
-    var firstOccurence = 0
-
-    companion object {
-        /* constants from enums*/
-        const val NEVER = "never"
-        const val YEARLY = "yearly"
-        const val YEARLY_EVERY_NTH_DAY = "yearly_every_nth_day"
-        const val YEARLY_EVERY_NTH_WEEK = "yearly_every_nth_week"
-        const val YEARLY_EVERY_NTH_MONTH = "yearly_every_nth_month"
-        const val MONTHLY = "monthly"
-        const val MONTHLY_EVERY_NTH_DAY = "monthly_every_nth_day"
-        const val MONTHLY_EVERY_NTH_WEEK = "monthly_every_nth_week"
-        const val WEEKLY = "weekly"
-        const val WEEKLY_EVERY_NTH_DAY = "weekly_every_nth_day"
-        const val DAILY = "daily"
-    }
+public class CalendarMarking {
+  /* constants from enums*/
+  public static final String NEVER = "never";
+  public static final String YEARLY = "yearly";
+  public static final String YEARLY_EVERY_NTH_DAY = "yearly_every_nth_day";
+  public static final String YEARLY_EVERY_NTH_WEEK = "yearly_every_nth_week";
+  public static final String YEARLY_EVERY_NTH_MONTH = "yearly_every_nth_month";
+  public static final String MONTHLY = "monthly";
+  public static final String MONTHLY_EVERY_NTH_DAY = "monthly_every_nth_day";
+  public static final String MONTHLY_EVERY_NTH_WEEK = "monthly_every_nth_week";
+  public static final String WEEKLY = "weekly";
+  public static final String WEEKLY_EVERY_NTH_DAY = "weekly_every_nth_day";
+  public static final String DAILY = "daily";
+  protected String name;
+  protected String color;
+  protected long startDate;
+  protected long endDate;
+  protected String repeatType;
+  protected int repeatEachNOccurence;
+  protected int firstOccurence;
+  public String getName(){
+    return name;
+  }
+  public String getColor(){
+    return color;
+  }
+  public long getStartDate(){
+    return startDate;
+  }
+  public long getEndDate(){
+    return endDate;
+  }
+  public String getRepeatType(){
+    return repeatType;
+  }
+  public int getRepeatEachNOccurence(){
+    return repeatEachNOccurence;
+  }
+  public int getFirstOccurence(){
+    return firstOccurence;
+  }
+  public void setName(String value){
+    this.name = value;
+  }
+  public void setColor(String value){
+    this.color = value;
+  }
+  public void setStartDate(long value){
+    this.startDate = value;
+  }
+  public void setEndDate(long value){
+    this.endDate = value;
+  }
+  public void setRepeatType(String value){
+    this.repeatType = value;
+  }
+  public void setRepeatEachNOccurence(int value){
+    this.repeatEachNOccurence = value;
+  }
+  public void setFirstOccurence(int value){
+    this.firstOccurence = value;
+  }
 } /* CalendarMarking*/

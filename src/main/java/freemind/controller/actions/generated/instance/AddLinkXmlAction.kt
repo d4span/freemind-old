@@ -1,7 +1,12 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* AddLinkXmlAction...*/
-class AddLinkXmlAction : NodeAction() {
-    /* constants from enums*/
-    var destination: String? = null
+public class AddLinkXmlAction extends NodeAction {
+  /* constants from enums*/
+  protected String destination;
+  public String getDestination(){
+    return destination;
+  }
+  public void setDestination(String value){
+    this.destination = value;
+  }
 } /* AddLinkXmlAction*/

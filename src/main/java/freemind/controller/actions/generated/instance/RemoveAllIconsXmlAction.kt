@@ -1,4 +1,5 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* RemoveAllIconsXmlAction...*/
-class RemoveAllIconsXmlAction : NodeAction() { /* constants from enums*/ } /* RemoveAllIconsXmlAction*/
+public class RemoveAllIconsXmlAction extends NodeAction {
+  /* constants from enums*/
+} /* RemoveAllIconsXmlAction*/

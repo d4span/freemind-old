@@ -1,4 +1,5 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* Result...*/
-class Result : ResultBase() { /* constants from enums*/ } /* Result*/
+public class Result extends ResultBase {
+  /* constants from enums*/
+} /* Result*/

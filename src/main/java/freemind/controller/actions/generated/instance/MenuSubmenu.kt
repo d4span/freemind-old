@@ -1,7 +1,12 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* MenuSubmenu...*/
-class MenuSubmenu : MenuCategoryBase() {
-    /* constants from enums*/
-    var nameRef: String? = null
+public class MenuSubmenu extends MenuCategoryBase {
+  /* constants from enums*/
+  protected String nameRef;
+  public String getNameRef(){
+    return nameRef;
+  }
+  public void setNameRef(String value){
+    this.nameRef = value;
+  }
 } /* MenuSubmenu*/

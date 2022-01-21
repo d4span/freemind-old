@@ -1,4 +1,5 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* EditNodeAction...*/
-class EditNodeAction : TextNodeAction() { /* constants from enums*/ } /* EditNodeAction*/
+public class EditNodeAction extends TextNodeAction {
+  /* constants from enums*/
+} /* EditNodeAction*/

@@ -1,8 +1,19 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* ArrowLinkColorXmlAction...*/
-class ArrowLinkColorXmlAction : XmlAction() {
-    /* constants from enums*/
-    var id: String? = null
-    var color: String? = null
+public class ArrowLinkColorXmlAction extends XmlAction {
+  /* constants from enums*/
+  protected String id;
+  protected String color;
+  public String getId(){
+    return id;
+  }
+  public String getColor(){
+    return color;
+  }
+  public void setId(String value){
+    this.id = value;
+  }
+  public void setColor(String value){
+    this.color = value;
+  }
 } /* ArrowLinkColorXmlAction*/

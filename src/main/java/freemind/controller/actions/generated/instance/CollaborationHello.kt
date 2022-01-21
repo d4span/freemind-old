@@ -1,7 +1,12 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* CollaborationHello...*/
-class CollaborationHello : CollaborationActionBase() {
-    /* constants from enums*/
-    var map: String? = null
+public class CollaborationHello extends CollaborationActionBase {
+  /* constants from enums*/
+  protected String map;
+  public String getMap(){
+    return map;
+  }
+  public void setMap(String value){
+    this.map = value;
+  }
 } /* CollaborationHello*/

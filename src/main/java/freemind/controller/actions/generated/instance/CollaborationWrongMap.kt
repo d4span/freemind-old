@@ -1,4 +1,5 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* CollaborationWrongMap...*/
-class CollaborationWrongMap : CollaborationActionBase() { /* constants from enums*/ } /* CollaborationWrongMap*/
+public class CollaborationWrongMap extends CollaborationActionBase {
+  /* constants from enums*/
+} /* CollaborationWrongMap*/

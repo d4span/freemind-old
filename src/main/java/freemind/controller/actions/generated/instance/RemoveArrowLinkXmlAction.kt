@@ -1,7 +1,12 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* RemoveArrowLinkXmlAction...*/
-class RemoveArrowLinkXmlAction : XmlAction() {
-    /* constants from enums*/
-    var id: String? = null
+public class RemoveArrowLinkXmlAction extends XmlAction {
+  /* constants from enums*/
+  protected String id;
+  public String getId(){
+    return id;
+  }
+  public void setId(String value){
+    this.id = value;
+  }
 } /* RemoveArrowLinkXmlAction*/

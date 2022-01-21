@@ -1,41 +1,84 @@
-package freemind.controller.actions.generated.instance
+package freemind.controller.actions.generated.instance;
+/* MindmapLastStateStorage...*/
+import java.util.ArrayList;
+public class MindmapLastStateStorage {
+  /* constants from enums*/
+  protected long lastChanged;
+  protected int tabIndex;
+  protected String restorableName;
+  protected float lastZoom;
+  protected int x;
+  protected int y;
+  protected String lastSelected;
+  public long getLastChanged(){
+    return lastChanged;
+  }
+  public int getTabIndex(){
+    return tabIndex;
+  }
+  public String getRestorableName(){
+    return restorableName;
+  }
+  public float getLastZoom(){
+    return lastZoom;
+  }
+  public int getX(){
+    return x;
+  }
+  public int getY(){
+    return y;
+  }
+  public String getLastSelected(){
+    return lastSelected;
+  }
+  public void setLastChanged(long value){
+    this.lastChanged = value;
+  }
+  public void setTabIndex(int value){
+    this.tabIndex = value;
+  }
+  public void setRestorableName(String value){
+    this.restorableName = value;
+  }
+  public void setLastZoom(float value){
+    this.lastZoom = value;
+  }
+  public void setX(int value){
+    this.x = value;
+  }
+  public void setY(int value){
+    this.y = value;
+  }
+  public void setLastSelected(String value){
+    this.lastSelected = value;
+  }
+  public void addNodeListMember(NodeListMember nodeListMember) {
+    nodeListMemberList.add(nodeListMember);
+  }
 
-import java.util.Collections
+  public void addAtNodeListMember(int position, NodeListMember nodeListMember) {
+    nodeListMemberList.add(position, nodeListMember);
+  }
 
-/* MindmapLastStateStorage...*/   class MindmapLastStateStorage {
-    /* constants from enums*/
-    var lastChanged: Long = 0
-    var tabIndex = 0
-    var restorableName: String? = null
-    var lastZoom = 0f
-    var x = 0
-    var y = 0
-    var lastSelected: String? = null
-    fun addNodeListMember(nodeListMember: NodeListMember?) {
-        nodeListMemberList.add(nodeListMember)
-    }
+  public NodeListMember getNodeListMember(int index) {
+    return (NodeListMember)nodeListMemberList.get( index );
+  }
 
-    fun addAtNodeListMember(position: Int, nodeListMember: NodeListMember?) {
-        nodeListMemberList.add(position, nodeListMember)
-    }
+  public void removeFromNodeListMemberElementAt(int index) {
+    nodeListMemberList.remove( index );
+  }
 
-    fun getNodeListMember(index: Int): NodeListMember {
-        return nodeListMemberList[index] as NodeListMember
-    }
+  public int sizeNodeListMemberList() {
+    return nodeListMemberList.size();
+  }
 
-    fun removeFromNodeListMemberElementAt(index: Int) {
-        nodeListMemberList.removeAt(index)
-    }
+  public void clearNodeListMemberList() {
+    nodeListMemberList.clear();
+  }
 
-    fun sizeNodeListMemberList(): Int {
-        return nodeListMemberList.size
-    }
+  public java.util.List getListNodeListMemberList() {
+    return java.util.Collections.unmodifiableList(nodeListMemberList);
+  }
+    protected ArrayList nodeListMemberList = new ArrayList();
 
-    fun clearNodeListMemberList() {
-        nodeListMemberList.clear()
-    }
-
-    val listNodeListMemberList: List<NodeListMember?>
-        get() = Collections.unmodifiableList(nodeListMemberList)
-    protected var nodeListMemberList: ArrayList<NodeListMember?> = ArrayList()
 } /* MindmapLastStateStorage*/

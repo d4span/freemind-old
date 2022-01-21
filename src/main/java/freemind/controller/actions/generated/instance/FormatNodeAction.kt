@@ -1,6 +1,5 @@
-package freemind.controller.actions.generated.instance
-
-import freemind.controller.actions.generated.instance.NodeAction
-
+package freemind.controller.actions.generated.instance;
 /* FormatNodeAction...*/
-open class FormatNodeAction : NodeAction() { /* constants from enums*/ } /* FormatNodeAction*/
+public class FormatNodeAction extends NodeAction {
+  /* constants from enums*/
+} /* FormatNodeAction*/

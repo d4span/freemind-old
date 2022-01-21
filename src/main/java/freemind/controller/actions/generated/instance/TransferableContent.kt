@@ -1,40 +1,95 @@
-package freemind.controller.actions.generated.instance
+package freemind.controller.actions.generated.instance;
+/* TransferableContent...*/
+import java.util.ArrayList;
+public class TransferableContent {
+  /* constants from enums*/
+  protected String transferable;
 
-import java.util.Collections
+  protected String transferableAsPlainText;
 
-/* TransferableContent...*/   class TransferableContent {
-    /* constants from enums*/
-    var transferable: String? = null
-    var transferableAsPlainText: String? = null
-    var transferableAsRTF: String? = null
-    var transferableAsDrop: String? = null
-    var transferableAsHtml: String? = null
-    var transferableAsImage: String? = null
-    fun addTransferableFile(transferableFile: TransferableFile?) {
-        transferableFileList.add(transferableFile)
-    }
+  protected String transferableAsRTF;
 
-    fun addAtTransferableFile(position: Int, transferableFile: TransferableFile?) {
-        transferableFileList.add(position, transferableFile)
-    }
+  protected String transferableAsDrop;
 
-    fun getTransferableFile(index: Int): TransferableFile {
-        return transferableFileList[index] as TransferableFile
-    }
+  protected String transferableAsHtml;
 
-    fun removeFromTransferableFileElementAt(index: Int) {
-        transferableFileList.removeAt(index)
-    }
+  protected String transferableAsImage;
 
-    fun sizeTransferableFileList(): Int {
-        return transferableFileList.size
-    }
+  public String getTransferable() {
+    return this.transferable;
+  }
 
-    fun clearTransferableFileList() {
-        transferableFileList.clear()
-    }
+  public void setTransferable(String value){
+    this.transferable = value;
+  }
 
-    val listTransferableFileList: List<TransferableFile?>
-        get() = Collections.unmodifiableList(transferableFileList)
-    protected var transferableFileList: ArrayList<TransferableFile?> = ArrayList()
+  public String getTransferableAsPlainText() {
+    return this.transferableAsPlainText;
+  }
+
+  public void setTransferableAsPlainText(String value){
+    this.transferableAsPlainText = value;
+  }
+
+  public String getTransferableAsRTF() {
+    return this.transferableAsRTF;
+  }
+
+  public void setTransferableAsRTF(String value){
+    this.transferableAsRTF = value;
+  }
+
+  public String getTransferableAsDrop() {
+    return this.transferableAsDrop;
+  }
+
+  public void setTransferableAsDrop(String value){
+    this.transferableAsDrop = value;
+  }
+
+  public String getTransferableAsHtml() {
+    return this.transferableAsHtml;
+  }
+
+  public void setTransferableAsHtml(String value){
+    this.transferableAsHtml = value;
+  }
+
+  public String getTransferableAsImage() {
+    return this.transferableAsImage;
+  }
+
+  public void setTransferableAsImage(String value){
+    this.transferableAsImage = value;
+  }
+
+  public void addTransferableFile(TransferableFile transferableFile) {
+    transferableFileList.add(transferableFile);
+  }
+
+  public void addAtTransferableFile(int position, TransferableFile transferableFile) {
+    transferableFileList.add(position, transferableFile);
+  }
+
+  public TransferableFile getTransferableFile(int index) {
+    return (TransferableFile)transferableFileList.get( index );
+  }
+
+  public void removeFromTransferableFileElementAt(int index) {
+    transferableFileList.remove( index );
+  }
+
+  public int sizeTransferableFileList() {
+    return transferableFileList.size();
+  }
+
+  public void clearTransferableFileList() {
+    transferableFileList.clear();
+  }
+
+  public java.util.List getListTransferableFileList() {
+    return java.util.Collections.unmodifiableList(transferableFileList);
+  }
+    protected ArrayList transferableFileList = new ArrayList();
+
 } /* TransferableContent*/

@@ -103,7 +103,7 @@ public class MarshallerTests extends FreeMindTestBase {
 		Result result = reverse.getResult(0);
 		assertEquals("correct place", "97929939", result
 				.getPlaceId());
-		String content = result.content;
+		String content = result.getContent();
 		assertNotNull(content);
 		String exp = "Rost- und Silberlaube, 45,";
 		assertEquals("Correct start", exp, content.substring(0, exp.length()));

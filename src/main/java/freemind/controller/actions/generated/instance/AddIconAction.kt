@@ -1,8 +1,19 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* AddIconAction...*/
-class AddIconAction : NodeAction() {
-    /* constants from enums*/
-    var iconName: String? = null
-    var iconPosition = 0
+public class AddIconAction extends NodeAction {
+  /* constants from enums*/
+  protected String iconName;
+  protected int iconPosition;
+  public String getIconName(){
+    return iconName;
+  }
+  public int getIconPosition(){
+    return iconPosition;
+  }
+  public void setIconName(String value){
+    this.iconName = value;
+  }
+  public void setIconPosition(int value){
+    this.iconPosition = value;
+  }
 } /* AddIconAction*/

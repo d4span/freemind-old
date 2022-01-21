@@ -1,34 +1,35 @@
-package freemind.controller.actions.generated.instance
+package freemind.controller.actions.generated.instance;
+/* NodeList...*/
+import java.util.ArrayList;
+public class NodeList extends XmlAction {
+  /* constants from enums*/
+  public void addNodeListMember(NodeListMember nodeListMember) {
+    nodeListMemberList.add(nodeListMember);
+  }
 
-import java.util.Collections
+  public void addAtNodeListMember(int position, NodeListMember nodeListMember) {
+    nodeListMemberList.add(position, nodeListMember);
+  }
 
-/* NodeList...*/   class NodeList : XmlAction() {
-    /* constants from enums*/
-    fun addNodeListMember(nodeListMember: NodeListMember?) {
-        nodeListMemberList.add(nodeListMember)
-    }
+  public NodeListMember getNodeListMember(int index) {
+    return (NodeListMember)nodeListMemberList.get( index );
+  }
 
-    fun addAtNodeListMember(position: Int, nodeListMember: NodeListMember?) {
-        nodeListMemberList.add(position, nodeListMember)
-    }
+  public void removeFromNodeListMemberElementAt(int index) {
+    nodeListMemberList.remove( index );
+  }
 
-    fun getNodeListMember(index: Int): NodeListMember {
-        return nodeListMemberList[index] as NodeListMember
-    }
+  public int sizeNodeListMemberList() {
+    return nodeListMemberList.size();
+  }
 
-    fun removeFromNodeListMemberElementAt(index: Int) {
-        nodeListMemberList.removeAt(index)
-    }
+  public void clearNodeListMemberList() {
+    nodeListMemberList.clear();
+  }
 
-    fun sizeNodeListMemberList(): Int {
-        return nodeListMemberList.size
-    }
+  public java.util.List getListNodeListMemberList() {
+    return java.util.Collections.unmodifiableList(nodeListMemberList);
+  }
+    protected ArrayList nodeListMemberList = new ArrayList();
 
-    fun clearNodeListMemberList() {
-        nodeListMemberList.clear()
-    }
-
-    val listNodeListMemberList: List<*>
-        get() = Collections.unmodifiableList(nodeListMemberList)
-    protected var nodeListMemberList: ArrayList<NodeListMember?> = ArrayList()
 } /* NodeList*/

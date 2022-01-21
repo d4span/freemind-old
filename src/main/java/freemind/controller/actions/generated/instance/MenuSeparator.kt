@@ -1,4 +1,5 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* MenuSeparator...*/
-class MenuSeparator { /* constants from enums*/ } /* MenuSeparator*/
+public class MenuSeparator {
+  /* constants from enums*/
+} /* MenuSeparator*/

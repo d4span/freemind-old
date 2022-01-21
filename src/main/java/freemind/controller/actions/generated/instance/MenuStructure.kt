@@ -1,34 +1,35 @@
-package freemind.controller.actions.generated.instance
+package freemind.controller.actions.generated.instance;
+/* MenuStructure...*/
+import java.util.ArrayList;
+public class MenuStructure {
+  /* constants from enums*/
+  public void addChoice(Object choice) {
+    choiceList.add(choice);
+  }
 
-import java.util.Collections
+  public void addAtChoice(int position, Object choice) {
+    choiceList.add(position, choice);
+  }
 
-/* MenuStructure...*/   class MenuStructure {
-    /* constants from enums*/
-    fun addChoice(choice: Any?) {
-        choiceList.add(choice)
-    }
+  public void setAtChoice(int position, Object choice) {
+    choiceList.set(position, choice);
+  }
+  public Object getChoice(int index) {
+    return (Object)choiceList.get( index );
+  }
 
-    fun addAtChoice(position: Int, choice: Any?) {
-        choiceList.add(position, choice)
-    }
+  public int sizeChoiceList() {
+    return choiceList.size();
+  }
 
-    fun setAtChoice(position: Int, choice: Any?) {
-        choiceList.set(position, choice)
-    }
+  public void clearChoiceList() {
+    choiceList.clear();
+  }
 
-    fun getChoice(index: Int): Any {
-        return choiceList[index] as Any
-    }
+  public java.util.List getListChoiceList() {
+    return java.util.Collections.unmodifiableList(choiceList);
+  }
 
-    fun sizeChoiceList(): Int {
-        return choiceList.size
-    }
+  protected ArrayList choiceList = new ArrayList();
 
-    fun clearChoiceList() {
-        choiceList.clear()
-    }
-
-    val listChoiceList: List<Any?>
-        get() = Collections.unmodifiableList(choiceList)
-    protected var choiceList: ArrayList<Any?> = ArrayList<Any?>()
 } /* MenuStructure*/

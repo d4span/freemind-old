@@ -1,7 +1,12 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* TransferableFile...*/
-class TransferableFile {
-    /* constants from enums*/
-    var fileName: String? = null
+public class TransferableFile {
+  /* constants from enums*/
+  protected String fileName;
+  public String getFileName(){
+    return fileName;
+  }
+  public void setFileName(String value){
+    this.fileName = value;
+  }
 } /* TransferableFile*/

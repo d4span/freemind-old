@@ -1,7 +1,12 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* NodeAction...*/
-open class NodeAction : XmlAction() {
-    /* constants from enums*/
-    var node: String? = null
+public class NodeAction extends XmlAction {
+  /* constants from enums*/
+  protected String node;
+  public String getNode(){
+    return node;
+  }
+  public void setNode(String value){
+    this.node = value;
+  }
 } /* NodeAction*/

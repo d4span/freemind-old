@@ -1,7 +1,12 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* CollaborationMapOffer...*/
-class CollaborationMapOffer {
-    /* constants from enums*/
-    var map: String? = null
+public class CollaborationMapOffer {
+  /* constants from enums*/
+  protected String map;
+  public String getMap(){
+    return map;
+  }
+  public void setMap(String value){
+    this.map = value;
+  }
 } /* CollaborationMapOffer*/

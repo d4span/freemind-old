@@ -1,35 +1,42 @@
-package freemind.controller.actions.generated.instance
+package freemind.controller.actions.generated.instance;
+/* MoveNodesAction...*/
+import java.util.ArrayList;
+public class MoveNodesAction extends NodeAction {
+  /* constants from enums*/
+  protected int direction;
+  public int getDirection(){
+    return direction;
+  }
+  public void setDirection(int value){
+    this.direction = value;
+  }
+  public void addNodeListMember(NodeListMember nodeListMember) {
+    nodeListMemberList.add(nodeListMember);
+  }
 
-import java.util.Collections
+  public void addAtNodeListMember(int position, NodeListMember nodeListMember) {
+    nodeListMemberList.add(position, nodeListMember);
+  }
 
-/* MoveNodesAction...*/   class MoveNodesAction : NodeAction() {
-    /* constants from enums*/
-    var direction = 0
-    fun addNodeListMember(nodeListMember: NodeListMember?) {
-        nodeListMemberList.add(nodeListMember)
-    }
+  public NodeListMember getNodeListMember(int index) {
+    return (NodeListMember)nodeListMemberList.get( index );
+  }
 
-    fun addAtNodeListMember(position: Int, nodeListMember: NodeListMember?) {
-        nodeListMemberList.add(position, nodeListMember)
-    }
+  public void removeFromNodeListMemberElementAt(int index) {
+    nodeListMemberList.remove( index );
+  }
 
-    fun getNodeListMember(index: Int): NodeListMember {
-        return nodeListMemberList[index] as NodeListMember
-    }
+  public int sizeNodeListMemberList() {
+    return nodeListMemberList.size();
+  }
 
-    fun removeFromNodeListMemberElementAt(index: Int) {
-        nodeListMemberList.removeAt(index)
-    }
+  public void clearNodeListMemberList() {
+    nodeListMemberList.clear();
+  }
 
-    fun sizeNodeListMemberList(): Int {
-        return nodeListMemberList.size
-    }
+  public java.util.List getListNodeListMemberList() {
+    return java.util.Collections.unmodifiableList(nodeListMemberList);
+  }
+    protected ArrayList nodeListMemberList = new ArrayList();
 
-    fun clearNodeListMemberList() {
-        nodeListMemberList.clear()
-    }
-
-    val listNodeListMemberList: List<NodeListMember?>
-        get() = Collections.unmodifiableList(nodeListMemberList)
-    protected var nodeListMemberList: ArrayList<NodeListMember?> = ArrayList()
 } /* MoveNodesAction*/

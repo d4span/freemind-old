@@ -1,4 +1,5 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* CutNodeAction...*/
-class CutNodeAction : NodeAction() { /* constants from enums*/ } /* CutNodeAction*/
+public class CutNodeAction extends NodeAction {
+  /* constants from enums*/
+} /* CutNodeAction*/

@@ -1,8 +1,19 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* ScriptEditorWindowConfigurationStorage...*/
-class ScriptEditorWindowConfigurationStorage : WindowConfigurationStorage() {
-    /* constants from enums*/
-    var leftRatio = 0
-    var topRatio = 0
+public class ScriptEditorWindowConfigurationStorage extends WindowConfigurationStorage {
+  /* constants from enums*/
+  protected int leftRatio;
+  protected int topRatio;
+  public int getLeftRatio(){
+    return leftRatio;
+  }
+  public int getTopRatio(){
+    return topRatio;
+  }
+  public void setLeftRatio(int value){
+    this.leftRatio = value;
+  }
+  public void setTopRatio(int value){
+    this.topRatio = value;
+  }
 } /* ScriptEditorWindowConfigurationStorage*/

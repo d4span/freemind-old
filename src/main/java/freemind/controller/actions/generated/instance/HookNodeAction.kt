@@ -1,62 +1,72 @@
-package freemind.controller.actions.generated.instance
+package freemind.controller.actions.generated.instance;
+/* HookNodeAction...*/
+import java.util.ArrayList;
+import java.util.ArrayList;
+public class HookNodeAction extends NodeAction {
+  /* constants from enums*/
+  protected String hookName;
+  public String getHookName(){
+    return hookName;
+  }
+  public void setHookName(String value){
+    this.hookName = value;
+  }
+  public void addNodeListMember(NodeListMember nodeListMember) {
+    nodeListMemberList.add(nodeListMember);
+  }
 
-import java.util.Collections
+  public void addAtNodeListMember(int position, NodeListMember nodeListMember) {
+    nodeListMemberList.add(position, nodeListMember);
+  }
 
-/* HookNodeAction...*/   class HookNodeAction : NodeAction() {
-    /* constants from enums*/
-    var hookName: String? = null
-    fun addNodeListMember(nodeListMember: NodeListMember?) {
-        nodeListMemberList.add(nodeListMember)
-    }
+  public NodeListMember getNodeListMember(int index) {
+    return (NodeListMember)nodeListMemberList.get( index );
+  }
 
-    fun addAtNodeListMember(position: Int, nodeListMember: NodeListMember?) {
-        nodeListMemberList.add(position, nodeListMember)
-    }
+  public void removeFromNodeListMemberElementAt(int index) {
+    nodeListMemberList.remove( index );
+  }
 
-    fun getNodeListMember(index: Int): NodeListMember {
-        return nodeListMemberList[index] as NodeListMember
-    }
+  public int sizeNodeListMemberList() {
+    return nodeListMemberList.size();
+  }
 
-    fun removeFromNodeListMemberElementAt(index: Int) {
-        nodeListMemberList.removeAt(index)
-    }
+  public void clearNodeListMemberList() {
+    nodeListMemberList.clear();
+  }
 
-    fun sizeNodeListMemberList(): Int {
-        return nodeListMemberList.size
-    }
+  public java.util.List getListNodeListMemberList() {
+    return java.util.Collections.unmodifiableList(nodeListMemberList);
+  }
+    protected ArrayList nodeListMemberList = new ArrayList();
 
-    fun clearNodeListMemberList() {
-        nodeListMemberList.clear()
-    }
+  public void addNodeChildParameter(NodeChildParameter nodeChildParameter) {
+    nodeChildParameterList.add(nodeChildParameter);
+  }
 
-    val listNodeListMemberList: List<NodeListMember?>
-        get() = Collections.unmodifiableList(nodeListMemberList)
-    protected var nodeListMemberList: ArrayList<NodeListMember?> = ArrayList()
-    fun addNodeChildParameter(nodeChildParameter: NodeChildParameter?) {
-        nodeChildParameterList.add(nodeChildParameter)
-    }
+  public void addAtNodeChildParameter(int position, NodeChildParameter nodeChildParameter) {
+    nodeChildParameterList.add(position, nodeChildParameter);
+  }
 
-    fun addAtNodeChildParameter(position: Int, nodeChildParameter: NodeChildParameter?) {
-        nodeChildParameterList.add(position, nodeChildParameter)
-    }
+  public NodeChildParameter getNodeChildParameter(int index) {
+    return (NodeChildParameter)nodeChildParameterList.get( index );
+  }
 
-    fun getNodeChildParameter(index: Int): NodeChildParameter {
-        return nodeChildParameterList[index] as NodeChildParameter
-    }
+  public void removeFromNodeChildParameterElementAt(int index) {
+    nodeChildParameterList.remove( index );
+  }
 
-    fun removeFromNodeChildParameterElementAt(index: Int) {
-        nodeChildParameterList.removeAt(index)
-    }
+  public int sizeNodeChildParameterList() {
+    return nodeChildParameterList.size();
+  }
 
-    fun sizeNodeChildParameterList(): Int {
-        return nodeChildParameterList.size
-    }
+  public void clearNodeChildParameterList() {
+    nodeChildParameterList.clear();
+  }
 
-    fun clearNodeChildParameterList() {
-        nodeChildParameterList.clear()
-    }
+  public java.util.List getListNodeChildParameterList() {
+    return java.util.Collections.unmodifiableList(nodeChildParameterList);
+  }
+    protected ArrayList nodeChildParameterList = new ArrayList();
 
-    val listNodeChildParameterList: List<NodeChildParameter?>
-        get() = Collections.unmodifiableList(nodeChildParameterList)
-    protected var nodeChildParameterList: ArrayList<NodeChildParameter?> = ArrayList()
 } /* HookNodeAction*/

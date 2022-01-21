@@ -20,6 +20,28 @@
 
 package freemind.modes.mindmapmode.actions.xml.actors;
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
+
 import freemind.controller.MindMapNodesSelection;
 import freemind.controller.actions.generated.instance.PasteNodeAction;
 import freemind.controller.actions.generated.instance.TransferableContent;
@@ -42,27 +64,6 @@ import freemind.modes.ModeController;
 import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.MindMapNodeModel;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
-
-import javax.imageio.ImageIO;
-import javax.swing.JOptionPane;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author foltin
@@ -94,7 +95,7 @@ public class PasteActor extends XmlActorAdapter {
 		PasteNodeAction pasteAction = (PasteNodeAction) action;
 		_paste(getTransferable(pasteAction.getTransferableContent()),
 				getNodeFromID(pasteAction.getNode()),
-				pasteAction.getAsSibling(), pasteAction.isLeft());
+				pasteAction.getAsSibling(), pasteAction.getIsLeft());
 	}
 
 	/*
@@ -121,11 +122,11 @@ public class PasteActor extends XmlActorAdapter {
 		pasteAction.setTransferableContent(getTransferableContent(t,
 				pUndoAction));
 		pasteAction.setAsSibling(coord.asSibling);
-		pasteAction.setLeft(coord.isLeft);
+		pasteAction.setIsLeft(coord.isLeft);
 		if (pUndoAction != null) {
 			pUndoAction.setNode(targetId);
 			pUndoAction.setAsSibling(coord.asSibling);
-			pUndoAction.setLeft(coord.isLeft);
+			pUndoAction.setIsLeft(coord.isLeft);
 			if(logger.isLoggable(Level.FINE)) {
 				String s = Tools.marshall(pUndoAction);
 				logger.fine("Undo action: " + s);

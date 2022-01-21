@@ -1,8 +1,19 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* CollaborationWelcome...*/
-class CollaborationWelcome : CollaborationActionBase() {
-    /* constants from enums*/
-    var map: String? = null
-    var filename: String? = null
+public class CollaborationWelcome extends CollaborationActionBase {
+  /* constants from enums*/
+  protected String map;
+  protected String filename;
+  public String getMap(){
+    return map;
+  }
+  public String getFilename(){
+    return filename;
+  }
+  public void setMap(String value){
+    this.map = value;
+  }
+  public void setFilename(String value){
+    this.filename = value;
+  }
 } /* CollaborationWelcome*/

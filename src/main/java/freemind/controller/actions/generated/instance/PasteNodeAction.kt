@@ -1,9 +1,29 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* PasteNodeAction...*/
-class PasteNodeAction : NodeAction() {
-    /* constants from enums*/
-    var isLeft = false
-    var asSibling = false
-    var transferableContent: TransferableContent? = null
+public class PasteNodeAction extends NodeAction {
+  /* constants from enums*/
+  protected boolean isLeft;
+  protected boolean asSibling;
+  public boolean getIsLeft(){
+    return isLeft;
+  }
+  public boolean getAsSibling(){
+    return asSibling;
+  }
+  public void setIsLeft(boolean value){
+    this.isLeft = value;
+  }
+  public void setAsSibling(boolean value){
+    this.asSibling = value;
+  }
+  protected TransferableContent transferableContent;
+
+  public TransferableContent getTransferableContent() {
+    return this.transferableContent;
+  }
+
+  public void setTransferableContent(TransferableContent value){
+    this.transferableContent = value;
+  }
+
 } /* PasteNodeAction*/

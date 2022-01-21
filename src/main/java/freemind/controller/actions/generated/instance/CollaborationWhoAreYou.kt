@@ -1,7 +1,12 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* CollaborationWhoAreYou...*/
-class CollaborationWhoAreYou : CollaborationActionBase() {
-    /* constants from enums*/
-    var serverVersion: String? = null
+public class CollaborationWhoAreYou extends CollaborationActionBase {
+  /* constants from enums*/
+  protected String serverVersion;
+  public String getServerVersion(){
+    return serverVersion;
+  }
+  public void setServerVersion(String value){
+    this.serverVersion = value;
+  }
 } /* CollaborationWhoAreYou*/

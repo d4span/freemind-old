@@ -1,35 +1,42 @@
-package freemind.controller.actions.generated.instance
+package freemind.controller.actions.generated.instance;
+/* TimeWindowConfigurationStorage...*/
+import java.util.ArrayList;
+public class TimeWindowConfigurationStorage extends WindowConfigurationStorage {
+  /* constants from enums*/
+  protected boolean viewFoldedNodes;
+  public boolean getViewFoldedNodes(){
+    return viewFoldedNodes;
+  }
+  public void setViewFoldedNodes(boolean value){
+    this.viewFoldedNodes = value;
+  }
+  public void addTimeWindowColumnSetting(TimeWindowColumnSetting timeWindowColumnSetting) {
+    timeWindowColumnSettingList.add(timeWindowColumnSetting);
+  }
 
-import java.util.Collections
+  public void addAtTimeWindowColumnSetting(int position, TimeWindowColumnSetting timeWindowColumnSetting) {
+    timeWindowColumnSettingList.add(position, timeWindowColumnSetting);
+  }
 
-/* TimeWindowConfigurationStorage...*/   class TimeWindowConfigurationStorage : WindowConfigurationStorage() {
-    /* constants from enums*/
-    var viewFoldedNodes = false
-    fun addTimeWindowColumnSetting(timeWindowColumnSetting: TimeWindowColumnSetting?) {
-        timeWindowColumnSettingList.add(timeWindowColumnSetting)
-    }
+  public TimeWindowColumnSetting getTimeWindowColumnSetting(int index) {
+    return (TimeWindowColumnSetting)timeWindowColumnSettingList.get( index );
+  }
 
-    fun addAtTimeWindowColumnSetting(position: Int, timeWindowColumnSetting: TimeWindowColumnSetting?) {
-        timeWindowColumnSettingList.add(position, timeWindowColumnSetting)
-    }
+  public void removeFromTimeWindowColumnSettingElementAt(int index) {
+    timeWindowColumnSettingList.remove( index );
+  }
 
-    fun getTimeWindowColumnSetting(index: Int): TimeWindowColumnSetting {
-        return timeWindowColumnSettingList[index] as TimeWindowColumnSetting
-    }
+  public int sizeTimeWindowColumnSettingList() {
+    return timeWindowColumnSettingList.size();
+  }
 
-    fun removeFromTimeWindowColumnSettingElementAt(index: Int) {
-        timeWindowColumnSettingList.removeAt(index)
-    }
+  public void clearTimeWindowColumnSettingList() {
+    timeWindowColumnSettingList.clear();
+  }
 
-    fun sizeTimeWindowColumnSettingList(): Int {
-        return timeWindowColumnSettingList.size
-    }
+  public java.util.List getListTimeWindowColumnSettingList() {
+    return java.util.Collections.unmodifiableList(timeWindowColumnSettingList);
+  }
+    protected ArrayList timeWindowColumnSettingList = new ArrayList();
 
-    fun clearTimeWindowColumnSettingList() {
-        timeWindowColumnSettingList.clear()
-    }
-
-    val listTimeWindowColumnSettingList: List<TimeWindowColumnSetting?>
-        get() = Collections.unmodifiableList(timeWindowColumnSettingList)
-    protected var timeWindowColumnSettingList: ArrayList<TimeWindowColumnSetting?> = ArrayList()
 } /* TimeWindowConfigurationStorage*/

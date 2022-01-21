@@ -1,7 +1,15 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* TextNodeAction...*/
-open class TextNodeAction : NodeAction() {
-    /* constants from enums*/
-    var text: String? = null
+public class TextNodeAction extends NodeAction {
+  /* constants from enums*/
+  protected String text;
+
+  public String getText() {
+    return this.text;
+  }
+
+  public void setText(String value){
+    this.text = value;
+  }
+
 } /* TextNodeAction*/

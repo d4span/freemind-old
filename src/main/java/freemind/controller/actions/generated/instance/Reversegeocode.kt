@@ -1,37 +1,56 @@
-package freemind.controller.actions.generated.instance
+package freemind.controller.actions.generated.instance;
+/* Reversegeocode...*/
+import java.util.ArrayList;
+public class Reversegeocode extends XmlAction {
+  /* constants from enums*/
+  protected String attribution;
+  protected String querystring;
+  protected String timestamp;
+  public String getAttribution(){
+    return attribution;
+  }
+  public String getQuerystring(){
+    return querystring;
+  }
+  public String getTimestamp(){
+    return timestamp;
+  }
+  public void setAttribution(String value){
+    this.attribution = value;
+  }
+  public void setQuerystring(String value){
+    this.querystring = value;
+  }
+  public void setTimestamp(String value){
+    this.timestamp = value;
+  }
+  public void addResult(Result result) {
+    resultList.add(result);
+  }
 
-import java.util.Collections
+  public void addAtResult(int position, Result result) {
+    resultList.add(position, result);
+  }
 
-/* Reversegeocode...*/   class Reversegeocode : XmlAction() {
-    /* constants from enums*/
-    var attribution: String? = null
-    var querystring: String? = null
-    var timestamp: String? = null
-    fun addResult(result: Result?) {
-        resultList.add(result)
-    }
+  public Result getResult(int index) {
+    return (Result)resultList.get( index );
+  }
 
-    fun addAtResult(position: Int, result: Result?) {
-        resultList.add(position, result)
-    }
+  public void removeFromResultElementAt(int index) {
+    resultList.remove( index );
+  }
 
-    fun getResult(index: Int): Result {
-        return resultList[index] as Result
-    }
+  public int sizeResultList() {
+    return resultList.size();
+  }
 
-    fun removeFromResultElementAt(index: Int) {
-        resultList.removeAt(index)
-    }
+  public void clearResultList() {
+    resultList.clear();
+  }
 
-    fun sizeResultList(): Int {
-        return resultList.size
-    }
+  public java.util.List getListResultList() {
+    return java.util.Collections.unmodifiableList(resultList);
+  }
+    protected ArrayList resultList = new ArrayList();
 
-    fun clearResultList() {
-        resultList.clear()
-    }
-
-    val listResultList: List<*>
-        get() = Collections.unmodifiableList(resultList)
-    protected var resultList: ArrayList<Result?> = ArrayList()
 } /* Reversegeocode*/

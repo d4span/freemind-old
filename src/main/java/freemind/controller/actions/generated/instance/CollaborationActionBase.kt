@@ -1,4 +1,5 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* CollaborationActionBase...*/
-open class CollaborationActionBase : XmlAction() { /* constants from enums*/ } /* CollaborationActionBase*/
+public class CollaborationActionBase extends XmlAction {
+  /* constants from enums*/
+} /* CollaborationActionBase*/

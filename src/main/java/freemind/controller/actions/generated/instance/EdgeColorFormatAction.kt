@@ -1,7 +1,12 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* EdgeColorFormatAction...*/
-class EdgeColorFormatAction : FormatNodeAction() {
-    /* constants from enums*/
-    var color: String? = null
+public class EdgeColorFormatAction extends FormatNodeAction {
+  /* constants from enums*/
+  protected String color;
+  public String getColor(){
+    return color;
+  }
+  public void setColor(String value){
+    this.color = value;
+  }
 } /* EdgeColorFormatAction*/

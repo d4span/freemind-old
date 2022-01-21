@@ -20,6 +20,32 @@
 
 package plugins.collaboration.socket;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.Socket;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import javax.swing.AbstractAction;
+import javax.swing.AbstractListModel;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.WindowConstants;
+
+import plugins.collaboration.socket.SocketBasics.UnableToGetLockException;
 import freemind.common.OptionalDontShowMeAgainDialog;
 import freemind.common.TextTranslator;
 import freemind.controller.actions.generated.instance.CollaborationActionBase;
@@ -45,31 +71,6 @@ import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.MindMapMapModel;
 import freemind.modes.mindmapmode.MindMapNodeModel;
-import plugins.collaboration.socket.SocketBasics.UnableToGetLockException;
-
-import javax.swing.AbstractAction;
-import javax.swing.AbstractListModel;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.WindowConstants;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.Socket;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  * @author foltin
@@ -165,7 +166,7 @@ public class ClientCommunication extends CommunicationBase {
 				printWrongState(pCommand);
 			}
 			final CollaborationOffers collOffers = (CollaborationOffers) pCommand;
-			if(collOffers.isSingleOffer()) {
+			if(collOffers.getIsSingleOffer()) {
 				// we directly choose the one and only offer:
 				int size = collOffers.getListCollaborationMapOfferList().size();
 				if(size != 1) {

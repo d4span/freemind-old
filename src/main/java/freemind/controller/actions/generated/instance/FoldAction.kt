@@ -1,7 +1,12 @@
-package freemind.controller.actions.generated.instance
-
+package freemind.controller.actions.generated.instance;
 /* FoldAction...*/
-class FoldAction : NodeAction() {
-    /* constants from enums*/
-    var folded = false
+public class FoldAction extends NodeAction {
+  /* constants from enums*/
+  protected boolean folded;
+  public boolean getFolded(){
+    return folded;
+  }
+  public void setFolded(boolean value){
+    this.folded = value;
+  }
 } /* FoldAction*/

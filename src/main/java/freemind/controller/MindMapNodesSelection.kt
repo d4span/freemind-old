@@ -37,10 +37,10 @@ class MindMapNodesSelection(
     private val htmlContent: String?,
     private var dropActionContent: String,
     private val fileList: List<*>,
-    private val nodeIdsContent: List<String>?
+    private val nodeIdsContent: List<String>
 ) : Transferable, ClipboardOwner {
     @Throws(UnsupportedFlavorException::class)
-    override fun getTransferData(flavor: DataFlavor): Any? {
+    override fun getTransferData(flavor: DataFlavor): Any {
         if (flavor.equals(DataFlavor.imageFlavor)) {
             return imageContent
         }
@@ -112,16 +112,13 @@ class MindMapNodesSelection(
 
     companion object {
         @JvmField
-        var mindMapNodesFlavor: DataFlavor? = MindMapNodesSelection.mindMapNodesFlavor
-
+        var mindMapNodesFlavor: DataFlavor? = null
         @JvmField
         var rtfFlavor: DataFlavor? = null
-
         @JvmField
-        var htmlFlavor: DataFlavor? = MindMapNodesSelection.htmlFlavor
-
+        var htmlFlavor: DataFlavor? = null
         @JvmField
-        var fileListFlavor: DataFlavor? = MindMapNodesSelection.fileListFlavor
+        var fileListFlavor: DataFlavor? = null
 
         /**
          * fc, 7.8.2004: This is a quite interesting flavor, but how does it

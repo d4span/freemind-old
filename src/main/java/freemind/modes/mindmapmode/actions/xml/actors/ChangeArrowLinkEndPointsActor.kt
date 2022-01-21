@@ -17,91 +17,82 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-package freemind.modes.mindmapmode.actions.xml.actors
 
-import freemind.controller.actions.generated.instance.ArrowLinkPointXmlAction
-import freemind.controller.actions.generated.instance.XmlAction
-import freemind.main.Tools
-import freemind.modes.ExtendedMapFeedback
-import freemind.modes.MindMapArrowLink
-import freemind.modes.mindmapmode.actions.xml.ActionPair
-import java.awt.Point
+package freemind.modes.mindmapmode.actions.xml.actors;
+
+import java.awt.Point;
+
+import freemind.controller.actions.generated.instance.ArrowLinkPointXmlAction;
+import freemind.controller.actions.generated.instance.XmlAction;
+import freemind.main.Tools;
+import freemind.modes.ExtendedMapFeedback;
+import freemind.modes.MindMapArrowLink;
+import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
  * @author foltin
  * @date 01.04.2014
  */
-class ChangeArrowLinkEndPointsActor
-/**
- * @param pMapFeedback
- */
-(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
-    fun setArrowLinkEndPoints(
-        link: MindMapArrowLink,
-        startPoint: Point,
-        endPoint: Point
-    ) {
-        execute(getActionPair(link, startPoint, endPoint))
-    }
+public class ChangeArrowLinkEndPointsActor extends XmlActorAdapter {
 
-    /**
-     */
-    private fun getActionPair(
-        link: MindMapArrowLink,
-        startPoint: Point,
-        endPoint: Point
-    ): ActionPair {
-        return ActionPair(
-            createArrowLinkPointXmlAction(
-                link, startPoint,
-                endPoint
-            ),
-            createArrowLinkPointXmlAction(
-                link,
-                link.startInclination, link.endInclination
-            )
-        )
-    }
+	/**
+	 * @param pMapFeedback
+	 */
+	public ChangeArrowLinkEndPointsActor(ExtendedMapFeedback pMapFeedback) {
+		super(pMapFeedback);
+	}
 
-    /*
+	public void setArrowLinkEndPoints(MindMapArrowLink link, Point startPoint,
+			Point endPoint) {
+		execute(getActionPair(link, startPoint, endPoint));
+	}
+
+	/**
+	 */
+	private ActionPair getActionPair(MindMapArrowLink link, Point startPoint,
+			Point endPoint) {
+		return new ActionPair(createArrowLinkPointXmlAction(link, startPoint,
+				endPoint), createArrowLinkPointXmlAction(link,
+				link.getStartInclination(), link.getEndInclination()));
+	}
+
+	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * freemind.controller.actions.ActorXml#act(freemind.controller.actions.
 	 * generated.instance.XmlAction)
 	 */
-    override fun act(action: XmlAction) {
-        if (action is ArrowLinkPointXmlAction) {
-            val pointAction = action
-            val link = linkRegistry?.getLinkForId(pointAction.id) as MindMapArrowLink
-            link.startInclination = Tools.xmlToPoint(
-                pointAction
-                    .startPoint
-            )
-            link.endInclination = Tools.xmlToPoint(pointAction.endPoint)
-            exMapFeedback?.nodeChanged(link.source)
-            exMapFeedback?.nodeChanged(link.target)
-        }
-    }
+	public void act(XmlAction action) {
+		if (action instanceof ArrowLinkPointXmlAction) {
+			ArrowLinkPointXmlAction pointAction = (ArrowLinkPointXmlAction) action;
+			MindMapArrowLink link = (MindMapArrowLink) getLinkRegistry()
+					.getLinkForId(pointAction.getId());
+			link.setStartInclination(Tools.xmlToPoint(pointAction
+					.getStartPoint()));
+			link.setEndInclination(Tools.xmlToPoint(pointAction.getEndPoint()));
+			getExMapFeedback().nodeChanged(link.getSource());
+			getExMapFeedback().nodeChanged(link.getTarget());
+		}
 
-    /*
+	}
+
+	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see freemind.controller.actions.ActorXml#getDoActionClass()
 	 */
-    override fun getDoActionClass(): Class<ArrowLinkPointXmlAction> {
-        return ArrowLinkPointXmlAction::class.java
-    }
+	public Class<ArrowLinkPointXmlAction> getDoActionClass() {
+		return ArrowLinkPointXmlAction.class;
+	}
 
-    private fun createArrowLinkPointXmlAction(
-        arrowLink: MindMapArrowLink,
-        startPoint: Point,
-        endPoint: Point
-    ): ArrowLinkPointXmlAction {
-        val action = ArrowLinkPointXmlAction()
-        action.startPoint = Tools.PointToXml(startPoint)
-        action.endPoint = Tools.PointToXml(endPoint)
-        action.id = arrowLink.uniqueId
-        return action
-    }
+	private ArrowLinkPointXmlAction createArrowLinkPointXmlAction(
+			MindMapArrowLink arrowLink, Point startPoint, Point endPoint) {
+		ArrowLinkPointXmlAction action = new ArrowLinkPointXmlAction();
+		action.setStartPoint(Tools.PointToXml(startPoint));
+		action.setEndPoint(Tools.PointToXml(endPoint));
+		action.setId(arrowLink.getUniqueId());
+		return action;
+	}
+
 }

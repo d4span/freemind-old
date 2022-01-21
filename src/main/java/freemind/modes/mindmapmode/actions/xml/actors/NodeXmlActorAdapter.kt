@@ -17,17 +17,24 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-package freemind.modes.mindmapmode.actions.xml.actors
 
-import freemind.modes.ExtendedMapFeedback
-import freemind.modes.mindmapmode.actions.NodeActorXml
+package freemind.modes.mindmapmode.actions.xml.actors;
+
+import freemind.modes.ExtendedMapFeedback;
+import freemind.modes.mindmapmode.actions.NodeActorXml;
 
 /**
  * @author foltin
  * @date 16.03.2014
  */
-abstract class NodeXmlActorAdapter
-/**
- * @param pMapFeedback
- */
-(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback), NodeActorXml
+public abstract class NodeXmlActorAdapter extends XmlActorAdapter implements NodeActorXml {
+
+	/**
+	 * @param pMapFeedback
+	 */
+	public NodeXmlActorAdapter(ExtendedMapFeedback pMapFeedback) {
+		super(pMapFeedback);
+	}
+
+
+}

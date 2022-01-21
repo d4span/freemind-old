@@ -17,102 +17,110 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-package freemind.modes.mindmapmode.actions.xml.actors
 
-import freemind.main.Resources
-import freemind.modes.ExtendedMapFeedback
-import freemind.modes.MindMapLinkRegistry
-import freemind.modes.MindMapNode
-import freemind.modes.NodeAdapter
-import freemind.modes.mindmapmode.MindMapController
-import freemind.modes.mindmapmode.actions.xml.ActionPair
-import freemind.modes.mindmapmode.actions.xml.ActorXml
-import freemind.view.mindmapview.ViewFeedback
-import java.util.logging.Logger
+package freemind.modes.mindmapmode.actions.xml.actors;
+
+import freemind.modes.ExtendedMapFeedback;
+import freemind.modes.MindMapLinkRegistry;
+import freemind.modes.MindMapNode;
+import freemind.modes.NodeAdapter;
+import freemind.modes.mindmapmode.MindMapController;
+import freemind.modes.mindmapmode.actions.xml.ActionPair;
+import freemind.modes.mindmapmode.actions.xml.ActorXml;
+import freemind.view.mindmapview.ViewFeedback;
 
 /**
  * @author foltin
  * @date 16.03.2014
  */
-abstract class XmlActorAdapter(
-    /**
-     * @return the mapFeedback
-     */
-    var exMapFeedback: ExtendedMapFeedback?
-) : ActorXml {
-    /**
-     *
-     */
-    init {
-        if (logger == null) {
-            logger = Resources.getInstance().getLogger(
-                this.javaClass.name
-            )
-        }
-        addActor(this)
-    }
+public abstract class XmlActorAdapter implements ActorXml {
 
-    /**
-     * @return
-     */
-    @get:Deprecated(
-        """replaced by {@link XmlActorAdapter#getExMapFeedback()}
-	  """
-    )
-    protected val modeController: MindMapController
-        get() = exMapFeedback as MindMapController
-    val viewFeedback: ViewFeedback?
-        get() = exMapFeedback?.viewFeedback
+	protected ExtendedMapFeedback mMapFeedback;
 
-    /**
-     * @param pActionPair
-     */
-    protected fun execute(pActionPair: ActionPair?) {
-        exMapFeedback?.doTransaction(doActionClass.name, pActionPair)
-    }
+	protected static java.util.logging.Logger logger = null;
 
-    /**
-     * @param pNodeId
-     * @return
-     */
-    protected fun getNodeFromID(pNodeId: String?): NodeAdapter? {
-        return exMapFeedback?.getNodeFromID(pNodeId)
-    }
+	/**
+	 * 
+	 */
+	public XmlActorAdapter(ExtendedMapFeedback pMapFeedback) {
+		mMapFeedback = pMapFeedback;
+		if (logger == null) {
+			logger = freemind.main.Resources.getInstance().getLogger(
+					this.getClass().getName());
+		}
+		addActor(this);
+	}
 
-    /**
-     * @return
-     */
-    protected val selected: MindMapNode?
-        get() = exMapFeedback?.selected
+	
+	/**
+	 * @deprecated replaced by {@link XmlActorAdapter#getExMapFeedback()}
+	 * @return
+	 */
+	@Deprecated
+	protected MindMapController getModeController() {
+		return (MindMapController) mMapFeedback;
+	}
 
-    /**
-     * @param pSelected
-     * @return
-     */
-    protected fun getNodeID(pNode: MindMapNode?): String? {
-        return exMapFeedback?.getNodeID(pNode)
-    }
+	/**
+	 * @return the mapFeedback
+	 */
+	public ExtendedMapFeedback getExMapFeedback() {
+		return mMapFeedback;
+	}
 
-    protected fun addActor(actor: ActorXml?) {
-        if (actor != null) {
-            // registration:
-            exMapFeedback?.actionRegistry?.registerActor(
-                actor,
-                actor.doActionClass
-            )
-        }
-    }
+	public ViewFeedback getViewFeedback() {
+		return getExMapFeedback().getViewFeedback();
+	}
+	
+	/**
+	 * @param pActionPair
+	 */
+	protected void execute(ActionPair pActionPair) {
+		getExMapFeedback().doTransaction(getDoActionClass().getName(), pActionPair);
+		
+	}
 
-    protected val xmlActorFactory: XmlActorFactory?
-        get() = exMapFeedback?.actorFactory
+	/**
+	 * @param pNodeId
+	 * @return
+	 */
+	protected NodeAdapter getNodeFromID(String pNodeId) {
+		return getExMapFeedback().getNodeFromID(pNodeId);
+	}
 
-    /**
-     */
-    protected open val linkRegistry: MindMapLinkRegistry?
-        get() = exMapFeedback?.map?.linkRegistry
 
-    companion object {
-        @JvmField
-        var logger: Logger? = null
-    }
+	/**
+	 * @return
+	 */
+	protected MindMapNode getSelected() {
+		return getExMapFeedback().getSelected();
+	}
+
+	/**
+	 * @param pSelected
+	 * @return
+	 */
+	protected String getNodeID(MindMapNode pNode) {
+		return getExMapFeedback().getNodeID(pNode);
+	}
+
+	protected void addActor(ActorXml actor) {
+		if (actor != null) {
+			// registration:
+			getExMapFeedback().getActionRegistry().registerActor(actor,
+					actor.getDoActionClass());
+		}
+	}
+	
+	protected XmlActorFactory getXmlActorFactory() {
+		return getExMapFeedback().getActorFactory();
+	}
+
+
+	/**
+	 */
+	protected MindMapLinkRegistry getLinkRegistry() {
+		return getExMapFeedback().getMap().getLinkRegistry();
+	}
+	
 }

@@ -19,89 +19,98 @@
  *
  * Created on 09.11.2005
  */
-package freemind.modes.common
 
-import freemind.main.Tools.BooleanHolder
-import freemind.modes.ControllerAdapter
-import freemind.modes.MindMapNode
-import java.awt.event.ActionEvent
-import java.util.logging.Logger
-import javax.swing.AbstractAction
+package freemind.modes.common;
+
+import java.awt.event.ActionEvent;
+import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.logging.Logger;
+
+import javax.swing.AbstractAction;
+
+import freemind.main.Tools;
+import freemind.modes.ControllerAdapter;
+import freemind.modes.MindMapNode;
 
 /**
  * @author foltin
+ * 
  */
-class CommonToggleFoldedAction(private val modeController: ControllerAdapter) : AbstractAction(
-    modeController.getText("toggle_folded")
-) {
-    private val logger: Logger
+@SuppressWarnings("serial")
+public class CommonToggleFoldedAction extends AbstractAction {
 
-    init {
-        logger = modeController.frame.getLogger(this.javaClass.name)
-    }
+	private ControllerAdapter modeController;
 
-    override fun actionPerformed(e: ActionEvent) {
-        toggleFolded()
-    }
+	private Logger logger;
 
-    @JvmOverloads
-    fun toggleFolded(listIterator: ListIterator<MindMapNode> = modeController.selecteds.listIterator()) {
-        val fold = getFoldingState(reset(listIterator))
-        val i = reset(listIterator)
-        while (i.hasNext()) {
-            val node = i.next()
-            modeController.setFolded(node, fold)
-        }
-    }
+	public CommonToggleFoldedAction(ControllerAdapter controller) {
+		super(controller.getText("toggle_folded"));
+		this.modeController = controller;
+		logger = modeController.getFrame().getLogger(this.getClass().getName());
+	}
 
-    companion object {
-        @JvmStatic
-        fun reset(iterator: ListIterator<MindMapNode>): ListIterator<MindMapNode> {
-            while (iterator.hasPrevious()) {
-                iterator.previous()
-            }
-            return iterator
-        }
+	public void actionPerformed(ActionEvent e) {
+		toggleFolded();
+	}
 
-        /**
-         * Determines whether the nodes should be folded or unfolded depending on
-         * their states. If not all nodes have the same folding status, the result
-         * means folding
-         *
-         * @param iterator
-         * an iterator of MindMapNodes.
-         * @return true, if the nodes should be folded.
-         */
-        @JvmStatic
-        fun getFoldingState(iterator: ListIterator<MindMapNode>): Boolean {
-            /*
+	public void toggleFolded() {
+		toggleFolded(modeController.getSelecteds().listIterator());
+	}
+
+	public void toggleFolded(ListIterator listIterator) {
+		boolean fold = getFoldingState(reset(listIterator));
+		for (Iterator<MindMapNode> i = reset(listIterator); i.hasNext();) {
+			MindMapNode node = i.next();
+			modeController.setFolded(node, fold);
+		}
+	}
+
+	public static ListIterator reset(ListIterator iterator) {
+		while (iterator.hasPrevious()) {
+			iterator.previous();
+		}
+		return iterator;
+	}
+
+	/**
+	 * Determines whether the nodes should be folded or unfolded depending on
+	 * their states. If not all nodes have the same folding status, the result
+	 * means folding
+	 * 
+	 * @param iterator
+	 *            an iterator of MindMapNodes.
+	 * @return true, if the nodes should be folded.
+	 */
+	public static boolean getFoldingState(ListIterator<MindMapNode> iterator) {
+		/*
 		 * Retrieve the information whether or not all nodes have the same
 		 * folding state.
 		 */
-            var state: BooleanHolder? = null
-            var allNodeHaveSameFoldedStatus = true
-            while (iterator.hasNext()) {
-                val node = iterator.next()
-                if (node.childCount == 0) {
-                    // no folding state change for unfoldable nodes.
-                    continue
-                }
-                if (state == null) {
-                    state = BooleanHolder()
-                    state.value = node.isFolded
-                } else {
-                    if (node.isFolded != state.value) {
-                        allNodeHaveSameFoldedStatus = false
-                        break
-                    }
-                }
-            }
-            /* if the folding state is ambiguous, the nodes are folded. */
-            var fold = true
-            if (allNodeHaveSameFoldedStatus && state != null) {
-                fold = !state.value
-            }
-            return fold
-        }
-    }
+		Tools.BooleanHolder state = null;
+		boolean allNodeHaveSameFoldedStatus = true;
+		for (ListIterator<MindMapNode> it = iterator; it.hasNext();) {
+			MindMapNode node = it.next();
+			if (node.getChildCount() == 0) {
+				// no folding state change for unfoldable nodes.
+				continue;
+			}
+			if (state == null) {
+				state = new Tools.BooleanHolder();
+				state.setValue(node.isFolded());
+			} else {
+				if (node.isFolded() != state.getValue()) {
+					allNodeHaveSameFoldedStatus = false;
+					break;
+				}
+			}
+		}
+		/* if the folding state is ambiguous, the nodes are folded. */
+		boolean fold = true;
+		if (allNodeHaveSameFoldedStatus && state != null) {
+			fold = !state.getValue();
+		}
+		return fold;
+	}
+
 }

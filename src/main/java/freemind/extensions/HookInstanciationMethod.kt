@@ -39,25 +39,25 @@ class HookInstanciationMethod private constructor(
 ) {
     private interface DestinationNodesGetter {
         fun getDestinationNodes(
-            controller: MapFeedback?,
+            controller: MapFeedback,
             focussed: MindMapNode?,
-            selecteds: List<MindMapNode?>
-        ): Collection<MindMapNode?>
+            selecteds: List<MindMapNode>
+        ): Collection<MindMapNode>
 
-        fun getCenterNode(controller: MapFeedback?, focussed: MindMapNode, selecteds: List<MindMapNode?>?): MindMapNode?
+        fun getCenterNode(controller: MapFeedback, focussed: MindMapNode, selecteds: List<MindMapNode?>?): MindMapNode
     }
 
     private class DefaultDestinationNodesGetter : DestinationNodesGetter {
         override fun getDestinationNodes(
-            controller: MapFeedback?,
+            controller: MapFeedback,
             focussed: MindMapNode?,
-            selecteds: List<MindMapNode?>
-        ): Collection<MindMapNode?> {
+            selecteds: List<MindMapNode>
+        ): Collection<MindMapNode> {
             return selecteds
         }
 
         override fun getCenterNode(
-            controller: MapFeedback?,
+            controller: MapFeedback,
             focussed: MindMapNode,
             selecteds: List<MindMapNode?>?
         ): MindMapNode {
@@ -67,46 +67,46 @@ class HookInstanciationMethod private constructor(
 
     private class RootDestinationNodesGetter : DestinationNodesGetter {
         override fun getDestinationNodes(
-            controller: MapFeedback?,
+            controller: MapFeedback,
             focussed: MindMapNode?,
-            selecteds: List<MindMapNode?>
-        ): Collection<MindMapNode?> {
+            selecteds: List<MindMapNode>
+        ): Collection<MindMapNode> {
             val returnValue = Vector<MindMapNode>()
-            returnValue.add(controller?.map?.rootNode)
+            returnValue.add(controller.map.rootNode)
             return returnValue
         }
 
         override fun getCenterNode(
-            controller: MapFeedback?,
+            controller: MapFeedback,
             focussed: MindMapNode,
             selecteds: List<MindMapNode?>?
-        ): MindMapNode? {
-            return controller?.map?.rootNode
+        ): MindMapNode {
+            return controller.map.rootNode
         }
     }
 
     private class AllDestinationNodesGetter : DestinationNodesGetter {
-        private fun addChilds(node: MindMapNode?, allNodeCollection: MutableCollection<MindMapNode?>) {
+        private fun addChilds(node: MindMapNode, allNodeCollection: MutableCollection<MindMapNode>) {
             allNodeCollection.add(node)
-            val i = node?.childrenFolded()
-            while (i?.hasNext() ?: false) {
-                val child = i?.next()
+            val i: Iterator<MindMapNode> = node.childrenFolded()
+            while (i.hasNext()) {
+                val child = i.next()
                 addChilds(child, allNodeCollection)
             }
         }
 
         override fun getDestinationNodes(
-            controller: MapFeedback?,
+            controller: MapFeedback,
             focussed: MindMapNode?,
-            selecteds: List<MindMapNode?>
+            selecteds: List<MindMapNode>
         ): Collection<MindMapNode> {
             val returnValue = Vector<MindMapNode>()
-            addChilds(controller?.map?.rootNode, returnValue)
+            addChilds(controller.map.rootNode, returnValue)
             return returnValue
         }
 
         override fun getCenterNode(
-            controller: MapFeedback?,
+            controller: MapFeedback,
             focussed: MindMapNode,
             selecteds: List<MindMapNode?>?
         ): MindMapNode {
@@ -117,20 +117,20 @@ class HookInstanciationMethod private constructor(
     /**
      */
     fun getDestinationNodes(
-        controller: MapFeedback?,
+        controller: MapFeedback,
         focussed: MindMapNode?,
-        selecteds: List<MindMapNode?>
-    ): Collection<MindMapNode?> {
+        selecteds: List<MindMapNode>
+    ): Collection<MindMapNode> {
         return getter.getDestinationNodes(controller, focussed, selecteds)
     }
 
     /**
      */
-    fun isAlreadyPresent(hookName: String, focussed: MindMapNode?): Boolean {
-        val i = focussed?.activatedHooks?.iterator()
-        while (i?.hasNext() ?: false) {
-            val hook = i?.next()
-            if (hookName == hook?.name) {
+    fun isAlreadyPresent(hookName: String, focussed: MindMapNode): Boolean {
+        val i: Iterator<PermanentNodeHook> = focussed.activatedHooks.iterator()
+        while (i.hasNext()) {
+            val hook = i.next()
+            if (hookName == hook.name) {
                 return true
             }
         }
@@ -140,10 +140,10 @@ class HookInstanciationMethod private constructor(
     /**
      */
     fun getCenterNode(
-        controller: MapFeedback?,
+        controller: MapFeedback,
         focussed: MindMapNode,
         selecteds: List<MindMapNode?>?
-    ): MindMapNode? {
+    ): MindMapNode {
         return getter.getCenterNode(controller, focussed, selecteds)
     }
 

@@ -19,37 +19,43 @@
  *
  * Created on 16.10.2004
  */
-package freemind.modes.common
 
-import freemind.modes.MindMapNode
-import freemind.modes.ModeController
-import freemind.view.ImageFactory.Companion.instance
-import java.awt.event.ActionEvent
-import javax.swing.AbstractAction
 
-/** Follow a graphical link (AKA connector) action.  */
-class GotoLinkNodeAction(private val controller: ModeController, var source: MindMapNode?) : AbstractAction(
-    controller.getText("goto_link_node_action"),
-    instance!!.createIcon(
-        controller.getResource("images/Link.png")
-    )
-) {
-    init {
-        // only display a reasonable part of the string. the rest is available
-        // via the short description (tooltip).
-        // source is for the controllerAdapter == null,
-        if (source != null) {
-            val adaptedText = source!!.getShortText(controller)
-            putValue(
-                NAME,
-                controller.getText("follow_graphical_link") +
-                    adaptedText
-            )
-            putValue(SHORT_DESCRIPTION, source.toString())
-        }
-    }
+package freemind.modes.common;
 
-    override fun actionPerformed(e: ActionEvent) {
-        controller.centerNode(source)
-    }
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+
+import freemind.modes.MindMapNode;
+import freemind.modes.ModeController;
+
+/** Follow a graphical link (AKA connector) action. */
+@SuppressWarnings("serial")
+public class GotoLinkNodeAction extends AbstractAction {
+	MindMapNode source;
+
+	private final ModeController controller;
+
+	public GotoLinkNodeAction(ModeController controller, MindMapNode source) {
+		super(controller.getText("goto_link_node_action"), freemind.view.ImageFactory.getInstance().createIcon(
+				controller.getResource("images/Link.png")));
+		this.controller = controller;
+		// only display a reasonable part of the string. the rest is available
+		// via the short description (tooltip).
+		this.source = source;
+		// source is for the controllerAdapter == null,
+		if (source != null) {
+			String adaptedText = source.getShortText(controller);
+			putValue(Action.NAME, controller.getText("follow_graphical_link")
+					+ adaptedText);
+			putValue(Action.SHORT_DESCRIPTION, source.toString());
+		}
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		controller.centerNode(source);
+	}
+
 }

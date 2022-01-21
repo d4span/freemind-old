@@ -19,206 +19,223 @@
  *
  * Created on 06.02.2005
  */
-package freemind.modes.common.plugins
 
-import freemind.extensions.PermanentNodeHookAdapter
-import freemind.main.XMLElement
-import freemind.modes.MindIcon
-import freemind.modes.MindMapNode
-import java.awt.event.ActionEvent
-import java.awt.event.ActionListener
-import java.text.MessageFormat
-import java.util.Date
-import javax.swing.ImageIcon
-import javax.swing.Timer
+package freemind.modes.common.plugins;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.MessageFormat;
+import java.util.Date;
+import java.util.HashMap;
+
+import javax.swing.ImageIcon;
+import javax.swing.Timer;
+
+import freemind.extensions.PermanentNodeHookAdapter;
+import freemind.main.XMLElement;
+import freemind.modes.MindIcon;
+import freemind.modes.MindMapNode;
 
 /**
  * @author foltin
+ * 
  */
-abstract class ReminderHookBase : // private Vector dateVector = new Vector();
-/**
-     *
-     */
-        PermanentNodeHookAdapter() {
-        var remindUserAt: Long = 0
-        private var timer: Timer? = null
-        override fun loadFrom(child: XMLElement?) {
-            super.loadFrom(child)
-            val hash = loadNameValuePairs(child!!)
-            if (hash.containsKey(REMINDUSERAT)) {
-                remindUserAt = hash[REMINDUSERAT]!!.toLong()
-            }
-        }
+public abstract class ReminderHookBase extends PermanentNodeHookAdapter {
 
-        override fun save(hookElement: XMLElement?) {
-            super.save(hookElement)
-            val nameValuePairs = HashMap<String?, Any?>()
-            nameValuePairs[REMINDUSERAT] = remindUserAt
-            saveNameValuePairs(nameValuePairs, hookElement!!)
-        }
+	public static final String PLUGIN_LABEL = "plugins/TimeManagementReminder.xml";
 
-        override fun shutdownMapHook() {
-            setToolTip(getNode(), name, null)
-            if (timer != null) {
-                timer!!.stop()
-            }
-            displayState(REMOVE_CLOCK, getNode(), true)
-            super.shutdownMapHook()
-        }
+	private static final int CLOCK_INVISIBLE = 0;
 
-        override fun invoke(node: MindMapNode?) {
-            super.invoke(node)
-            if (remindUserAt == 0L) {
-                return
-            }
-            if (timer == null) {
-                scheduleTimer()
-                val date = Date(remindUserAt)
-                val messageArguments = arrayOf<Any>(date)
-                val formatter = MessageFormat(
-                    getResourceString("plugins/TimeManagement.xml_reminderNode_tooltip")
-                )
-                val message = formatter.format(messageArguments)
-                setToolTip(node, name, message)
-                displayState(CLOCK_VISIBLE, getNode(), false)
-            }
-            logger!!.info("Invoke for node: " + node!!.getObjectId(controller))
-        }
+	private static final int CLOCK_VISIBLE = 1;
 
-        /**
-         */
-        private fun scheduleTimer() {
-            timer = Timer(
-                remindUserAtAsSecondsFromNow,
-                TimerBlinkTask(false)
-            )
-            timer!!.delay = BLINK_INTERVAL_IN_MILLIES
-            timer!!.start()
-        }
+	private static final int REMOVE_CLOCK = -1;
 
-        // icon
-        private val clockIcon: ImageIcon?
-            get() {
-                // icon
-                if (Companion.clockIcon == null) {
-                    Companion.clockIcon = MindIcon.factory("clock2").icon
-                }
-                return Companion.clockIcon
-            }
+	public static final String REMINDUSERAT = "REMINDUSERAT";
 
-        // icon
-        private val bellIcon: ImageIcon?
-            get() {
-                // icon
-                if (Companion.bellIcon == null) {
-                    Companion.bellIcon = MindIcon.factory("bell").icon
-                }
-                return Companion.bellIcon
-            }
+	private static final int BLINK_INTERVAL_IN_MILLIES = 3000;
 
-        // icon
-        private val flagIcon: ImageIcon?
-            get() {
-                // icon
-                if (Companion.flagIcon == null) {
-                    Companion.flagIcon = MindIcon.factory("flag").icon
-                }
-                return Companion.flagIcon
-            }
+	private long remindUserAt = 0;
 
-        inner class TimerBlinkTask(stateAdded: Boolean) : ActionListener {
-            private var stateAdded = false
+	private Timer timer;
 
-            /**
-             */
-            init {
-                this.stateAdded = stateAdded
-            }
+	private static ImageIcon clockIcon = null;
 
-            override fun actionPerformed(pE: ActionEvent) {
-                // check for time over:
-                val remindAt = remindUserAtAsSecondsFromNow
-                if (remindAt > BLINK_INTERVAL_IN_MILLIES) {
-                    // time not over (maybe due to integer-long conversion too big)
-                    timer!!.stop()
-                    scheduleTimer()
-                    return
-                }
-                // time is over, we add the new icon until
-                // the user removes the reminder.
-                //
-                stateAdded = !stateAdded
-                remindUserAt = (
-                    System.currentTimeMillis() +
-                        BLINK_INTERVAL_IN_MILLIES
-                    ) // 3
-                displayState(
-                    if (stateAdded) CLOCK_VISIBLE else CLOCK_INVISIBLE,
-                    getNode(), true
-                )
-            }
-        }
+	private static ImageIcon bellIcon;
 
-        fun displayState(stateAdded: Int, pNode: MindMapNode?, recurse: Boolean) {
-            var icon: ImageIcon? = null
-            if (stateAdded == CLOCK_VISIBLE) {
-                icon = clockIcon
-            } else if (stateAdded == CLOCK_INVISIBLE) {
-                icon = if (pNode === getNode()) {
-                    bellIcon
-                } else {
-                    flagIcon
-                }
-            }
-            pNode!!.setStateIcon(stateKey, icon)
-            nodeRefresh(pNode)
-            if (recurse && !pNode.isRoot) {
-                displayState(stateAdded, pNode.parentNode, recurse)
-            }
-        }
+	private static ImageIcon flagIcon;
 
-        protected abstract fun nodeRefresh(node: MindMapNode?)
-        abstract override fun setToolTip(
-            node: MindMapNode?,
-            key: String?,
-            value: String?
-        )
+	// private Vector dateVector = new Vector();
 
-        val remindUserAtAsSecondsFromNow: Int
-            get() {
-                val timeDiff = remindUserAt - System.currentTimeMillis()
-                if (timeDiff > Int.MAX_VALUE) {
-                    return Int.MAX_VALUE
-                }
-                return if (timeDiff < Int.MIN_VALUE) {
-                    Int.MIN_VALUE
-                } else timeDiff.toInt()
-            }
-        private val STATE_TOOLTIP = (
-            TimerBlinkTask::class.java.name +
-                "_STATE_"
-            )
-        private var mStateTooltipName: String? = null
+	/**
+	 *
+	 */
+	public ReminderHookBase() {
+		super();
+	}
 
-        // + getNode().getObjectId(getController());
-        val stateKey: String?
-            get() {
-                if (mStateTooltipName == null) {
-                    mStateTooltipName = STATE_TOOLTIP
-                    // + getNode().getObjectId(getController());
-                }
-                return mStateTooltipName
-            }
+	public void loadFrom(XMLElement child) {
+		super.loadFrom(child);
+		HashMap<String, String> hash = loadNameValuePairs(child);
+		if (hash.containsKey(REMINDUSERAT)) {
+			String remindAt = (String) hash.get(REMINDUSERAT);
+			setRemindUserAt(new Long(remindAt).longValue());
+		}
 
-        companion object {
-            const val PLUGIN_LABEL = "plugins/TimeManagementReminder.xml"
-            private const val CLOCK_INVISIBLE = 0
-            private const val CLOCK_VISIBLE = 1
-            private const val REMOVE_CLOCK = -1
-            const val REMINDUSERAT = "REMINDUSERAT"
-            private const val BLINK_INTERVAL_IN_MILLIES = 3000
-            private var clockIcon: ImageIcon? = null
-            private var bellIcon: ImageIcon? = null
-            private var flagIcon: ImageIcon? = null
-        }
-    }
+	}
+
+	public void save(XMLElement xml) {
+		super.save(xml);
+		HashMap<String, Object> nameValuePairs = new HashMap<>();
+		nameValuePairs.put(REMINDUSERAT, remindUserAt);
+		saveNameValuePairs(nameValuePairs, xml);
+	}
+
+	public void shutdownMapHook() {
+		setToolTip(getNode(), getName(), null);
+		if (timer != null) {
+			timer.stop();
+		}
+		displayState(REMOVE_CLOCK, getNode(), true);
+		super.shutdownMapHook();
+	}
+
+	public void invoke(MindMapNode node) {
+		super.invoke(node);
+		if (remindUserAt == 0) {
+			return;
+		}
+		if (timer == null) {
+			scheduleTimer();
+			Date date = new Date(remindUserAt);
+			Object[] messageArguments = { date };
+			MessageFormat formatter = new MessageFormat(
+					getResourceString("plugins/TimeManagement.xml_reminderNode_tooltip"));
+			String message = formatter.format(messageArguments);
+			setToolTip(node, getName(), message);
+			displayState(CLOCK_VISIBLE, getNode(), false);
+		}
+		logger.info("Invoke for node: " + node.getObjectId(getController()));
+	}
+
+	/**
+	 */
+	private void scheduleTimer() {
+		timer = new Timer(getRemindUserAtAsSecondsFromNow(),
+				new TimerBlinkTask(false));
+		timer.setDelay(BLINK_INTERVAL_IN_MILLIES);
+		timer.start();
+	}
+
+	private ImageIcon getClockIcon() {
+		// icon
+		if (clockIcon == null) {
+			clockIcon = MindIcon.factory("clock2").getIcon();
+		}
+		return clockIcon;
+	}
+
+	private ImageIcon getBellIcon() {
+		// icon
+		if (bellIcon == null) {
+			bellIcon = MindIcon.factory("bell").getIcon();
+		}
+		return bellIcon;
+	}
+
+	private ImageIcon getFlagIcon() {
+		// icon
+		if (flagIcon == null) {
+			flagIcon = MindIcon.factory("flag").getIcon();
+		}
+		return flagIcon;
+	}
+
+	public class TimerBlinkTask implements ActionListener {
+
+		/**
+		 */
+		public TimerBlinkTask(boolean stateAdded) {
+			super();
+			this.stateAdded = stateAdded;
+		}
+
+		private boolean stateAdded = false;
+
+		public void actionPerformed(ActionEvent pE) {
+			// check for time over:
+			int remindAt = getRemindUserAtAsSecondsFromNow();
+			if(remindAt > BLINK_INTERVAL_IN_MILLIES) {
+				// time not over (maybe due to integer-long conversion too big)
+				timer.stop();
+				scheduleTimer();
+				return;
+				
+			}
+			// time is over, we add the new icon until
+			// the user removes the reminder.
+			//
+			stateAdded = !stateAdded;
+			setRemindUserAt(System.currentTimeMillis()
+					+ BLINK_INTERVAL_IN_MILLIES); // 3
+			displayState((stateAdded) ? CLOCK_VISIBLE : CLOCK_INVISIBLE,
+					getNode(), true);
+
+		}
+
+	}
+
+	public void displayState(int stateAdded, MindMapNode pNode, boolean recurse) {
+		ImageIcon icon = null;
+		if (stateAdded == CLOCK_VISIBLE) {
+			icon = getClockIcon();
+		} else if (stateAdded == CLOCK_INVISIBLE) {
+			if (pNode == getNode()) {
+				icon = getBellIcon();
+			} else {
+				icon = getFlagIcon();
+			}
+		}
+		pNode.setStateIcon(getStateKey(), icon);
+		nodeRefresh(pNode);
+		if (recurse && !pNode.isRoot()) {
+			displayState(stateAdded, pNode.getParentNode(), recurse);
+		}
+	}
+
+	protected abstract void nodeRefresh(MindMapNode node);
+
+	protected abstract void setToolTip(MindMapNode node, String key,
+			String value);
+
+	public long getRemindUserAt() {
+		return remindUserAt;
+	}
+
+	public int getRemindUserAtAsSecondsFromNow() {
+		long timeDiff = remindUserAt - System.currentTimeMillis();
+		if(timeDiff > Integer.MAX_VALUE) {
+			return Integer.MAX_VALUE;
+		}
+		if(timeDiff < Integer.MIN_VALUE) {
+			return Integer.MIN_VALUE;
+		}
+		return (int) timeDiff;
+	}
+
+	public void setRemindUserAt(long remindUserAt) {
+		this.remindUserAt = remindUserAt;
+	}
+
+	private final String STATE_TOOLTIP = TimerBlinkTask.class.getName()
+			+ "_STATE_";
+
+	private String mStateTooltipName = null;
+
+	public String getStateKey() {
+		if (mStateTooltipName == null) {
+			mStateTooltipName = STATE_TOOLTIP;
+			// + getNode().getObjectId(getController());
+		}
+		return mStateTooltipName;
+	}
+}

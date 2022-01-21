@@ -17,59 +17,65 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-package freemind.modes.mindmapmode.actions.xml.actors
 
-import freemind.controller.actions.generated.instance.BoldNodeAction
-import freemind.controller.actions.generated.instance.XmlAction
-import freemind.modes.ExtendedMapFeedback
-import freemind.modes.MindMap
-import freemind.modes.MindMapNode
-import freemind.modes.mindmapmode.actions.xml.ActionPair
+package freemind.modes.mindmapmode.actions.xml.actors;
+
+import freemind.controller.actions.generated.instance.BoldNodeAction;
+import freemind.controller.actions.generated.instance.XmlAction;
+import freemind.modes.ExtendedMapFeedback;
+import freemind.modes.MindMap;
+import freemind.modes.MindMapNode;
+import freemind.modes.NodeAdapter;
+import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
  * @author foltin
  * @date 16.03.2014
  */
-class BoldNodeActor
-/**
- * @param pMapFeedback
- */
-(pMapFeedback: ExtendedMapFeedback?) : NodeXmlActorAdapter(pMapFeedback) {
-    override fun act(action: XmlAction) {
-        if (action is BoldNodeAction) {
-            val boldact = action
-            val node = getNodeFromID(boldact.node)
-            if (node?.isBold != boldact.bold) {
-                node?.isBold = boldact.bold
-                exMapFeedback?.nodeChanged(node)
-            }
-        }
-    }
+public class BoldNodeActor extends NodeXmlActorAdapter {
 
-    override fun getDoActionClass(): Class<BoldNodeAction> {
-        return BoldNodeAction::class.java
-    }
+	/**
+	 * @param pMapFeedback
+	 */
+	public BoldNodeActor(ExtendedMapFeedback pMapFeedback) {
+		super(pMapFeedback);
+	}
 
-    override fun apply(model: MindMap, selected: MindMapNode): ActionPair {
-        // every node is set to the inverse of the focussed node.
-        val bold = selected.isBold
-        return getActionPair(selected, !bold)
-    }
+	public void act(XmlAction action) {
+		if (action instanceof BoldNodeAction) {
+			BoldNodeAction boldact = (BoldNodeAction) action;
+			NodeAdapter node = getNodeFromID(boldact.getNode());
+			if (node.isBold() != boldact.getBold()) {
+				node.setBold(boldact.getBold());
+				mMapFeedback.nodeChanged(node);
+			}
+		}
+	}
 
-    private fun getActionPair(selected: MindMapNode, bold: Boolean): ActionPair {
-        val boldAction = toggleBold(selected, bold)
-        val undoBoldAction = toggleBold(selected, selected.isBold)
-        return ActionPair(boldAction, undoBoldAction)
-    }
+	public Class<BoldNodeAction> getDoActionClass() {
+		return BoldNodeAction.class;
+	}
 
-    private fun toggleBold(selected: MindMapNode, bold: Boolean): BoldNodeAction {
-        val boldAction = BoldNodeAction()
-        boldAction.node = getNodeID(selected)
-        boldAction.bold = bold
-        return boldAction
-    }
+	public ActionPair apply(MindMap model, MindMapNode selected) {
+		// every node is set to the inverse of the focussed node.
+		boolean bold = getSelected().isBold();
+		return getActionPair(selected, !bold);
+	}
 
-    fun setBold(node: MindMapNode, bold: Boolean) {
-        execute(getActionPair(node, bold))
-    }
+	private ActionPair getActionPair(MindMapNode selected, boolean bold) {
+		BoldNodeAction boldAction = toggleBold(selected, bold);
+		BoldNodeAction undoBoldAction = toggleBold(selected, selected.isBold());
+		return new ActionPair(boldAction, undoBoldAction);
+	}
+
+	private BoldNodeAction toggleBold(MindMapNode selected, boolean bold) {
+		BoldNodeAction boldAction = new BoldNodeAction();
+		boldAction.setNode(getNodeID(selected));
+		boldAction.setBold(bold);
+		return boldAction;
+	}
+
+	public void setBold(MindMapNode node, boolean bold) {
+		execute(getActionPair(node, bold));
+	}
 }

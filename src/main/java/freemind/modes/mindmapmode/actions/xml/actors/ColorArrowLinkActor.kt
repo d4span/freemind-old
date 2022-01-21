@@ -17,64 +17,64 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-package freemind.modes.mindmapmode.actions.xml.actors
 
-import freemind.controller.actions.generated.instance.ArrowLinkColorXmlAction
-import freemind.controller.actions.generated.instance.XmlAction
-import freemind.main.Tools
-import freemind.modes.ExtendedMapFeedback
-import freemind.modes.LineAdapter
-import freemind.modes.MindMapLink
-import freemind.modes.mindmapmode.actions.xml.ActionPair
-import java.awt.Color
+package freemind.modes.mindmapmode.actions.xml.actors;
+
+import java.awt.Color;
+
+import freemind.controller.actions.generated.instance.ArrowLinkColorXmlAction;
+import freemind.controller.actions.generated.instance.XmlAction;
+import freemind.main.Tools;
+import freemind.modes.ExtendedMapFeedback;
+import freemind.modes.LineAdapter;
+import freemind.modes.MindMapLink;
+import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
  * @author foltin
  * @date 01.04.2014
  */
-class ColorArrowLinkActor
-/**
- * @param pMapFeedback
- */
-(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
-    fun setArrowLinkColor(arrowLink: MindMapLink, color: Color) {
-        execute(getActionPair(arrowLink, color))
-    }
+public class ColorArrowLinkActor extends XmlActorAdapter {
 
-    /**
+	/**
+	 * @param pMapFeedback
+	 */
+	public ColorArrowLinkActor(ExtendedMapFeedback pMapFeedback) {
+		super(pMapFeedback);
+	}
+
+	public void setArrowLinkColor(MindMapLink arrowLink, Color color) {
+		execute(getActionPair(arrowLink, color));
+	}
+
+	/**
      */
-    private fun getActionPair(arrowLink: MindMapLink, color: Color): ActionPair {
-        return ActionPair(
-            createArrowLinkColorXmlAction(arrowLink, color),
-            createArrowLinkColorXmlAction(arrowLink, arrowLink.color)
-        )
-    }
+	private ActionPair getActionPair(MindMapLink arrowLink, Color color) {
+		return new ActionPair(createArrowLinkColorXmlAction(arrowLink, color),
+				createArrowLinkColorXmlAction(arrowLink, arrowLink.getColor()));
+	}
 
-    override fun act(action: XmlAction) {
-        if (action is ArrowLinkColorXmlAction) {
-            val colorAction = action
-            val link = linkRegistry!!.getLinkForId(
-                colorAction.id
-            )
-            (link as LineAdapter).color = Tools.xmlToColor(
-                colorAction
-                    .color
-            )
-            exMapFeedback?.nodeChanged(link.source)
-        }
-    }
+	public void act(XmlAction action) {
+		if (action instanceof ArrowLinkColorXmlAction) {
+			ArrowLinkColorXmlAction colorAction = (ArrowLinkColorXmlAction) action;
+			MindMapLink link = getLinkRegistry().getLinkForId(
+					colorAction.getId());
+			((LineAdapter) link).setColor(Tools.xmlToColor(colorAction
+					.getColor()));
+			getExMapFeedback().nodeChanged(link.getSource());
+		}
+	}
 
-    override fun getDoActionClass(): Class<ArrowLinkColorXmlAction> {
-        return ArrowLinkColorXmlAction::class.java
-    }
+	public Class<ArrowLinkColorXmlAction> getDoActionClass() {
+		return ArrowLinkColorXmlAction.class;
+	}
 
-    private fun createArrowLinkColorXmlAction(
-        arrowLink: MindMapLink,
-        color: Color
-    ): ArrowLinkColorXmlAction {
-        val action = ArrowLinkColorXmlAction()
-        action.color = Tools.colorToXml(color)
-        action.id = arrowLink.uniqueId
-        return action
-    }
+	private ArrowLinkColorXmlAction createArrowLinkColorXmlAction(
+			MindMapLink arrowLink, Color color) {
+		ArrowLinkColorXmlAction action = new ArrowLinkColorXmlAction();
+		action.setColor(Tools.colorToXml(color));
+		action.setId(arrowLink.getUniqueId());
+		return action;
+	}
+
 }

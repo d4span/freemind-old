@@ -17,62 +17,63 @@
 *along with this program; if not, write to the Free Software
 *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-package freemind.modes.mindmapmode.actions.xml.actors
 
-import freemind.controller.actions.generated.instance.NodeBackgroundColorFormatAction
-import freemind.controller.actions.generated.instance.XmlAction
-import freemind.main.Tools
-import freemind.modes.ExtendedMapFeedback
-import freemind.modes.MindMapNode
-import freemind.modes.mindmapmode.actions.xml.ActionPair
-import java.awt.Color
+package freemind.modes.mindmapmode.actions.xml.actors;
+
+import java.awt.Color;
+
+import freemind.controller.actions.generated.instance.NodeBackgroundColorFormatAction;
+import freemind.controller.actions.generated.instance.XmlAction;
+import freemind.main.Tools;
+import freemind.modes.ExtendedMapFeedback;
+import freemind.modes.MindMapNode;
+import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
  * @author foltin
  * @date 01.04.2014
  */
-class NodeBackgroundColorActor
-/**
- * @param pMapFeedback
- */
-(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback!!) {
-    fun setNodeBackgroundColor(node: MindMapNode, color: Color?) {
-        val doAction = createNodeBackgroundColorFormatAction(
-            node, color
-        )
-        val undoAction = createNodeBackgroundColorFormatAction(
-            node, node.backgroundColor
-        )
-        execute(ActionPair(doAction, undoAction))
-    }
+public class NodeBackgroundColorActor extends XmlActorAdapter {
 
-    fun createNodeBackgroundColorFormatAction(
-        node: MindMapNode?,
-        color: Color?
-    ): NodeBackgroundColorFormatAction {
-        val nodeAction = NodeBackgroundColorFormatAction()
-        nodeAction.node = getNodeID(node)
-        nodeAction.color = Tools.colorToXml(color)
-        return nodeAction
-    }
+	/**
+	 * @param pMapFeedback
+	 */
+	public NodeBackgroundColorActor(ExtendedMapFeedback pMapFeedback) {
+		super(pMapFeedback);
+	}
 
-    override fun act(action: XmlAction) {
-        if (action is NodeBackgroundColorFormatAction) {
-            val nodeColorAction = action
-            val color = Tools.xmlToColor(nodeColorAction.color)
-            val node = getNodeFromID(
-                nodeColorAction
-                    .node
-            )
-            val oldColor = node?.backgroundColor
-            if (!Tools.safeEquals(color, oldColor)) {
-                node?.backgroundColor = color // null
-                exMapFeedback?.nodeChanged(node)
-            }
-        }
-    }
+	public void setNodeBackgroundColor(MindMapNode node, Color color) {
+		NodeBackgroundColorFormatAction doAction = createNodeBackgroundColorFormatAction(
+				node, color);
+		NodeBackgroundColorFormatAction undoAction = createNodeBackgroundColorFormatAction(
+				node, node.getBackgroundColor());
+		execute(new ActionPair(doAction, undoAction));
+	}
 
-    override fun getDoActionClass(): Class<NodeBackgroundColorFormatAction> {
-        return NodeBackgroundColorFormatAction::class.java
-    }
+	public NodeBackgroundColorFormatAction createNodeBackgroundColorFormatAction(
+			MindMapNode node, Color color) {
+		NodeBackgroundColorFormatAction nodeAction = new NodeBackgroundColorFormatAction();
+		nodeAction.setNode(getNodeID(node));
+		nodeAction.setColor(Tools.colorToXml(color));
+		return nodeAction;
+	}
+
+	public void act(XmlAction action) {
+		if (action instanceof NodeBackgroundColorFormatAction) {
+			NodeBackgroundColorFormatAction nodeColorAction = (NodeBackgroundColorFormatAction) action;
+			Color color = Tools.xmlToColor(nodeColorAction.getColor());
+			MindMapNode node = getNodeFromID(nodeColorAction
+					.getNode());
+			Color oldColor = node.getBackgroundColor();
+			if (!Tools.safeEquals(color, oldColor)) {
+				node.setBackgroundColor(color); // null
+				getExMapFeedback().nodeChanged(node);
+			}
+		}
+	}
+
+	public Class<NodeBackgroundColorFormatAction> getDoActionClass() {
+		return NodeBackgroundColorFormatAction.class;
+	}
+
 }

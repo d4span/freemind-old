@@ -68,7 +68,7 @@ class BrowseController(mode: Mode?) : ViewControllerAdapter(mode) {
 
     class FollowMapLink(private val modeController: ViewControllerAdapter) :
         AbstractAction(
-            modeController.getText("follow_map_link"), MapNodePositionHolderBase.mapLocationIcon
+            modeController.getText("follow_map_link"), MapNodePositionHolderBase.getMapLocationIcon()
         ),
         MenuItemEnabledListener {
         private val logger: Logger

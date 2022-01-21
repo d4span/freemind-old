@@ -17,110 +17,107 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package freemind.modes.mindmapmode.actions.xml.actors
 
-import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction
-import freemind.controller.actions.generated.instance.XmlAction
-import freemind.main.Tools
-import freemind.modes.ExtendedMapFeedback
-import freemind.modes.MindMapNode
-import freemind.modes.mindmapmode.MindMapArrowLinkModel
-import freemind.modes.mindmapmode.actions.xml.ActionPair
+package freemind.modes.mindmapmode.actions.xml.actors;
+
+import freemind.controller.actions.generated.instance.AddArrowLinkXmlAction;
+import freemind.controller.actions.generated.instance.RemoveArrowLinkXmlAction;
+import freemind.controller.actions.generated.instance.XmlAction;
+import freemind.main.Tools;
+import freemind.modes.ExtendedMapFeedback;
+import freemind.modes.MindMapNode;
+import freemind.modes.mindmapmode.MindMapArrowLinkModel;
+import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
  * @author foltin
  * @date 27.03.2014
  */
-class AddArrowLinkActor
-/**
- * @param pMapFeedback
- */
-(pMapFeedback: ExtendedMapFeedback?) : XmlActorAdapter(pMapFeedback) {
-    override fun act(action: XmlAction) {
-        if (action is AddArrowLinkXmlAction) {
-            val arrowAction = action
-            val source = getNodeFromID(arrowAction.node)
-            val target = getNodeFromID(arrowAction.destination)
-            if (source === target) {
-                logger?.warning("Can't create link between itself. ($source).")
-                return
-            }
-            val proposedId = arrowAction.newId
-            if (linkRegistry?.getLabel(target) == null) {
-                // call registry to give new label
-                linkRegistry?.registerLinkTarget(target)
-            }
-            val linkModel = MindMapArrowLinkModel(
-                source,
-                target, exMapFeedback
-            )
-            linkModel.destinationLabel = linkRegistry?.getLabel(target)
-            // give label:
-            linkModel.uniqueId = linkRegistry?.generateUniqueLinkId(
-                proposedId
-            )
-            // check for other attributes:
-            if (arrowAction.color != null) {
-                linkModel.color = Tools.xmlToColor(arrowAction.color)
-            }
-            if (arrowAction.endArrow != null) {
-                linkModel.endArrow = arrowAction.endArrow
-            }
-            if (arrowAction.endInclination != null) {
-                linkModel.endInclination = Tools.xmlToPoint(
-                    arrowAction
-                        .endInclination
-                )
-            }
-            if (arrowAction.startArrow != null) {
-                linkModel.startArrow = arrowAction.startArrow
-            }
-            if (arrowAction.startInclination != null) {
-                linkModel.startInclination = Tools.xmlToPoint(
-                    arrowAction
-                        .startInclination
-                )
-            }
-            // register link.
-            linkRegistry?.registerLink(linkModel)
-            exMapFeedback?.nodeChanged(target)
-            exMapFeedback?.nodeChanged(source)
-        }
-    }
+public class AddArrowLinkActor extends XmlActorAdapter {
 
-    override fun getDoActionClass(): Class<AddArrowLinkXmlAction> {
-        return AddArrowLinkXmlAction::class.java
-    }
+	/**
+	 * @param pMapFeedback
+	 */
+	public AddArrowLinkActor(ExtendedMapFeedback pMapFeedback) {
+		super(pMapFeedback);
+	}
 
-    private fun getActionPair(source: MindMapNode, target: MindMapNode): ActionPair {
-        val doAction = createAddArrowLinkXmlAction(
-            source,
-            target, linkRegistry?.generateUniqueLinkId(null)
-        )
-        // now, the id is clear:
-        val undoAction = exMapFeedback
-            ?.actorFactory?.removeArrowLinkActor
-            ?.createRemoveArrowLinkXmlAction(doAction.newId)
-        return ActionPair(doAction, undoAction)
-    }
+	public void act(XmlAction action) {
+		if (action instanceof AddArrowLinkXmlAction) {
+			AddArrowLinkXmlAction arrowAction = (AddArrowLinkXmlAction) action;
+			MindMapNode source = getNodeFromID(arrowAction.getNode());
+			MindMapNode target = getNodeFromID(arrowAction.getDestination());
+			if(source == target) {
+				logger.warning("Can't create link between itself. ("+source+").");
+				return;
+			}
+			String proposedId = arrowAction.getNewId();
 
-    fun createAddArrowLinkXmlAction(
-        source: MindMapNode?,
-        target: MindMapNode?,
-        proposedID: String?
-    ): AddArrowLinkXmlAction {
-        val action = AddArrowLinkXmlAction()
-        action.node = getNodeID(source)
-        action.destination = getNodeID(target)
-        action.newId = proposedID
-        return action
-    }
+			if (getLinkRegistry().getLabel(target) == null) {
+				// call registry to give new label
+				getLinkRegistry().registerLinkTarget(target);
+			}
+			MindMapArrowLinkModel linkModel = new MindMapArrowLinkModel(source,
+					target, getExMapFeedback());
+			linkModel.setDestinationLabel(getLinkRegistry().getLabel(target));
+			// give label:
+			linkModel.setUniqueId(getLinkRegistry().generateUniqueLinkId(
+					proposedId));
+			// check for other attributes:
+			if (arrowAction.getColor() != null) {
+				linkModel.setColor(Tools.xmlToColor(arrowAction.getColor()));
+			}
+			if (arrowAction.getEndArrow() != null) {
+				linkModel.setEndArrow(arrowAction.getEndArrow());
+			}
+			if (arrowAction.getEndInclination() != null) {
+				linkModel.setEndInclination(Tools.xmlToPoint(arrowAction
+						.getEndInclination()));
+			}
+			if (arrowAction.getStartArrow() != null) {
+				linkModel.setStartArrow(arrowAction.getStartArrow());
+			}
+			if (arrowAction.getStartInclination() != null) {
+				linkModel.setStartInclination(Tools.xmlToPoint(arrowAction
+						.getStartInclination()));
+			}
+			// register link.
+			getLinkRegistry().registerLink(linkModel);
+			getExMapFeedback().nodeChanged(target);
+			getExMapFeedback().nodeChanged(source);
 
-    /**
-     * Source holds the MindMapArrowLinkModel and points to the id placed in
-     * target.
-     */
-    fun addLink(source: MindMapNode, target: MindMapNode) {
-        execute(getActionPair(source, target))
-    }
+		}
+	}
+
+	public Class<AddArrowLinkXmlAction> getDoActionClass() {
+		return AddArrowLinkXmlAction.class;
+	}
+
+	private ActionPair getActionPair(MindMapNode source, MindMapNode target) {
+		AddArrowLinkXmlAction doAction = createAddArrowLinkXmlAction(source,
+				target, getLinkRegistry().generateUniqueLinkId(null));
+		// now, the id is clear:
+		RemoveArrowLinkXmlAction undoAction = getExMapFeedback()
+				.getActorFactory().getRemoveArrowLinkActor()
+				.createRemoveArrowLinkXmlAction(doAction.getNewId());
+		return new ActionPair(doAction, undoAction);
+	}
+
+	public AddArrowLinkXmlAction createAddArrowLinkXmlAction(
+			MindMapNode source, MindMapNode target, String proposedID) {
+		AddArrowLinkXmlAction action = new AddArrowLinkXmlAction();
+		action.setNode(getNodeID(source));
+		action.setDestination(getNodeID(target));
+		action.setNewId(proposedID);
+		return action;
+	}
+
+	/**
+	 * Source holds the MindMapArrowLinkModel and points to the id placed in
+	 * target.
+	 */
+	public void addLink(MindMapNode source, MindMapNode target) {
+		execute(getActionPair(source, target));
+	}
+
 }

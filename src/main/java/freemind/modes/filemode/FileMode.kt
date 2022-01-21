@@ -16,58 +16,67 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package freemind.modes.filemode
 
-import freemind.controller.Controller
-import freemind.modes.Mode
-import freemind.modes.ModeController
-import javax.swing.JToolBar
 
-class FileMode : Mode() {
-    private var c: Controller? = null
-    private var modecontroller: FileController? = null
-    var toolbar: JToolBar? = null
-        private set
+package freemind.modes.filemode;
 
-    override fun init(c: Controller) {
-        this.c = c
-        val controller = FileController(this)
-        modecontroller = controller
-        toolbar = FileToolBar(controller)
-    }
+import javax.swing.JToolBar;
 
-    override fun toString(): String {
-        return MODENAME
-    }
+import freemind.controller.Controller;
+import freemind.modes.Mode;
+import freemind.modes.ModeController;
 
-    /**
-     * Called whenever this mode is chosen in the program. (updates Actions
-     * etc.)
-     */
-    override fun activate() {
-        defaultModeController.newMap()
-        c!!.mapModuleManager!!.changeToMapOfMode(this)
-        if (!isRunning) {
-            isRunning = true
-        } else {
-        }
-    }
+public class FileMode extends Mode {
 
-    override fun restore(restoreable: String) {}
-    override fun getController(): Controller {
-        return c!!
-    }
+	private Controller c;
+	private FileController modecontroller;
+	private JToolBar toolbar;
+	private static final String MODENAME = "File";
+	private static boolean isRunning = false;
 
-    override fun getDefaultModeController(): ModeController {
-        return modecontroller!!
-    }
+	public FileMode() {
+	}
 
-    override fun createModeController(): ModeController {
-        return FileController(this)
-    }
+	public void init(Controller c) {
+		this.c = c;
+		modecontroller = new FileController(this);
+		toolbar = new FileToolBar(modecontroller);
+	}
 
-    companion object {
-        private const val MODENAME = "File"
-        private var isRunning = false
-    }
+	public JToolBar getToolbar() {
+		return toolbar;
+	}
+
+	public String toString() {
+		return MODENAME;
+	}
+
+	/**
+	 * Called whenever this mode is chosen in the program. (updates Actions
+	 * etc.)
+	 */
+	public void activate() {
+		getDefaultModeController().newMap();
+		c.getMapModuleManager().changeToMapOfMode(this);
+		if (!isRunning) {
+			isRunning = true;
+		} else {
+		}
+	}
+
+	public void restore(String restoreable) {
+	}
+
+	public Controller getController() {
+		return c;
+	}
+
+	public ModeController getDefaultModeController() {
+		return modecontroller;
+	}
+
+	public ModeController createModeController() {
+		return new FileController(this);
+	}
+
 }

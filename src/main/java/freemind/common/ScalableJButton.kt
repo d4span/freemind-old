@@ -2,18 +2,18 @@
  * FreeMind - A Program for creating and viewing MindmapsCopyright (C) 2000-2015
  * Christian Foltin, Joerg Mueller, Daniel Polansky, Dimitri Polivaev and
  * others.
- *
+ * 
  * See COPYING for Details
- *
+ * 
  * This program is free software; you can redistribute it and/ormodify it under
  * the terms of the GNU General Public Licenseas published by the Free Software
  * Foundation; either version 2of the License, or (at your option) any later
  * version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,but WITHOUT
  * ANY WARRANTY; without even the implied warranty ofMERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See theGNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public Licensealong with
  * this program; if not, write to the Free SoftwareFoundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
@@ -45,20 +45,20 @@ open class ScalableJButton : JButton, ComponentListener {
             logger = Resources.getInstance().getLogger(this.javaClass.name)
         }
 
-// 		mInitialFont = getFont();
-// 		addComponentListener(this);
+//		mInitialFont = getFont();
+//		addComponentListener(this);
     }
 
     override fun componentResized(pE: ComponentEvent) {
-// 		// FIXME: This doesn't work in GridBagLayout and GroupLayout.
-// 		if (mInitialHeight == 0) {
-// 			mInitialHeight = getHeight();
-// 		}
-// 		int resizal = this.getHeight() * mInitialFont.getSize() / mInitialHeight;
-// 		if(resizal != mCurrentSize){
-// 			setFont(mInitialFont.deriveFont((float) resizal));
-// 			mCurrentSize = resizal;
-// 		}
+//		// FIXME: This doesn't work in GridBagLayout and GroupLayout.
+//		if (mInitialHeight == 0) {
+//			mInitialHeight = getHeight();
+//		}
+//		int resizal = this.getHeight() * mInitialFont.getSize() / mInitialHeight;
+//		if(resizal != mCurrentSize){
+//			setFont(mInitialFont.deriveFont((float) resizal));
+//			mCurrentSize = resizal;
+//		}
     }
 
     override fun componentMoved(pE: ComponentEvent) {}
@@ -68,9 +68,9 @@ open class ScalableJButton : JButton, ComponentListener {
     companion object {
         protected var logger: Logger? = null
 
-        // 	int mCurrentSize = 0;
-        // 	Font mInitialFont = null;
-        // 	int mInitialHeight;
+        //	int mCurrentSize = 0;
+        //	Font mInitialFont = null;
+        //	int mInitialHeight;
         private const val serialVersionUID = 1L
     }
 }

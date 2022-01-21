@@ -69,18 +69,18 @@ class UnicodeReader(`in`: InputStream?, defaultEnc: String) : Reader() {
         val n: Int
         val unread: Int
         n = internalIn.read(bom, 0, bom.size)
-        if (bom[0] == 0x00.toByte() && bom[1] == 0x00.toByte() &&
-            bom[2] == 0xFE.toByte() && bom[3] == 0xFF.toByte()
+        if (bom[0] == 0x00.toByte() && bom[1] == 0x00.toByte()
+            && bom[2] == 0xFE.toByte() && bom[3] == 0xFF.toByte()
         ) {
             // encoding = "UTF-32BE"
             unread = n - 4
-        } else if (bom[0] == 0xFF.toByte() && bom[1] == 0xFE.toByte() &&
-            bom[2] == 0x00.toByte() && bom[3] == 0x00.toByte()
+        } else if (bom[0] == 0xFF.toByte() && bom[1] == 0xFE.toByte()
+            && bom[2] == 0x00.toByte() && bom[3] == 0x00.toByte()
         ) {
             // encoding = "UTF-32LE"
             unread = n - 4
-        } else if (bom[0] == 0xEF.toByte() && bom[1] == 0xBB.toByte() &&
-            bom[2] == 0xBF.toByte()
+        } else if (bom[0] == 0xEF.toByte() && bom[1] == 0xBB.toByte()
+            && bom[2] == 0xBF.toByte()
         ) {
             // encoding = "UTF-8"
             unread = n - 3
@@ -100,7 +100,7 @@ class UnicodeReader(`in`: InputStream?, defaultEnc: String) : Reader() {
 
         // Use given encoding
 //        internalIn2 = if (encoding == null) {
-        InputStreamReader(internalIn)
+            InputStreamReader(internalIn)
 //        } else {
 //            InputStreamReader(internalIn, encoding)
 //        }

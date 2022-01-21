@@ -28,10 +28,7 @@ import javax.swing.JSpinner
 import javax.swing.SpinnerNumberModel
 
 class NumberProperty(
-    override var description: String,
-    override var label: String,
-    private val min: Int,
-    private val max: Int,
+    override var description: String, override var label: String, private val min: Int, private val max: Int,
     private val step: Int
 ) : PropertyBean(), PropertyControl {
 
@@ -58,8 +55,8 @@ class NumberProperty(
                 val stepModul = (intValue - min) % step
                 if (intValue < min || intValue > max || stepModul != 0) {
                     System.err.println(
-                        "Actual value of property " + label +
-                            " is not in the allowed range: " + value
+                        "Actual value of property " + label
+                                + " is not in the allowed range: " + value
                     )
                     intValue = min
                 }

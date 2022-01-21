@@ -20,94 +20,118 @@
  * Created on 22.07.2004
  */
 /*$Id: HookDescriptorPluginAction.java,v 1.1.2.2 2008/01/13 20:55:34 christianfoltin Exp $*/
-package freemind.extensions
+package freemind.extensions;
 
-import freemind.controller.actions.generated.instance.Plugin
-import freemind.controller.actions.generated.instance.PluginAction
-import freemind.controller.actions.generated.instance.PluginMenu
-import freemind.controller.actions.generated.instance.PluginMode
-import freemind.controller.actions.generated.instance.PluginProperty
-import java.util.Properties
-import java.util.Vector
+import freemind.controller.actions.generated.instance.Plugin;
+import freemind.controller.actions.generated.instance.PluginAction;
+import freemind.controller.actions.generated.instance.PluginMenu;
+import freemind.controller.actions.generated.instance.PluginMode;
+import freemind.controller.actions.generated.instance.PluginProperty;
 
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.Vector;
 /**
  * This is an information class that holds all outer properties of a hook, i.e.
  * all contents of the XML description file.
- *
+ * 
  * Don't use this class for anything except for the implementation of a
  * HookFactory.
- *
+ * 
  * @author foltin
+ * 
  */
-class HookDescriptorPluginAction(
-    xmlPluginFile: String?,
-    pluginBase: Plugin?, private val pluginAction: PluginAction
-) : HookDescriptorBase(pluginBase!!, xmlPluginFile!!) {
-    /**
-     */
-    val properties: Properties
-    @JvmField
-    var menuPositions: Vector<String?>
-    val modes: Vector<String?>
+public class HookDescriptorPluginAction extends HookDescriptorBase {
+	private Properties properties;
+	public Vector<String> menuPositions;
+	private Vector<String> modes;
+	private PluginAction pluginAction;
 
-    init {
-        if (pluginAction.name == null) {
-            pluginAction.name = pluginAction.label
-        }
-        menuPositions = Vector()
-        properties = Properties()
-        modes = Vector()
-        for (obj in pluginAction.listChoiceList) {
-            if (obj is PluginMenu) {
-                menuPositions.add(obj.location)
-            }
-            if (obj is PluginProperty) {
-                val property = obj
-                properties[property.name] = property.value
-            }
-            if (obj is PluginMode) {
-                modes.add(obj.className)
-            }
-        }
-    }
+	public HookDescriptorPluginAction(String xmlPluginFile,
+			Plugin pluginBase, PluginAction pluginAction) {
+		super(pluginBase, xmlPluginFile);
+		this.pluginAction = pluginAction;
+		if (pluginAction.getName() == null) {
+			pluginAction.setName(pluginAction.getLabel());
+		}
+		menuPositions = new Vector<>();
+		properties = new Properties();
+		modes = new Vector<>();
+		for (Object obj : pluginAction.getListChoiceList()) {
+			if (obj instanceof PluginMenu) {
+				PluginMenu menu = (PluginMenu) obj;
+				menuPositions.add(menu.getLocation());
+			}
+			if (obj instanceof PluginProperty) {
+				PluginProperty property = (PluginProperty) obj;
+				properties.put(property.getName(), property.getValue());
+			}
+			if (obj instanceof PluginMode) {
+				PluginMode mode = (PluginMode) obj;
+				modes.add(mode.getClassName());
+			}
+		}
+	}
 
-    override fun toString(): String {
-        return ("[HookDescriptor props=" + properties + ", menu positions="
-                + menuPositions + "]")
-    }
+	public String toString() {
+		return "[HookDescriptor props=" + properties + ", menu positions="
+				+ menuPositions + "]";
+	}
 
-    // this is an error case?
-    val instanciationMethod: HookInstanciationMethod?
-        get() {
-            if (pluginAction.instanciation != null) {
-                val allInstMethods = HookInstanciationMethod
-                    .allInstanciationMethods
-                for (name in allInstMethods.keys) {
-                    if (pluginAction.instanciation.equals(name, ignoreCase = true)) {
-                        return allInstMethods[name]
-                    }
-                }
-            }
-            // this is an error case?
-            return HookInstanciationMethod.Other
-        }
-    val name: String?
-        get() = getFromResourceIfNecessary(pluginAction.name)
-    val className: String?
-        get() = pluginAction.className
-    val documentation: String?
-        get() = getFromResourceIfNecessary(pluginAction.documentation)
-    val iconPath: String?
-        get() = pluginAction.iconPath
-    val keyStroke: String?
-        get() = getFromPropertiesIfNecessary(pluginAction.keyStroke)
-    val baseClass: String?
-        get() = pluginAction.base
+	public HookInstanciationMethod getInstanciationMethod() {
+		if (pluginAction.getInstanciation() != null) {
+			HashMap<String, HookInstanciationMethod> allInstMethods = HookInstanciationMethod
+					.getAllInstanciationMethods();
+			for (String name : allInstMethods.keySet()) {
+				if (pluginAction.getInstanciation().equalsIgnoreCase(name)) {
+					return (HookInstanciationMethod) allInstMethods.get(name);
+				}
+			}
+		}
+		// this is an error case?
+		return HookInstanciationMethod.Other;
+	}
 
-    /**
-     * @return whether or not the plugin can be on/off and this should be
-     * displayed in the menus.
-     */
-    val isSelectable: Boolean
-        get() = pluginAction.isSelectable
+	public Vector<String> getModes() {
+		return modes;
+	}
+
+	public String getBaseClass() {
+		return pluginAction.getBase();
+	}
+
+	public String getName() {
+		return getFromResourceIfNecessary(pluginAction.getName());
+	}
+
+	public String getClassName() {
+		return pluginAction.getClassName();
+	}
+
+	public String getDocumentation() {
+		return getFromResourceIfNecessary(pluginAction.getDocumentation());
+	}
+
+	public String getIconPath() {
+		return pluginAction.getIconPath();
+	}
+
+	public String getKeyStroke() {
+		return getFromPropertiesIfNecessary(pluginAction.getKeyStroke());
+	}
+
+	/**
+	 */
+	public Properties getProperties() {
+		return properties;
+	}
+
+	/**
+	 * @return whether or not the plugin can be on/off and this should be
+	 *         displayed in the menus.
+	 */
+	public boolean isSelectable() {
+		return pluginAction.isSelectable();
+	}
+
 }

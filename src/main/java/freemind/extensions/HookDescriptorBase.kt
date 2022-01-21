@@ -20,141 +20,152 @@
  * Created on 18.08.2006
  */
 /*$Id: HookDescriptorBase.java,v 1.1.2.7 2008/07/09 20:01:00 christianfoltin Exp $*/
-package freemind.extensions
+package freemind.extensions;
 
-import freemind.controller.actions.generated.instance.Plugin
-import freemind.controller.actions.generated.instance.PluginClasspath
-import freemind.main.Resources
-import freemind.main.Tools
-import java.io.File
-import java.net.MalformedURLException
-import java.net.URL
-import java.net.URLClassLoader
-import java.util.Vector
-import java.util.logging.Logger
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Vector;
+
+import freemind.controller.actions.generated.instance.Plugin;
+import freemind.controller.actions.generated.instance.PluginClasspath;
+import freemind.main.Resources;
+import freemind.main.Tools;
 
 /**
  * @author foltin
+ * 
  */
-open class HookDescriptorBase(
-    val pluginBase: Plugin,
-    protected val mXmlPluginFile: String
-) {
-    /**
-     */
-    protected fun getFromResourceIfNecessary(string: String?): String? {
-        if (string == null) {
-            return string
-        }
-        return if (string.startsWith("%")) {
-            Resources.getInstance().getResourceString(string.substring(1))
-        } else string
-    }
+public class HookDescriptorBase {
+	public static final String FREEMIND_BASE_DIR_STRING = "${freemind.base.dir}";
 
-    protected fun getFromPropertiesIfNecessary(string: String?): String? {
-        if (string == null) {
-            return string
-        }
-        return if (string.startsWith("%")) {
-            Resources.getInstance().getProperty(string.substring(1))
-        } else string
-    }
+	// Logging:
+	protected static java.util.logging.Logger logger = null;
 
-    /**
-     * @return the relative/absolute(?) position of the plugin xml file.
-     */
-    private val pluginDirectory: String
-        get() = (Resources.getInstance().freemindBaseDir + "/"
-                + File(mXmlPluginFile).parent)
-    val pluginClasspath: List<PluginClasspath>
-        get() {
-            val returnValue = Vector<PluginClasspath>()
-            for (obj in pluginBase.listChoiceList) {
-                if (obj is PluginClasspath) {
-                    returnValue.add(obj)
-                }
-            }
-            return returnValue
-        }
+	protected final Plugin pluginBase;
 
-    // construct class loader:
-    val pluginClassLoader: ClassLoader?
-        get() {
-            // construct class loader:
-            val pluginClasspathList = pluginClasspath
-            return getClassLoader(pluginClasspathList)
-        }
+	protected final String mXmlPluginFile;
 
-    /**
-     * @param pluginBase
-     * @param frame
-     * @param xmlPluginFile
-     */
-    init {
-        if (logger == null) {
-            logger = Resources.getInstance().getLogger(
-                this.javaClass.name
-            )
-        }
-    }
+	/**
+	 * @param pluginBase
+	 * @param frame
+	 * @param xmlPluginFile
+	 */
+	public HookDescriptorBase(final Plugin pluginBase,
+			final String xmlPluginFile) {
+		super();
+		this.pluginBase = pluginBase;
+		mXmlPluginFile = xmlPluginFile;
+		if (logger == null) {
+			logger = freemind.main.Resources.getInstance().getLogger(
+					this.getClass().getName());
+		}
+	}
 
-    /**
-     * This string is used to identify known classloaders as they are cached.
-     *
-     */
-    private fun createPluginClasspathString(pluginClasspathList: List<PluginClasspath>): String {
-        var result = ""
-        for (type in pluginClasspathList) {
-            result += type.jar + ","
-        }
-        return result
-    }
+	/**
+	 */
+	protected String getFromResourceIfNecessary(String string) {
+		if (string == null) {
+			return string;
+		}
+		if (string.startsWith("%")) {
+			return Resources.getInstance().getResourceString(string.substring(1));
+		}
+		return string;
+	}
 
-    /**
-     * @throws MalformedURLException
-     */
-    private fun getClassLoader(pluginClasspathList: List<PluginClasspath>): ClassLoader? {
-        val key = createPluginClasspathString(pluginClasspathList)
-        return if (classLoaderCache.containsKey(key)) classLoaderCache[key] else try {
-            val urls = arrayOfNulls<URL>(pluginClasspathList.size)
-            var j = 0
-            for (classPath in pluginClasspathList) {
-                val jarString = classPath.jar
-                // if(jarString.startsWith(FREEMIND_BASE_DIR_STRING)){
-                // jarString = frame.getFreemindBaseDir() +
-                // jarString.substring(FREEMIND_BASE_DIR_STRING.length());
-                // }
-                // new version of classpath resolution suggested by ewl under
-                // patch [ 1154510 ] Be able to give absolute classpath entries
-                // in plugin.xml
-                var file = File(jarString)
-                if (!file.isAbsolute) {
-                    file = File(pluginDirectory, jarString)
-                }
-                // end new version by ewl.
-                logger!!.info(
-                    "file " + Tools.fileToUrl(file) + " exists = "
-                            + file.exists()
-                )
-                urls[j++] = Tools.fileToUrl(file)
-            }
-            val loader: ClassLoader = URLClassLoader(
-                urls,
-                Resources.getInstance().freeMindClassLoader
-            )
-            classLoaderCache[key] = loader
-            loader
-        } catch (e: MalformedURLException) {
-            Resources.getInstance().logException(e)
-            this.javaClass.classLoader
-        }
-    }
+	protected String getFromPropertiesIfNecessary(String string) {
+		if (string == null) {
+			return string;
+		}
+		if (string.startsWith("%")) {
+			return Resources.getInstance().getProperty(string.substring(1));
+		}
+		return string;
+	}
 
-    companion object {
-        const val FREEMIND_BASE_DIR_STRING = "\${freemind.base.dir}"
+	/**
+	 * @return the relative/absolute(?) position of the plugin xml file.
+	 */
+	private String getPluginDirectory() {
+		return Resources.getInstance().getFreemindBaseDir() + "/"
+				+ new File(mXmlPluginFile).getParent();
+	}
 
-        // Logging:
-        protected var logger: Logger? = null
-        private val classLoaderCache = HashMap<String, ClassLoader>()
-    }
+	public Plugin getPluginBase() {
+		return pluginBase;
+	}
+
+	public List<PluginClasspath> getPluginClasspath() {
+		Vector<PluginClasspath> returnValue = new Vector<>();
+		for (Object obj : pluginBase.getListChoiceList()) {
+			if (obj instanceof PluginClasspath) {
+				PluginClasspath pluginClasspath = (PluginClasspath) obj;
+				returnValue.add(pluginClasspath);
+			}
+		}
+		return returnValue;
+	}
+
+	public ClassLoader getPluginClassLoader() {
+		// construct class loader:
+		List<PluginClasspath> pluginClasspathList = getPluginClasspath();
+		ClassLoader loader = getClassLoader(pluginClasspathList);
+		return loader;
+	}
+
+	private static HashMap<String, ClassLoader> classLoaderCache = new HashMap<>();
+
+	/**
+	 * This string is used to identify known classloaders as they are cached.
+	 * 
+	 */
+	private String createPluginClasspathString(List<PluginClasspath> pluginClasspathList) {
+		String result = "";
+		for (PluginClasspath type : pluginClasspathList) {
+			result += type.getJar() + ",";
+		}
+		return result;
+	}
+
+	/**
+	 * @throws MalformedURLException
+	 */
+	private ClassLoader getClassLoader(List<PluginClasspath> pluginClasspathList) {
+		String key = createPluginClasspathString(pluginClasspathList);
+		if (classLoaderCache.containsKey(key))
+			return (ClassLoader) classLoaderCache.get(key);
+		try {
+			URL[] urls = new URL[pluginClasspathList.size()];
+			int j = 0;
+			for (PluginClasspath classPath :pluginClasspathList) {
+				String jarString = classPath.getJar();
+				// if(jarString.startsWith(FREEMIND_BASE_DIR_STRING)){
+				// jarString = frame.getFreemindBaseDir() +
+				// jarString.substring(FREEMIND_BASE_DIR_STRING.length());
+				// }
+				// new version of classpath resolution suggested by ewl under
+				// patch [ 1154510 ] Be able to give absolute classpath entries
+				// in plugin.xml
+				File file = new File(jarString);
+				if (!file.isAbsolute()) {
+					file = new File(getPluginDirectory(), jarString);
+				}
+				// end new version by ewl.
+				logger.info("file " + Tools.fileToUrl(file) + " exists = "
+						+ file.exists());
+				urls[j++] = Tools.fileToUrl(file);
+			}
+			ClassLoader loader = new URLClassLoader(urls,
+					Resources.getInstance().getFreeMindClassLoader());
+			classLoaderCache.put(key, loader);
+			return loader;
+		} catch (MalformedURLException e) {
+			freemind.main.Resources.getInstance().logException(e);
+			return this.getClass().getClassLoader();
+		}
+	}
 }

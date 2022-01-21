@@ -17,64 +17,72 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: NodeHookAdapter.java,v 1.1.4.4.2.2 2007/04/21 15:11:20 dpolivaev Exp $*/
-package freemind.extensions
+package freemind.extensions;
 
-import freemind.modes.MindMap
-import freemind.modes.MindMapNode
+import freemind.modes.MindMap;
+import freemind.modes.MindMapNode;
 
 /**
  * Straight forward implementation with some helpers.
- *
+ * 
  * @author foltin
- *
- */
-abstract class NodeHookAdapter
-/**
- *
- */
-    : HookAdapter(), NodeHook {
-    private var map: MindMap? = null
-    private var node: MindMapNode? = null
+ * 
+ * */
+public abstract class NodeHookAdapter extends HookAdapter implements NodeHook {
 
-    /*
+	private MindMap map;
+
+	private MindMapNode node;
+
+	/**
+	 * 
+	 */
+	public NodeHookAdapter() {
+		super();
+	}
+
+	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.modes.NodeHook#invoke()
 	 */
-    override fun invoke(node: MindMapNode?) {
-        logger?.finest("invoke(node) called.")
-    }
+	public void invoke(MindMapNode node) {
+		logger.finest("invoke(node) called.");
+	}
 
-    /**
-     */
-    open fun getNode(): MindMapNode? {
-        return node
-    }
+	/**
+	 */
+	public MindMapNode getNode() {
+		return node;
+	}
 
-    /**
-     */
-    override fun setNode(node: MindMapNode?) {
-        this.node = node
-    }
+	/**
+	 */
+	public void setNode(MindMapNode node) {
+		this.node = node;
+	}
 
-    /**
-     */
-    protected fun getMap(): MindMap? {
-        return map
-    }
+	/**
+	 */
+	protected MindMap getMap() {
+		return map;
+	}
 
-    /**
-     */
-    protected fun nodeChanged(node: MindMapNode?) {
-        controller?.nodeChanged(node)
-    }
+	/**
+	 */
+	protected void nodeChanged(MindMapNode node) {
+		getController().nodeChanged(node);
+	}
 
-    /**
-     */
-    override fun setMap(map: MindMap?) {
-        this.map = map
-    }
+	/**
+	 */
+	public void setMap(MindMap map) {
+		this.map = map;
+	}
 
-    open val nodeId: String?
-        get() = controller?.getNodeID(getNode())
+	public String getNodeId() {
+		return getController().getNodeID(getNode());
+	}
+
+
 }

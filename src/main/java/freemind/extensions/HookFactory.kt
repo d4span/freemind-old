@@ -20,93 +20,96 @@
  * Created on 31.12.2005
  */
 /*$Id: HookFactory.java,v 1.1.4.9.2.1 2006/07/25 20:28:20 christianfoltin Exp $*/
-package freemind.extensions
+package freemind.extensions;
 
-import freemind.controller.actions.generated.instance.Plugin
-import freemind.modes.MindMapNode
-import java.util.Vector
+import java.util.List;
+import java.util.Vector;
 
-interface HookFactory {
-    class RegistrationContainer {
-        @JvmField
-        var hookRegistrationClass: Class<*>? = null
-        @JvmField
-        var isPluginBase = false
-        @JvmField
-        var correspondingPlugin: Plugin? = null
-    }
+import freemind.controller.actions.generated.instance.Plugin;
+import freemind.modes.MindMapNode;
 
-    /**
-     * @return a string vector with representatives for plugins.
-     */
-    val possibleNodeHooks: Vector<String?>?
+public interface HookFactory {
 
-    /**
-     * @return a string vector with representatives for plugins.
-     */
-    val possibleModeControllerHooks: Vector<String?>?
-    fun createModeControllerHook(hookName: String?): ModeControllerHook?
+	public static class RegistrationContainer {
+		public Class hookRegistrationClass;
 
-    /**
-     * Do not call this method directly. Call ModeController.createNodeHook
-     * instead.
-     */
-    fun createNodeHook(hookName: String?): NodeHook?
+		public boolean isPluginBase;
 
-    /**
-     * @return null if not present, the hook otherwise.
-     */
-    fun getHookInNode(
-        node: MindMapNode?,
-        hookName: String?
-    ): PermanentNodeHook?
+		public Plugin correspondingPlugin;
 
-    /**
-     * @return returns a list of menu position strings for the
-     * StructuredMenuHolder.
-     */
-    fun getHookMenuPositions(hookName: String?): List<String?>?
+		public RegistrationContainer() {
+		}
+	}
 
-    /**
-     */
-    fun getInstanciationMethod(
-        hookName: String?
-    ): HookInstanciationMethod?
+	/**
+	 * @return a string vector with representatives for plugins.
+	 */
+	public abstract Vector<String> getPossibleNodeHooks();
 
-    /**
-     * Each Plugin can have a list of HookRegistrations that are called after
-     * the corresponding mode is enabled. (Like singletons.) One of these can
-     * operate as the pluginBase that is accessible to every normal
-     * plugin_action via the getPluginBaseClass method.
-     *
-     * @return A list of RegistrationContainer elements. The field
-     * hookRegistrationClass of RegistrationContainer is a class that is
-     * (probably) of HookRegistration type. You have to register every
-     * registration via the registerRegistrationContainer method when
-     * instanciated (this is typically done in the ModeController).
-     */
-    val registrations: List<RegistrationContainer?>?
+	/**
+	 * @return a string vector with representatives for plugins.
+	 */
+	public abstract Vector<String> getPossibleModeControllerHooks();
 
-    /**
-     * See getRegistrations. The registration makes sense for the factory, as
-     * the factory observes every object creation. <br></br>
-     * Moreover, the factory can tell other hooks it creates, who is its base
-     * plugin.
-     *
-     */
-    fun registerRegistrationContainer(
-        container: RegistrationContainer?,
-        instanciatedRegistrationObject: HookRegistration?
-    )
+	public abstract ModeControllerHook createModeControllerHook(String hookName);
 
-    fun deregisterAllRegistrationContainer()
+	/**
+	 * Do not call this method directly. Call ModeController.createNodeHook
+	 * instead.
+	 */
+	public abstract NodeHook createNodeHook(String hookName);
 
-    /**
-     * A plugin base class is a common registration class of multiple plugins.
-     * It is useful to embrace several related plugins (example: EncryptedNote
-     * -> Registration).
-     *
-     * @return the base class if declared and successfully instanciated or NULL.
-     */
-    fun getPluginBaseClass(hookName: String?): Any?
+	/**
+	 * @return null if not present, the hook otherwise.
+	 */
+	public abstract PermanentNodeHook getHookInNode(MindMapNode node,
+			String hookName);
+
+	/**
+	 * @return returns a list of menu position strings for the
+	 *         StructuredMenuHolder.
+	 */
+	public abstract List<String> getHookMenuPositions(String hookName);
+
+	/**
+	 */
+	public abstract HookInstanciationMethod getInstanciationMethod(
+			String hookName);
+
+	/**
+	 * Each Plugin can have a list of HookRegistrations that are called after
+	 * the corresponding mode is enabled. (Like singletons.) One of these can
+	 * operate as the pluginBase that is accessible to every normal
+	 * plugin_action via the getPluginBaseClass method.
+	 * 
+	 * @return A list of RegistrationContainer elements. The field
+	 *         hookRegistrationClass of RegistrationContainer is a class that is
+	 *         (probably) of HookRegistration type. You have to register every
+	 *         registration via the registerRegistrationContainer method when
+	 *         instanciated (this is typically done in the ModeController).
+	 */
+	public abstract List<RegistrationContainer> getRegistrations();
+
+	/**
+	 * See getRegistrations. The registration makes sense for the factory, as
+	 * the factory observes every object creation. <br>
+	 * Moreover, the factory can tell other hooks it creates, who is its base
+	 * plugin.
+	 * 
+	 */
+	public abstract void registerRegistrationContainer(
+			HookFactory.RegistrationContainer container,
+			HookRegistration instanciatedRegistrationObject);
+
+	public abstract void deregisterAllRegistrationContainer();
+
+	/**
+	 * A plugin base class is a common registration class of multiple plugins.
+	 * It is useful to embrace several related plugins (example: EncryptedNote
+	 * -> Registration).
+	 * 
+	 * @return the base class if declared and successfully instanciated or NULL.
+	 */
+	public abstract Object getPluginBaseClass(String hookName);
+
 }

@@ -20,26 +20,42 @@
  * Created on 18.08.2006
  */
 /*$Id: HookDescriptorRegistration.java,v 1.1.2.1 2006/08/20 19:34:25 christianfoltin Exp $*/
-package freemind.extensions
+package freemind.extensions;
 
-import freemind.controller.actions.generated.instance.Plugin
-import freemind.controller.actions.generated.instance.PluginMode
-import freemind.controller.actions.generated.instance.PluginRegistration
+import java.util.List;
+
+import freemind.controller.actions.generated.instance.Plugin;
+import freemind.controller.actions.generated.instance.PluginMode;
+import freemind.controller.actions.generated.instance.PluginRegistration;
 
 /**
  * @author foltin
+ * 
  */
-class HookDescriptorRegistration(
-    xmlPluginFile: String?,
-    pluginBase: Plugin?, private val mRegistration: PluginRegistration
-) : HookDescriptorBase(pluginBase!!, xmlPluginFile!!) {
-    // public PluginRegistration getPluginRegistration() {
-    // return mRegistration;
-    // }
-    val className: String?
-        get() = mRegistration.className
-    val isPluginBase: Boolean
-        get() = mRegistration.isPluginBase
-    val listPluginModeList: List<PluginMode?>
-        get() = mRegistration.listPluginModeList
+public class HookDescriptorRegistration extends HookDescriptorBase {
+
+	private final PluginRegistration mRegistration;
+
+	public HookDescriptorRegistration(String xmlPluginFile,
+			Plugin pluginBase, PluginRegistration pRegistration) {
+		super(pluginBase, xmlPluginFile);
+		mRegistration = pRegistration;
+	}
+
+	// public PluginRegistration getPluginRegistration() {
+	// return mRegistration;
+	// }
+
+	public String getClassName() {
+		return mRegistration.getClassName();
+	}
+
+	public boolean getIsPluginBase() {
+		return mRegistration.isPluginBase();
+	}
+
+	public List<PluginMode> getListPluginModeList() {
+		return mRegistration.getListPluginModeList();
+	}
+
 }

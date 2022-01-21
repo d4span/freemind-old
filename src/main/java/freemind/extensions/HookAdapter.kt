@@ -21,129 +21,144 @@
  * Created on 29.02.2004
  *
  */
-package freemind.extensions
+package freemind.extensions;
 
-import freemind.extensions.MindMapHook.PluginBaseClassSearcher
-import freemind.main.Resources
-import freemind.modes.MapFeedback
-import freemind.modes.ModeController
-import java.net.URL
-import java.util.Properties
-import java.util.logging.Logger
+import java.net.URL;
+import java.util.Properties;
+
+import freemind.modes.MapFeedback;
+import freemind.modes.ModeController;
 
 /**
  * Implments MindMapHook as an Adapter class. Implementation is straight
  * forward.
- *
+ * 
  * @author foltin
+ * 
  */
-open class HookAdapter : MindMapHook {
-    /*
+public class HookAdapter implements MindMapHook {
+
+	private String name;
+	private Properties properties;
+	private ModeController controller;
+
+	// Logging:
+	protected java.util.logging.Logger logger;
+	/**
+	 * Stores the plugin base class as declared by the
+	 * plugin_registration/isBaseClass attribute.
+	 */
+	private PluginBaseClassSearcher baseClass;
+	protected MapFeedback mapFeedback;
+
+	/**
+	 */
+	public HookAdapter() {
+		if (logger == null)
+			logger = freemind.main.Resources.getInstance().getLogger(
+					this.getClass().getName());
+		baseClass = null;
+	}
+
+	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.modes.NodeHook#getName()
-	 */  override var name: String? = null
-    private var properties: Properties? = null
-    protected var controller: ModeController? = null
+	 */
+	public String getName() {
+		return this.name;
+	}
 
-    // Logging:
-    @JvmField
-    protected var logger: Logger? = null
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    /**
-     * Stores the plugin base class as declared by the
-     * plugin_registration/isBaseClass attribute.
-     */
-    private var baseClass: PluginBaseClassSearcher?
-    @JvmField
-    protected var mapFeedback: MapFeedback? = null
-
-    /**
-     */
-    init {
-        if (logger == null) logger = Resources.getInstance().getLogger(
-            this.javaClass.name
-        )
-        baseClass = null
-    }
-
-    /*
+	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.modes.NodeHook#startupMapHook(java.lang.String)
 	 */
-    override fun startupMapHook() {
-        // TODO Auto-generated method stub
-    }
+	public void startupMapHook() {
+		// TODO Auto-generated method stub
 
-    /*
+	}
+
+	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.modes.NodeHook#shutdownMapHook()
 	 */
-    override fun shutdownMapHook() {
-        controller = null
-    }
+	public void shutdownMapHook() {
+		controller = null;
+	}
 
-    /**
-     */
-    protected fun getProperties(): Properties? {
-        return properties
-    }
+	/**
+	 */
+	protected ModeController getController() {
+		return controller;
+	}
 
-    /**
-     */
-    override fun setProperties(properties: Properties?) {
-        this.properties = properties
-    }
+	/**
+	 */
+	protected Properties getProperties() {
+		return properties;
+	}
 
-    /**
-     */
-    override fun setController(controller: MapFeedback?) {
-        mapFeedback = controller
-        if (controller is ModeController) {
-            this.controller = controller
-        }
-    }
+	/**
+	 */
+	public void setProperties(Properties properties) {
+		this.properties = properties;
+	}
 
-    /*
+	/**
+	 */
+	public void setController(MapFeedback controller) {
+		this.mapFeedback = controller;
+		if (controller instanceof ModeController) {
+			this.controller = (ModeController) controller;
+		}
+	}
+
+	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.extensions.MindMapHook#getResourceString(java.lang.String)
 	 */
-    override fun getResourceString(property: String?): String? {
-        var result = properties!!.getProperty(property)
-        if (result == null) {
-            result = controller!!.getText(property)
-        }
-        if (result == null) {
-            logger!!.warning("The following property was not found:$property")
-        }
-        return result
-    }
+	public String getResourceString(String property) {
+		String result = properties.getProperty(property);
+		if (result == null) {
+			result = getController().getText(property);
+		}
+		if (result == null) {
+			logger.warning("The following property was not found:" + property);
+		}
+		return result;
+	}
 
-    fun getResource(resourceName: String?): URL {
-        return this.javaClass.classLoader.getResource(resourceName)
-    }
+	public URL getResource(String resourceName) {
+		return this.getClass().getClassLoader().getResource(resourceName);
+	}
 
-    /*
+	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see freemind.extensions.MindMapHook#getPluginBaseClass()
 	 */
-    override fun getPluginBaseClass(): Any? {
-        return baseClass!!.pluginBaseObject
-    }
+	public Object getPluginBaseClass() {
+		return baseClass.getPluginBaseObject();
+	}
 
-    override fun setPluginBaseClass(baseClass: PluginBaseClassSearcher?) {
-        this.baseClass = baseClass
-    }
+	public void setPluginBaseClass(PluginBaseClassSearcher baseClass) {
+		this.baseClass = baseClass;
+	}
 
-    /**
-     * After tree node change, the focus must be obtained as it is invalid.
-     */
-    protected fun obtainFocusForSelected() {
-        // Focus fix
-        controller!!.controller.obtainFocusForSelected()
-    }
+	/**
+	 * After tree node change, the focus must be obtained as it is invalid.
+	 */
+	protected void obtainFocusForSelected() {
+		// Focus fix
+		getController().getController().obtainFocusForSelected();
+	}
+
+
 }

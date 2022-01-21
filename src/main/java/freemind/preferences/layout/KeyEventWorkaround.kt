@@ -19,187 +19,239 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package freemind.preferences.layout
 
-import java.awt.event.InputEvent
-import java.awt.event.KeyEvent
+package freemind.preferences.layout;
 
-// {{{ Imports
+//{{{ Imports
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+
 /**
  * Various hacks to get keyboard event handling to behave in a consistent manner
  * across Java implementations.
- *
+ * 
  * @author Slava Pestov
  * @version $Id: KeyEventWorkaround.java,v 1.1.2.1 2005/05/10 20:55:31
- * christianfoltin Exp $
+ *          christianfoltin Exp $
  */
-@Suppress("DEPRECATION")
-object KeyEventWorkaround {
-    const val ALT_KEY_PRESSED_DISABLED = false
-    const val ALTERNATIVE_DISPATCHER = false
+public class KeyEventWorkaround {
+	public static final boolean ALT_KEY_PRESSED_DISABLED = false;
+	public static final boolean ALTERNATIVE_DISPATCHER = false;
 
-    // {{{ processKeyEvent() method
-    fun processKeyEvent(evt: KeyEvent): KeyEvent? {
-        val keyCode = evt.keyCode
-        val ch = evt.keyChar
-        return when (evt.id) {
-            KeyEvent.KEY_PRESSED -> {
-                lastKeyTime = evt.getWhen()
-                when (keyCode) {
-                    KeyEvent.VK_DEAD_GRAVE, KeyEvent.VK_DEAD_ACUTE, KeyEvent.VK_DEAD_CIRCUMFLEX, KeyEvent.VK_DEAD_TILDE, KeyEvent.VK_DEAD_MACRON, KeyEvent.VK_DEAD_BREVE, KeyEvent.VK_DEAD_ABOVEDOT, KeyEvent.VK_DEAD_DIAERESIS, KeyEvent.VK_DEAD_ABOVERING, KeyEvent.VK_DEAD_DOUBLEACUTE, KeyEvent.VK_DEAD_CARON, KeyEvent.VK_DEAD_CEDILLA, KeyEvent.VK_DEAD_OGONEK, KeyEvent.VK_DEAD_IOTA, KeyEvent.VK_DEAD_VOICED_SOUND, KeyEvent.VK_DEAD_SEMIVOICED_SOUND, '\u0000'.digitToInt() -> null
-                    KeyEvent.VK_ALT -> {
-                        modifiers = modifiers or InputEvent.ALT_MASK
-                        null
-                    }
-                    KeyEvent.VK_ALT_GRAPH -> {
-                        modifiers =
-                            modifiers or InputEvent.ALT_GRAPH_MASK
-                        null
-                    }
-                    KeyEvent.VK_CONTROL -> {
-                        modifiers = modifiers or InputEvent.CTRL_MASK
-                        null
-                    }
-                    KeyEvent.VK_SHIFT -> {
-                        modifiers = modifiers or InputEvent.SHIFT_MASK
-                        null
-                    }
-                    KeyEvent.VK_META -> {
-                        modifiers = modifiers or InputEvent.META_MASK
-                        null
-                    }
-                    else -> {
-                        if (!evt.isMetaDown) {
-                            if (evt.isControlDown && evt.isAltDown) {
-                                lastKeyTime = 0L
-                            } else if (!evt.isControlDown && !evt.isAltDown) {
-                                lastKeyTime = 0L
-                                if (keyCode >= KeyEvent.VK_0 &&
-                                    keyCode <= KeyEvent.VK_9
-                                ) {
-                                    return null
-                                }
-                                if (keyCode >= KeyEvent.VK_A &&
-                                    keyCode <= KeyEvent.VK_Z
-                                ) {
-                                    return null
-                                }
-                            }
-                        }
-                        if (ALT_KEY_PRESSED_DISABLED) {
-                            /* we don't handle key pressed A+ */
-                            /* they're too troublesome */
-                            if (modifiers and InputEvent.ALT_MASK != 0) return null
-                        }
-                        when (keyCode) {
-                            KeyEvent.VK_NUMPAD0, KeyEvent.VK_NUMPAD1, KeyEvent.VK_NUMPAD2, KeyEvent.VK_NUMPAD3, KeyEvent.VK_NUMPAD4, KeyEvent.VK_NUMPAD5, KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD7, KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD9, KeyEvent.VK_MULTIPLY, KeyEvent.VK_ADD, KeyEvent.VK_SUBTRACT, KeyEvent.VK_DECIMAL, KeyEvent.VK_DIVIDE ->
-                                last =
-                                    LAST_NUMKEYPAD
-                            else -> last = LAST_NOTHING
-                        }
-                        evt
-                    }
-                }
-            }
-            KeyEvent.KEY_TYPED -> {
-                // need to let \b through so that backspace will work
-                // in HistoryTextFields
-                if ((ch.code < 0x20 || ch.code == 0x7f || ch.code == 0xff) && ch != '\b' && ch != '\t' && ch != '\n') {
-                    return null
-                }
-                if (evt.getWhen() - lastKeyTime < 750) {
-                    if (!ALTERNATIVE_DISPATCHER) {
-//                        if (modifiers and InputEvent.CTRL_MASK != 0 xor (modifiers and InputEvent.ALT_MASK) != 0
-//                            || modifiers and InputEvent.META_MASK != 0
-//                        ) {
-//                            return null
-//                        }
-                        TODO()
-                    }
+	// {{{ processKeyEvent() method
+	public static KeyEvent processKeyEvent(KeyEvent evt) {
+		int keyCode = evt.getKeyCode();
+		char ch = evt.getKeyChar();
 
-                    // if the last key was a numeric keypad key
-                    // and NumLock is off, filter it out
-                    if (last == LAST_NUMKEYPAD) {
-                        last = LAST_NOTHING
-                        if (ch >= '0' && ch <= '9' || ch == '.' || ch == '/' || ch == '*' || ch == '-' || ch == '+') {
-                            return null
-                        }
-                    } else if (last == LAST_ALT) {
-                        last = LAST_NOTHING
-                        when (ch) {
-                            'B', 'M', 'X', 'c', '!', ',', '?' -> return null
-                        }
-                    }
-                } else {
-                    if (modifiers and InputEvent.SHIFT_MASK != 0) {
-                        when (ch) {
-                            '\n', '\t' -> return null
-                        }
-                    }
-                    modifiers = 0
-                }
-                evt
-            }
-            KeyEvent.KEY_RELEASED -> {
-                when (keyCode) {
-                    KeyEvent.VK_ALT -> {
-                        modifiers =
-                            modifiers and InputEvent.ALT_MASK.inv()
-                        lastKeyTime = evt.getWhen()
-                        // we consume this to work around the bug
-                        // where A+TAB window switching activates
-                        // the menu bar on Windows.
-                        evt.consume()
-                        return null
-                    }
-                    KeyEvent.VK_ALT_GRAPH -> {
-                        modifiers =
-                            modifiers and InputEvent.ALT_GRAPH_MASK.inv()
-                        return null
-                    }
-                    KeyEvent.VK_CONTROL -> {
-                        modifiers =
-                            modifiers and InputEvent.CTRL_MASK.inv()
-                        return null
-                    }
-                    KeyEvent.VK_SHIFT -> {
-                        modifiers =
-                            modifiers and InputEvent.SHIFT_MASK.inv()
-                        return null
-                    }
-                    KeyEvent.VK_META -> {
-                        modifiers =
-                            modifiers and InputEvent.META_MASK.inv()
-                        return null
-                    }
-                    KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_PAGE_UP, KeyEvent.VK_PAGE_DOWN, KeyEvent.VK_END, KeyEvent.VK_HOME -> /*
+		switch (evt.getID()) {
+		// {{{ KEY_PRESSED...
+		case KeyEvent.KEY_PRESSED:
+			lastKeyTime = evt.getWhen();
+			// get rid of keys we never need to handle
+			switch (keyCode) {
+			case KeyEvent.VK_DEAD_GRAVE:
+			case KeyEvent.VK_DEAD_ACUTE:
+			case KeyEvent.VK_DEAD_CIRCUMFLEX:
+			case KeyEvent.VK_DEAD_TILDE:
+			case KeyEvent.VK_DEAD_MACRON:
+			case KeyEvent.VK_DEAD_BREVE:
+			case KeyEvent.VK_DEAD_ABOVEDOT:
+			case KeyEvent.VK_DEAD_DIAERESIS:
+			case KeyEvent.VK_DEAD_ABOVERING:
+			case KeyEvent.VK_DEAD_DOUBLEACUTE:
+			case KeyEvent.VK_DEAD_CARON:
+			case KeyEvent.VK_DEAD_CEDILLA:
+			case KeyEvent.VK_DEAD_OGONEK:
+			case KeyEvent.VK_DEAD_IOTA:
+			case KeyEvent.VK_DEAD_VOICED_SOUND:
+			case KeyEvent.VK_DEAD_SEMIVOICED_SOUND:
+			case '\0':
+				return null;
+			case KeyEvent.VK_ALT:
+				modifiers |= InputEvent.ALT_MASK;
+				return null;
+			case KeyEvent.VK_ALT_GRAPH:
+				modifiers |= InputEvent.ALT_GRAPH_MASK;
+				return null;
+			case KeyEvent.VK_CONTROL:
+				modifiers |= InputEvent.CTRL_MASK;
+				return null;
+			case KeyEvent.VK_SHIFT:
+				modifiers |= InputEvent.SHIFT_MASK;
+				return null;
+			case KeyEvent.VK_META:
+				modifiers |= InputEvent.META_MASK;
+				return null;
+			default:
+				if (!evt.isMetaDown()) {
+					if (evt.isControlDown() && evt.isAltDown()) {
+						lastKeyTime = 0L;
+					} else if (!evt.isControlDown() && !evt.isAltDown()) {
+						lastKeyTime = 0L;
+
+						if (keyCode >= KeyEvent.VK_0
+								&& keyCode <= KeyEvent.VK_9) {
+							return null;
+						}
+
+						if (keyCode >= KeyEvent.VK_A
+								&& keyCode <= KeyEvent.VK_Z) {
+							return null;
+						}
+					}
+				}
+
+				if (ALT_KEY_PRESSED_DISABLED) {
+					/* we don't handle key pressed A+ */
+					/* they're too troublesome */
+					if ((modifiers & InputEvent.ALT_MASK) != 0)
+						return null;
+				}
+
+				switch (keyCode) {
+				case KeyEvent.VK_NUMPAD0:
+				case KeyEvent.VK_NUMPAD1:
+				case KeyEvent.VK_NUMPAD2:
+				case KeyEvent.VK_NUMPAD3:
+				case KeyEvent.VK_NUMPAD4:
+				case KeyEvent.VK_NUMPAD5:
+				case KeyEvent.VK_NUMPAD6:
+				case KeyEvent.VK_NUMPAD7:
+				case KeyEvent.VK_NUMPAD8:
+				case KeyEvent.VK_NUMPAD9:
+				case KeyEvent.VK_MULTIPLY:
+				case KeyEvent.VK_ADD:
+					/* case KeyEvent.VK_SEPARATOR: */
+				case KeyEvent.VK_SUBTRACT:
+				case KeyEvent.VK_DECIMAL:
+				case KeyEvent.VK_DIVIDE:
+					last = LAST_NUMKEYPAD;
+					break;
+				default:
+					last = LAST_NOTHING;
+					break;
+				}
+
+				return evt;
+			}
+			// }}}
+			// {{{ KEY_TYPED...
+		case KeyEvent.KEY_TYPED:
+			// need to let \b through so that backspace will work
+			// in HistoryTextFields
+			if ((ch < 0x20 || ch == 0x7f || ch == 0xff) && ch != '\b'
+					&& ch != '\t' && ch != '\n') {
+				return null;
+			}
+
+			if (evt.getWhen() - lastKeyTime < 750) {
+				if (!ALTERNATIVE_DISPATCHER) {
+					if (((modifiers & InputEvent.CTRL_MASK) != 0 ^ (modifiers & InputEvent.ALT_MASK) != 0)
+							|| (modifiers & InputEvent.META_MASK) != 0) {
+						return null;
+					}
+				}
+
+				// if the last key was a numeric keypad key
+				// and NumLock is off, filter it out
+				if (last == LAST_NUMKEYPAD) {
+					last = LAST_NOTHING;
+					if ((ch >= '0' && ch <= '9') || ch == '.' || ch == '/'
+							|| ch == '*' || ch == '-' || ch == '+') {
+						return null;
+					}
+				}
+				// Windows JDK workaround
+				else if (last == LAST_ALT) {
+					last = LAST_NOTHING;
+					switch (ch) {
+					case 'B':
+					case 'M':
+					case 'X':
+					case 'c':
+					case '!':
+					case ',':
+					case '?':
+						return null;
+					}
+				}
+			} else {
+				if ((modifiers & InputEvent.SHIFT_MASK) != 0) {
+					switch (ch) {
+					case '\n':
+					case '\t':
+						return null;
+					}
+				}
+				modifiers = 0;
+			}
+
+			return evt;
+			// }}}
+			// {{{ KEY_RELEASED...
+		case KeyEvent.KEY_RELEASED:
+			switch (keyCode) {
+			case KeyEvent.VK_ALT:
+				modifiers &= ~InputEvent.ALT_MASK;
+				lastKeyTime = evt.getWhen();
+				// we consume this to work around the bug
+				// where A+TAB window switching activates
+				// the menu bar on Windows.
+				evt.consume();
+				return null;
+			case KeyEvent.VK_ALT_GRAPH:
+				modifiers &= ~InputEvent.ALT_GRAPH_MASK;
+				return null;
+			case KeyEvent.VK_CONTROL:
+				modifiers &= ~InputEvent.CTRL_MASK;
+				return null;
+			case KeyEvent.VK_SHIFT:
+				modifiers &= ~InputEvent.SHIFT_MASK;
+				return null;
+			case KeyEvent.VK_META:
+				modifiers &= ~InputEvent.META_MASK;
+				return null;
+			case KeyEvent.VK_LEFT:
+			case KeyEvent.VK_RIGHT:
+			case KeyEvent.VK_UP:
+			case KeyEvent.VK_DOWN:
+			case KeyEvent.VK_PAGE_UP:
+			case KeyEvent.VK_PAGE_DOWN:
+			case KeyEvent.VK_END:
+			case KeyEvent.VK_HOME:
+				/*
 				 * workaround for A+keys producing garbage on Windows
-				 */if (modifiers == InputEvent.ALT_MASK) last =
-                        LAST_ALT
-                }
-                evt
-            }
-            else -> evt
-        }
-    } // }}}
-    // {{{ numericKeypadKey() method
-    /**
-     * A workaround for non-working NumLock status in some Java versions.
-     *
-     * @since jEdit 4.0pre8
-     */
-    fun numericKeypadKey() {
-        last = LAST_NOTHING
-    } // }}}
+				 */
+				if (modifiers == InputEvent.ALT_MASK)
+					last = LAST_ALT;
+				break;
+			}
+			return evt;
+			// }}}
+		default:
+			return evt;
+		}
+	} // }}}
 
-    // {{{ Package-private members
-    var lastKeyTime: Long = 0
-    var modifiers = 0
+	// {{{ numericKeypadKey() method
+	/**
+	 * A workaround for non-working NumLock status in some Java versions.
+	 * 
+	 * @since jEdit 4.0pre8
+	 */
+	public static void numericKeypadKey() {
+		last = LAST_NOTHING;
+	} // }}}
 
-    // }}}
-    // {{{ Private members
-    private var last = 0
-    private const val LAST_NOTHING = 0
-    private const val LAST_NUMKEYPAD = 1
-    private const val LAST_ALT = 2 // }}}
+	// {{{ Package-private members
+	static long lastKeyTime;
+	static int modifiers;
+	// }}}
+
+	// {{{ Private members
+	private static int last;
+	private static final int LAST_NOTHING = 0;
+	private static final int LAST_NUMKEYPAD = 1;
+	private static final int LAST_ALT = 2;
+	// }}}
 }

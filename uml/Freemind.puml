@@ -82,7 +82,6 @@ package "Third-party libs" {
 [Preferences] --> [JGoodies]
 [Preferences] --> [Controllers]
 [Preferences] --> [Java Swing]
-[Preferences] --> [Jetbrains Annotations]
 
 [Modes] --> [Preferences]
 [Modes] --> [Controllers]

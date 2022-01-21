@@ -19,12 +19,13 @@
  *
  * Created on 10.05.2005
  */
-package freemind.preferences
+
+package freemind.preferences;
 
 /**
  * Is issued by the OptionPanel when the user accepted a change of its
  * preferences.
  */
-interface FreemindPropertyListener {
-    fun propertyChanged(propertyName: String?, newValue: String?, oldValue: String?)
+public interface FreemindPropertyListener {
+	void propertyChanged(String propertyName, String newValue, String oldValue);
 }

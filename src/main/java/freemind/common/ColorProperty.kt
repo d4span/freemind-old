@@ -37,7 +37,7 @@ import javax.swing.JPopupMenu
 class ColorProperty(
     override var description: String,
     override var label: String,
-    private val defaultColor: String?,
+    private val defaultColor: String,
     private val mTranslator: TextTranslator
 ) : PropertyBean(), PropertyControl, ActionListener {
 

@@ -21,7 +21,6 @@ tasks {
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         kotlinOptions {
             allWarningsAsErrors = true
-            jvmTarget = "17"
         }
     }
     test {

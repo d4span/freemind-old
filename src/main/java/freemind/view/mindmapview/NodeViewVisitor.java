@@ -16,22 +16,9 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package freemind.view.mindmapview
 
-import java.awt.LayoutManager
-import java.awt.Point
+package freemind.view.mindmapview;
 
-interface NodeViewLayout : LayoutManager {
-    fun layoutNodeMotionListenerView(view: NodeMotionListenerView?)
-    fun getMainViewOutPoint(
-        view: NodeView?, targetView: NodeView?,
-        destinationPoint: Point?
-    ): Point?
-
-    fun getMainViewInPoint(view: NodeView?): Point?
-
-    /**
-     * @param pFoldingComponent
-     */
-    fun layoutNodeFoldingComponent(pFoldingComponent: NodeFoldingComponent?)
+public interface NodeViewVisitor {
+	void visit(NodeView view);
 }

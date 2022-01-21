@@ -19,17 +19,17 @@
 
 package freemind.view.mindmapview;
 
-import freemind.main.Tools;
-import freemind.modes.EdgeAdapter;
-import freemind.modes.MindMapEdge;
-import freemind.modes.MindMapNode;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.Iterator;
+
+import freemind.main.Tools;
+import freemind.modes.EdgeAdapter;
+import freemind.modes.MindMapEdge;
+import freemind.modes.MindMapNode;
 
 @SuppressWarnings("serial")
 class ForkMainView extends MainView {
@@ -57,7 +57,7 @@ class ForkMainView extends MainView {
 		super.paint(g);
 	}
 
-	public int getMainViewWidthWithFoldingMark() {
+	protected int getMainViewWidthWithFoldingMark() {
 		int width = getWidth();
 		if (getNodeView().getModel().isFolded()) {
 			width += getZoomedFoldingSymbolHalfWidth() * 2
@@ -66,7 +66,7 @@ class ForkMainView extends MainView {
 		return width;
 	}
 
-	public int getMainViewHeightWithFoldingMark() {
+	protected int getMainViewHeightWithFoldingMark() {
 		int height = getHeight();
 		if (getNodeView().getModel().isFolded()) {
 			height += getZoomedFoldingSymbolHalfWidth();
@@ -86,18 +86,18 @@ class ForkMainView extends MainView {
 	 * 
 	 * @see freemind.view.mindmapview.NodeView#getStyle()
 	 */
-	public String getStyle() {
+	String getStyle() {
 		return MindMapNode.STYLE_FORK;
 	}
 
 	/**
 	 * Returns the relative position of the Edge
 	 */
-	public int getAlignment() {
+	int getAlignment() {
 		return NodeView.ALIGN_BOTTOM;
 	}
 
-	public Point getLeftPoint() {
+	Point getLeftPoint() {
 		int edgeWidth = getEdgeWidth();
 		Point in = new Point(0, getHeight() - edgeWidth / 2 - 1);
 		return in;
@@ -124,12 +124,12 @@ class ForkMainView extends MainView {
 		return edgeWidth;
 	}
 
-	public Point getCenterPoint() {
+	Point getCenterPoint() {
 		Point in = new Point(getWidth() / 2, getHeight() / 2);
 		return in;
 	}
 
-	public Point getRightPoint() {
+	Point getRightPoint() {
 		int edgeWidth = getEdgeWidth();
 		Point in = new Point(getWidth() - 1, getHeight() - edgeWidth / 2 - 1);
 		return in;

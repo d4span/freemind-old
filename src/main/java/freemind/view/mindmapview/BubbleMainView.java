@@ -22,17 +22,17 @@ package freemind.view.mindmapview;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Stroke;
 
-import freemind.main.FreeMind;
-import freemind.main.Resources;
 import freemind.main.Tools;
+import freemind.modes.MindMapNode;
 
 @SuppressWarnings("serial")
-class RootMainView extends MainView {
+class BubbleMainView extends MainView {
+	final static Stroke DEF_STROKE = new BasicStroke();
 
 	/*
 	 * (non-Javadoc)
@@ -41,56 +41,48 @@ class RootMainView extends MainView {
 	 */
 	public Dimension getPreferredSize() {
 		Dimension prefSize = super.getPreferredSize();
-		prefSize.width *= 1.1;
-		prefSize.height *= 2;
+		prefSize.width += getNodeView().getMap().getZoomed(5);
 		return prefSize;
 	}
 
 	public void paint(Graphics graphics) {
 		Graphics2D g = (Graphics2D) graphics;
-
-		if (getNodeView().getModel() == null)
+		final NodeView nodeView = getNodeView();
+		final MindMapNode model = nodeView.getModel();
+		if (model == null)
 			return;
 
 		Object renderingHint = getNodeView().getMap().setEdgesRenderingHint(g);
 		paintSelected(g);
 		paintDragOver(g);
 
-		// Draw a root node
-		g.setColor(Color.gray);
-		g.setStroke(new BasicStroke(1.0f));
-		g.drawOval(0, 0, getWidth() - 1, getHeight() - 1);
+		// change to bold stroke
+		// g.setStroke(BOLD_STROKE); // Changed by Daniel
+
+		// Draw a standard node
+		g.setColor(model.getEdge().getColor());
+		// g.drawOval(0,0,size.width-1,size.height-1); // Changed by Daniel
+
+		// return to std stroke
+		g.setStroke(DEF_STROKE);
+		g.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
 		Tools.restoreAntialiasing(g, renderingHint);
+
 		super.paint(g);
 	}
 
-	public void paintDragOver(Graphics2D graphics) {
-		final int draggedOver = getDraggedOver();
-		if (draggedOver == NodeView.DRAGGED_OVER_SON) {
-			graphics.setPaint(new GradientPaint(getWidth() / 4, 0,
-					getNodeView().getMap().getBackground(), getWidth() * 3 / 4,
-					0, NodeView.dragColor));
-			graphics.fillRect(getWidth() / 4, 0, getWidth() - 1,
-					getHeight() - 1);
-		} else if (draggedOver == NodeView.DRAGGED_OVER_SON_LEFT) {
-			graphics.setPaint(new GradientPaint(getWidth() * 3 / 4, 0,
-					getNodeView().getMap().getBackground(), getWidth() / 4, 0,
-					NodeView.dragColor));
-			graphics.fillRect(0, 0, getWidth() * 3 / 4, getHeight() - 1);
-		}
-	}
-
 	public void paintSelected(Graphics2D graphics) {
+		super.paintSelected(graphics);
 		if (getNodeView().useSelectionColors()) {
-			paintBackground(graphics, getNodeView().getSelectedColor());
-		} else {
-			paintBackground(graphics, getNodeView().getTextBackground());
+			graphics.setColor(MapView.standardSelectColor);
+			graphics.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10,
+					10);
 		}
 	}
 
 	protected void paintBackground(Graphics2D graphics, Color color) {
 		graphics.setColor(color);
-		graphics.fillOval(1, 1, getWidth() - 2, getHeight() - 2);
+		graphics.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
 	}
 
 	Point getLeftPoint() {
@@ -110,9 +102,20 @@ class RootMainView extends MainView {
 		return in;
 	}
 
-	public void setDraggedOver(Point p) {
-		setDraggedOver((dropPosition(p.getX())) ? NodeView.DRAGGED_OVER_SON_LEFT
-				: NodeView.DRAGGED_OVER_SON);
+	protected int getMainViewWidthWithFoldingMark() {
+		int width = getWidth();
+		int dW = getZoomedFoldingSymbolHalfWidth() * 2;
+		if (getNodeView().getModel().isFolded()) {
+			width += dW;
+		}
+		return width + dW;
+	}
+
+	public int getDeltaX() {
+		if (getNodeView().getModel().isFolded() && getNodeView().isLeft()) {
+			return super.getDeltaX() + getZoomedFoldingSymbolHalfWidth() * 2;
+		}
+		return super.getDeltaX();
 	}
 
 	/*
@@ -121,8 +124,7 @@ class RootMainView extends MainView {
 	 * @see freemind.view.mindmapview.NodeView#getStyle()
 	 */
 	String getStyle() {
-		return Resources.getInstance().getProperty(
-				FreeMind.RESOURCES_ROOT_NODE_STYLE);
+		return MindMapNode.STYLE_BUBBLE;
 	}
 
 	/**
@@ -132,8 +134,13 @@ class RootMainView extends MainView {
 		return NodeView.ALIGN_CENTER;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see freemind.view.mindmapview.NodeView#getTextWidth()
+	 */
 	public int getTextWidth() {
-		return super.getTextWidth() - getWidth() / 10;
+		return super.getTextWidth() + getNodeView().getMap().getZoomed(5);
 	}
 
 	/*
@@ -142,16 +149,7 @@ class RootMainView extends MainView {
 	 * @see freemind.view.mindmapview.NodeView#getTextX()
 	 */
 	public int getTextX() {
-		return getIconWidth() + getWidth() / 20;
-	}
-
-	public boolean dropAsSibling(double xCoord) {
-		return false;
-	}
-
-	/** @return true if should be on the left, false otherwise. */
-	public boolean dropPosition(double xCoord) {
-		return xCoord < getSize().width * 1 / 2;
+		return super.getTextX() + getNodeView().getMap().getZoomed(2);
 	}
 
 }

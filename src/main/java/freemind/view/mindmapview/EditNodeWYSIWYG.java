@@ -21,20 +21,6 @@
 
 package freemind.view.mindmapview;
 
-import accessories.plugins.NodeNoteRegistration.SimplyHtmlResources;
-import com.inet.jortho.SpellChecker;
-import com.lightdev.app.shtm.SHTMLPanel;
-import freemind.main.FreeMindMain;
-import freemind.main.HtmlTools;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.modes.ModeController;
-
-import javax.swing.JButton;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.html.HTMLDocument;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -45,6 +31,23 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import javax.swing.JButton;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.text.JTextComponent;
+import javax.swing.text.html.HTMLDocument;
+
+import accessories.plugins.NodeNoteRegistration.SimplyHtmlResources;
+
+import com.inet.jortho.SpellChecker;
+import com.lightdev.app.shtm.SHTMLPanel;
+
+import freemind.main.FreeMindMain;
+import freemind.main.HtmlTools;
+import freemind.main.Resources;
+import freemind.main.Tools;
+import freemind.modes.ModeController;
 
 /**
  * @author Daniel Polansky
@@ -233,7 +236,7 @@ public class EditNodeWYSIWYG extends EditNodeBase {
 			final SHTMLPanel htmlEditorPanel = ((HTMLDialog) htmlEditorWindow)
 					.getHtmlEditorPanel();
 			String rule = "BODY {";
-			Font font = getNode().getTextFont();
+			Font font = node.getTextFont();
 			if (Resources.getInstance().getBoolProperty(
 					"experimental_font_sizing_for_long_node_editors")) {
 				/*
@@ -245,18 +248,18 @@ public class EditNodeWYSIWYG extends EditNodeBase {
 				font = Tools.updateFontSize(font, this.getView().getZoom(),
 						font.getSize());
 			}
-			final Color nodeTextBackground = getNode().getTextBackground();
+			final Color nodeTextBackground = node.getTextBackground();
 			rule += "font-family: " + font.getFamily() + ";";
 			rule += "font-size: " + font.getSize() + "pt;";
 			// Daniel said:, but no effect:
 			// rule += "font-size: "+node.getFont().getSize()+"pt;";
-			if (getNode().getModel().isItalic()) {
+			if (node.getModel().isItalic()) {
 				rule += "font-style: italic; ";
 			}
-			if (getNode().getModel().isBold()) {
+			if (node.getModel().isBold()) {
 				rule += "font-weight: bold; ";
 			}
-			final Color nodeTextColor = getNode().getTextColor();
+			final Color nodeTextColor = node.getTextColor();
 			rule += "color: " + Tools.colorToXml(nodeTextColor) + ";";
 			rule += "}\n";
 			rule += "p {";
@@ -269,18 +272,18 @@ public class EditNodeWYSIWYG extends EditNodeBase {
 			editorPane.setCaretColor(nodeTextColor);
 			document.getStyleSheet().addRule(rule);
 			try {
-				document.setBase(getNode().getMap().getModel().getURL());
+				document.setBase(node.getMap().getModel().getURL());
 			} catch (MalformedURLException e) {
 			}
 
 			// { -- Set size (can be refactored to share code with long node
 			// editor)
-			int preferredHeight = (int) (getNode().getMainView().getHeight() * 1.2);
+			int preferredHeight = (int) (node.getMainView().getHeight() * 1.2);
 			preferredHeight = Math.max(preferredHeight, Integer.parseInt(frame
 					.getProperty("el__min_default_window_height")));
 			preferredHeight = Math.min(preferredHeight, Integer.parseInt(frame
 					.getProperty("el__max_default_window_height")));
-			int preferredWidth = (int) (getNode().getMainView().getWidth() * 1.2);
+			int preferredWidth = (int) (node.getMainView().getWidth() * 1.2);
 			preferredWidth = Math.max(preferredWidth, Integer.parseInt(frame
 					.getProperty("el__min_default_window_width")));
 			preferredWidth = Math.min(preferredWidth, Integer.parseInt(frame
@@ -291,9 +294,9 @@ public class EditNodeWYSIWYG extends EditNodeBase {
 
 			htmlEditorWindow.pack();
 
-			Tools.setDialogLocationRelativeTo(htmlEditorWindow, getNode());
+			Tools.setDialogLocationRelativeTo(htmlEditorWindow, node);
 
-			String content = getNode().getModel().toString();
+			String content = node.getModel().toString();
 			if (!HtmlTools.isHtmlNode(content)) {
 				content = HtmlTools.plainToHTML(content);
 			}

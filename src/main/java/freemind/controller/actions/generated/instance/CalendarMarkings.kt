@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* CalendarMarkings...*/ class CalendarMarkings : XmlAction() {
+/* CalendarMarkings...*/   class CalendarMarkings : XmlAction() {
     /* constants from enums*/
     fun addCalendarMarking(calendarMarking: CalendarMarking?) {
         calendarMarkingList.add(calendarMarking)

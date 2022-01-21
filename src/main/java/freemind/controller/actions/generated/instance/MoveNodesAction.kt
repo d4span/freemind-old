@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* MoveNodesAction...*/ class MoveNodesAction : NodeAction() {
+/* MoveNodesAction...*/   class MoveNodesAction : NodeAction() {
     /* constants from enums*/
     var direction = 0
     fun addNodeListMember(nodeListMember: NodeListMember?) {

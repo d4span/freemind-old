@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* NodeList...*/ class NodeList : XmlAction() {
+/* NodeList...*/   class NodeList : XmlAction() {
     /* constants from enums*/
     fun addNodeListMember(nodeListMember: NodeListMember?) {
         nodeListMemberList.add(nodeListMember)

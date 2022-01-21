@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* TimeWindowConfigurationStorage...*/ class TimeWindowConfigurationStorage : WindowConfigurationStorage() {
+/* TimeWindowConfigurationStorage...*/   class TimeWindowConfigurationStorage : WindowConfigurationStorage() {
     /* constants from enums*/
     var viewFoldedNodes = false
     fun addTimeWindowColumnSetting(timeWindowColumnSetting: TimeWindowColumnSetting?) {

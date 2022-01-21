@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* PluginStrings...*/ class PluginStrings {
+/* PluginStrings...*/   class PluginStrings {
     /* constants from enums*/
     var language: String? = null
     fun addPluginString(pluginString: PluginString?) {

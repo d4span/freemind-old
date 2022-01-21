@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* PluginRegistration...*/ class PluginRegistration {
+/* PluginRegistration...*/   class PluginRegistration {
     /* constants from enums*/
     var className: String? = null
     var isPluginBase = false

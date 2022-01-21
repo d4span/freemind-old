@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* CollaborationOffers...*/ class CollaborationOffers(var isSingleOffer: Boolean = false) : CollaborationActionBase() {
+/* CollaborationOffers...*/   class CollaborationOffers(var isSingleOffer: Boolean = false) : CollaborationActionBase() {
     /* constants from enums*/
     // var isSingleOffer = false
     fun addCollaborationMapOffer(collaborationMapOffer: CollaborationMapOffer?) {

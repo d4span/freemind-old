@@ -2,7 +2,7 @@ package freemind.controller.actions.generated.instance
 
 import java.util.Collections
 
-/* Patterns...*/ class Patterns : XmlAction() {
+/* Patterns...*/   class Patterns : XmlAction() {
     /* constants from enums*/
     fun addChoice(choice: Pattern?) {
         choiceList.add(choice)

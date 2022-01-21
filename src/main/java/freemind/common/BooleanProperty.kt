@@ -20,55 +20,77 @@
  * 
  * Created on 25.02.2006
  */
-package freemind.common
 
-import com.jgoodies.forms.builder.DefaultFormBuilder
-import java.util.*
-import javax.swing.JCheckBox
+package freemind.common;
 
-open class BooleanProperty(override var description: String, override var label: String) : PropertyBean(),
-    PropertyControl {
-    @JvmField
-	protected var mFalseValue = FALSE_VALUE
-    @JvmField
-	protected var mTrueValue = TRUE_VALUE
-    var mCheckBox = JCheckBox()
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
-    /**
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+
+public class BooleanProperty extends PropertyBean implements PropertyControl {
+	static public final String FALSE_VALUE = "false";
+
+	static public final String TRUE_VALUE = "true";
+
+	protected String mFalseValue = FALSE_VALUE;
+
+	protected String mTrueValue = TRUE_VALUE;
+
+	String description;
+
+	String label;
+
+	JCheckBox mCheckBox = new JCheckBox();
+
+	/**
      */
-    init {
-        mCheckBox.addItemListener { firePropertyChangeEvent() }
-    }
+	public BooleanProperty(String description, String label) {
+		super();
+		this.description = description;
+		this.label = label;
+		mCheckBox.addItemListener(new ItemListener() {
 
-    override var value: String?
-        get() = if (mCheckBox.isSelected) mTrueValue else mFalseValue
-        set(value) {
-            require(
-                !(value == null
-                        || !(value.lowercase(Locale.getDefault()) == mTrueValue || value
-                    .lowercase(Locale.getDefault()) == mFalseValue))
-            ) {
-                ("Cannot set a boolean to '"
-                        + value + "', allowed are " + mTrueValue + " and "
-                        + mFalseValue + ".")
-            }
-            mCheckBox.isSelected = value.lowercase(Locale.getDefault()) == mTrueValue
-        }
+			public void itemStateChanged(ItemEvent pE) {
+				firePropertyChangeEvent();
+			}
+		});
+	}
 
-    override fun layout(builder: DefaultFormBuilder?, pTranslator: TextTranslator?) {
-        val label = builder!!.append(
-            pTranslator!!.getText(label),
-            mCheckBox
-        )
-        label.toolTipText = pTranslator.getText(description)
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    override fun setEnabled(pEnabled: Boolean) {
-        mCheckBox.isEnabled = pEnabled
-    }
+	public String getLabel() {
+		return label;
+	}
 
-    companion object {
-        const val FALSE_VALUE = "false"
-        const val TRUE_VALUE = "true"
-    }
+	public void setValue(String value) {
+		if (value == null
+				|| !(value.toLowerCase().equals(mTrueValue) || value
+						.toLowerCase().equals(mFalseValue))) {
+			throw new IllegalArgumentException("Cannot set a boolean to '"
+					+ value + "', allowed are " + mTrueValue + " and "
+					+ mFalseValue + ".");
+		}
+		mCheckBox.setSelected(value.toLowerCase().equals(mTrueValue));
+	}
+
+	public String getValue() {
+		return mCheckBox.isSelected() ? mTrueValue : mFalseValue;
+	}
+
+	public void layout(DefaultFormBuilder builder, TextTranslator pTranslator) {
+		JLabel label = builder.append(pTranslator.getText(getLabel()),
+				mCheckBox);
+		label.setToolTipText(pTranslator.getText(getDescription()));
+	}
+
+	public void setEnabled(boolean pEnabled) {
+		mCheckBox.setEnabled(pEnabled);
+	}
+
 }

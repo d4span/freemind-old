@@ -112,11 +112,10 @@ abstract class FreeMindTask(private val mFrame: RootPaneContainer, var amountOfS
                 if (mProgressDescription == null) {
                     progressDescription = ProgressDescription("FreeMindTask.Default", arrayOf(rounds))
                 }
-                val pParameters = progressDescription?.mProgressParameters
                 val canceled = mProgressMonitor!!.showProgress(
                     rounds,
                     amountOfSteps, progressDescription!!.mProgressString,
-                    pParameters
+                    progressDescription.mProgressParameters
                 )
                 if (canceled) {
                     mInterrupted = true

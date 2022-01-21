@@ -24,13 +24,7 @@ import tests.freemind.FreeMindMainMock
 import java.awt.BorderLayout
 import java.awt.GridLayout
 import java.awt.event.ActionEvent
-import javax.swing.AbstractAction
-import javax.swing.JButton
-import javax.swing.JComponent
-import javax.swing.JFrame
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.JSplitPane
+import javax.swing.*
 
 /**
  * Should display one or two JComponents. If two, it should use a JSplitPane
@@ -126,7 +120,7 @@ class JOptionalSplitPane : JPanel() {
         if (!mComponentHash.containsKey(index)) {
             return
         }
-        // 		JComponent formerComponent = mComponentHash.get(index);
+        //		JComponent formerComponent = mComponentHash.get(index);
         mComponentHash.remove(index)
         when (mComponentHash.size) {
             0 -> {
@@ -137,7 +131,7 @@ class JOptionalSplitPane : JPanel() {
                 add(mBasicComponent)
                 revalidate()
             }
-            1 -> // TODO: Too complicated:
+            1 ->            // TODO: Too complicated:
                 setSingleJPanel(mComponentHash.values.iterator().next())
             else -> throw IllegalArgumentException("Wrong indices: " + mComponentHash.size)
         }
@@ -173,44 +167,36 @@ class JOptionalSplitPane : JPanel() {
             contentPane.layout = GridLayout(5, 1)
             frame.pack()
             frame.setSize(800, 400)
-            // 		// focus fix after startup.
-// 		frame.addWindowFocusListener(new WindowAdapter() {
+            //		// focus fix after startup.
+//		frame.addWindowFocusListener(new WindowAdapter() {
 //
-// 			public void windowGainedFocus(WindowEvent e) {
-// 				frame.removeWindowFocusListener(this);
-// 				jcalendar.getDayChooser().getSelectedDay().requestFocus();
-// 			}
-// 		});
-            contentPane.add(
-                JButton(object : AbstractAction("Add 0") {
-                    private var index = 0
-                    override fun actionPerformed(pE: ActionEvent) {
-                        panel.setComponent(JLabel("links " + index++), 0)
-                    }
-                })
-            )
-            contentPane.add(
-                JButton(object : AbstractAction("Add 1") {
-                    private var index = 0
-                    override fun actionPerformed(pE: ActionEvent) {
-                        panel.setComponent(JLabel("rechts " + index++), 1)
-                    }
-                })
-            )
-            contentPane.add(
-                JButton(object : AbstractAction("Remove 0") {
-                    override fun actionPerformed(pE: ActionEvent) {
-                        panel.removeComponent(0)
-                    }
-                })
-            )
-            contentPane.add(
-                JButton(object : AbstractAction("Remove 1") {
-                    override fun actionPerformed(pE: ActionEvent) {
-                        panel.removeComponent(1)
-                    }
-                })
-            )
+//			public void windowGainedFocus(WindowEvent e) {
+//				frame.removeWindowFocusListener(this);
+//				jcalendar.getDayChooser().getSelectedDay().requestFocus();
+//			}
+//		});
+            contentPane.add(JButton(object : AbstractAction("Add 0") {
+                private var index = 0
+                override fun actionPerformed(pE: ActionEvent) {
+                    panel.setComponent(JLabel("links " + index++), 0)
+                }
+            }))
+            contentPane.add(JButton(object : AbstractAction("Add 1") {
+                private var index = 0
+                override fun actionPerformed(pE: ActionEvent) {
+                    panel.setComponent(JLabel("rechts " + index++), 1)
+                }
+            }))
+            contentPane.add(JButton(object : AbstractAction("Remove 0") {
+                override fun actionPerformed(pE: ActionEvent) {
+                    panel.removeComponent(0)
+                }
+            }))
+            contentPane.add(JButton(object : AbstractAction("Remove 1") {
+                override fun actionPerformed(pE: ActionEvent) {
+                    panel.removeComponent(1)
+                }
+            }))
             contentPane.add(panel)
             frame.isVisible = true
         }

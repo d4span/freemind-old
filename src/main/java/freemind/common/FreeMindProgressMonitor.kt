@@ -23,11 +23,7 @@ import freemind.controller.actions.generated.instance.WindowConfigurationStorage
 import freemind.main.Resources
 import freemind.main.Tools
 import tests.freemind.FreeMindMainMock
-import java.awt.Dimension
-import java.awt.EventQueue
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
-import java.awt.Insets
+import java.awt.*
 import javax.swing.JButton
 import javax.swing.JDialog
 import javax.swing.JLabel
@@ -93,9 +89,7 @@ class FreeMindProgressMonitor(pTitle: String?) : JDialog() {
      * @return
      */
     fun showProgress(
-        pCurrent: Int,
-        pMax: Int,
-        pName: String?,
+        pCurrent: Int, pMax: Int, pName: String?,
         pParameters: Array<Any>?
     ): Boolean {
         EventQueue.invokeLater { mProgressBar.maximum = pMax }

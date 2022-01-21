@@ -23,8 +23,7 @@
 package freemind.common
 
 import com.jgoodies.forms.builder.DefaultFormBuilder
-import java.util.Arrays
-import java.util.Vector
+import java.util.*
 import javax.swing.DefaultComboBoxModel
 import javax.swing.JComboBox
 
@@ -40,9 +39,7 @@ open class ComboProperty : PropertyBean, PropertyControl {
      * TODO
      */
     constructor(
-        description: String,
-        label: String,
-        possibles: Array<String>,
+        description: String, label: String, possibles: Array<String>,
         pTranslator: TextTranslator
     ) : super() {
         this.description = description
@@ -61,9 +58,7 @@ open class ComboProperty : PropertyBean, PropertyControl {
     }
 
     constructor(
-        description: String,
-        label: String,
-        possibles: Array<String>,
+        description: String, label: String, possibles: Array<String>,
         possibleTranslations: List<String?>?
     ) {
         this.description = description
@@ -78,9 +73,7 @@ open class ComboProperty : PropertyBean, PropertyControl {
     }
 
     constructor(
-        description: String,
-        label: String,
-        possibles: List<String>,
+        description: String, label: String, possibles: List<String>,
         possibleTranslations: List<String?>?
     ) {
         this.description = description
@@ -131,9 +124,9 @@ open class ComboProperty : PropertyBean, PropertyControl {
                 mComboBox.setSelectedIndex(possibleValues!!.indexOf(value))
             } else {
                 System.err.println(
-                    "Can't set the value:" + value +
-                        " into the combo box " + label + "/" +
-                        description
+                    "Can't set the value:" + value
+                            + " into the combo box " + label + "/"
+                            + description
                 )
                 if (mComboBox.model.size > 0) {
                     mComboBox.selectedIndex = 0

@@ -29,13 +29,11 @@ import freemind.modes.MindIcon
 import freemind.modes.common.dialogs.IconSelectionPopupDialog
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
-import java.util.Vector
+import java.util.*
 import javax.swing.JButton
 
 class IconProperty(
-    override var description: String,
-    override var label: String,
-    private val mFreeMindMain: FreeMindMain,
+    override var description: String, override var label: String, private val mFreeMindMain: FreeMindMain,
     /**
      * Of IconInformation s.
      */

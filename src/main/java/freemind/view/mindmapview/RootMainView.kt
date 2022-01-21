@@ -16,131 +16,142 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package freemind.view.mindmapview
 
-import freemind.main.FreeMind
-import freemind.main.Resources
-import freemind.main.Tools
-import freemind.view.mindmapview.NodeView.Companion.selectedColor
-import java.awt.BasicStroke
-import java.awt.Color
-import java.awt.Dimension
-import java.awt.GradientPaint
-import java.awt.Graphics
-import java.awt.Graphics2D
-import java.awt.Point
+package freemind.view.mindmapview;
 
-internal class RootMainView : MainView() {
-    /*
+import freemind.main.FreeMind;
+import freemind.main.Resources;
+import freemind.main.Tools;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+
+@SuppressWarnings("serial")
+class RootMainView extends MainView {
+
+	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see freemind.view.mindmapview.NodeView.MainView#getPreferredSize()
 	 */
-    override fun getPreferredSize(): Dimension {
-        val prefSize = super.getPreferredSize()
-        prefSize.width *= 1.1.toInt()
-        prefSize.height *= 2
-        return prefSize
-    }
+	public Dimension getPreferredSize() {
+		Dimension prefSize = super.getPreferredSize();
+		prefSize.width *= 1.1;
+		prefSize.height *= 2;
+		return prefSize;
+	}
 
-    override fun paint(g: Graphics) {
-        val graphics2D = g as Graphics2D
-        val renderingHint = nodeView.map.setEdgesRenderingHint(graphics2D)
-        paintSelected(graphics2D)
-        paintDragOver(graphics2D)
+	public void paint(Graphics graphics) {
+		Graphics2D g = (Graphics2D) graphics;
 
-        // Draw a root node
-        graphics2D.color = Color.gray
-        graphics2D.stroke = BasicStroke(1.0f)
-        graphics2D.drawOval(0, 0, width - 1, height - 1)
-        Tools.restoreAntialiasing(graphics2D, renderingHint)
-        super.paint(graphics2D)
-    }
+		if (getNodeView().getModel() == null)
+			return;
 
-    override fun paintDragOver(graphics: Graphics2D) {
-        val draggedOver = draggedOver
-        if (draggedOver == NodeView.DRAGGED_OVER_SON) {
-            graphics.paint = GradientPaint(
-                (width / 4).toFloat(), 0F,
-                nodeView.map.background, (width * 3 / 4).toFloat(),
-                0F, NodeView.dragColor
-            )
-            graphics.fillRect(
-                width / 4, 0, width - 1,
-                height - 1
-            )
-        } else if (draggedOver == NodeView.DRAGGED_OVER_SON_LEFT) {
-            graphics.paint = GradientPaint(
-                (width * 3 / 4).toFloat(), 0F,
-                nodeView.map.background, (width / 4).toFloat(), 0F,
-                NodeView.dragColor
-            )
-            graphics.fillRect(0, 0, width * 3 / 4, height - 1)
-        }
-    }
+		Object renderingHint = getNodeView().getMap().setEdgesRenderingHint(g);
+		paintSelected(g);
+		paintDragOver(g);
 
-    override fun paintSelected(graphics: Graphics2D) {
-        if (nodeView.useSelectionColors()) {
-            paintBackground(graphics, selectedColor)
-        } else {
-            paintBackground(graphics, nodeView.textBackground)
-        }
-    }
+		// Draw a root node
+		g.setColor(Color.gray);
+		g.setStroke(new BasicStroke(1.0f));
+		g.drawOval(0, 0, getWidth() - 1, getHeight() - 1);
+		Tools.restoreAntialiasing(g, renderingHint);
+		super.paint(g);
+	}
 
-    override fun paintBackground(graphics: Graphics2D, color: Color?) {
-        graphics.color = color
-        graphics.fillOval(1, 1, width - 2, height - 2)
-    }
+	public void paintDragOver(Graphics2D graphics) {
+		final int draggedOver = getDraggedOver();
+		if (draggedOver == NodeView.DRAGGED_OVER_SON) {
+			graphics.setPaint(new GradientPaint(getWidth() / 4, 0,
+					getNodeView().getMap().getBackground(), getWidth() * 3 / 4,
+					0, NodeView.dragColor));
+			graphics.fillRect(getWidth() / 4, 0, getWidth() - 1,
+					getHeight() - 1);
+		} else if (draggedOver == NodeView.DRAGGED_OVER_SON_LEFT) {
+			graphics.setPaint(new GradientPaint(getWidth() * 3 / 4, 0,
+					getNodeView().getMap().getBackground(), getWidth() / 4, 0,
+					NodeView.dragColor));
+			graphics.fillRect(0, 0, getWidth() * 3 / 4, getHeight() - 1);
+		}
+	}
 
-    override val leftPoint: Point
-        get() = Point(0, height / 2)
-    override val centerPoint: Point
-        get() {
-            val `in` = leftPoint
-            `in`.x = width / 2
-            return `in`
-        }
-    override val rightPoint: Point
-        get() {
-            val `in` = leftPoint
-            `in`.x = width - 1
-            return `in`
-        }
+	public void paintSelected(Graphics2D graphics) {
+		if (getNodeView().useSelectionColors()) {
+			paintBackground(graphics, NodeView.Companion.getSelectedColor());
+		} else {
+			paintBackground(graphics, getNodeView().getTextBackground());
+		}
+	}
 
-    override fun setDraggedOver(p: Point) {
-        draggedOver = if (dropPosition(p.getX())) NodeView.DRAGGED_OVER_SON_LEFT else NodeView.DRAGGED_OVER_SON
-    }
+	protected void paintBackground(Graphics2D graphics, Color color) {
+		graphics.setColor(color);
+		graphics.fillOval(1, 1, getWidth() - 2, getHeight() - 2);
+	}
 
-    /*
+	public Point getLeftPoint() {
+		Point in = new Point(0, getHeight() / 2);
+		return in;
+	}
+
+	public Point getCenterPoint() {
+		Point in = getLeftPoint();
+		in.x = getWidth() / 2;
+		return in;
+	}
+
+	public Point getRightPoint() {
+		Point in = getLeftPoint();
+		in.x = getWidth() - 1;
+		return in;
+	}
+
+	public void setDraggedOver(Point p) {
+		setDraggedOver((dropPosition(p.getX())) ? NodeView.DRAGGED_OVER_SON_LEFT
+				: NodeView.DRAGGED_OVER_SON);
+	}
+
+	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see freemind.view.mindmapview.NodeView#getStyle()
 	 */
-    override val style: String
-        get() = Resources.getInstance().getProperty(
-            FreeMind.RESOURCES_ROOT_NODE_STYLE
-        )
-    override val alignment: Int
-        get() = TODO("Not yet implemented")
+	public String getStyle() {
+		return Resources.getInstance().getProperty(
+				FreeMind.RESOURCES_ROOT_NODE_STYLE);
+	}
 
-    override val textWidth: Int
-        get() = super.textWidth - width / 10
+	/**
+	 * Returns the relative position of the Edge
+	 */
+	public int getAlignment() {
+		return NodeView.ALIGN_CENTER;
+	}
 
-    /*
+	public int getTextWidth() {
+		return super.getTextWidth() - getWidth() / 10;
+	}
+
+	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see freemind.view.mindmapview.NodeView#getTextX()
 	 */
-    override val textX: Int
-        get() = iconWidth + width / 20
+	public int getTextX() {
+		return getIconWidth() + getWidth() / 20;
+	}
 
-    override fun dropAsSibling(xCoord: Double): Boolean {
-        return false
-    }
+	public boolean dropAsSibling(double xCoord) {
+		return false;
+	}
 
-    /** @return true if should be on the left, false otherwise.
-     */
-    override fun dropPosition(xCoord: Double): Boolean {
-        return xCoord < size.width * 1 / 2
-    }
+	/** @return true if should be on the left, false otherwise. */
+	public boolean dropPosition(double xCoord) {
+		return xCoord < getSize().width * 1 / 2;
+	}
+
 }

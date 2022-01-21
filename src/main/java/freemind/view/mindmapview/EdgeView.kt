@@ -102,7 +102,7 @@ abstract class EdgeView {
 
     companion object {
         @JvmField
-        val DEF_STROKE = BasicStroke()
+        protected val DEF_STROKE = BasicStroke()
         var ECLIPSED_STROKE: Stroke? = null
         @JvmStatic
         protected val eclipsedStroke: Stroke?

@@ -343,8 +343,8 @@ open class MapView( //
 
     fun initRoot() {
         rootContentLocation = Point()
-        this.root = NodeViewFactory.instance?.newNodeView(
-            model?.rootNode, this, this
+        this.root = NodeViewFactory.getInstance().newNodeView(
+            model?.rootNode, 0, this, this
         )
         root?.insert()
         revalidate()

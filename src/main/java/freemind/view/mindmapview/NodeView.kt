@@ -765,7 +765,7 @@ class NodeView(
     fun insert() {
         val it = model.childrenFolded()
         while (it.hasNext()) {
-            insert(it.next())
+            insert(it.next(), 0)
         }
     }
 
@@ -773,12 +773,12 @@ class NodeView(
      * Create views for the newNode and all his descendants, set their isLeft
      * attribute according to this view.
      */
-    fun insert(newNode: MindMapNode?): NodeView? {
-        val newView = NodeViewFactory.instance?.newNodeView(
+    fun insert(newNode: MindMapNode?, position: Int): NodeView {
+        val newView = NodeViewFactory.getInstance().newNodeView(
             newNode,
-            map, this
+            position, map, this
         )
-        newView?.insert()
+        newView.insert()
         return newView
     }
 
@@ -1021,7 +1021,7 @@ class NodeView(
         ) {
             return
         }
-        val newMainView = NodeViewFactory.instance?.newMainView(
+        val newMainView = NodeViewFactory.getInstance().newMainView(
             model
         )
         setMainView(newMainView)
@@ -1203,7 +1203,7 @@ class NodeView(
         val childIndices = e.childIndices
         for (i in childIndices.indices) {
             val index = childIndices[i]
-            insert(model.getChildAt(index) as MindMapNode)
+            insert(model.getChildAt(index) as MindMapNode, index)
         }
         revalidate()
     }
@@ -1309,9 +1309,9 @@ class NodeView(
 
     fun getContentPane(): Container? {
         if (contentPane == null) {
-            val pane = NodeViewFactory.instance?.newContentPane()
+            val pane = NodeViewFactory.getInstance().newContentPane(this)
             remove(mainView)
-            pane?.add(mainView)
+            pane.add(mainView)
             add(pane)
 
             contentPane = pane
@@ -1350,8 +1350,8 @@ class NodeView(
                 g.translate(p.x, p.y)
                 nodeView.paintCloud(g)
                 g.translate(-p.x, -p.y)
-                val edge = NodeViewFactory.instance?.getEdge(nodeView)
-                edge?.paint(nodeView, g)
+                val edge = NodeViewFactory.getInstance().getEdge(nodeView)
+                edge.paint(nodeView, g)
             } else {
                 nodeView.paintCloudsAndEdges(g)
             }
@@ -1447,13 +1447,6 @@ class NodeView(
         const val DRAGGED_OVER_SON_LEFT = 3
         const val ALIGN_BOTTOM = -1
         const val ALIGN_CENTER = 0
-
-        /**
-         * Returns the relative position of the Edge
-         */val alignment: Int
-            get() {
-                return NodeView.ALIGN_CENTER
-            }
         const val ALIGN_TOP = 1
         private var logger: Logger? = null
         private var sListener: FreemindPropertyListener? = null

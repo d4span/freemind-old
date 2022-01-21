@@ -16,66 +16,70 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package freemind.modes.browsemode
 
-import freemind.controller.Controller
-import freemind.main.Resources
-import freemind.modes.Mode
-import freemind.modes.ModeController
-import java.io.File
 
-class BrowseMode : Mode() {
-    private var c: Controller? = null
-    private var modecontroller: BrowseController? = null
-    private var isRunning = false
-    override fun init(c: Controller) {
-        this.c = c
-        modecontroller = BrowseController(this)
-    }
+package freemind.modes.browsemode;
 
-    override fun toString(): String {
-        return MODENAME
-    }
+import java.io.File;
 
-    /**
-     * Called whenever this mode is chosen in the program. (updates Actions
-     * etc.)
-     */
-    override fun activate() {
-        if (isRunning) {
-            c!!.mapModuleManager!!.changeToMapOfMode(this)
-        } else {
-            isRunning = true
-        }
-    }
+import freemind.controller.Controller;
+import freemind.modes.Mode;
+import freemind.modes.ModeController;
 
-    override fun restore(restoreable: String) {
-        try {
-            defaultModeController.load(File(restoreable))
-        } catch (e: Exception) {
-            c!!.errorMessage(
-                "An error occured on opening the file: " +
-                    restoreable + "."
-            )
-            Resources.getInstance().logException(e)
-        }
-    }
+public class BrowseMode extends Mode {
 
-    override fun getController(): Controller {
-        return c!!
-    }
+	private Controller c;
+	private BrowseController modecontroller;
+	public final static String MODENAME = "Browse";
+	private boolean isRunning = false;
 
-    override fun getDefaultModeController(): ModeController {
-        // no url should be visible for the empty controller.
-        modecontroller!!.toolBar.setURLField("")
-        return modecontroller!!
-    }
+	public BrowseMode() {
+	}
 
-    override fun createModeController(): ModeController {
-        return BrowseController(this)
-    }
+	public void init(Controller c) {
+		this.c = c;
+		modecontroller = new BrowseController(this);
+	}
 
-    companion object {
-        const val MODENAME = "Browse"
-    }
+	public String toString() {
+		return MODENAME;
+	}
+
+	/**
+	 * Called whenever this mode is chosen in the program. (updates Actions
+	 * etc.)
+	 */
+	public void activate() {
+		if (isRunning) {
+			c.getMapModuleManager().changeToMapOfMode(this);
+		} else {
+			isRunning = true;
+		}
+
+	}
+
+	public void restore(String restoreable) {
+		try {
+			getDefaultModeController().load(new File(restoreable));
+		} catch (Exception e) {
+			c.errorMessage("An error occured on opening the file: "
+					+ restoreable + ".");
+			freemind.main.Resources.getInstance().logException(e);
+		}
+	}
+
+	public Controller getController() {
+		return c;
+	}
+
+	public ModeController getDefaultModeController() {
+		// no url should be visible for the empty controller.
+		modecontroller.getToolBar().setURLField("");
+		return modecontroller;
+	}
+
+	public ModeController createModeController() {
+		return new BrowseController(this);
+	}
+
 }

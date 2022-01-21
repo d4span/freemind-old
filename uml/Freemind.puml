@@ -97,7 +97,6 @@ package "Third-party libs" {
 [Modes] --> [JIBX]
 [Modes] --> [Java Image I/O API]
 [Modes] --> [JGoodies]
-[Modes] --> [Jetbrains Annotations]
 
 [Main] --> [Preferences]
 [Main] --> [Common]

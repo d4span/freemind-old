@@ -17,24 +17,31 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: BrowseEdgeModel.java,v 1.6 2003/11/03 11:00:13 sviles Exp $*/
-package freemind.modes.browsemode
 
-import freemind.main.XMLElement
-import freemind.modes.EdgeAdapter
-import freemind.modes.MapFeedback
-import freemind.modes.MindMapNode
-import java.awt.Color
+package freemind.modes.browsemode;
 
-class BrowseEdgeModel(node: MindMapNode?, pMapFeedback: MapFeedback?) : EdgeAdapter(node, pMapFeedback) {
-    override fun save(): XMLElement? {
-        return null
-    }
+import java.awt.Color;
 
-    override fun setColor(color: Color) {
-        super.setColor(color)
-    }
+import freemind.main.XMLElement;
+import freemind.modes.EdgeAdapter;
+import freemind.modes.MapFeedback;
+import freemind.modes.MindMapNode;
 
-    override fun setStyle(style: String) {
-        super.setStyle(style)
-    }
+public class BrowseEdgeModel extends EdgeAdapter {
+
+	public BrowseEdgeModel(MindMapNode node, MapFeedback pMapFeedback) {
+		super(node, pMapFeedback);
+	}
+
+	public XMLElement save() {
+		return null;
+	}
+
+	public void setColor(Color color) {
+		super.setColor(color);
+	}
+
+	public void setStyle(String style) {
+		super.setStyle(style);
+	}
 }

@@ -19,122 +19,134 @@
  *
  * Created on 10.01.2006
  */
-package freemind.modes.browsemode
 
-import freemind.common.TextTranslator
-import freemind.main.Resources
-import freemind.main.Tools.SingleDesEncrypter
-import freemind.main.XMLParseException
-import freemind.modes.MapFeedback
-import freemind.modes.MindIcon
-import freemind.modes.ModeController
-import freemind.modes.NodeAdapter
-import freemind.modes.common.dialogs.EnterPasswordDialog
-import java.io.IOException
-import java.io.StringReader
-import java.util.logging.Logger
-import javax.swing.ImageIcon
+package freemind.modes.browsemode;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashMap;
+
+import javax.swing.ImageIcon;
+
+import freemind.common.TextTranslator;
+import freemind.main.Resources;
+import freemind.main.Tools.SingleDesEncrypter;
+import freemind.main.XMLParseException;
+import freemind.modes.MapFeedback;
+import freemind.modes.MindIcon;
+import freemind.modes.MindMap;
+import freemind.modes.ModeController;
+import freemind.modes.NodeAdapter;
+import freemind.modes.common.dialogs.EnterPasswordDialog;
 
 /**
  * @author foltin
+ * 
  */
-class EncryptedBrowseNode(userObject: Any?, private val mMapFeedback: MapFeedback) :
-    BrowseNodeModel(userObject, mMapFeedback.map) {
-    private var encryptedContent: String? = null
-    private var isDecrypted = false
+public class EncryptedBrowseNode extends BrowseNodeModel {
 
-    /**
-     */
-    constructor(pMapFeedback: MapFeedback) : this(null, pMapFeedback) {}
+	private static ImageIcon encryptedIcon;
 
-    /**
-     */
-    init {
-        if (logger == null) logger = Resources.getInstance().getLogger(
-            this.javaClass.name
-        )
-        if (encryptedIcon == null) {
-            encryptedIcon = MindIcon.factory("encrypted").icon
-        }
-        if (decryptedIcon == null) {
-            decryptedIcon = MindIcon.factory("decrypted").icon
-        }
-        updateIcon()
-    }
+	private static ImageIcon decryptedIcon;
 
-    fun updateIcon() {
-        setStateIcon("encryptedNode", if (isDecrypted) decryptedIcon else encryptedIcon)
-    }
+	private String encryptedContent;
 
-    override fun setFolded(folded: Boolean) {
-        if (isDecrypted || folded) {
-            super.setFolded(folded)
-            return
-        }
-        // get password:
-        val pwdDialog = EnterPasswordDialog(
-            null,
-            object : TextTranslator {
-                override fun getText(pKey: String?): String? {
-                    return mMapFeedback.getResourceString(pKey)
-                }
-            },
-            false
-        )
-        pwdDialog.isModal = true
-        pwdDialog.isVisible = true
-        if (pwdDialog.result == EnterPasswordDialog.CANCEL) {
-            return
-        }
-        val encrypter = SingleDesEncrypter(
-            pwdDialog.password
-        )
-        // Decrypt
-        val decrypted = encrypter.decrypt(encryptedContent) ?: return
-        val IDToTarget = HashMap<String, NodeAdapter>()
-        val childs = decrypted.split(ModeController.NODESEPARATOR).toTypedArray()
-        // and now? paste it:
-        for (i in childs.indices.reversed()) {
-            val string = childs[i]
-            logger!!.finest("Decrypted '$string'.")
-            // if the encrypted node is empty, we skip the insert.
-            if (string.length == 0) continue
-            try {
-                val node = map
-                    .createNodeTreeFromXml(StringReader(string), IDToTarget) as NodeAdapter
-                // now, the import is finished. We can inform others about
-                // the new nodes:
-                val model = mMapFeedback.map
-                model.insertNodeInto(node, this, this.childCount)
-                mMapFeedback.invokeHooksRecursively(node, model)
-                super.setFolded(folded)
-                mMapFeedback.nodeChanged(this)
-                // mMapFeedback.nodeStructureChanged(this);
-                isDecrypted = true
-                updateIcon()
-            } catch (e: XMLParseException) {
-                Resources.getInstance().logException(e)
-                return
-            } catch (e: IOException) {
-                Resources.getInstance().logException(e)
-                return
-            }
-        }
-    }
+	private boolean isDecrypted = false;
 
-    /**
-     *
-     */
-    override fun setAdditionalInfo(info: String) {
-        encryptedContent = info
-        isDecrypted = false
-    }
+	// Logging:
+	static protected java.util.logging.Logger logger;
 
-    companion object {
-        private var encryptedIcon: ImageIcon? = null
-        private var decryptedIcon: ImageIcon? = null
+	private final MapFeedback mMapFeedback;
 
-        // Logging:
-        protected var logger: Logger? = null
-    }
+	/**
+	 */
+	public EncryptedBrowseNode(MapFeedback pMapFeedback) {
+		this(null, pMapFeedback);
+	}
+
+	/**
+	 */
+	public EncryptedBrowseNode(Object userObject, MapFeedback pMapFeedback) {
+		super(userObject, pMapFeedback.getMap());
+		this.mMapFeedback = pMapFeedback;
+		if (logger == null)
+			logger = Resources.getInstance().getLogger(
+					this.getClass().getName());
+		if (encryptedIcon == null) {
+			encryptedIcon = MindIcon.factory("encrypted").getIcon();
+		}
+		if (decryptedIcon == null) {
+			decryptedIcon = MindIcon.factory("decrypted").getIcon();
+		}
+		updateIcon();
+	}
+
+	public void updateIcon() {
+		setStateIcon("encryptedNode", (isDecrypted) ? decryptedIcon
+				: encryptedIcon);
+	}
+
+	public void setFolded(boolean folded) {
+		if (isDecrypted || folded) {
+			super.setFolded(folded);
+			return;
+		}
+		// get password:
+		final EnterPasswordDialog pwdDialog = new EnterPasswordDialog(null,
+				new TextTranslator() {
+					@Override
+					public String getText(String pKey) {
+						return mMapFeedback.getResourceString(pKey);
+					}}, false);
+		pwdDialog.setModal(true);
+		pwdDialog.setVisible(true);
+		if (pwdDialog.getResult() == EnterPasswordDialog.CANCEL) {
+			return;
+		}
+		SingleDesEncrypter encrypter = new SingleDesEncrypter(
+				pwdDialog.getPassword());
+		// Decrypt
+		String decrypted = encrypter.decrypt(encryptedContent);
+		if (decrypted == null)
+			return;
+		HashMap<String, NodeAdapter>  IDToTarget = new HashMap<>();
+		String[] childs = decrypted.split(ModeController.NODESEPARATOR);
+		// and now? paste it:
+		for (int i = childs.length - 1; i >= 0; i--) {
+			String string = childs[i];
+			logger.finest("Decrypted '" + string + "'.");
+			// if the encrypted node is empty, we skip the insert.
+			if (string.length() == 0)
+				continue;
+			try {
+				NodeAdapter node = (NodeAdapter) getMap()
+						.createNodeTreeFromXml(new StringReader(string),IDToTarget);
+				// now, the import is finished. We can inform others about
+				// the new nodes:
+				MindMap model = mMapFeedback.getMap();
+				model.insertNodeInto(node, this, this.getChildCount());
+				mMapFeedback.invokeHooksRecursively(node, model);
+				super.setFolded(folded);
+				mMapFeedback.nodeChanged(this);
+				//mMapFeedback.nodeStructureChanged(this);
+				isDecrypted = true;
+				updateIcon();
+			} catch (XMLParseException e) {
+				freemind.main.Resources.getInstance().logException(e);
+				return;
+			} catch (IOException e) {
+				freemind.main.Resources.getInstance().logException(e);
+				return;
+			}
+		}
+	}
+
+	/**
+	 *
+	 */
+	public void setAdditionalInfo(String info) {
+		encryptedContent = info;
+		isDecrypted = false;
+	}
+
 }

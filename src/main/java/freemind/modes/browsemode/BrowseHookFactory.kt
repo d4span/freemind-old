@@ -19,115 +19,126 @@
  *
  * Created on 31.12.2005
  */
-package freemind.modes.browsemode
 
-import freemind.extensions.HookFactory.RegistrationContainer
-import freemind.extensions.HookFactoryAdapter
-import freemind.extensions.HookInstanciationMethod
-import freemind.extensions.ModeControllerHook
-import freemind.extensions.NodeHook
-import freemind.extensions.PermanentNodeHookSubstituteUnknown
-import freemind.modes.common.plugins.MapNodePositionHolderBase
-import freemind.modes.common.plugins.ReminderHookBase
-import java.util.Properties
-import java.util.Vector
+package freemind.modes.browsemode;
+
+import java.util.List;
+import java.util.Properties;
+import java.util.Vector;
+
+import freemind.extensions.HookFactoryAdapter;
+import freemind.extensions.HookInstanciationMethod;
+import freemind.extensions.ModeControllerHook;
+import freemind.extensions.NodeHook;
+import freemind.extensions.PermanentNodeHookSubstituteUnknown;
+import freemind.modes.common.plugins.MapNodePositionHolderBase;
+import freemind.modes.common.plugins.ReminderHookBase;
 
 /**
  * @author foltin
+ * 
  */
-class BrowseHookFactory :
-/**
-     *
-     */
-        HookFactoryAdapter() {
-    /*
-	 * (non-Javadoc)
+public class BrowseHookFactory extends HookFactoryAdapter {
+
+	/**
 	 *
+	 */
+	public BrowseHookFactory() {
+		super();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see freemind.extensions.HookFactory#getPossibleNodeHooks()
 	 */
-        override val possibleNodeHooks: Vector<String?>
-            get() = Vector()
+	public Vector<String> getPossibleNodeHooks() {
+		return new Vector<>();
+	}
 
-    /*
+	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see freemind.extensions.HookFactory#getPossibleModeControllerHooks()
 	 */
-        override val possibleModeControllerHooks: Vector<String?>
-            get() = Vector()
+	public Vector<String> getPossibleModeControllerHooks() {
+		return new Vector<>();
+	}
 
-    /*
+	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * freemind.extensions.HookFactory#createModeControllerHook(java.lang.String
 	 * )
 	 */
-        override fun createModeControllerHook(hookName: String?): ModeControllerHook? {
-            // TODO Auto-generated method stub
-            return null
-        }
+	public ModeControllerHook createModeControllerHook(String hookName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    /*
+	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see freemind.extensions.HookFactory#createNodeHook(java.lang.String)
 	 */
-        override fun createNodeHook(hookName: String?): NodeHook? {
-            // System.out.println("create node hook:"+hookName);
-            val hook: NodeHook
-            hook = if (hookName == ReminderHookBase.PLUGIN_LABEL) {
-                BrowseReminderHook()
-            } else if (hookName == MapNodePositionHolderBase.NODE_MAP_HOOK_NAME) {
-                MapNodePositionHolderBase()
-            } else {
-                PermanentNodeHookSubstituteUnknown(hookName)
-            }
-            // decorate hook.
-            hook.setProperties(Properties())
-            hook.name = hookName
-            hook.setPluginBaseClass(null)
-            return hook
-        }
+	public NodeHook createNodeHook(String hookName) {
+		// System.out.println("create node hook:"+hookName);
+		NodeHook hook;
+		if (hookName.equals(ReminderHookBase.PLUGIN_LABEL)) {
+			hook = new BrowseReminderHook();
+		} else if (hookName.equals(MapNodePositionHolderBase.NODE_MAP_HOOK_NAME)) {
+			hook = new MapNodePositionHolderBase();
+		} else {
+			hook = new PermanentNodeHookSubstituteUnknown(hookName);
+		}
+		// decorate hook.
+		hook.setProperties(new Properties());
+		hook.setName(hookName);
+		hook.setPluginBaseClass(null);
+		return hook;
+	}
 
-    /*
+	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * freemind.extensions.HookFactory#getHookMenuPositions(java.lang.String)
 	 */
-        override fun getHookMenuPositions(hookName: String?): List<String?>? {
-            // TODO Auto-generated method stub
-            return null
-        }
+	public List<String> getHookMenuPositions(String hookName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    /*
+	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * freemind.extensions.HookFactory#getInstanciationMethod(java.lang.String)
 	 */
-        override fun getInstanciationMethod(hookName: String?): HookInstanciationMethod? {
-            // TODO Auto-generated method stub
-            return null
-        } // TODO Auto-generated method stub
+	public HookInstanciationMethod getInstanciationMethod(String hookName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    /*
+	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see freemind.extensions.HookFactory#getRegistrations()
 	 */
-        override val registrations: List<RegistrationContainer>?
-            get() = // TODO Auto-generated method stub
-                null
+	public List<RegistrationContainer> getRegistrations() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    /*
+	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see freemind.extensions.HookFactory#getPluginBaseClass(java.lang.String)
 	 */
-        override fun getPluginBaseClass(hookName: String?): Any? {
-            // TODO Auto-generated method stub
-            return null
-        }
-    }
+	public Object getPluginBaseClass(String hookName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

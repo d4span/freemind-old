@@ -17,41 +17,42 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 /*$Id: BrowseArrowLinkModel.java,v 1.1.18.1.16.1 2007/04/21 15:11:21 dpolivaev Exp $*/
-package freemind.modes.browsemode
 
-import freemind.main.XMLElement
-import freemind.modes.ArrowLinkAdapter
-import freemind.modes.MapFeedback
-import freemind.modes.MindMapNode
-import freemind.view.mindmapview.MapView
+package freemind.modes.browsemode;
 
-class BrowseArrowLinkModel(
-    source: MindMapNode?,
-    target: MindMapNode?,
-    pMapFeedback: MapFeedback?
-) : ArrowLinkAdapter(source, target, pMapFeedback) {
-    /* maybe this method is wrong here, but ... */
-    override fun clone(): Any {
-        return super.clone()
-    }
+import freemind.main.XMLElement;
+import freemind.modes.ArrowLinkAdapter;
+import freemind.modes.MapFeedback;
+import freemind.modes.MindMapNode;
+import freemind.view.mindmapview.MapView;
 
-    override fun save(): XMLElement? {
-        return null
-    }
+public class BrowseArrowLinkModel extends ArrowLinkAdapter {
 
-    override fun toString(): String {
-        return "Source=" + source + ", target=" + getTarget()
-    }
+	public BrowseArrowLinkModel(MindMapNode source, MindMapNode target,
+			MapFeedback pMapFeedback) {
+		super(source, target, pMapFeedback);
+	}
 
-    /**
-     * @see freemind.modes.MindMapArrowLink.changeInclination
-     */
-    override fun changeInclination(
-        map: MapView,
-        oldX: Int,
-        oldY: Int,
-        deltaX: Int,
-        deltaY: Int
-    ) {
-    }
+	/* maybe this method is wrong here, but ... */
+	public Object clone() {
+		return super.clone();
+	}
+
+	public XMLElement save() {
+		return null;
+	}
+
+	public String toString() {
+		return "Source=" + getSource() + ", target=" + getTarget();
+	}
+
+	/**
+	 * @see freemind.modes.MindMapArrowLink#changeInclination(MapView, int, int,
+	 *      int, int)
+	 */
+	public void changeInclination(MapView map, int oldX, int oldY, int deltaX,
+			int deltaY) {
+
+	}
+
 }

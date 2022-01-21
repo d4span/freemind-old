@@ -17,438 +17,432 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package freemind.modes.common.actions
+package freemind.modes.common.actions;
 
-import freemind.main.FreeMind
-import freemind.main.HtmlTools
-import freemind.main.Resources
-import freemind.main.Tools
-import freemind.modes.ControllerAdapter
-import freemind.modes.FreemindAction
-import freemind.modes.MindMapNode
-import freemind.view.ImageFactory.Companion.instance
-import java.awt.Dimension
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
-import java.awt.Insets
-import java.awt.event.ActionEvent
-import java.awt.event.WindowAdapter
-import java.awt.event.WindowEvent
-import java.util.LinkedList
-import java.util.Locale
-import javax.swing.AbstractAction
-import javax.swing.JButton
-import javax.swing.JCheckBox
-import javax.swing.JDialog
-import javax.swing.JLabel
-import javax.swing.JOptionPane
-import javax.swing.JTextField
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
-class FindAction(private val controller: ControllerAdapter) :
-    FreemindAction("find", "images/filefind.png", controller) {
-    private var findNodesUnfoldedByLastFind: ArrayList<MindMapNode>? = null
-    private var findFromNode: MindMapNode? = null
-    var searchTerm: String? = null
-        private set
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
-    /**
-     * @return Returns the subterms.
-     */
-    var subterms: Collection<String>? = null
-        private set
-    val findFromText: String
-        get() {
-            val plainNodeText = HtmlTools.htmlToPlain(findFromNode.toString())
-                .replace("\n".toRegex(), " ")
-            return if (plainNodeText.length <= 30) plainNodeText else plainNodeText
-                .substring(0, 30) + "..."
-        }
-    private var findCaseSensitive = false
-    private var findNodeQueue: LinkedList<MindMapNode>? = null
-    private var mDialog: JDialog? = null
-    private var mResult = 0
-    private var mFindInNotesTooBox: JCheckBox? = null
-    private var mSearchField: JTextField? = null
+import freemind.main.FreeMind;
+import freemind.main.HtmlTools;
+import freemind.main.Resources;
+import freemind.main.Tools;
+import freemind.modes.ControllerAdapter;
+import freemind.modes.FreemindAction;
+import freemind.modes.MindMapNode;
 
-    /** This isn't stored and is per map.  */
-    private var mLastSearchString: String? = null
-    override fun actionPerformed(e: ActionEvent) {
-        displayDialog()
-        if (mResult != JOptionPane.OK_OPTION) {
-            return
-        }
-        val what = mSearchField!!.text
-        if (what == null || what == "") {
-            return
-        }
-        val subterms = breakSearchTermIntoSubterms(what)
-        searchTerm = what
-        // System.err.println(subterms);
-        /* caseSensitive=false */
-        val found = find(controller.selected, subterms, false)
-        controller.view.repaint()
-        if (!found) {
-            val messageText = controller.getText("no_found_from")
-            val searchTerm = getSearchTermAsEscapedString(messageText)
-            controller.controller.informationMessage(
-                messageText!!.replace("\\$1".toRegex(), searchTerm).replace(
-                    "\\$2".toRegex(), findFromText
-                ),
-                controller.view.selected
-            )
-        }
-    }
+@SuppressWarnings("serial")
+public class FindAction extends FreemindAction {
+	private final ControllerAdapter controller;
 
-    private fun close(pResult: Int) {
-        mResult = pResult
-        mDialog!!.isVisible = false
-        mDialog!!.dispose()
-        // Store "find in notes too" value to prop.
-        if (pResult == JOptionPane.OK_OPTION) {
-            Resources
-                .getInstance()
-                .properties
-                .setProperty(
-                    FreeMind.RESOURCES_SEARCH_IN_NOTES_TOO,
-                    if (mFindInNotesTooBox!!.isSelected) "true" else "false"
-                )
-            mLastSearchString = mSearchField!!.text
-        }
-    }
+	private ArrayList<MindMapNode> findNodesUnfoldedByLastFind;
 
-    fun displayDialog() {
-        mDialog = null
-        mDialog = JDialog(
-            controller.frame.jFrame,
-            controller.getText("find")
-        )
-        mDialog!!.isModal = true
-        mDialog!!.defaultCloseOperation = JDialog.DO_NOTHING_ON_CLOSE
-        val cancelAction: AbstractAction = object : AbstractAction() {
-            override fun actionPerformed(pE: ActionEvent) {
-                close(JOptionPane.CANCEL_OPTION)
-            }
-        }
-        val okAction: AbstractAction = object : AbstractAction() {
-            override fun actionPerformed(pE: ActionEvent) {
-                close(JOptionPane.OK_OPTION)
-            }
-        }
-        Tools.addEscapeActionToDialog(mDialog, cancelAction)
-        mDialog!!.addWindowListener(object : WindowAdapter() {
-            override fun windowClosing(pE: WindowEvent) {
-                close(JOptionPane.CANCEL_OPTION)
-            }
-        })
-        val contentPane = mDialog!!.contentPane
-        contentPane.layout = GridBagLayout()
-        contentPane.add(
-            JLabel(controller.getText("find_what")),
-            GridBagConstraints(
-                1, 0, 1, 1, 1.0, 1.0,
-                GridBagConstraints.WEST, GridBagConstraints.BOTH,
-                Insets(5, 5, 0, 0), 0, 0
-            )
-        )
-        mSearchField = JTextField(mLastSearchString)
-        mSearchField!!.selectAll()
-        mSearchField!!.minimumSize = Dimension(500, 14)
-        contentPane.add(
-            mSearchField,
-            GridBagConstraints(
-                2, 0, 10, 1, 1.0,
-                1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
-                Insets(5, 5, 0, 0), 0, 0
-            )
-        )
-        val findImage = instance!!.createIcon(
-            Resources.getInstance()
-                .getResource("images/filefind_big.png")
-        )
-        contentPane.add(
-            JLabel(findImage),
-            GridBagConstraints(
-                0, 0, 1,
-                2, 1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
-                Insets(5, 5, 0, 0), 0, 0
-            )
-        )
-        mFindInNotesTooBox = JCheckBox(
-            controller
-                .getText("ExtendedFindDialog.find_search_in_notes_too")
-        )
-        mFindInNotesTooBox!!.isSelected = Resources.getInstance().getBoolProperty(
-            FreeMind.RESOURCES_SEARCH_IN_NOTES_TOO
-        )
-        Tools.setLabelAndMnemonic(mFindInNotesTooBox, null)
-        contentPane.add(
-            mFindInNotesTooBox,
-            GridBagConstraints(
-                0, 2, 3, 1,
-                1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
-                Insets(5, 5, 0, 0), 0, 0
-            )
-        )
-        val okButton = JButton(
-            controller.getText("ExtendedFindDialog.ok")
-        )
-        Tools.setLabelAndMnemonic(okButton, null)
-        okButton.addActionListener(okAction)
-        contentPane.add(
-            okButton,
-            GridBagConstraints(
-                2, 3, 1, 1, 1.0, 1.0,
-                GridBagConstraints.WEST, GridBagConstraints.BOTH,
-                Insets(
-                    5,
-                    5, 0, 0
-                ),
-                0, 0
-            )
-        )
-        val cancelButton = JButton(
-            controller.getText("ExtendedFindDialog.cancel")
-        )
-        Tools.setLabelAndMnemonic(cancelButton, null)
-        cancelButton.addActionListener(cancelAction)
-        contentPane.add(
-            cancelButton,
-            GridBagConstraints(
-                3, 3, 1, 1, 1.0,
-                1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
-                Insets(5, 5, 0, 0), 0, 0
-            )
-        )
-        mDialog!!.rootPane.defaultButton = okButton
-        mDialog!!.pack()
-        Tools.setDialogLocationRelativeTo(mDialog, controller.selectedView)
-        mDialog!!.isVisible = true
-    }
+	private MindMapNode findFromNode;
 
-    private fun getSearchTermAsEscapedString(messageText: String?): String {
-        var searchTerm = if (messageText!!.startsWith("<html>")) HtmlTools
-            .toXMLEscapedText(searchTerm) else searchTerm!!
-        // Fix for
-        // https://sourceforge.net/tracker/?func=detail&aid=3200783&group_id=7118&atid=107118
-        // Patch
-        // https://sourceforge.net/tracker/?func=detail&aid=3276562&group_id=7118&atid=307118,
-        // thanks to the author
-        searchTerm = searchTerm.replace("$", "\\$")
-        return searchTerm
-    }
+	private String searchTerm;
 
-    class FindNextAction(private val controller: ControllerAdapter, private val find: FindAction) :
-        FreemindAction("find_next", controller) {
-        override fun actionPerformed(e: ActionEvent) {
-            val subterms = find.subterms
-            if (subterms == null) {
-                controller.controller.informationMessage(
-                    controller.getText("no_previous_find")!!,
-                    controller.view.selected
-                )
-                return
-            }
-            val found = find.findNext()
-            controller.view.repaint()
-            if (!found) {
-                val messageText = controller.getText("no_more_found_from")
-                val searchTerm = find
-                    .getSearchTermAsEscapedString(messageText)
-                controller.controller.informationMessage(
-                    messageText!!.replace("\\$1".toRegex(), searchTerm).replace(
-                        "\\$2".toRegex(), find.findFromText
-                    ),
-                    controller.view.selected
-                )
-            }
-        }
-    }
+	private Collection<String> subterms;
 
-    fun find(
-        node: MindMapNode,
-        subterms: MutableCollection<String>,
-        caseSensitive: Boolean
-    ): Boolean {
-        findNodesUnfoldedByLastFind = ArrayList()
-        val nodes = LinkedList<MindMapNode>()
-        nodes.addFirst(node)
-        findFromNode = node
-        val finalizedSubterms: MutableCollection<String>
-        if (!caseSensitive) {
-            finalizedSubterms = ArrayList()
-            for (subterm in subterms) {
-                finalizedSubterms.add(subterm.lowercase(Locale.getDefault()))
-            }
-        } else {
-            finalizedSubterms = subterms
-        }
-        return find(nodes, finalizedSubterms, caseSensitive)
-    }
+	/**
+	 * @return Returns the subterms.
+	 */
+	public Collection<String> getSubterms() {
+		return subterms;
+	}
 
-    private fun find(
-        nodes: LinkedList<MindMapNode>?,
-        subterms: Collection<String>,
-        caseSensitive: Boolean
-    ): Boolean {
-        // Precondition: if !caseSensitive then >>what<< is in lowercase.
-        val searchInNotesToo = Resources.getInstance().getBoolProperty(
-            FreeMind.RESOURCES_SEARCH_IN_NOTES_TOO
-        )
-        if (!findNodesUnfoldedByLastFind!!.isEmpty()) {
+	public String getSearchTerm() {
+		return searchTerm;
+	}
 
-            // if (false) {
-            val i: ListIterator<MindMapNode> = findNodesUnfoldedByLastFind!!.listIterator(
-                findNodesUnfoldedByLastFind!!.size
-            )
-            while (i.hasPrevious()) {
-                val node = i.previous()
-                try {
-                    controller.setFolded(node, true)
-                } catch (e: Exception) {
-                }
-            }
-            findNodesUnfoldedByLastFind = ArrayList()
-        }
+	public String getFindFromText() {
+		String plainNodeText = HtmlTools.htmlToPlain(findFromNode.toString())
+				.replaceAll("\n", " ");
+		return plainNodeText.length() <= 30 ? plainNodeText : plainNodeText
+				.substring(0, 30) + "...";
+	}
 
-        // We implement width-first search.
-        while (!nodes!!.isEmpty()) {
-            val node = nodes.removeFirst() as MindMapNode
-            // Add children to the queue
-            val i = node.childrenUnfolded()
-            while (i.hasNext()) {
-                nodes.addLast(i.next())
-            }
-            if (!node.isVisible) continue
+	private boolean findCaseSensitive;
 
-            // Bug fix for
-            // http://sourceforge.net/tracker/?func=detail&aid=3035387&group_id=7118&atid=107118
-            var nodeText: String? = node.toString()
-            nodeText = prepareTextContent(caseSensitive, nodeText)
-            // End bug fix.
-            var noteText = node.noteText
-            noteText = prepareTextContent(caseSensitive, noteText)
-            var found = true
-            var foundInNotes = false
-            for (subterm in subterms) {
-                if (nodeText!!.indexOf(subterm) < 0) {
-                    // Subterm not found
-                    found = false
-                    break
-                }
-            }
-            if (!found && searchInNotesToo) {
-                /* now, search the notes. */
-                found = true
-                for (subterm in subterms) {
-                    if (noteText!!.indexOf(subterm) < 0) {
-                        // Subterm not found
-                        found = false
-                        break
-                    }
-                }
-                foundInNotes = true
-            }
-            if (found) { // Found
-                displayNode(node, findNodesUnfoldedByLastFind)
-                centerNode(node)
-                if (foundInNotes) {
-                    // TODO: Select text in notes window.
-                }
-                // Save the state for find next
-                this.subterms = subterms
-                findCaseSensitive = caseSensitive
-                findNodeQueue = nodes
-                return true
-            }
-        }
-        centerNode(findFromNode)
-        return false
-    }
+	private LinkedList<MindMapNode> findNodeQueue;
 
-    fun prepareTextContent(caseSensitive: Boolean, nodeText: String?): String? {
-        var text = nodeText
-        if (text == null) {
-            text = ""
-        }
-        if (HtmlTools.isHtmlNode(text)) {
-            text = HtmlTools.removeHtmlTagsFromString(text)
-            text = HtmlTools.unescapeHTMLUnicodeEntity(text)
-        }
-        if (!caseSensitive) {
-            text = text!!.lowercase(Locale.getDefault())
-        }
-        return text
-    }
+	private JDialog mDialog;
 
-    private fun breakSearchTermIntoSubterms(searchTerm: String): MutableCollection<String> {
-        val subterms = ArrayList<String>()
-        val subterm = StringBuffer()
-        val len = searchTerm.length
-        var myChar: Char
-        var withinQuotes = false
-        for (i in 0 until len) {
-            myChar = searchTerm[i]
-            if (myChar == ' ' && withinQuotes) {
-                subterm.append(myChar)
-            } else if (myChar == ' ' && !withinQuotes) {
-                subterms.add(subterm.toString())
-                subterm.setLength(0)
-            } else if (myChar == '"' && i > 0 && i < len - 1 && searchTerm[i - 1] != ' ' && searchTerm[i + 1] != ' ') {
-                // Character " surrounded by non-spaces
-                subterm.append(myChar)
-            } else if (myChar == '"' && withinQuotes) {
-                withinQuotes = false
-            } else if (myChar == '"' && !withinQuotes) {
-                withinQuotes = true
-            } else {
-                subterm.append(myChar)
-            }
-        }
-        subterms.add(subterm.toString())
-        return subterms
-    }
+	private int mResult;
 
-    /**
-     * Display a node in the display (used by find and the goto action by arrow
-     * link actions).
-     */
-    fun displayNode(node: MindMapNode?, nodesUnfoldedByDisplay: ArrayList<MindMapNode>?) {
-        // Unfold the path to the node
-        val path = controller.map.getPathToRoot(node)
-        // Iterate the path with the exception of the last node
-        for (i in 0 until path.size - 1) {
-            val nodeOnPath = path[i] as MindMapNode
-            // System.out.println(nodeOnPath);
-            if (nodeOnPath.isFolded) {
-                nodesUnfoldedByDisplay?.add(nodeOnPath)
-                controller.setFolded(nodeOnPath, false)
-            }
-        }
-    }
+	private JCheckBox mFindInNotesTooBox;
 
-    fun findNext(): Boolean {
-        // Precodition: subterms != null. We check the precodition but give no
-        // message.
+	private JTextField mSearchField;
 
-        // The logic of find next is vulnerable. find next relies on the queue
-        // of nodes from previous find / find next. However, between previous
-        // find / find next and this find next, nodes could have been deleted
-        // or moved. The logic expects that no changes happened, even that no
-        // node has been folded / unfolded.
+	/** This isn't stored and is per map. */
+	private String mLastSearchString;
 
-        // You may want to come with more correct solution, but this one
-        // works for most uses, and does not cause any big trouble except
-        // perhaps for some uncaught exceptions. As a result, it is not very
-        // nice, but far from critical and working quite fine.
-        return if (subterms != null) {
-            find(findNodeQueue, subterms!!, findCaseSensitive)
-        } else false
-    }
+	public FindAction(ControllerAdapter controller) {
+		super("find", "images/filefind.png", controller);
+		this.controller = controller;
+	}
 
-    /**
-     */
-    private fun centerNode(node: MindMapNode?) {
-        // Select the node and scroll to it.
-        controller.centerNode(node)
-    }
+	public void actionPerformed(ActionEvent e) {
+		displayDialog();
+		if (mResult != JOptionPane.OK_OPTION) {
+			return;
+		}
+		String what = mSearchField.getText();
+		if (what == null || what.equals("")) {
+			return;
+		}
+		Collection<String> subterms = breakSearchTermIntoSubterms(what);
+		this.searchTerm = what;
+		// System.err.println(subterms);
+		/* caseSensitive=false */
+		boolean found = find(controller.getSelected(), subterms, false);
+		controller.getView().repaint();
+		if (!found) {
+			String messageText = controller.getText("no_found_from");
+			String searchTerm = getSearchTermAsEscapedString(messageText);
+			controller.getController().informationMessage(
+					messageText.replaceAll("\\$1", searchTerm).replaceAll(
+							"\\$2", getFindFromText()),
+					controller.getView().getSelected());
+		}
+	}
+
+	private void close(int pResult) {
+		mResult = pResult;
+		mDialog.setVisible(false);
+		mDialog.dispose();
+		// Store "find in notes too" value to prop.
+		if (pResult == JOptionPane.OK_OPTION) {
+			Resources
+					.getInstance()
+					.getProperties()
+					.setProperty(FreeMind.RESOURCES_SEARCH_IN_NOTES_TOO,
+							mFindInNotesTooBox.isSelected() ? "true" : "false");
+			mLastSearchString = mSearchField.getText();
+		}
+	}
+
+	void displayDialog() {
+		mDialog = null;
+		mDialog = new JDialog(controller.getFrame().getJFrame(),
+				controller.getText("find"));
+		mDialog.setModal(true);
+		mDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		AbstractAction cancelAction = new AbstractAction() {
+
+			public void actionPerformed(ActionEvent pE) {
+				close(JOptionPane.CANCEL_OPTION);
+			}
+		};
+		AbstractAction okAction = new AbstractAction() {
+
+			public void actionPerformed(ActionEvent pE) {
+				close(JOptionPane.OK_OPTION);
+			}
+		};
+		Tools.addEscapeActionToDialog(mDialog, cancelAction);
+		mDialog.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent pE) {
+				close(JOptionPane.CANCEL_OPTION);
+			}
+		});
+		Container contentPane = mDialog.getContentPane();
+		contentPane.setLayout(new GridBagLayout());
+		contentPane.add(new JLabel(controller.getText("find_what")),
+				new GridBagConstraints(1, 0, 1, 1, 1.0, 1.0,
+						GridBagConstraints.WEST, GridBagConstraints.BOTH,
+						new Insets(5, 5, 0, 0), 0, 0));
+		mSearchField = new JTextField(mLastSearchString);
+		mSearchField.selectAll();
+		mSearchField.setMinimumSize(new Dimension(500, 14));
+		contentPane.add(mSearchField, new GridBagConstraints(2, 0, 10, 1, 1.0,
+				1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
+				new Insets(5, 5, 0, 0), 0, 0));
+		ImageIcon findImage = freemind.view.ImageFactory.getInstance().createIcon(Resources.getInstance()
+				.getResource("images/filefind_big.png"));
+		contentPane.add(new JLabel(findImage), new GridBagConstraints(0, 0, 1,
+				2, 1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
+				new Insets(5, 5, 0, 0), 0, 0));
+		mFindInNotesTooBox = new JCheckBox(
+				controller
+						.getText("ExtendedFindDialog.find_search_in_notes_too"));
+		mFindInNotesTooBox.setSelected(Resources.getInstance().getBoolProperty(
+				FreeMind.RESOURCES_SEARCH_IN_NOTES_TOO));
+		Tools.setLabelAndMnemonic(mFindInNotesTooBox, null);
+		contentPane.add(mFindInNotesTooBox, new GridBagConstraints(0, 2, 3, 1,
+				1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
+				new Insets(5, 5, 0, 0), 0, 0));
+		JButton okButton = new JButton(
+				controller.getText("ExtendedFindDialog.ok"));
+		Tools.setLabelAndMnemonic(okButton, null);
+		okButton.addActionListener(okAction);
+		contentPane.add(okButton, new GridBagConstraints(2, 3, 1, 1, 1.0, 1.0,
+				GridBagConstraints.WEST, GridBagConstraints.BOTH, new Insets(5,
+						5, 0, 0), 0, 0));
+		JButton cancelButton = new JButton(
+				controller.getText("ExtendedFindDialog.cancel"));
+		Tools.setLabelAndMnemonic(cancelButton, null);
+		cancelButton.addActionListener(cancelAction);
+		contentPane.add(cancelButton, new GridBagConstraints(3, 3, 1, 1, 1.0,
+				1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
+				new Insets(5, 5, 0, 0), 0, 0));
+		mDialog.getRootPane().setDefaultButton(okButton);
+		mDialog.pack();
+		Tools.setDialogLocationRelativeTo(mDialog, controller.getSelectedView());
+		mDialog.setVisible(true);
+	}
+
+	private String getSearchTermAsEscapedString(String messageText) {
+		String searchTerm = messageText.startsWith("<html>") ? HtmlTools
+				.toXMLEscapedText(getSearchTerm()) : getSearchTerm();
+		// Fix for
+		// https://sourceforge.net/tracker/?func=detail&aid=3200783&group_id=7118&atid=107118
+		// Patch
+		// https://sourceforge.net/tracker/?func=detail&aid=3276562&group_id=7118&atid=307118,
+		// thanks to the author
+		searchTerm = searchTerm.replace("$", "\\$");
+		return searchTerm;
+	}
+
+	public static class FindNextAction extends FreemindAction {
+		private final ControllerAdapter controller;
+
+		private final FindAction find;
+
+		public FindNextAction(ControllerAdapter controller, FindAction find) {
+			super("find_next", controller);
+			this.controller = controller;
+			this.find = find;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			Collection<String> subterms = find.getSubterms();
+			if (subterms == null) {
+				controller.getController().informationMessage(
+						controller.getText("no_previous_find"),
+						controller.getView().getSelected());
+				return;
+			}
+			boolean found = find.findNext();
+			controller.getView().repaint();
+			if (!found) {
+				String messageText = controller.getText("no_more_found_from");
+				String searchTerm = find
+						.getSearchTermAsEscapedString(messageText);
+				controller.getController().informationMessage(
+						messageText.replaceAll("\\$1", searchTerm).replaceAll(
+								"\\$2", find.getFindFromText()),
+						controller.getView().getSelected());
+			}
+		}
+	}
+
+	public boolean find(MindMapNode node, Collection<String> subterms,
+			boolean caseSensitive) {
+		findNodesUnfoldedByLastFind = new ArrayList<>();
+		LinkedList<MindMapNode> nodes = new LinkedList<>();
+		nodes.addFirst(node);
+		findFromNode = node;
+		Collection<String> finalizedSubterms;
+		if (!caseSensitive) {
+			finalizedSubterms = new ArrayList<>();
+			for (String subterm : subterms) {
+				finalizedSubterms.add(subterm.toLowerCase());
+			}
+		} else {
+			finalizedSubterms = subterms;
+		}
+		return find(nodes, finalizedSubterms, caseSensitive);
+	}
+
+	private boolean find(LinkedList<MindMapNode> nodes,
+			Collection<String> subterms, boolean caseSensitive) {
+		// Precondition: if !caseSensitive then >>what<< is in lowercase.
+		boolean searchInNotesToo = Resources.getInstance().getBoolProperty(
+				FreeMind.RESOURCES_SEARCH_IN_NOTES_TOO);
+
+		if (!findNodesUnfoldedByLastFind.isEmpty()) {
+
+			// if (false) {
+			ListIterator<MindMapNode> i = findNodesUnfoldedByLastFind.listIterator(findNodesUnfoldedByLastFind.size());
+			while (i.hasPrevious()) {
+				MindMapNode node = i.previous();
+				try {
+					controller.setFolded(node, true);
+				} catch (Exception e) {
+				}
+			}
+			findNodesUnfoldedByLastFind = new ArrayList<>();
+		}
+
+		// We implement width-first search.
+		while (!nodes.isEmpty()) {
+			MindMapNode node = (MindMapNode) nodes.removeFirst();
+			// Add children to the queue
+			for (ListIterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+				nodes.addLast(i.next());
+			}
+
+			if (!node.isVisible())
+				continue;
+
+			// Bug fix for
+			// http://sourceforge.net/tracker/?func=detail&aid=3035387&group_id=7118&atid=107118
+			String nodeText = node.toString();
+			nodeText = prepareTextContent(caseSensitive, nodeText);
+			// End bug fix.
+			String noteText = node.getNoteText();
+			noteText = prepareTextContent(caseSensitive, noteText);
+
+			boolean found = true;
+			boolean foundInNotes = false;
+			for (String subterm : subterms) {
+				if (nodeText.indexOf(subterm) < 0) {
+					// Subterm not found
+					found = false;
+					break;
+				}
+			}
+
+			if ((!found) && searchInNotesToo) {
+				/* now, search the notes. */
+				found = true;
+				for (String subterm : subterms) {
+					if (noteText.indexOf(subterm) < 0) {
+						// Subterm not found
+						found = false;
+						break;
+					}
+				}
+				foundInNotes = true;
+			}
+			if (found) { // Found
+				displayNode(node, findNodesUnfoldedByLastFind);
+				centerNode(node);
+				if (foundInNotes) {
+					// TODO: Select text in notes window.
+				}
+				// Save the state for find next
+				this.subterms = subterms;
+				findCaseSensitive = caseSensitive;
+				findNodeQueue = nodes;
+				return true;
+			}
+		}
+
+		centerNode(findFromNode);
+		return false;
+	}
+
+	public String prepareTextContent(boolean caseSensitive, String nodeText) {
+		if (nodeText == null) {
+			nodeText = "";
+		}
+		if (HtmlTools.isHtmlNode(nodeText)) {
+			nodeText = HtmlTools.removeHtmlTagsFromString(nodeText);
+			nodeText = HtmlTools.unescapeHTMLUnicodeEntity(nodeText);
+		}
+		if (!caseSensitive) {
+			nodeText = nodeText.toLowerCase();
+		}
+		return nodeText;
+	}
+
+	private Collection<String> breakSearchTermIntoSubterms(String searchTerm) {
+		ArrayList<String> subterms = new ArrayList<>();
+		StringBuffer subterm = new StringBuffer();
+		int len = searchTerm.length();
+		char myChar;
+
+		boolean withinQuotes = false;
+		for (int i = 0; i < len; ++i) {
+			myChar = searchTerm.charAt(i);
+			if (myChar == ' ' && withinQuotes) {
+				subterm.append(myChar);
+			} else if ((myChar == ' ' && !withinQuotes)) {
+				subterms.add(subterm.toString());
+				subterm.setLength(0);
+			} else if (myChar == '"' && i > 0 && i < len - 1
+					&& searchTerm.charAt(i - 1) != ' '
+					&& searchTerm.charAt(i + 1) != ' ') {
+				// Character " surrounded by non-spaces
+				subterm.append(myChar);
+			} else if (myChar == '"' && withinQuotes) {
+				withinQuotes = false;
+			} else if (myChar == '"' && !withinQuotes) {
+				withinQuotes = true;
+			} else {
+				subterm.append(myChar);
+			}
+
+		}
+		subterms.add(subterm.toString());
+		return subterms;
+	}
+
+	/**
+	 * Display a node in the display (used by find and the goto action by arrow
+	 * link actions).
+	 */
+	public void displayNode(MindMapNode node, ArrayList<MindMapNode> nodesUnfoldedByDisplay) {
+		// Unfold the path to the node
+		Object[] path = controller.getMap().getPathToRoot(node);
+		// Iterate the path with the exception of the last node
+		for (int i = 0; i < path.length - 1; i++) {
+			MindMapNode nodeOnPath = (MindMapNode) path[i];
+			// System.out.println(nodeOnPath);
+			if (nodeOnPath.isFolded()) {
+				if (nodesUnfoldedByDisplay != null)
+					nodesUnfoldedByDisplay.add(nodeOnPath);
+				controller.setFolded(nodeOnPath, false);
+			}
+		}
+
+	}
+
+	public boolean findNext() {
+		// Precodition: subterms != null. We check the precodition but give no
+		// message.
+
+		// The logic of find next is vulnerable. find next relies on the queue
+		// of nodes from previous find / find next. However, between previous
+		// find / find next and this find next, nodes could have been deleted
+		// or moved. The logic expects that no changes happened, even that no
+		// node has been folded / unfolded.
+
+		// You may want to come with more correct solution, but this one
+		// works for most uses, and does not cause any big trouble except
+		// perhaps for some uncaught exceptions. As a result, it is not very
+		// nice, but far from critical and working quite fine.
+
+		if (subterms != null) {
+			return find(findNodeQueue, subterms, findCaseSensitive);
+		}
+		return false;
+	}
+
+	/**
+	 */
+	private void centerNode(MindMapNode node) {
+		// Select the node and scroll to it.
+		controller.centerNode(node);
+	}
+
 }

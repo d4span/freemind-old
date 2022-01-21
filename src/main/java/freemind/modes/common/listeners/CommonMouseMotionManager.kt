@@ -19,52 +19,66 @@
  *
  * Created on 11.11.2005
  */
-package freemind.modes.common.listeners
 
-import freemind.controller.MapMouseMotionListener.MapMouseMotionReceiver
-import freemind.modes.ModeController
-import freemind.view.mindmapview.MapView
-import java.awt.Rectangle
-import java.awt.event.MouseEvent
+package freemind.modes.common.listeners;
+
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+
+import freemind.controller.MapMouseMotionListener.MapMouseMotionReceiver;
+import freemind.modes.ModeController;
+import freemind.view.mindmapview.MapView;
 
 /**
  * @author foltin
+ * 
  */
-class CommonMouseMotionManager
-/**
- *
- */(private val mController: ModeController) : MapMouseMotionReceiver {
-    var originX = -1
-    var originY = -1
+public class CommonMouseMotionManager implements MapMouseMotionReceiver {
 
-    // |= oldX >=0 iff we are in the drag
-    override fun mouseDragged(e: MouseEvent?) {
-        val r = Rectangle(e!!.x, e.y, 1, 1)
-        val mapView = e.component as MapView
-        val isEventPointVisible = mapView.visibleRect.contains(r)
-        if (!isEventPointVisible) {
-            mapView.scrollRectToVisible(r)
-        }
-        // Always try to get mouse to the original position in the Map.
-        if (originX >= 0 && isEventPointVisible) {
-            (e.component as MapView).scrollBy(
-                originX - e.x,
-                originY -
-                    e.y
-            )
-        }
-    }
+	int originX = -1;
 
-    override fun mousePressed(e: MouseEvent?) {
-        if (!mController.isBlocked && e!!.button == MouseEvent.BUTTON1) {
-            mController.view.setMoveCursor(true)
-            originX = e.x
-            originY = e.y
-        }
-    }
+	int originY = -1;
 
-    override fun mouseReleased(e: MouseEvent?) {
-        originX = -1
-        originY = -1
-    }
+	private final ModeController mController;
+
+	// |= oldX >=0 iff we are in the drag
+
+	/**
+	 *
+	 */
+	public CommonMouseMotionManager(ModeController controller) {
+		super();
+		this.mController = controller;
+
+	}
+
+	public void mouseDragged(MouseEvent e) {
+		Rectangle r = new Rectangle(e.getX(), e.getY(), 1, 1);
+		MapView mapView = (MapView) e.getComponent();
+		boolean isEventPointVisible = mapView.getVisibleRect().contains(r);
+		if (!isEventPointVisible) {
+			mapView.scrollRectToVisible(r);
+		}
+		// Always try to get mouse to the original position in the Map.
+		if (originX >= 0 && isEventPointVisible) {
+			((MapView) e.getComponent()).scrollBy(originX - e.getX(), originY
+					- e.getY());
+		}
+	}
+
+	public void mousePressed(MouseEvent e) {
+		if (!mController.isBlocked() && e.getButton() == MouseEvent.BUTTON1) {
+			mController.getView().setMoveCursor(true);
+			originX = e.getX();
+			originY = e.getY();
+
+		}
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		originX = -1;
+		originY = -1;
+
+	}
+
 }

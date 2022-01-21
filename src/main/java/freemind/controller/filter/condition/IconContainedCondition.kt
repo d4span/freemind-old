@@ -35,15 +35,13 @@ import javax.swing.JLabel
 class IconContainedCondition(private val iconName: String) : Condition {
 
     override fun checkNode(c: Controller?, node: MindMapNode?): Boolean {
-        return (
-            Tools.iconFirstIndex(node, iconName) != -1 ||
-                isStateIconContained(node, iconName)
-            )
+        return (Tools.iconFirstIndex(node, iconName) != -1
+                || isStateIconContained(node, iconName))
     }
 
     /*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing
 	 * .JList, java.lang.Object, int, boolean, boolean)
@@ -51,12 +49,10 @@ class IconContainedCondition(private val iconName: String) : Condition {
     override val listCellRendererComponent: JComponent
         get() {
             val component = JCondition()
-            val text = (
-                Resources.getInstance().getResourceString("filter_icon") +
-                    ' ' +
-                    Resources.getInstance().getResourceString("filter_contains") +
-                    ' '
-                )
+            val text = (Resources.getInstance().getResourceString("filter_icon")
+                    + ' '
+                    + Resources.getInstance().getResourceString("filter_contains")
+                    + ' ')
             component.add(JLabel(text))
             component.add(MindIcon.factory(iconName).rendererComponent)
             return component

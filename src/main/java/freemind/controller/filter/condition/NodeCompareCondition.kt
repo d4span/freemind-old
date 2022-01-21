@@ -29,10 +29,8 @@ import freemind.main.XMLElement
 import freemind.modes.MindMapNode
 
 internal class NodeCompareCondition(
-    value: String?,
-    ignoreCase: Boolean,
-    private val comparationResult: Int,
-    private val succeed: Boolean
+    value: String?, ignoreCase: Boolean,
+    private val comparationResult: Int, private val succeed: Boolean
 ) : CompareConditionAdapter(
     value!!, ignoreCase
 ) {

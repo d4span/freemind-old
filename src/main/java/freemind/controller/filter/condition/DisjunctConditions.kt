@@ -41,7 +41,7 @@ class DisjunctConditions
  */(private val conditions: Array<Any?>) : Condition {
     /*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * freemind.controller.filter.condition.Condition#checkNode(freemind.modes
 	 * .MindMapNode)
@@ -59,7 +59,7 @@ class DisjunctConditions
 
     /*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * freemind.controller.filter.condition.Condition#getListCellRendererComponent
 	 * ()

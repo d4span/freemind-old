@@ -2,18 +2,18 @@
  * FreeMind - A Program for creating and viewing MindmapsCopyright (C) 2000-2015
  * Christian Foltin, Joerg Mueller, Daniel Polansky, Dimitri Polivaev and
  * others.
- *
+ * 
  * See COPYING for Details
- *
+ * 
  * This program is free software; you can redistribute it and/ormodify it under
  * the terms of the GNU General Public Licenseas published by the Free Software
  * Foundation; either version 2of the License, or (at your option) any later
  * version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,but WITHOUT
  * ANY WARRANTY; without even the implied warranty ofMERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See theGNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public Licensealong with
  * this program; if not, write to the Free SoftwareFoundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
@@ -68,11 +68,8 @@ class JColorCombo : JComboBox<ColorPair?>() {
 	     * to display the text and image.
 	     */
         override fun getListCellRendererComponent(
-            list: JList<out ColorPair?>,
-            value: ColorPair?,
-            index: Int,
-            isSelected: Boolean,
-            cellHasFocus: Boolean
+            list: JList<out ColorPair?>, value: ColorPair?, index: Int,
+            isSelected: Boolean, cellHasFocus: Boolean
         ): Component {
             if (isSelected) {
                 background = list.selectionBackground
@@ -128,11 +125,11 @@ class JColorCombo : JComboBox<ColorPair?>() {
             ColorPair(Color(0x008080), "teal"),
             ColorPair(Color(0x00FFFF), "aqua"),
             ColorPair(Color(0xC0C0C0), "silver"),
-            ColorPair(Color(0xFFFFFF), "white"), // automatic layout colors:
+            ColorPair(Color(0xFFFFFF), "white"),  // automatic layout colors:
             ColorPair(Color(0x0033ff), "level1"),
             ColorPair(Color(0x00b439), "level2"),
             ColorPair(Color(0x990000), "level3"),
-            ColorPair(Color(0x111111), "level4"), // netscape colors
+            ColorPair(Color(0x111111), "level4"),  // netscape colors
             ColorPair(Color(0xFFC0CB), "pink"),
             ColorPair(Color(0xFFB6C1), "lightpink"),
             ColorPair(Color(0xFF69B4), "hotpink"),

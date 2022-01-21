@@ -55,7 +55,6 @@ package "Third-party libs" {
 [Controllers] --> [Modes]
 [Controllers] --> [Preferences]
 [Controllers] --> [Java Swing]
-[Controllers] --> [Jetbrains Annotations]
 
 [Extensions] --> [Main]
 [Extensions] --> [Views]

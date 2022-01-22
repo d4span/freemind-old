@@ -47,7 +47,7 @@ import freemind.modes.FreeMindFileDialog;
 import freemind.modes.MapAdapter;
 import freemind.modes.MapFeedbackAdapter;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.Mode;
 import freemind.modes.ModeController;
 import freemind.modes.NodeAdapter;
@@ -270,7 +270,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * @see freemind.modes.ModeController#getNodeID(freemind.modes.MindMapNode)
 	 */
 	@Override
-	public String getNodeID(MindMapNode pSelected) {
+	public String getNodeID(NodeRepresentation pSelected) {
 
 		return null;
 	}
@@ -293,7 +293,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * java.util.List)
 	 */
 	@Override
-	public void select(MindMapNode pFocused, List<MindMapNode> pSelecteds) {
+	public void select(NodeRepresentation pFocused, List<NodeRepresentation> pSelecteds) {
 
 	}
 
@@ -315,7 +315,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * @see freemind.modes.ModeController#getSelected()
 	 */
 	@Override
-	public MindMapNode getSelected() {
+	public NodeRepresentation getSelected() {
 
 		return null;
 	}
@@ -337,7 +337,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * @see freemind.modes.ModeController#getSelecteds()
 	 */
 	@Override
-	public List<MindMapNode> getSelecteds() {
+	public List<NodeRepresentation> getSelecteds() {
 
 		return null;
 	}
@@ -348,7 +348,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * @see freemind.modes.ModeController#getSelectedsByDepth()
 	 */
 	@Override
-	public List<MindMapNode> getSelectedsByDepth() {
+	public List<NodeRepresentation> getSelectedsByDepth() {
 
 		return null;
 	}
@@ -359,7 +359,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * @see freemind.modes.ModeController#sortNodesByDepth(java.util.List)
 	 */
 	@Override
-	public void sortNodesByDepth(List<MindMapNode> pInPlaceList) {
+	public void sortNodesByDepth(List<NodeRepresentation> pInPlaceList) {
 
 	}
 
@@ -442,7 +442,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * freemind.modes.ModeController#displayNode(freemind.modes.MindMapNode)
 	 */
 	@Override
-	public void displayNode(MindMapNode pNode) {
+	public void displayNode(NodeRepresentation pNode) {
 
 	}
 
@@ -452,7 +452,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * @see freemind.modes.ModeController#centerNode(freemind.modes.MindMapNode)
 	 */
 	@Override
-	public void centerNode(MindMapNode pNode) {
+	public void centerNode(NodeRepresentation pNode) {
 
 	}
 
@@ -464,7 +464,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * )
 	 */
 	@Override
-	public String getLinkShortText(MindMapNode pNode) {
+	public String getLinkShortText(NodeRepresentation pNode) {
 
 		return null;
 	}
@@ -651,7 +651,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * freemind.modes.ModeController#getNodeView(freemind.modes.MindMapNode)
 	 */
 	@Override
-	public NodeView getNodeView(MindMapNode pNode) {
+	public NodeView getNodeView(NodeRepresentation pNode) {
 
 		return null;
 	}
@@ -673,7 +673,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * boolean)
 	 */
 	@Override
-	public Transferable copy(MindMapNode pNode, boolean pSaveInvisible) {
+	public Transferable copy(NodeRepresentation pNode, boolean pSaveInvisible) {
 
 		return null;
 	}
@@ -706,7 +706,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * @see freemind.modes.ModeController#copy(java.util.List, boolean)
 	 */
 	@Override
-	public Transferable copy(List<MindMapNode> pSelectedNodes, boolean pCopyInvisible) {
+	public Transferable copy(List<NodeRepresentation> pSelectedNodes, boolean pCopyInvisible) {
 
 		return null;
 	}
@@ -742,7 +742,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * java.lang.String, java.lang.String)
 	 */
 	@Override
-	public void setToolTip(MindMapNode pNode, String pKey, String pValue) {
+	public void setToolTip(NodeRepresentation pNode, String pKey, String pValue) {
 
 	}
 

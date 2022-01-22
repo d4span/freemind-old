@@ -53,7 +53,7 @@ public class MindMapLinkRegistry {
 			boolean add = super.add(pE);
 			if (pE instanceof MindMapLink) {
 				MindMapLink link = (MindMapLink) pE;
-				MindMapNode source = link.getSource();
+				NodeRepresentation source = link.getSource();
 				if (!mSourceToLinks.containsKey(source)) {
 					mSourceToLinks.put(source, new Vector<MindMapLink>());
 				}
@@ -69,7 +69,7 @@ public class MindMapLinkRegistry {
 		 */
 		public synchronized void removeElementAt(int pIndex) {
 			MindMapLink link = (MindMapLink) get(pIndex);
-			MindMapNode source = link.getSource();
+			NodeRepresentation source = link.getSource();
 			Vector<MindMapLink> vector = mSourceToLinks.get(source);
 			if (vector != null) {
 				vector.remove(link);
@@ -83,16 +83,16 @@ public class MindMapLinkRegistry {
 	}
 
 	/** source -> vector of links with same source */
-	protected HashMap<MindMapNode, Vector<MindMapLink>> mSourceToLinks = new HashMap<>();
+	protected HashMap<NodeRepresentation, Vector<MindMapLink>> mSourceToLinks = new HashMap<>();
 
 	// //////////////////////////////////////////////////////////////////////////////////////
 	// // Attributes /////
 	// //////////////////////////////////////////////////////////////////////////////////////
 
 	/** MindMapNode = Target -> ID. */
-	protected HashMap<MindMapNode, String> mTargetToId;
+	protected HashMap<NodeRepresentation, String> mTargetToId;
 	/** MindMapNode-> ID. */
-	protected HashMap<String, MindMapNode> mIdToTarget;
+	protected HashMap<String, NodeRepresentation> mIdToTarget;
 	/** id -> vector of links whose TargetToID.get(target) == id. */
 	protected HashMap<String, Vector<MindMapLink>> mIdToLinks;
 	/** id -> link */
@@ -132,7 +132,7 @@ public class MindMapLinkRegistry {
 		return Tools.generateID(proposedID, mIdToLink, "Arrow_ID_");
 	}
 
-	public String registerLinkTarget(MindMapNode pTarget) {
+	public String registerLinkTarget(NodeRepresentation pTarget) {
 		return _registerLinkTarget(pTarget);
 
 	}
@@ -141,18 +141,18 @@ public class MindMapLinkRegistry {
 	 * The second variant of the main method. The difference is that here an ID
 	 * is proposed, but has not to be taken, though.
 	 */
-	public String registerLinkTarget(MindMapNode pTarget, String pProposedID) {
+	public String registerLinkTarget(NodeRepresentation pTarget, String pProposedID) {
 		return _registerLinkTarget(pTarget, pProposedID);
 	}
 
 	/**
 	 * The main method. Registeres a node with a new (or an existing) node-id.
 	 */
-	public String _registerLinkTarget(MindMapNode target) {
+	public String _registerLinkTarget(NodeRepresentation target) {
 		return _registerLinkTarget(target, null);
 	}
 
-	public String _registerLinkTarget(MindMapNode target, String proposedID) {
+	public String _registerLinkTarget(NodeRepresentation target, String proposedID) {
 		// id already exists?
 		if (mTargetToId.containsKey(target)) {
 			String id = (String) mTargetToId.get(target);
@@ -178,7 +178,7 @@ public class MindMapLinkRegistry {
 	 * @param node
 	 * @return null, if not registered.
 	 */
-	public String getState(MindMapNode node) {
+	public String getState(NodeRepresentation node) {
 		if (mTargetToId.containsKey(node))
 			return (String) mTargetToId.get(node);
 		return null;
@@ -188,9 +188,9 @@ public class MindMapLinkRegistry {
 	 * Reverses the getLabel method: searches for a node with the id given as
 	 * the argument.
 	 */
-	public MindMapNode getTargetForId(String ID) {
+	public NodeRepresentation getTargetForId(String ID) {
 		final Object target = mIdToTarget.get(ID);
-		return (MindMapNode) target;
+		return (NodeRepresentation) target;
 	}
 
 	/** @return a Vector of {@link MindMapLink}s */
@@ -211,7 +211,7 @@ public class MindMapLinkRegistry {
 	}
 
 	/** If there are still targets registered, they are removed, too. */
-	public void deregisterLinkTarget(MindMapNode target)
+	public void deregisterLinkTarget(NodeRepresentation target)
 			throws java.lang.IllegalArgumentException {
 		// deregister all links :
 		Vector<MindMapLink> links = getAllLinks(target);
@@ -220,8 +220,8 @@ public class MindMapLinkRegistry {
 			deregisterLink(link);
 		}
 		// and process my sons:
-		for (ListIterator<MindMapNode> e = target.childrenUnfolded(); e.hasNext();) {
-			MindMapNode child = e.next();
+		for (ListIterator<NodeRepresentation> e = target.childrenUnfolded(); e.hasNext();) {
+			NodeRepresentation child = e.next();
 			deregisterLinkTarget(child);
 		}
 		String id = getState(target);
@@ -244,8 +244,8 @@ public class MindMapLinkRegistry {
 				|| (link.getDestinationLabel() == null))
 			throw new java.lang.IllegalArgumentException(
 					"Illegal link specification." + link);
-		MindMapNode source = link.getSource();
-		MindMapNode target = link.getTarget();
+		NodeRepresentation source = link.getSource();
+		NodeRepresentation target = link.getTarget();
 		logger.fine("Register link (" + link + ") from source node:" + source
 				+ " to target " + target);
 		String id = _registerLinkTarget(target);
@@ -273,7 +273,7 @@ public class MindMapLinkRegistry {
 	}
 
 	public void deregisterLink(MindMapLink link) {
-		MindMapNode target = link.getTarget();
+		NodeRepresentation target = link.getTarget();
 		String id = _registerLinkTarget(target);
 		Vector<MindMapLink> vec = getAssignedLinksVector(id);
 		for (int i = vec.size() - 1; i >= 0; --i) {
@@ -300,11 +300,11 @@ public class MindMapLinkRegistry {
 	}
 
 	/**
-	 * @return Returns a Vector of {@link MindMapNode}s that point to the given
+	 * @return Returns a Vector of {@link NodeRepresentation}s that point to the given
 	 *         target node.
 	 */
-	public Vector<MindMapNode> getAllSources(MindMapNode target) {
-		Vector<MindMapNode> returnValue;
+	public Vector<NodeRepresentation> getAllSources(NodeRepresentation target) {
+		Vector<NodeRepresentation> returnValue;
 		returnValue = new Vector<>();
 		String id = getState(target);
 		if (id != null) {
@@ -317,7 +317,7 @@ public class MindMapLinkRegistry {
 	}
 
 	/** @return returns all links from or to this node. */
-	public Vector<MindMapLink> getAllLinks(MindMapNode node) {
+	public Vector<MindMapLink> getAllLinks(NodeRepresentation node) {
 		Vector<MindMapLink> returnValue = new Vector<>();
 		returnValue.addAll(getAllLinksIntoMe(node));
 		returnValue.addAll(getAllLinksFromMe(node));
@@ -327,7 +327,7 @@ public class MindMapLinkRegistry {
 	}
 
 	/** @return returns all links to this node as {@link MindMapLink} vector. */
-	public Vector<MindMapLink> getAllLinksIntoMe(MindMapNode target) {
+	public Vector<MindMapLink> getAllLinksIntoMe(NodeRepresentation target) {
 		Vector<MindMapLink> returnValue = new Vector<MindMapLink>();
 		String id = getState(target);
 		if (id != null) {
@@ -339,7 +339,7 @@ public class MindMapLinkRegistry {
 	}
 
 	/** @return returns all links from this node as {@link MindMapLink} vector. */
-	public Vector<MindMapLink> getAllLinksFromMe(MindMapNode source) {
+	public Vector<MindMapLink> getAllLinksFromMe(NodeRepresentation source) {
 		Vector<MindMapLink> returnValue = new Vector<MindMapLink>();
 		Collection<MindMapLink> vec = mSourceToLinks.get(source);
 		if (vec != null) {
@@ -348,7 +348,7 @@ public class MindMapLinkRegistry {
 		return returnValue;
 	}
 
-	public String getLabel(MindMapNode target) {
+	public String getLabel(NodeRepresentation target) {
 		return getState(target);
 	}
 

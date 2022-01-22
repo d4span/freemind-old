@@ -30,6 +30,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Vector;
 
+import freemind.modes.NodeRepresentation;
 import plugins.collaboration.socket.FormDialog;
 import plugins.collaboration.socket.FormDialog.FormDialogValidator;
 import freemind.common.NumberProperty;
@@ -39,7 +40,6 @@ import freemind.extensions.DontSaveMarker;
 import freemind.extensions.PermanentNodeHook;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 import freemind.view.mindmapview.NodeView;
@@ -149,28 +149,28 @@ public class DatabaseStarter extends DatabaseBasics implements
 		super.shutdownMapHook();
 	}
 
-	public void onAddChild(MindMapNode pAddedChildNode) {
+	public void onAddChild(NodeRepresentation pAddedChildNode) {
 	}
 
-	public void onAddChildren(MindMapNode pAddedChild) {
+	public void onAddChildren(NodeRepresentation pAddedChild) {
 	}
 
 	public void onLostFocusNode(NodeView pNodeView) {
 	}
 
-	public void onNewChild(MindMapNode pNewChildNode) {
+	public void onNewChild(NodeRepresentation pNewChildNode) {
 	}
 
-	public void onRemoveChild(MindMapNode pOldChildNode) {
+	public void onRemoveChild(NodeRepresentation pOldChildNode) {
 	}
 
-	public void onRemoveChildren(MindMapNode pOldChildNode, MindMapNode pOldDad) {
+	public void onRemoveChildren(NodeRepresentation pOldChildNode, NodeRepresentation pOldDad) {
 	}
 
 	public void onFocusNode(NodeView pNodeView) {
 	}
 
-	public void onUpdateChildrenHook(MindMapNode pUpdatedNode) {
+	public void onUpdateChildrenHook(NodeRepresentation pUpdatedNode) {
 	}
 
 	public void onUpdateNodeHook() {

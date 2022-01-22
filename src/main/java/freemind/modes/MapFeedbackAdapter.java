@@ -68,7 +68,7 @@ public abstract class MapFeedbackAdapter implements MapFeedback, ViewFeedback {
 	 * )
 	 */
 	@Override
-	public void fireNodePreDeleteEvent(MindMapNode pNode) {
+	public void fireNodePreDeleteEvent(NodeRepresentation pNode) {
 
 	}
 	
@@ -76,7 +76,7 @@ public abstract class MapFeedbackAdapter implements MapFeedback, ViewFeedback {
 	 * @see freemind.modes.MapFeedback#fireNodePostDeleteEvent(freemind.modes.MindMapNode, freemind.modes.MindMapNode)
 	 */
 	@Override
-	public void fireNodePostDeleteEvent(MindMapNode pNode, MindMapNode pParent) {
+	public void fireNodePostDeleteEvent(NodeRepresentation pNode, NodeRepresentation pParent) {
 		
 	}
 
@@ -84,7 +84,7 @@ public abstract class MapFeedbackAdapter implements MapFeedback, ViewFeedback {
 	 * @see freemind.modes.MapFeedback#fireRecursiveNodeCreateEvent(freemind.modes.MindMapNode)
 	 */
 	@Override
-	public void fireRecursiveNodeCreateEvent(MindMapNode pNode) {
+	public void fireRecursiveNodeCreateEvent(NodeRepresentation pNode) {
 	}
 	
 	/*
@@ -94,7 +94,7 @@ public abstract class MapFeedbackAdapter implements MapFeedback, ViewFeedback {
 	 * freemind.modes.MapFeedback#firePreSaveEvent(freemind.modes.MindMapNode)
 	 */
 	@Override
-	public void firePreSaveEvent(MindMapNode pNode) {
+	public void firePreSaveEvent(NodeRepresentation pNode) {
 
 	}
 
@@ -104,7 +104,7 @@ public abstract class MapFeedbackAdapter implements MapFeedback, ViewFeedback {
 	 * @see freemind.modes.MapFeedback#nodeChanged(freemind.modes.MindMapNode)
 	 */
 	@Override
-	public void nodeChanged(MindMapNode pNode) {
+	public void nodeChanged(NodeRepresentation pNode) {
 		if(getMap() != null) {
 			getMap().setSaved(false);
 		}
@@ -116,7 +116,7 @@ public abstract class MapFeedbackAdapter implements MapFeedback, ViewFeedback {
 	 * @see freemind.modes.MapFeedback#nodeRefresh(freemind.modes.MindMapNode)
 	 */
 	@Override
-	public void nodeRefresh(MindMapNode pNode) {
+	public void nodeRefresh(NodeRepresentation pNode) {
 
 	}
 
@@ -127,7 +127,7 @@ public abstract class MapFeedbackAdapter implements MapFeedback, ViewFeedback {
 	 * freemind.modes.MindMapNode)
 	 */
 	@Override
-	public void paste(MindMapNode pNode, MindMapNode pParent) {
+	public void paste(NodeRepresentation pNode, NodeRepresentation pParent) {
 
 	}
 
@@ -202,7 +202,7 @@ public abstract class MapFeedbackAdapter implements MapFeedback, ViewFeedback {
 	 * freemind.modes.MindMapNode)
 	 */
 	@Override
-	public NodeHook createNodeHook(String pLoadName, MindMapNode pNode) {
+	public NodeHook createNodeHook(String pLoadName, NodeRepresentation pNode) {
 		PermanentNodeHookSubstituteUnknown hook = new PermanentNodeHookSubstituteUnknown(pLoadName);
 		hook.setMap(getMap());
 		pNode.addHook(hook);
@@ -217,7 +217,7 @@ public abstract class MapFeedbackAdapter implements MapFeedback, ViewFeedback {
 	 * , freemind.modes.MindMap)
 	 */
 	@Override
-	public void invokeHooksRecursively(MindMapNode pNode, MindMap pModel) {
+	public void invokeHooksRecursively(NodeRepresentation pNode, MindMap pModel) {
 		for (Iterator i = pNode.childrenUnfolded(); i.hasNext();) {
 			NodeAdapter child = (NodeAdapter) i.next();
 			invokeHooksRecursively(child, getMap());
@@ -249,7 +249,7 @@ public abstract class MapFeedbackAdapter implements MapFeedback, ViewFeedback {
 	}
 
 	@Override
-	public void setFolded(MindMapNode pModel, boolean pB) {
+	public void setFolded(NodeRepresentation pModel, boolean pB) {
 		
 	}
 
@@ -332,7 +332,7 @@ public abstract class MapFeedbackAdapter implements MapFeedback, ViewFeedback {
 	/* (non-Javadoc)
 	 * @see freemind.view.mindmapview.ViewFeedback#getNodeView(freemind.modes.MindMapNode)
 	 */
-	public NodeView getNodeView(MindMapNode node) {
+	public NodeView getNodeView(NodeRepresentation node) {
 		return null;
 	}
 	
@@ -344,12 +344,12 @@ public abstract class MapFeedbackAdapter implements MapFeedback, ViewFeedback {
 	 * Moreover, it sorts nodes with the same depth according to their position
 	 * relative to each other.
 	 */
-	protected class NodesDepthComparator implements Comparator<MindMapNode> {
+	protected class NodesDepthComparator implements Comparator<NodeRepresentation> {
 		public NodesDepthComparator() {
 		}
 
 		/* the < relation. */
-		public int compare(MindMapNode n1, MindMapNode n2) {
+		public int compare(NodeRepresentation n1, NodeRepresentation n2) {
 			Object[] path1 = getMap().getPathToRoot(n1);
 			Object[] path2 = getMap().getPathToRoot(n2);
 			int depth = path1.length - path2.length;
@@ -364,7 +364,7 @@ public abstract class MapFeedbackAdapter implements MapFeedback, ViewFeedback {
 		}
 	}
 
-	public void sortNodesByDepth(List<MindMapNode> inPlaceList) {
+	public void sortNodesByDepth(List<NodeRepresentation> inPlaceList) {
 		Collections.sort(inPlaceList, new NodesDepthComparator());
 		logger.finest("Sort result: " + inPlaceList);
 	}

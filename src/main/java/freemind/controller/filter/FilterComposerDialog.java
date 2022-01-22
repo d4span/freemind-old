@@ -34,7 +34,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.HashSet;
 import java.util.Iterator;
 
 import javax.swing.AbstractAction;
@@ -71,7 +70,7 @@ import freemind.main.Tools;
 import freemind.modes.FreeMindFileDialog;
 import freemind.modes.MindIcon;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.attributes.Attribute;
 
 /**
@@ -686,24 +685,24 @@ public class FilterComposerDialog extends JDialog {
 		}
 	}
 
-	private void addAttributeKeysRecursively(MindMapNode pNode, SortedListModel pAttributesInMap) {
+	private void addAttributeKeysRecursively(NodeRepresentation pNode, SortedListModel pAttributesInMap) {
 		for (String key : pNode.getAttributeKeyList()) {
 			pAttributesInMap.add(key);
 		}
 		for (Iterator it = pNode.getChildren().iterator(); it.hasNext();) {
-			MindMapNode child = (MindMapNode) it.next();
+			NodeRepresentation child = (NodeRepresentation) it.next();
 			addAttributeKeysRecursively(child, pAttributesInMap);
 		}
 	}
 
-	private void addAttributeValuesRecursively(String pKey, MindMapNode pNode, SortedListModel pAttributesInMap) {
+	private void addAttributeValuesRecursively(String pKey, NodeRepresentation pNode, SortedListModel pAttributesInMap) {
 		for (Attribute attr : pNode.getAttributes()) {
 			if(Tools.safeEquals(attr.getName(), pKey)){
 				pAttributesInMap.add(attr.getValue());
 			}
 		}
 		for (Iterator it = pNode.getChildren().iterator(); it.hasNext();) {
-			MindMapNode child = (MindMapNode) it.next();
+			NodeRepresentation child = (NodeRepresentation) it.next();
 			addAttributeValuesRecursively(pKey, child, pAttributesInMap);
 		}
 	}

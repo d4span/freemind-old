@@ -44,7 +44,7 @@ import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
 import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.view.mindmapview.NodeView;
 import plugins.collaboration.socket.FormDialog.FormDialogValidator;
@@ -266,28 +266,28 @@ public class MindMapMaster extends SocketMaster implements PermanentNodeHook,
 		}
 	}
 
-	public void onAddChild(MindMapNode pAddedChildNode) {
+	public void onAddChild(NodeRepresentation pAddedChildNode) {
 	}
 
-	public void onAddChildren(MindMapNode pAddedChild) {
+	public void onAddChildren(NodeRepresentation pAddedChild) {
 	}
 
 	public void onLostFocusNode(NodeView pNodeView) {
 	}
 
-	public void onNewChild(MindMapNode pNewChildNode) {
+	public void onNewChild(NodeRepresentation pNewChildNode) {
 	}
 
-	public void onRemoveChild(MindMapNode pOldChildNode) {
+	public void onRemoveChild(NodeRepresentation pOldChildNode) {
 	}
 
-	public void onRemoveChildren(MindMapNode pOldChildNode, MindMapNode pOldDad) {
+	public void onRemoveChildren(NodeRepresentation pOldChildNode, NodeRepresentation pOldDad) {
 	}
 
 	public void onFocusNode(NodeView pNodeView) {
 	}
 
-	public void onUpdateChildrenHook(MindMapNode pUpdatedNode) {
+	public void onUpdateChildrenHook(NodeRepresentation pUpdatedNode) {
 	}
 
 	public void onUpdateNodeHook() {

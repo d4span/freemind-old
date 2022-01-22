@@ -53,7 +53,7 @@ import freemind.controller.actions.generated.instance.Pattern;
 import freemind.controller.actions.generated.instance.Patterns;
 import freemind.extensions.HookRegistration;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.StylePatternFactory;
 import freemind.modes.mindmapmode.MindMapController;
@@ -372,7 +372,7 @@ public class AutomaticLayout extends PermanentMindMapNodeHookAdapter {
 
 	}
 
-	private void setStyle(MindMapNode node) {
+	private void setStyle(NodeRepresentation node) {
 		logger.finest("updating node id="
 				+ node.getObjectId(getMindMapController()) + " and text:"
 				+ node);
@@ -386,7 +386,7 @@ public class AutomaticLayout extends PermanentMindMapNodeHookAdapter {
 		getMindMapController().applyPattern(node, p);
 	}
 
-	private int depth(MindMapNode node) {
+	private int depth(NodeRepresentation node) {
 		if (node.isRoot())
 			return 0;
 		return depth(node.getParentNode()) + 1;
@@ -399,7 +399,7 @@ public class AutomaticLayout extends PermanentMindMapNodeHookAdapter {
 	 * freemind.extensions.PermanentNodeHook#onAddChild(freemind.modes.MindMapNode
 	 * )
 	 */
-	public void onAddChildren(MindMapNode newChildNode) {
+	public void onAddChildren(NodeRepresentation newChildNode) {
 		logger.finest("onAddChildren " + newChildNode);
 		super.onAddChild(newChildNode);
 		setStyleRecursive(newChildNode);
@@ -412,7 +412,7 @@ public class AutomaticLayout extends PermanentMindMapNodeHookAdapter {
 	 * freemind.extensions.PermanentNodeHook#onUpdateChildrenHook(freemind.modes
 	 * .MindMapNode)
 	 */
-	public void onUpdateChildrenHook(MindMapNode updatedNode) {
+	public void onUpdateChildrenHook(NodeRepresentation updatedNode) {
 		super.onUpdateChildrenHook(updatedNode);
 		setStyleRecursive(updatedNode);
 	}
@@ -432,7 +432,7 @@ public class AutomaticLayout extends PermanentMindMapNodeHookAdapter {
 	 * 
 	 * @see freemind.extensions.NodeHook#invoke(freemind.modes.MindMapNode)
 	 */
-	public void invoke(MindMapNode node) {
+	public void invoke(NodeRepresentation node) {
 		super.invoke(node);
 		setStyleRecursive(node);
 	}
@@ -448,12 +448,12 @@ public class AutomaticLayout extends PermanentMindMapNodeHookAdapter {
 
 	/**
      */
-	private void setStyleRecursive(MindMapNode node) {
+	private void setStyleRecursive(NodeRepresentation node) {
 		logger.finest("setStyle " + node);
 		setStyle(node);
 		// recurse:
-		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = i.next();
+		for (Iterator<NodeRepresentation> i = node.childrenUnfolded(); i.hasNext();) {
+			NodeRepresentation child = i.next();
 			invoke(child);
 		}
 	}

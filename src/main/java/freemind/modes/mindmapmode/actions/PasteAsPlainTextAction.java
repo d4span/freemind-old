@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 
 import freemind.main.HtmlTools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 
 /**
@@ -72,8 +72,8 @@ public class PasteAsPlainTextAction extends AbstractAction {
 				plainText = HtmlTools.makeValidXml(plainText);
 				logger.info("Pasting string " + plainText);
 				// paste.
-				MindMapNode selected = mMindMapController.getSelected();
-				MindMapNode newNode = mMindMapController.addNewNode(selected,
+				NodeRepresentation selected = mMindMapController.getSelected();
+				NodeRepresentation newNode = mMindMapController.addNewNode(selected,
 						selected.getChildCount(), selected.isLeft());
 				mMindMapController.setNodeText(newNode, plainText);
 			} catch (UnsupportedFlavorException e) {

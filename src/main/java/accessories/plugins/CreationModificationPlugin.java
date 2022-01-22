@@ -26,7 +26,7 @@ package accessories.plugins;
 import java.text.MessageFormat;
 import java.util.Iterator;
 
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.hooks.PermanentMindMapNodeHookAdapter;
 
 /**
@@ -44,7 +44,7 @@ public class CreationModificationPlugin extends PermanentMindMapNodeHookAdapter 
 		super();
 	}
 
-	private void setStyle(MindMapNode node) {
+	private void setStyle(NodeRepresentation node) {
 		Object[] messageArguments = {
 				node.getHistoryInformation().getCreatedAt(),
 				node.getHistoryInformation().getLastModifiedAt() };
@@ -66,10 +66,10 @@ public class CreationModificationPlugin extends PermanentMindMapNodeHookAdapter 
 	/**
 	 *  
 	 */
-	private void removeToolTipRecursively(MindMapNode node) {
+	private void removeToolTipRecursively(NodeRepresentation node) {
 		setToolTip(node, getName(), null);
-		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = i.next();
+		for (Iterator<NodeRepresentation> i = node.childrenUnfolded(); i.hasNext();) {
+			NodeRepresentation child = i.next();
 			removeToolTipRecursively(child);
 		}
 	}
@@ -89,7 +89,7 @@ public class CreationModificationPlugin extends PermanentMindMapNodeHookAdapter 
 	 * freemind.extensions.PermanentNodeHook#onUpdateChildrenHook(freemind.modes
 	 * .MindMapNode)
 	 */
-	public void onUpdateChildrenHook(MindMapNode updatedNode) {
+	public void onUpdateChildrenHook(NodeRepresentation updatedNode) {
 		super.onUpdateChildrenHook(updatedNode);
 		setStyleRecursive(updatedNode);
 	}
@@ -109,28 +109,28 @@ public class CreationModificationPlugin extends PermanentMindMapNodeHookAdapter 
 	 * 
 	 * @see freemind.extensions.NodeHook#invoke(freemind.modes.MindMapNode)
 	 */
-	public void invoke(MindMapNode node) {
+	public void invoke(NodeRepresentation node) {
 		super.invoke(node);
 		setStyleRecursive(node);
 	}
 
 	/**
 	 */
-	private void setStyleRecursive(MindMapNode node) {
+	private void setStyleRecursive(NodeRepresentation node) {
 		logger.finest("setStyle " + node);
 		setStyle(node);
 		// recurse:
-		for (Iterator<MindMapNode> i = node.childrenFolded(); i.hasNext();) {
-			MindMapNode child = i.next();
+		for (Iterator<NodeRepresentation> i = node.childrenFolded(); i.hasNext();) {
+			NodeRepresentation child = i.next();
 			setStyleRecursive(child);
 		}
 	}
 
-	public void onAddChildren(MindMapNode pAddedChild) {
+	public void onAddChildren(NodeRepresentation pAddedChild) {
 		setStyleRecursive(pAddedChild);
 	}
 
-	public void onNewChild(MindMapNode pNewChildNode) {
+	public void onNewChild(NodeRepresentation pNewChildNode) {
 		setStyleRecursive(pNewChildNode);
 	}
 

@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 import freemind.view.mindmapview.NodeView;
 
@@ -83,7 +83,7 @@ public class PermanentNodeHookAdapter extends NodeHookAdapter implements
 	 * 
 	 * @see freemind.modes.NodeHook#onUpdateChildrenHook()
 	 */
-	public void onUpdateChildrenHook(MindMapNode updatedNode) {
+	public void onUpdateChildrenHook(NodeRepresentation updatedNode) {
 		logger.finest("onUpdateChildrenHook");
 	}
 
@@ -92,11 +92,11 @@ public class PermanentNodeHookAdapter extends NodeHookAdapter implements
 	 * 
 	 * @see freemind.modes.NodeHook#onAddChild(freemind.modes.MindMapNode)
 	 */
-	public void onAddChild(MindMapNode newChildNode) {
+	public void onAddChild(NodeRepresentation newChildNode) {
 		logger.finest("onAddChild");
 	}
 
-	public void onNewChild(MindMapNode newChildNode) {
+	public void onNewChild(NodeRepresentation newChildNode) {
 		logger.finest("onNewChild");
 	}
 
@@ -106,7 +106,7 @@ public class PermanentNodeHookAdapter extends NodeHookAdapter implements
 	 * @see freemind.extensions.PermanentNodeHook#onRemoveChild(freemind.modes.
 	 * MindMapNode)
 	 */
-	public void onRemoveChild(MindMapNode oldChildNode) {
+	public void onRemoveChild(NodeRepresentation oldChildNode) {
 		logger.finest("onRemoveChild");
 	}
 
@@ -155,7 +155,7 @@ public class PermanentNodeHookAdapter extends NodeHookAdapter implements
 	 * @see freemind.extensions.PermanentNodeHook#onAddChildren(freemind.modes.
 	 * MindMapNode)
 	 */
-	public void onAddChildren(MindMapNode addedChild) {
+	public void onAddChildren(NodeRepresentation addedChild) {
 		logger.finest("onAddChildren");
 	}
 
@@ -192,7 +192,7 @@ public class PermanentNodeHookAdapter extends NodeHookAdapter implements
 		}
 	}
 
-	public void onRemoveChildren(MindMapNode oldChildNode, MindMapNode oldDad) {
+	public void onRemoveChildren(NodeRepresentation oldChildNode, NodeRepresentation oldDad) {
 		logger.finest("onRemoveChildren");
 	}
 
@@ -208,7 +208,7 @@ public class PermanentNodeHookAdapter extends NodeHookAdapter implements
 		setToolTip(getNode(), key, value);
 	}
 
-	protected void setToolTip(MindMapNode node, String key, String value) {
+	protected void setToolTip(NodeRepresentation node, String key, String value) {
 		getController().setToolTip(node, key, value);
 	}
 

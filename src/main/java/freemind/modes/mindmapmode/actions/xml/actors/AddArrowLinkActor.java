@@ -25,7 +25,7 @@ import freemind.controller.actions.generated.instance.RemoveArrowLinkXmlAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapArrowLinkModel;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
@@ -45,8 +45,8 @@ public class AddArrowLinkActor extends XmlActorAdapter {
 	public void act(XmlAction action) {
 		if (action instanceof AddArrowLinkXmlAction) {
 			AddArrowLinkXmlAction arrowAction = (AddArrowLinkXmlAction) action;
-			MindMapNode source = getNodeFromID(arrowAction.getNode());
-			MindMapNode target = getNodeFromID(arrowAction.getDestination());
+			NodeRepresentation source = getNodeFromID(arrowAction.getNode());
+			NodeRepresentation target = getNodeFromID(arrowAction.getDestination());
 			if(source == target) {
 				logger.warning("Can't create link between itself. ("+source+").");
 				return;
@@ -93,7 +93,7 @@ public class AddArrowLinkActor extends XmlActorAdapter {
 		return AddArrowLinkXmlAction.class;
 	}
 
-	private ActionPair getActionPair(MindMapNode source, MindMapNode target) {
+	private ActionPair getActionPair(NodeRepresentation source, NodeRepresentation target) {
 		AddArrowLinkXmlAction doAction = createAddArrowLinkXmlAction(source,
 				target, getLinkRegistry().generateUniqueLinkId(null));
 		// now, the id is clear:
@@ -104,7 +104,7 @@ public class AddArrowLinkActor extends XmlActorAdapter {
 	}
 
 	public AddArrowLinkXmlAction createAddArrowLinkXmlAction(
-			MindMapNode source, MindMapNode target, String proposedID) {
+            NodeRepresentation source, NodeRepresentation target, String proposedID) {
 		AddArrowLinkXmlAction action = new AddArrowLinkXmlAction();
 		action.setNode(getNodeID(source));
 		action.setDestination(getNodeID(target));
@@ -116,7 +116,7 @@ public class AddArrowLinkActor extends XmlActorAdapter {
 	 * Source holds the MindMapArrowLinkModel and points to the id placed in
 	 * target.
 	 */
-	public void addLink(MindMapNode source, MindMapNode target) {
+	public void addLink(NodeRepresentation source, NodeRepresentation target) {
 		execute(getActionPair(source, target));
 	}
 

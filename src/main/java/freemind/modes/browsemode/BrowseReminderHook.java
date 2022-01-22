@@ -22,7 +22,7 @@
 
 package freemind.modes.browsemode;
 
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.common.plugins.ReminderHookBase;
 
 /**
@@ -45,7 +45,7 @@ public class BrowseReminderHook extends ReminderHookBase {
 	 * freemind.modes.common.plugins.ReminderHookBase#nodeRefresh(freemind.modes
 	 * .MindMapNode)
 	 */
-	protected void nodeRefresh(MindMapNode node) {
+	protected void nodeRefresh(NodeRepresentation node) {
 		getController().nodeChanged(node);
 	}
 
@@ -56,7 +56,7 @@ public class BrowseReminderHook extends ReminderHookBase {
 	 * freemind.modes.common.plugins.ReminderHookBase#setToolTip(freemind.modes
 	 * .MindMapNode, java.lang.String, java.lang.String)
 	 */
-	protected void setToolTip(MindMapNode node, String key, String value) {
+	protected void setToolTip(NodeRepresentation node, String key, String value) {
 		// FIXME: Duplicated code.
 		node.setToolTip(key, value);
 		nodeRefresh(node);

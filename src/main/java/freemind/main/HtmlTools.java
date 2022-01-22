@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import javax.swing.text.BadLocationException;
 import javax.xml.parsers.SAXParserFactory;
 
+import freemind.modes.NodeRepresentation;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -42,8 +43,6 @@ import org.jsoup.select.NodeVisitor;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import freemind.modes.MindMapNode;
 
 /** */
 public class HtmlTools {
@@ -733,9 +732,9 @@ public class HtmlTools {
 	}
 
 	public interface NodeCreator {
-		MindMapNode createChild(MindMapNode pParent);
-		void setText(String pText, MindMapNode pNode);
-		void setLink(String pLink, MindMapNode pNode);
+		NodeRepresentation createChild(NodeRepresentation pParent);
+		void setText(String pText, NodeRepresentation pNode);
+		void setLink(String pLink, NodeRepresentation pNode);
 	}
 
 	/**
@@ -745,8 +744,8 @@ public class HtmlTools {
 	private final class HtmlNodeVisitor implements NodeVisitor {
 		boolean isNewline = true;
 		int	mLevel = 0;
-		private MindMapNode mParentNode;
-		private MindMapNode mCurrentNode = null;
+		private NodeRepresentation mParentNode;
+		private NodeRepresentation mCurrentNode = null;
 		private NodeCreator mCreator;
 		private boolean mFirstUl;
 		private String mLink;
@@ -755,7 +754,7 @@ public class HtmlTools {
 		 * @param pParentNode
 		 * @param pCreator
 		 */
-		public HtmlNodeVisitor(MindMapNode pParentNode, NodeCreator pCreator) {
+		public HtmlNodeVisitor(NodeRepresentation pParentNode, NodeCreator pCreator) {
 			mParentNode = pParentNode;
 			mCreator = pCreator;
 			mFirstUl = true;
@@ -861,7 +860,7 @@ public class HtmlTools {
 	/**
 	 * Uses JSoup to parse HTML
 	 */
-	public void insertHtmlIntoNodes(String pText, MindMapNode pParentNode, NodeCreator pCreator) {
+	public void insertHtmlIntoNodes(String pText, NodeRepresentation pParentNode, NodeCreator pCreator) {
 		new NodeTraversor(new HtmlNodeVisitor(pParentNode, pCreator)).traverse(Jsoup.parse(pText));
 	}
 }

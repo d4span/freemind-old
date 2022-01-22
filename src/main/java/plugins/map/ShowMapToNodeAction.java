@@ -20,7 +20,7 @@
 
 package plugins.map;
 
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 
 /**
@@ -37,7 +37,7 @@ public class ShowMapToNodeAction extends MindMapNodeHookAdapter {
 	 * @see
 	 * freemind.extensions.NodeHookAdapter#invoke(freemind.modes.MindMapNode)
 	 */
-	public void invoke(MindMapNode pNode) {
+	public void invoke(NodeRepresentation pNode) {
 		// is the map open? Ask base class.
 		Registration registration = getRegistration();
 		if (registration != null) {

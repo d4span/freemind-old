@@ -37,7 +37,7 @@ import freemind.modes.MapAdapter;
 import freemind.modes.MindIcon;
 import freemind.modes.MindMap;
 import freemind.modes.MindMapLinkRegistry;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 
 public class EncryptedMindMapNode extends MindMapNodeModel {
@@ -102,7 +102,7 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
 		setAccessible(true);
 		if (!isDecrypted) {
 			try {
-				MindMapNode node = null;
+				NodeRepresentation node = null;
 				String childXml = decryptXml(encryptedContent, password);
 				// is it a map at all?
 				if (childXml.startsWith(MapAdapter.MAP_INITIAL_START)) {
@@ -123,8 +123,8 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
 					node = getNodeFromXml(mapContent);
 				}
 				int index = 0;
-				for (ListIterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
-					MindMapNode importNode = i.next();
+				for (ListIterator<NodeRepresentation> i = node.childrenUnfolded(); i.hasNext();) {
+					NodeRepresentation importNode = i.next();
 					getMap().insertNodeInto(importNode, this, index++);
 				}
 				isDecrypted = true;
@@ -137,9 +137,9 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
 		return true;
 	}
 
-	private MindMapNode getNodeFromXml(String childXml) throws IOException {
+	private NodeRepresentation getNodeFromXml(String childXml) throws IOException {
 		// the loadTree method performs an automatical version update.
-		MindMapNode node = getMap().loadTree(
+		NodeRepresentation node = getMap().loadTree(
 				new Tools.StringReaderCreator(childXml), MapAdapter.sDontAskInstance);
 		return node;
 	}
@@ -212,18 +212,18 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
 		return 0;
 	}
 
-	public ListIterator<MindMapNode> childrenFolded() {
+	public ListIterator<NodeRepresentation> childrenFolded() {
 		if (isAccessible()) {
 			return super.childrenFolded();
 		}
-		return new Vector<MindMapNode>().listIterator();
+		return new Vector<NodeRepresentation>().listIterator();
 	}
 
-	public ListIterator<MindMapNode> childrenUnfolded() {
+	public ListIterator<NodeRepresentation> childrenUnfolded() {
 		if (isAccessible() || isShuttingDown) {
 			return super.childrenUnfolded();
 		}
-		return new Vector<MindMapNode>().listIterator();
+		return new Vector<NodeRepresentation>().listIterator();
 	}
 
 	public boolean hasChildren() {

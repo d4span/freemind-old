@@ -30,7 +30,7 @@ import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.extensions.PermanentNodeHook;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ViewAbstraction;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.NodeCoordinate;
@@ -57,19 +57,19 @@ public class DeleteChildActor extends XmlActorAdapter {
 	 */
 	public void act(XmlAction action) {
 		DeleteNodeAction deleteNodeAction = (DeleteNodeAction) action;
-		MindMapNode selectedNode = getNodeFromID(deleteNodeAction.getNode());
+		NodeRepresentation selectedNode = getNodeFromID(deleteNodeAction.getNode());
 		deleteWithoutUndo(selectedNode);
 	}
 
 	/**
      */
-	public void deleteWithoutUndo(MindMapNode selectedNode) {
+	public void deleteWithoutUndo(NodeRepresentation selectedNode) {
 		if(selectedNode.isRoot()) {
 			throw new IllegalArgumentException("Root node can't be deleted");
 		}
 		// remove hooks:
 		removeHooks(selectedNode);
-		MindMapNode parent = selectedNode.getParentNode();
+		NodeRepresentation parent = selectedNode.getParentNode();
 		getExMapFeedback().fireNodePreDeleteEvent(selectedNode);
 		// deregister node:
 		MindMap map = getExMapFeedback().getMap();
@@ -85,10 +85,10 @@ public class DeleteChildActor extends XmlActorAdapter {
 				int childIndex = parent.getChildPosition(selectedNode);
 				if(parent.getChildCount() > childIndex+1) {
 					// the next node
-					newSelectedView = view.getNodeView((MindMapNode) parent.getChildAt(childIndex+1));
+					newSelectedView = view.getNodeView((NodeRepresentation) parent.getChildAt(childIndex+1));
 				} else if(childIndex > 0) {
 					// the node before:
-					newSelectedView = view.getNodeView((MindMapNode) parent.getChildAt(childIndex-1));
+					newSelectedView = view.getNodeView((NodeRepresentation) parent.getChildAt(childIndex-1));
 				} else {
 					// no other node on same level. take the parent.
 					newSelectedView = view.getNodeView(parent);
@@ -101,9 +101,9 @@ public class DeleteChildActor extends XmlActorAdapter {
 		getExMapFeedback().fireNodePostDeleteEvent(selectedNode, parent);
 	}
 
-	private void removeHooks(MindMapNode selectedNode) {
-		for (Iterator<MindMapNode> it = selectedNode.childrenUnfolded(); it.hasNext();) {
-			MindMapNode child = it.next();
+	private void removeHooks(NodeRepresentation selectedNode) {
+		for (Iterator<NodeRepresentation> it = selectedNode.childrenUnfolded(); it.hasNext();) {
+			NodeRepresentation child = it.next();
 			removeHooks(child);
 		}
 		long currentRun = 0;
@@ -129,7 +129,7 @@ public class DeleteChildActor extends XmlActorAdapter {
 		return DeleteNodeAction.class;
 	}
 
-	public void deleteNode(MindMapNode selectedNode) {
+	public void deleteNode(NodeRepresentation selectedNode) {
 		if(selectedNode.isRoot()) {
 			throw new IllegalArgumentException("Root node can't be deleted");
 		}

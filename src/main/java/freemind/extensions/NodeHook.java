@@ -23,7 +23,7 @@ package freemind.extensions;
 import accessories.plugins.ApplyFormatPlugin;
 import accessories.plugins.AutomaticLayout;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 /**
  * This is a general base interface for hooks that implement actions belonging to nodes.
@@ -48,11 +48,11 @@ public interface NodeHook extends MindMapHook {
 
 	void setMap(MindMap map);
 
-	void setNode(MindMapNode node);
+	void setNode(NodeRepresentation node);
 
 	/* hooks */
 	/**
 	 * Is called after creation:
 	 */
-	void invoke(MindMapNode node);
+	void invoke(NodeRepresentation node);
 }

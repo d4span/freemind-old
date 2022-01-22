@@ -27,7 +27,7 @@ import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapCloudModel;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
@@ -48,17 +48,17 @@ public class CloudActor extends NodeXmlActorAdapter {
 		return AddCloudXmlAction.class;
 	}
 
-	public ActionPair apply(MindMap model, MindMapNode selected) {
+	public ActionPair apply(MindMap model, NodeRepresentation selected) {
 		ActionPair pair = getActionPair(selected, selected.getCloud() == null);
 		return pair;
 	}
 
-	public void setCloud(MindMapNode node, boolean enable) {
+	public void setCloud(NodeRepresentation node, boolean enable) {
 		execute(getActionPair(node, enable));
 
 	}
 
-	private ActionPair getActionPair(MindMapNode selected, boolean enable) {
+	private ActionPair getActionPair(NodeRepresentation selected, boolean enable) {
 		AddCloudXmlAction cloudAction = createAddCloudXmlAction(selected,
 				enable, null);
 		AddCloudXmlAction undocloudAction = null;
@@ -72,8 +72,8 @@ public class CloudActor extends NodeXmlActorAdapter {
 		return new ActionPair(cloudAction, undocloudAction);
 	}
 
-	private AddCloudXmlAction createAddCloudXmlAction(MindMapNode selected,
-			boolean enable, Color color) {
+	private AddCloudXmlAction createAddCloudXmlAction(NodeRepresentation selected,
+                                                      boolean enable, Color color) {
 		AddCloudXmlAction nodecloudAction = new AddCloudXmlAction();
 		nodecloudAction.setNode(getNodeID(selected));
 		nodecloudAction.setEnabled(enable);
@@ -84,7 +84,7 @@ public class CloudActor extends NodeXmlActorAdapter {
 	public void act(XmlAction action) {
 		if (action instanceof AddCloudXmlAction) {
 			AddCloudXmlAction nodecloudAction = (AddCloudXmlAction) action;
-			MindMapNode node = getNodeFromID(nodecloudAction.getNode());
+			NodeRepresentation node = getNodeFromID(nodecloudAction.getNode());
 			if ((node.getCloud() == null) == nodecloudAction.getEnabled()) {
 				if (nodecloudAction.getEnabled()) {
 					if (node.isRoot()) {

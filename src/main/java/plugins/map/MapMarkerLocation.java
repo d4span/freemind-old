@@ -21,7 +21,7 @@ package plugins.map;
 
 
 
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 @SuppressWarnings("serial")
 public class MapMarkerLocation extends MapMarkerBase {
@@ -41,7 +41,7 @@ public class MapMarkerLocation extends MapMarkerBase {
 	 * Either start or when something changes on the node, this method is called.
 	 */
 	public void update() {
-		MindMapNode node = mNodePositionHolder.getNode();
+		NodeRepresentation node = mNodePositionHolder.getNode();
 		setText(node.getText());
 		setForeground(node.getColor());
 		setSize(getPreferredSize());

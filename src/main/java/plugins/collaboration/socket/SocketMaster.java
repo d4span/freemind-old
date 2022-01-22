@@ -30,7 +30,7 @@ import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.ExtendedMapFeedbackImpl;
 import freemind.modes.MapAdapter;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapMapModel;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
@@ -232,7 +232,7 @@ public abstract class SocketMaster extends SocketBasics {
 
 		MindMapMapModel map = new MindMapMapModel(mapFeedback);
 		mapFeedback.setMap(map); 
-		MindMapNode root = map.loadTree(readerCreator,
+		NodeRepresentation root = map.loadTree(readerCreator,
 				MapAdapter.sDontAskInstance);
 		map.setRoot(root);
 		mapFeedback.invokeHooksRecursively(root, map);

@@ -46,7 +46,7 @@ import freemind.modes.MapFeedback;
 import freemind.modes.MapFeedbackAdapter;
 import freemind.modes.MindMap;
 import freemind.modes.MindMapLinkRegistry;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.NodeAdapter;
 
 /** */
@@ -72,17 +72,17 @@ public class MindMapMock implements MindMap {
 	}
 
 	@Override
-	public String getAsPlainText(List<MindMapNode> mindMapNodes) {
+	public String getAsPlainText(List<NodeRepresentation> mindMapNodes) {
 		return null;
 	}
 
 	@Override
-	public String getAsRTF(List<MindMapNode> mindMapNodes) {
+	public String getAsRTF(List<NodeRepresentation> mindMapNodes) {
 		return null;
 	}
 
 	@Override
-	public String getAsHTML(List<MindMapNode> mindMapNodes) {
+	public String getAsHTML(List<NodeRepresentation> mindMapNodes) {
 		return null;
 	}
 
@@ -177,7 +177,7 @@ public class MindMapMock implements MindMap {
 	}
 
 	@Override
-	public MindMapNode getRootNode() {
+	public NodeRepresentation getRootNode() {
 		return null;
 	}
 
@@ -222,7 +222,7 @@ public class MindMapMock implements MindMap {
 	 * @see freemind.modes.MindMap#changeRoot(freemind.modes.MindMapNode)
 	 */
 	@Override
-	public void changeRoot(MindMapNode pNewRoot) {
+	public void changeRoot(NodeRepresentation pNewRoot) {
 		// TODO Auto-generated method stub
 
 	}
@@ -262,7 +262,7 @@ public class MindMapMock implements MindMap {
 	 * @see freemind.modes.MindMap#loadTree(freemind.modes.ModeController.ReaderCreator, freemind.modes.MapAdapter.AskUserBeforeUpdateCallback)
 	 */
 	@Override
-	public MindMapNode loadTree(Tools.ReaderCreator pReaderCreator, AskUserBeforeUpdateCallback pAskUserBeforeUpdateCallback) throws XMLParseException,
+	public NodeRepresentation loadTree(Tools.ReaderCreator pReaderCreator, AskUserBeforeUpdateCallback pAskUserBeforeUpdateCallback) throws XMLParseException,
 			IOException {
 		return null;
 	}
@@ -271,7 +271,7 @@ public class MindMapMock implements MindMap {
 	 * @see freemind.modes.MindMap#createNodeTreeFromXml(java.io.Reader, java.util.HashMap)
 	 */
 	@Override
-	public MindMapNode createNodeTreeFromXml(Reader pReader, HashMap<String, NodeAdapter> pIDToTarget)
+	public NodeRepresentation createNodeTreeFromXml(Reader pReader, HashMap<String, NodeAdapter> pIDToTarget)
 			throws XMLParseException, IOException {
 		return null;
 	}
@@ -336,8 +336,8 @@ public class MindMapMock implements MindMap {
 	 * @see freemind.modes.MindMap#insertNodeInto(freemind.modes.MindMapNode, freemind.modes.MindMapNode, int)
 	 */
 	@Override
-	public void insertNodeInto(MindMapNode pNode, MindMapNode pParentNode,
-			int pIndex) {
+	public void insertNodeInto(NodeRepresentation pNode, NodeRepresentation pParentNode,
+                               int pIndex) {
 		
 	}
 
@@ -345,7 +345,7 @@ public class MindMapMock implements MindMap {
 	 * @see freemind.modes.MindMap#removeNodeFromParent(freemind.modes.MindMapNode)
 	 */
 	@Override
-	public void removeNodeFromParent(MindMapNode pNode) {
+	public void removeNodeFromParent(NodeRepresentation pNode) {
 	}
 
 }

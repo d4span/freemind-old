@@ -24,7 +24,7 @@
 package freemind.controller.filter;
 
 import freemind.controller.Controller;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 /**
  * @author dimitri 07.05.2005
@@ -39,7 +39,7 @@ public interface Filter {
 
 	void applyFilter(Controller c);
 
-	boolean isVisible(MindMapNode node);
+	boolean isVisible(NodeRepresentation node);
 
 	boolean areMatchedShown();
 

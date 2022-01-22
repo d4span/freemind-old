@@ -34,7 +34,7 @@ import freemind.controller.Controller;
 import freemind.controller.MenuItemEnabledListener;
 import freemind.extensions.HookRegistration;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.ModeController.NodeSelectionListener;
 import freemind.modes.mindmapmode.MindMapController;
@@ -61,8 +61,8 @@ public class NodeHistory extends MindMapNodeHookAdapter {
 
 		public String mMapModuleName;
 
-		public NodeHolder(MindMapNode pNode,
-				MindMapController pMindMapController) {
+		public NodeHolder(NodeRepresentation pNode,
+                          MindMapController pMindMapController) {
 			mNodeId = pNode.getObjectId(pMindMapController);
 			MapModule mapModule = pMindMapController.getMapModule();
 			if (mapModule == null) {
@@ -74,7 +74,7 @@ public class NodeHistory extends MindMapNodeHookAdapter {
 		}
 
 		/** @return null, if node not found. */
-		public MindMapNode getNode(Controller pController) {
+		public NodeRepresentation getNode(Controller pController) {
 			ModeController modeController = getModeController(pController);
 			if (modeController != null) {
 				return modeController.getNodeFromID(mNodeId);
@@ -104,8 +104,8 @@ public class NodeHistory extends MindMapNodeHookAdapter {
 			return mapModule;
 		}
 
-		public boolean isIdentical(MindMapNode pNode,
-				MindMapController pMindMapController) {
+		public boolean isIdentical(NodeRepresentation pNode,
+                                   MindMapController pMindMapController) {
 			String id = pNode.getObjectId(pMindMapController);
 			MapModule mapModule = pMindMapController.getMapModule();
 			if (mapModule != null) {
@@ -172,10 +172,10 @@ public class NodeHistory extends MindMapNodeHookAdapter {
 			}
 		}
 
-		public void onSaveNode(MindMapNode pNode) {
+		public void onSaveNode(NodeRepresentation pNode) {
 		}
 
-		public void onUpdateNodeHook(MindMapNode pNode) {
+		public void onUpdateNodeHook(NodeRepresentation pNode) {
 		}
 
 		public boolean isEnabled(JMenuItem pItem, Action pAction) {
@@ -205,7 +205,7 @@ public class NodeHistory extends MindMapNodeHookAdapter {
 		super();
 	}
 
-	public void invoke(MindMapNode node) {
+	public void invoke(NodeRepresentation node) {
 		super.invoke(node);
 		final MindMapController modeController = getMindMapController();
 		String direction = getResourceString("direction");
@@ -230,7 +230,7 @@ public class NodeHistory extends MindMapNodeHookAdapter {
 		NodeHolder nodeHolder = (NodeHolder) sNodeVector
 				.get(sCurrentPosition - 1);
 		final Controller mainController = getController().getController();
-		final MindMapNode toBeSelected = (nodeHolder).getNode(mainController);
+		final NodeRepresentation toBeSelected = (nodeHolder).getNode(mainController);
 		boolean changeModule = false;
 		MapModule newModule = null;
 		if (nodeHolder.getModeController(mainController) != getMindMapController()) {

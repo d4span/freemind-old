@@ -28,7 +28,7 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 
 import freemind.controller.Controller;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.MindMapMapModel;
 import freemind.modes.mindmapmode.MindMapNodeModel;
@@ -50,7 +50,7 @@ public class NodeBackgroundColorAction extends MindmapAction {
 		if (color == null) {
 			return;
 		}
-		for (MindMapNode selected : controller.getSelecteds()) {
+		for (NodeRepresentation selected : controller.getSelecteds()) {
 			controller.setNodeBackgroundColor(selected, color);
 		}
 	}

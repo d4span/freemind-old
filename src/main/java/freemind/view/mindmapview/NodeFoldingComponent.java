@@ -46,7 +46,7 @@ import javax.swing.plaf.basic.BasicButtonUI;
 import freemind.main.FreeMind;
 import freemind.main.Resources;
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 /**
  * @author Foltin
@@ -309,7 +309,7 @@ public class NodeFoldingComponent extends JButton {
 	}
 
 	protected boolean isFolded() {
-		MindMapNode model = nodeView.getModel();
+		NodeRepresentation model = nodeView.getModel();
 		return model.isFolded() && model.isVisible();
 	}
 

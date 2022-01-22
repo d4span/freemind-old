@@ -29,7 +29,7 @@ import javax.swing.JLabel;
 import freemind.controller.Controller;
 import freemind.main.Resources;
 import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 public class NoFilteringCondition implements Condition {
 
@@ -50,7 +50,7 @@ public class NoFilteringCondition implements Condition {
 		return description;
 	}
 
-	public boolean checkNode(Controller c, MindMapNode node) {
+	public boolean checkNode(Controller c, NodeRepresentation node) {
 		return true;
 	}
 

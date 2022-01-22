@@ -28,7 +28,7 @@ import java.awt.Point;
 import java.awt.Stroke;
 
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 @SuppressWarnings("serial")
 class BubbleMainView extends MainView {
@@ -48,7 +48,7 @@ class BubbleMainView extends MainView {
 	public void paint(Graphics graphics) {
 		Graphics2D g = (Graphics2D) graphics;
 		final NodeView nodeView = getNodeView();
-		final MindMapNode model = nodeView.getModel();
+		final NodeRepresentation model = nodeView.getModel();
 		if (model == null)
 			return;
 
@@ -124,7 +124,7 @@ class BubbleMainView extends MainView {
 	 * @see freemind.view.mindmapview.NodeView#getStyle()
 	 */
 	String getStyle() {
-		return MindMapNode.STYLE_BUBBLE;
+		return NodeRepresentation.STYLE_BUBBLE;
 	}
 
 	/**

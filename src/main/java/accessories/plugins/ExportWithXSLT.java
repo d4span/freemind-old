@@ -56,7 +56,7 @@ import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.MindIcon;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 
 /**
@@ -322,7 +322,7 @@ public class ExportWithXSLT extends ExportHook {
 	private String getAreaCode(boolean create_image) {
 		String areaCode = "";
 		if (create_image) {
-			MindMapNode root = getController().getMap().getRootNode();
+			NodeRepresentation root = getController().getMap().getRootNode();
 			ClickableImageCreator creator = new ClickableImageCreator(root,
 					getController(),
 					getResourceString("link_replacement_format_string"));

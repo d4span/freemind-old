@@ -27,7 +27,7 @@ import java.awt.LayoutManager;
 import javax.swing.JComponent;
 
 import freemind.modes.EdgeAdapter;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 class NodeViewFactory {
 
@@ -157,8 +157,8 @@ class NodeViewFactory {
 	/**
 	 * Factory method which creates the right NodeView for the model.
 	 */
-	NodeView newNodeView(MindMapNode model, int position, MapView map,
-			Container parent) {
+	NodeView newNodeView(NodeRepresentation model, int position, MapView map,
+                         Container parent) {
 		NodeView newView = new NodeView(model, position, map, parent);
 
 		if (model.isRoot()) {
@@ -181,13 +181,13 @@ class NodeViewFactory {
 		return newView;
 	}
 
-	MainView newMainView(MindMapNode model) {
+	MainView newMainView(NodeRepresentation model) {
 		if (model.isRoot()) {
 			return new RootMainView();
 		}
-		if (model.getStyle().equals(MindMapNode.STYLE_FORK)) {
+		if (model.getStyle().equals(NodeRepresentation.STYLE_FORK)) {
 			return new ForkMainView();
-		} else if (model.getStyle().equals(MindMapNode.STYLE_BUBBLE)) {
+		} else if (model.getStyle().equals(NodeRepresentation.STYLE_BUBBLE)) {
 			return new BubbleMainView();
 		} else {
 			System.err.println("Tried to create a NodeView of unknown Style.");

@@ -27,7 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.logging.Logger;
 
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.EncryptedMindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.view.mindmapview.NodeView;
@@ -53,16 +53,16 @@ public class NewChildAction extends MindmapAction  {
 		this.c.addNew(c.getSelected(), MindMapController.NEW_CHILD, null);
 	}
 
-	public MindMapNode addNew(final MindMapNode target, int newNodeMode,
-			final KeyEvent e) {
-		final MindMapNode targetNode = target;
-		MindMapNode newNode = null;
+	public NodeRepresentation addNew(final NodeRepresentation target, int newNodeMode,
+                                     final KeyEvent e) {
+		final NodeRepresentation targetNode = target;
+		NodeRepresentation newNode = null;
 
 		switch (newNodeMode) {
 		case MindMapController.NEW_SIBLING_BEFORE:
 		case MindMapController.NEW_SIBLING_BEHIND: {
 			if (!targetNode.isRoot()) {
-				MindMapNode parent = targetNode.getParentNode();
+				NodeRepresentation parent = targetNode.getParentNode();
 				int childPosition = parent.getChildPosition(targetNode);
 				if (newNodeMode == MindMapController.NEW_SIBLING_BEHIND) {
 					childPosition++;
@@ -104,7 +104,7 @@ public class NewChildAction extends MindmapAction  {
 		return newNode;
 	}
 
-	protected MindMapNode addNewNode(MindMapNode parent, int index) {
+	protected NodeRepresentation addNewNode(NodeRepresentation parent, int index) {
 		return getModeController().addNewNode(parent, index, parent.isNewChildLeft());
 	}
 

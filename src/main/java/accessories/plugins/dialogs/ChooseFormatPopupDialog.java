@@ -19,6 +19,29 @@
 
 package accessories.plugins.dialogs;
 
+import freemind.common.TextTranslator;
+import freemind.controller.actions.generated.instance.Pattern;
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage;
+import freemind.main.Tools;
+import freemind.main.XMLParseException;
+import freemind.modes.ExtendedMapFeedbackAdapter;
+import freemind.modes.MapAdapter;
+import freemind.modes.MindMap;
+import freemind.modes.NodeRepresentation;
+import freemind.modes.StylePatternFactory;
+import freemind.modes.mindmapmode.MindMapController;
+import freemind.modes.mindmapmode.MindMapMapModel;
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame;
+import freemind.modes.mindmapmode.dialogs.StylePatternFrame.StylePatternFrameType;
+import freemind.view.mindmapview.MapView;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -31,30 +54,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
-import freemind.common.TextTranslator;
-import freemind.controller.actions.generated.instance.Pattern;
-import freemind.controller.actions.generated.instance.WindowConfigurationStorage;
-import freemind.main.Tools;
-import freemind.main.XMLParseException;
-import freemind.modes.ExtendedMapFeedbackAdapter;
-import freemind.modes.MapAdapter;
-import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
-import freemind.modes.StylePatternFactory;
-import freemind.modes.mindmapmode.MindMapController;
-import freemind.modes.mindmapmode.MindMapMapModel;
-import freemind.modes.mindmapmode.dialogs.StylePatternFrame;
-import freemind.modes.mindmapmode.dialogs.StylePatternFrame.StylePatternFrameType;
-import freemind.view.mindmapview.MapView;
 
 /** */
 @SuppressWarnings("serial")
@@ -103,11 +102,11 @@ public class ChooseFormatPopupDialog extends JDialog implements TextTranslator,
 
 	private MapView mDemoFrame;
 
-	private MindMapNode mDemoNode;
+	private NodeRepresentation mDemoNode;
 
 	protected static java.util.logging.Logger logger = null;
 
-	private MindMapNode mNode;
+	private NodeRepresentation mNode;
 
 	private DemoMapFeedback mDemoNodeMapFeedback;
 
@@ -118,7 +117,7 @@ public class ChooseFormatPopupDialog extends JDialog implements TextTranslator,
 	 * 
 	 */
 	public ChooseFormatPopupDialog(JFrame caller, MindMapController controller,
-			String dialogTitle, Pattern pattern, MindMapNode pNode) {
+			String dialogTitle, Pattern pattern, NodeRepresentation pNode) {
 		super(caller);
 		this.mController = controller;
 		mNode = pNode;
@@ -222,10 +221,10 @@ public class ChooseFormatPopupDialog extends JDialog implements TextTranslator,
 			Tools.StringReaderCreator readerCreator = new Tools.StringReaderCreator(
 					mController.getText("accessories/plugins/dialogs/ChooseFormatPopupDialog.DemoNode"));
 			try {
-				MindMapNode root = mMap.loadTree(readerCreator,
+				NodeRepresentation root = mMap.loadTree(readerCreator,
 						MapAdapter.sDontAskInstance);
 				mMap.setRoot(root);
-				mDemoNode = (MindMapNode) root.getChildAt(0);
+				mDemoNode = (NodeRepresentation) root.getChildAt(0);
 			} catch (XMLParseException e) {
 				freemind.main.Resources.getInstance().logException(e);
 			} catch (IOException e) {

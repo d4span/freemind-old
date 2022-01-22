@@ -24,7 +24,7 @@ import freemind.controller.actions.generated.instance.NodeAction;
 import freemind.controller.actions.generated.instance.RemoveAttributeAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
@@ -52,7 +52,7 @@ public class RemoveAttributeActor extends XmlActorAdapter {
 		return RemoveAttributeAction.class;
 	}
 
-	public ActionPair getActionPair(MindMapNode selected, int pPosition) {
+	public ActionPair getActionPair(NodeRepresentation selected, int pPosition) {
 		RemoveAttributeAction setAttributeAction = getRemoveAttributeAction(selected,
 				pPosition);
 		NodeAction undoRemoveAttributeAction;
@@ -72,15 +72,15 @@ public class RemoveAttributeActor extends XmlActorAdapter {
 	 *            TODO
 	 * @return
 	 */
-	public RemoveAttributeAction getRemoveAttributeAction(MindMapNode pSelected,
-			int pPosition) {
+	public RemoveAttributeAction getRemoveAttributeAction(NodeRepresentation pSelected,
+                                                          int pPosition) {
 		RemoveAttributeAction removeAttributeAction = new RemoveAttributeAction();
 		removeAttributeAction.setNode(getNodeID(pSelected));
 		removeAttributeAction.setPosition(pPosition);
 		return removeAttributeAction;
 	}
 	
-	public void removeAttribute(MindMapNode pNode, int pPosition) {
+	public void removeAttribute(NodeRepresentation pNode, int pPosition) {
 		ActionPair actionPair = getActionPair(pNode, pPosition);
 		execute(actionPair);
 	}

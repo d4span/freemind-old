@@ -47,15 +47,15 @@ import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.ControllerAdapter;
 import freemind.modes.FreemindAction;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 @SuppressWarnings("serial")
 public class FindAction extends FreemindAction {
 	private final ControllerAdapter controller;
 
-	private ArrayList<MindMapNode> findNodesUnfoldedByLastFind;
+	private ArrayList<NodeRepresentation> findNodesUnfoldedByLastFind;
 
-	private MindMapNode findFromNode;
+	private NodeRepresentation findFromNode;
 
 	private String searchTerm;
 
@@ -81,7 +81,7 @@ public class FindAction extends FreemindAction {
 
 	private boolean findCaseSensitive;
 
-	private LinkedList<MindMapNode> findNodeQueue;
+	private LinkedList<NodeRepresentation> findNodeQueue;
 
 	private JDialog mDialog;
 
@@ -254,10 +254,10 @@ public class FindAction extends FreemindAction {
 		}
 	}
 
-	public boolean find(MindMapNode node, Collection<String> subterms,
-			boolean caseSensitive) {
+	public boolean find(NodeRepresentation node, Collection<String> subterms,
+                        boolean caseSensitive) {
 		findNodesUnfoldedByLastFind = new ArrayList<>();
-		LinkedList<MindMapNode> nodes = new LinkedList<>();
+		LinkedList<NodeRepresentation> nodes = new LinkedList<>();
 		nodes.addFirst(node);
 		findFromNode = node;
 		Collection<String> finalizedSubterms;
@@ -272,7 +272,7 @@ public class FindAction extends FreemindAction {
 		return find(nodes, finalizedSubterms, caseSensitive);
 	}
 
-	private boolean find(LinkedList<MindMapNode> nodes,
+	private boolean find(LinkedList<NodeRepresentation> nodes,
 			Collection<String> subterms, boolean caseSensitive) {
 		// Precondition: if !caseSensitive then >>what<< is in lowercase.
 		boolean searchInNotesToo = Resources.getInstance().getBoolProperty(
@@ -281,9 +281,9 @@ public class FindAction extends FreemindAction {
 		if (!findNodesUnfoldedByLastFind.isEmpty()) {
 
 			// if (false) {
-			ListIterator<MindMapNode> i = findNodesUnfoldedByLastFind.listIterator(findNodesUnfoldedByLastFind.size());
+			ListIterator<NodeRepresentation> i = findNodesUnfoldedByLastFind.listIterator(findNodesUnfoldedByLastFind.size());
 			while (i.hasPrevious()) {
-				MindMapNode node = i.previous();
+				NodeRepresentation node = i.previous();
 				try {
 					controller.setFolded(node, true);
 				} catch (Exception e) {
@@ -294,9 +294,9 @@ public class FindAction extends FreemindAction {
 
 		// We implement width-first search.
 		while (!nodes.isEmpty()) {
-			MindMapNode node = (MindMapNode) nodes.removeFirst();
+			NodeRepresentation node = (NodeRepresentation) nodes.removeFirst();
 			// Add children to the queue
-			for (ListIterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			for (ListIterator<NodeRepresentation> i = node.childrenUnfolded(); i.hasNext();) {
 				nodes.addLast(i.next());
 			}
 
@@ -401,12 +401,12 @@ public class FindAction extends FreemindAction {
 	 * Display a node in the display (used by find and the goto action by arrow
 	 * link actions).
 	 */
-	public void displayNode(MindMapNode node, ArrayList<MindMapNode> nodesUnfoldedByDisplay) {
+	public void displayNode(NodeRepresentation node, ArrayList<NodeRepresentation> nodesUnfoldedByDisplay) {
 		// Unfold the path to the node
 		Object[] path = controller.getMap().getPathToRoot(node);
 		// Iterate the path with the exception of the last node
 		for (int i = 0; i < path.length - 1; i++) {
-			MindMapNode nodeOnPath = (MindMapNode) path[i];
+			NodeRepresentation nodeOnPath = (NodeRepresentation) path[i];
 			// System.out.println(nodeOnPath);
 			if (nodeOnPath.isFolded()) {
 				if (nodesUnfoldedByDisplay != null)
@@ -440,7 +440,7 @@ public class FindAction extends FreemindAction {
 
 	/**
 	 */
-	private void centerNode(MindMapNode node) {
+	private void centerNode(NodeRepresentation node) {
 		// Select the node and scroll to it.
 		controller.centerNode(node);
 	}

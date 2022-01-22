@@ -176,12 +176,12 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 
 	/**
 	 */
-	private void removeNodes(MindMapNode node) {
+	private void removeNodes(NodeRepresentation node) {
 		node.removeAllHooks();
 		mMapFeedback.fireNodePreDeleteEvent(node);
 		// and all children:
-		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = i.next();
+		for (Iterator<NodeRepresentation> i = node.childrenUnfolded(); i.hasNext();) {
+			NodeRepresentation child = i.next();
 			removeNodes(child);
 		}
 	}
@@ -190,7 +190,7 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 	 * @see freemind.modes.MindMap#removeNodeFromParent(freemind.modes.MindMapNode)
 	 */
 	@Override
-	public void removeNodeFromParent(MindMapNode pNode) {
+	public void removeNodeFromParent(NodeRepresentation pNode) {
 		super.removeNodeFromParent(pNode);
 	}
 
@@ -234,11 +234,11 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 		return changesPerformedSinceLastSave;
 	}
 
-	public MindMapNode getRootNode() {
-		return (MindMapNode) getRoot();
+	public NodeRepresentation getRootNode() {
+		return (NodeRepresentation) getRoot();
 	}
 
-	public void setRoot(MindMapNode root) {
+	public void setRoot(NodeRepresentation root) {
 		super.setRoot(root);
 	}
 
@@ -247,28 +247,28 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 	 *            one of the nodes, that is now root. The others are grouped
 	 *            around.
 	 */
-	public void changeRoot(MindMapNode newRoot) {
+	public void changeRoot(NodeRepresentation newRoot) {
 		if (newRoot == getRootNode()) {
 			return;
 		}
 		boolean left = newRoot.isLeft();
-		MindMapNode node = newRoot;
+		NodeRepresentation node = newRoot;
 		// collect parents (as we remove them from their parents...)
-		Vector<MindMapNode> parents = new Vector<>();
+		Vector<NodeRepresentation> parents = new Vector<>();
 		while (node.getParentNode() != null) {
-			MindMapNode parent = node.getParentNode();
+			NodeRepresentation parent = node.getParentNode();
 			parents.add(0, node);
 			node = parent;
 		}
 		// bind all parents to a new chain:
-		for (Iterator<MindMapNode> it = parents.iterator(); it.hasNext();) {
+		for (Iterator<NodeRepresentation> it = parents.iterator(); it.hasNext();) {
 			node = it.next();
-			MindMapNode parent = node.getParentNode();
+			NodeRepresentation parent = node.getParentNode();
 			// remove parent
 			node.removeFromParent();
 			// special treatment for left/right
 			if (node == newRoot) {
-				for (MindMapNode child : node.getChildren()) {
+				for (NodeRepresentation child : node.getChildren()) {
 					child.setLeft(left);
 				}
 				parent.setLeft(!left);
@@ -306,15 +306,15 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 	// Node editing
 	//
 
-	public String getAsPlainText(List<MindMapNode> mindMapNodes) {
+	public String getAsPlainText(List<NodeRepresentation> mindMapNodes) {
 		return "";
 	}
 
-	public String getAsRTF(List<MindMapNode> mindMapNodes) {
+	public String getAsRTF(List<NodeRepresentation> mindMapNodes) {
 		return "";
 	}
 
-	public String getAsHTML(List<MindMapNode> mindMapNodes) {
+	public String getAsHTML(List<NodeRepresentation> mindMapNodes) {
 		return null;
 	}
 
@@ -330,11 +330,11 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 	 * @see javax.swing.tree.DefaultTreeModel#insertNodeInto(javax.swing.tree.MutableTreeNode, javax.swing.tree.MutableTreeNode, int)
 	 */
 	@Override
-	public void insertNodeInto(MindMapNode pNewChild,
-			MindMapNode pParent, int pIndex) {
+	public void insertNodeInto(NodeRepresentation pNewChild,
+                               NodeRepresentation pParent, int pIndex) {
 		super.insertNodeInto(pNewChild, pParent, pIndex);
 		// call hooks
-		mMapFeedback.fireRecursiveNodeCreateEvent((MindMapNode) pNewChild);
+		mMapFeedback.fireRecursiveNodeCreateEvent((NodeRepresentation) pNewChild);
 
 	}
 
@@ -342,11 +342,11 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 	 * This method should not be called directly!
 	 */
 	public void nodeChanged(TreeNode node) {
-		mMapFeedback.nodeChanged((MindMapNode) node);
+		mMapFeedback.nodeChanged((NodeRepresentation) node);
 	}
 
 	public void nodeRefresh(TreeNode node) {
-		mMapFeedback.nodeRefresh((MindMapNode) node);
+		mMapFeedback.nodeRefresh((NodeRepresentation) node);
 	}
 
 	/**
@@ -383,7 +383,7 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 		// those that are interested in this event
 		e = fireTreeNodesInserted(source, path, childIndices, children,
 				listeners, e);
-		MindMapNode node = (MindMapNode) path[path.length - 1];
+		NodeRepresentation node = (NodeRepresentation) path[path.length - 1];
 		fireTreeNodesInserted(source, path, childIndices, children, node
 				.getListeners().getListenerList(), e);
 	}
@@ -411,7 +411,7 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 		// those that are interested in this event
 		e = fireTreeNodesRemoved(source, path, childIndices, children,
 				listeners, e);
-		MindMapNode node = (MindMapNode) path[path.length - 1];
+		NodeRepresentation node = (NodeRepresentation) path[path.length - 1];
 		fireTreeNodesRemoved(source, path, childIndices, children, node
 				.getListeners().getListenerList(), e);
 	}
@@ -439,7 +439,7 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 		// those that are interested in this event
 		e = fireTreeStructureChanged(source, path, childIndices, children,
 				listeners, e);
-		MindMapNode node = (MindMapNode) path[path.length - 1];
+		NodeRepresentation node = (NodeRepresentation) path[path.length - 1];
 		fireTreeStructureChanged(source, path, childIndices, children, node
 				.getListeners().getListenerList(), e);
 	}
@@ -467,7 +467,7 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 		// those that are interested in this event
 		e = fireTreeNodesChanged(source, path, childIndices, children,
 				listeners, e);
-		MindMapNode node = (MindMapNode) path[path.length - 1];
+		NodeRepresentation node = (NodeRepresentation) path[path.length - 1];
 		fireTreeNodesChanged(source, path, childIndices, children, node
 				.getListeners().getListenerList(), e);
 	}
@@ -532,11 +532,11 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 	 * @param pMapIcons
 	 * @param pRootNode
 	 */
-	private void addIcons(SortedMapListModel pMapIcons, MindMapNode pNode) {
+	private void addIcons(SortedMapListModel pMapIcons, NodeRepresentation pNode) {
 		pMapIcons.addAll(pNode.getIcons());
-		ListIterator<MindMapNode> iterator = pNode.childrenUnfolded();
+		ListIterator<NodeRepresentation> iterator = pNode.childrenUnfolded();
 		while (iterator.hasNext()) {
-			MindMapNode node = (MindMapNode) iterator.next();
+			NodeRepresentation node = (NodeRepresentation) iterator.next();
 			addIcons(pMapIcons, node);
 		}
 	}
@@ -546,12 +546,12 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 	 * freshly created nodes.
 	 */
 	@Override
-	public MindMapNode createNodeTreeFromXml(Reader pReader, HashMap<String, NodeAdapter> pIDToTarget)
+	public NodeRepresentation createNodeTreeFromXml(Reader pReader, HashMap<String, NodeAdapter> pIDToTarget)
 			throws XMLParseException, IOException {
 		XMLElementAdapter xmlAdapter = new XMLElementAdapter(mMapFeedback, new Vector<ArrowLinkAdapter>(), pIDToTarget);
 		xmlAdapter.parseFromReader(pReader);
 		xmlAdapter.processUnfinishedLinks(getLinkRegistry());
-		MindMapNode node = xmlAdapter.getMapChild();
+		NodeRepresentation node = xmlAdapter.getMapChild();
 		return node;
 	}
 	
@@ -570,8 +570,8 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 	}
 	
 	@Override
-	public MindMapNode loadTree(Tools.ReaderCreator pReaderCreator,
-			AskUserBeforeUpdateCallback pAskUserBeforeUpdateCallback) throws XMLParseException, IOException {
+	public NodeRepresentation loadTree(Tools.ReaderCreator pReaderCreator,
+                                       AskUserBeforeUpdateCallback pAskUserBeforeUpdateCallback) throws XMLParseException, IOException {
 		int versionInfoLength;
 		versionInfoLength = EXPECTED_START_STRINGS[0].length();
 		// reading the start of the file:
@@ -610,7 +610,7 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 		}
 		try {
 			HashMap<String, NodeAdapter> IDToTarget = new HashMap<>();
-			return (MindMapNode) createNodeTreeFromXml(
+			return (NodeRepresentation) createNodeTreeFromXml(
 					reader, IDToTarget);
 		} catch (Exception ex) {
 			String errorMessage = "Error while parsing file:" + ex;
@@ -618,7 +618,7 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 			freemind.main.Resources.getInstance().logException(ex);
 			NodeAdapter result = createNodeAdapter(this, null);
 			result.setText(errorMessage);
-			return (MindMapNode) result;
+			return (NodeRepresentation) result;
 		} finally {
 			if (reader != null) {
 				reader.close();

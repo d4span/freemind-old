@@ -85,7 +85,7 @@ public class StylePattern {
 	/**
 	 * Constructs a style pattern from a node:
 	 */
-	public StylePattern(MindMapNode node) {
+	public StylePattern(NodeRepresentation node) {
 		nodeColor = node.getColor();
 		nodeBackgroundColor = node.getBackgroundColor();
 		nodeStyle = node.getStyle();

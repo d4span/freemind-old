@@ -60,7 +60,7 @@ import freemind.controller.actions.generated.instance.Place;
 import freemind.controller.actions.generated.instance.TableColumnSetting;
 import freemind.main.Resources;
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.Mode;
 import freemind.modes.ModeController.NodeSelectionListener;
 import freemind.modes.mindmapmode.MindMapController;
@@ -845,7 +845,7 @@ public class MapDialog extends MindMapHookAdapter implements
 	 * freemind.modes.ModeController.NodeSelectionListener#onUpdateNodeHook(
 	 * freemind.modes.MindMapNode)
 	 */
-	public void onUpdateNodeHook(MindMapNode pNode) {
+	public void onUpdateNodeHook(NodeRepresentation pNode) {
 		// update MapMarkerLocation if present:
 		MapNodePositionHolder hook = MapNodePositionHolder.getHook(pNode);
 		if (hook != null && mMarkerMap.containsKey(hook)) {
@@ -899,7 +899,7 @@ public class MapDialog extends MindMapHookAdapter implements
 	 * freemind.modes.ModeController.NodeSelectionListener#onSaveNode(freemind
 	 * .modes.MindMapNode)
 	 */
-	public void onSaveNode(MindMapNode pNode) {
+	public void onSaveNode(NodeRepresentation pNode) {
 	}
 
 	/*

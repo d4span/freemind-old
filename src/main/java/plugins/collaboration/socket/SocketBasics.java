@@ -37,7 +37,7 @@ import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.xml.ActionFilter.FirstActionFilter;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
@@ -126,8 +126,8 @@ public abstract class SocketBasics extends MindMapNodeHookAdapter implements
 
 	public static void togglePermanentHook(MindMapController controller,
 			final String hookName) {
-		MindMapNode rootNode = controller.getRootNode();
-		List<MindMapNode> selecteds = Arrays.asList(new MindMapNode[] { rootNode });
+		NodeRepresentation rootNode = controller.getRootNode();
+		List<NodeRepresentation> selecteds = Arrays.asList(new NodeRepresentation[] { rootNode });
 		controller.addHook(rootNode, selecteds, hookName, null);
 	}
 

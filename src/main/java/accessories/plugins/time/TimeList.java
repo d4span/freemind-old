@@ -80,7 +80,7 @@ import freemind.main.HtmlTools;
 import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.MindIcon;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.Mode;
 import freemind.modes.ModeController;
 import freemind.modes.common.plugins.ReminderHookBase;
@@ -379,7 +379,7 @@ public class TimeList extends MindMapHookAdapter implements
 		});
 		// table selection listener to display the history of the selected nodes
 		rowSM.addListSelectionListener(new ListSelectionListener() {
-			String getNodeText(MindMapNode node) {
+			String getNodeText(NodeRepresentation node) {
 				return Tools.getNodeTextHierarchy(node, getMindMapController());
 			}
 
@@ -395,7 +395,7 @@ public class TimeList extends MindMapHookAdapter implements
 					return;
 				}
 				int selectedRow = lsm.getLeadSelectionIndex();
-				MindMapNode mindMapNode = getMindMapNode(selectedRow);
+				NodeRepresentation mindMapNode = getMindMapNode(selectedRow);
 				mTreeLabel.setText(getNodeText(mindMapNode));
 			}
 		});
@@ -447,7 +447,7 @@ public class TimeList extends MindMapHookAdapter implements
 
 	protected void exportSelectedRowsAndClose() {
 		int[] selectedRows = mTimeTable.getSelectedRows();
-		Vector<MindMapNode> selectedNodes = new Vector<>();
+		Vector<NodeRepresentation> selectedNodes = new Vector<>();
 		for (int i = 0; i < selectedRows.length; i++) {
 			int row = selectedRows[i];
 			selectedNodes.add(getMindMapNode(row));
@@ -456,8 +456,8 @@ public class TimeList extends MindMapHookAdapter implements
 		MindMapController newMindMapController = (MindMapController) getMindMapController().newMap();
 		// Tools.BooleanHolder booleanHolder = new Tools.BooleanHolder();
 		// booleanHolder.setValue(false);
-		for (MindMapNode node : selectedNodes) {
-			MindMapNode copy = node.shallowCopy();
+		for (NodeRepresentation node : selectedNodes) {
+			NodeRepresentation copy = node.shallowCopy();
 			if (copy != null) {
 				newMindMapController.insertNodeInto(copy, newMindMapController.getRootNode());
 			}
@@ -601,9 +601,9 @@ public class TimeList extends MindMapHookAdapter implements
 
 	private void selectNodes(int focussedRow, int[] selectedRows) {
 		if (focussedRow >= 0) {
-			MindMapNode focussedNode = getMindMapNode(focussedRow);
+			NodeRepresentation focussedNode = getMindMapNode(focussedRow);
 			// getController().centerNode(focussedNode);
-			Vector<MindMapNode> selectedNodes = new Vector<>();
+			Vector<NodeRepresentation> selectedNodes = new Vector<>();
 			for (int i = 0; i < selectedRows.length; i++) {
 				int row = selectedRows[i];
 				selectedNodes.add(getMindMapNode(row));
@@ -614,8 +614,8 @@ public class TimeList extends MindMapHookAdapter implements
 
 	/**
      */
-	private MindMapNode getMindMapNode(int focussedRow) {
-		MindMapNode selectedNode = ((NodeHolder) mTimeTable.getModel()
+	private NodeRepresentation getMindMapNode(int focussedRow) {
+		NodeRepresentation selectedNode = ((NodeHolder) mTimeTable.getModel()
 				.getValueAt(focussedRow, NODE_TEXT_COLUMN)).node;
 		return selectedNode;
 	}
@@ -636,7 +636,7 @@ public class TimeList extends MindMapHookAdapter implements
 		model.addColumn(COLUMN_CREATED);
 		model.addColumn(COLUMN_MODIFIED);
 		model.addColumn(COLUMN_NOTES);
-		MindMapNode node = getMindMapController().getMap().getRootNode();
+		NodeRepresentation node = getMindMapController().getMap().getRootNode();
 		updateModel(model, node);
 		mTimeTableModel = model;
 		mFlatNodeTableFilterModel = new FlatNodeTableFilterModel(
@@ -660,7 +660,7 @@ public class TimeList extends MindMapHookAdapter implements
 		return model;
 	}
 
-	private void updateModel(DefaultTableModel model, MindMapNode node) {
+	private void updateModel(DefaultTableModel model, NodeRepresentation node) {
 		ReminderHookBase hook = TimeManagementOrganizer.getHook(node);
 		// show all nodes or only those with reminder:
 		if (mShowAllNodes || hook != null) {
@@ -678,8 +678,8 @@ public class TimeList extends MindMapHookAdapter implements
 			// no recursion, if folded nodes should be hidden.
 			return;
 		}
-		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = i.next();
+		for (Iterator<NodeRepresentation> i = node.childrenUnfolded(); i.hasNext();) {
+			NodeRepresentation child = i.next();
 			updateModel(model, child);
 		}
 	}
@@ -865,11 +865,11 @@ public class TimeList extends MindMapHookAdapter implements
             int colIndex = columnAtPoint(point);
 			if(row>= 0 && colIndex >= 0) {
 				if (colIndex == NODE_TEXT_COLUMN) {
-					MindMapNode mindMapNode = getMindMapNode(row);
+					NodeRepresentation mindMapNode = getMindMapNode(row);
 					return mindMapNode.getText();
 				}
 				if (colIndex == NODE_NOTES_COLUMN) {
-					MindMapNode mindMapNode = getMindMapNode(row);
+					NodeRepresentation mindMapNode = getMindMapNode(row);
 					return mindMapNode.getNoteText();
 				}
 			}
@@ -917,7 +917,7 @@ public class TimeList extends MindMapHookAdapter implements
 
 	/** removes html in nodes before comparison. */
 	public static class NodeHolder implements Comparable<NodeHolder> {
-		private final MindMapNode node;
+		private final NodeRepresentation node;
 		private String untaggedNodeText = null;
 		/**
 		 * Holds the original node content to cache the untaggedNodeText and to
@@ -928,7 +928,7 @@ public class TimeList extends MindMapHookAdapter implements
 		/**
 		 *
 		 */
-		public NodeHolder(MindMapNode node) {
+		public NodeHolder(NodeRepresentation node) {
 			this.node = node;
 		}
 
@@ -956,7 +956,7 @@ public class TimeList extends MindMapHookAdapter implements
 			return untaggedNodeText;
 		}
 
-		public MindMapNode getNode() {
+		public NodeRepresentation getNode() {
 			return node;
 		}
 
@@ -964,14 +964,14 @@ public class TimeList extends MindMapHookAdapter implements
 
 	/** removes html in notes before comparison. */
 	public static class NotesHolder implements Comparable<NotesHolder> {
-		private final MindMapNode node;
+		private final NodeRepresentation node;
 		private String untaggedNotesText = null;
 		private String originalNotesText = null;
 
 		/**
 		 *
 		 */
-		public NotesHolder(MindMapNode node) {
+		public NotesHolder(NodeRepresentation node) {
 			this.node = node;
 		}
 
@@ -1007,7 +1007,7 @@ public class TimeList extends MindMapHookAdapter implements
 
 		private Vector<String> iconNames;
 
-		public IconsHolder(MindMapNode node) {
+		public IconsHolder(NodeRepresentation node) {
 			icons.addAll(node.getIcons());
 			// sorting the output.
 			iconNames = new Vector<>();

@@ -28,7 +28,7 @@ import javax.swing.JFileChooser;
 
 import freemind.main.Tools;
 import freemind.modes.FreeMindFileDialog;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 
 @SuppressWarnings("serial")
@@ -62,7 +62,7 @@ public class ImportExplorerFavoritesAction extends MindmapAction {
 		}
 	}
 
-	public boolean importExplorerFavorites(File folder, MindMapNode target,
+	public boolean importExplorerFavorites(File folder, NodeRepresentation target,
 			boolean redisplay) {
 		// Returns true iff any favorites found
 		boolean favoritesFound = false;
@@ -73,7 +73,7 @@ public class ImportExplorerFavoritesAction extends MindmapAction {
 				if (list[i].isDirectory()) {
 					// Insert a new node
 					String nodeContent = list[i].getName();
-					MindMapNode node = addNode(target, nodeContent);
+					NodeRepresentation node = addNode(target, nodeContent);
 					//
 					boolean favoritesFoundInSubfolder = importExplorerFavorites(
 							list[i], node, false);
@@ -91,7 +91,7 @@ public class ImportExplorerFavoritesAction extends MindmapAction {
 						&& Tools.getExtension(list[i]).equals("url")) {
 					favoritesFound = true;
 					try {
-						MindMapNode node = addNode(target,
+						NodeRepresentation node = addNode(target,
 								Tools.removeExtension(list[i].getName()));
 						// For each line: Is it URL? => Set it as link
 						BufferedReader in = new BufferedReader(new FileReader(
@@ -118,8 +118,8 @@ public class ImportExplorerFavoritesAction extends MindmapAction {
 
 	/**
      */
-	private MindMapNode addNode(MindMapNode target, String nodeContent) {
-		MindMapNode node = controller.addNewNode(target,
+	private NodeRepresentation addNode(NodeRepresentation target, String nodeContent) {
+		NodeRepresentation node = controller.addNewNode(target,
 				target.getChildCount(), target.isNewChildLeft());
 		controller.setNodeText(node, nodeContent);
 		return node;

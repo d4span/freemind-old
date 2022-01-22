@@ -29,7 +29,7 @@ import javax.swing.Action;
 import javax.swing.JMenuItem;
 
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 
 /**
@@ -49,8 +49,8 @@ public class AddLocalLinkAction extends MindmapAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		MindMapNode source = modeController.getSelected();
-		Vector<MindMapNode> nodesFromClipboard = Tools
+		NodeRepresentation source = modeController.getSelected();
+		Vector<NodeRepresentation> nodesFromClipboard = Tools
 				.getMindMapNodesFromClipboard(modeController);
 		if (nodesFromClipboard.size() == 0) {
 			modeController.getController().errorMessage(
@@ -58,7 +58,7 @@ public class AddLocalLinkAction extends MindmapAction {
 			return;
 		}
 		boolean first = true;
-		for (MindMapNode destination : nodesFromClipboard) {
+		for (NodeRepresentation destination : nodesFromClipboard) {
 			if(!first) {
 				logger.warning("Can't link the node '"+source+"' to more than one destination. Only the last is used.");
 			}

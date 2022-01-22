@@ -39,7 +39,7 @@ import freemind.extensions.HookFactory;
 import freemind.main.XMLParseException;
 import freemind.modes.MapAdapter;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.Mode;
 import freemind.modes.ModeController;
 import freemind.modes.common.actions.NewMapAction;
@@ -69,7 +69,7 @@ public class FileController extends ViewControllerAdapter {
 		return model;
 	}
 
-	public MindMapNode newNode(Object userObject, MindMap map) {
+	public NodeRepresentation newNode(Object userObject, MindMap map) {
 		return new FileNodeModel((File) userObject, map);
 	}
 
@@ -149,12 +149,12 @@ public class FileController extends ViewControllerAdapter {
 		if (component.isInFollowLinkRegion(e.getX())) {
 			loadURL();
 		} else {
-			MindMapNode node = (component).getNodeView().getModel();
+			NodeRepresentation node = (component).getNodeView().getModel();
 			toggleFolded(node);
 		}
 	}
 
-	private void toggleFolded(MindMapNode node) {
+	private void toggleFolded(NodeRepresentation node) {
 		if (node.hasChildren() && !node.isRoot()) {
 			setFolded(node, !node.isFolded());
 		}

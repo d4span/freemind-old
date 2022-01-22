@@ -41,7 +41,7 @@ import freemind.controller.color.JColorCombo;
 import freemind.main.FreeMind;
 import freemind.main.Resources;
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.view.ImageFactory;
 import freemind.view.mindmapview.MapView;
 
@@ -186,7 +186,7 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 	}
 
 	private void setFontColorByItem(ColorPair pItem) {
-		for (MindMapNode node : c.getSelecteds()) {
+		for (NodeRepresentation node : c.getSelecteds()) {
 			c.setNodeColor(node, pItem.color);
 		}
 	}

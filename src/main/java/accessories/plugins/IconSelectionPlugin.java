@@ -33,7 +33,7 @@ import javax.swing.Action;
 import freemind.main.FreeMind;
 import freemind.main.Tools;
 import freemind.modes.IconInformation;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.common.dialogs.IconSelectionPopupDialog;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.IconAction;
@@ -53,7 +53,7 @@ public class IconSelectionPlugin extends MindMapNodeHookAdapter {
 		super();
 	}
 
-	public void invoke(MindMapNode rootNode) {
+	public void invoke(NodeRepresentation rootNode) {
 		// we dont need node.
 		NodeView focussed = getController().getSelectedView();
 		Vector<IconInformation> actions = new Vector<>();

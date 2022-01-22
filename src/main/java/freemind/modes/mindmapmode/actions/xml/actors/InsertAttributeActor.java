@@ -24,7 +24,7 @@ import freemind.controller.actions.generated.instance.InsertAttributeAction;
 import freemind.controller.actions.generated.instance.RemoveAttributeAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.NodeAdapter;
 import freemind.modes.attributes.Attribute;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
@@ -55,8 +55,8 @@ public class InsertAttributeActor extends XmlActorAdapter {
 		return InsertAttributeAction.class;
 	}
 
-	public ActionPair getActionPair(MindMapNode selected, int pPosition,
-			Attribute pAttribute) {
+	public ActionPair getActionPair(NodeRepresentation selected, int pPosition,
+                                    Attribute pAttribute) {
 		InsertAttributeAction insertAttributeAction = getInsertAttributeAction(selected,
 				pPosition, pAttribute);
 		RemoveAttributeAction undoInsertAttributeAction = getXmlActorFactory().getRemoveAttributeActor().getRemoveAttributeAction(selected, pPosition);
@@ -69,8 +69,8 @@ public class InsertAttributeActor extends XmlActorAdapter {
 	 * @param pAttribute
 	 * @return
 	 */
-	public InsertAttributeAction getInsertAttributeAction(MindMapNode pSelected,
-			int pPosition, Attribute pAttribute) {
+	public InsertAttributeAction getInsertAttributeAction(NodeRepresentation pSelected,
+                                                          int pPosition, Attribute pAttribute) {
 		InsertAttributeAction insertAttributeAction = new InsertAttributeAction();
 		insertAttributeAction.setNode(getNodeID(pSelected));
 		insertAttributeAction.setName(pAttribute.getName());
@@ -79,7 +79,7 @@ public class InsertAttributeActor extends XmlActorAdapter {
 		return insertAttributeAction;
 	}
 	
-	public void insertAttribute(MindMapNode pNode, int pPosition, Attribute pAttribute) {
+	public void insertAttribute(NodeRepresentation pNode, int pPosition, Attribute pAttribute) {
 		ActionPair actionPair = getActionPair(pNode, pPosition, pAttribute);
 		execute(actionPair);
 

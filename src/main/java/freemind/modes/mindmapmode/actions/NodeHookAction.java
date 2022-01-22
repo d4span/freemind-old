@@ -34,7 +34,7 @@ import freemind.controller.MenuItemEnabledListener;
 import freemind.controller.MenuItemSelectedListener;
 import freemind.extensions.HookFactory;
 import freemind.extensions.HookInstanciationMethod;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 
 @SuppressWarnings("serial")
@@ -67,7 +67,7 @@ public class NodeHookAction extends MindmapAction implements HookAction,
 		mMindMapController.getFrame().setWaitingCursor(false);
 	}
 
-	public void invoke(MindMapNode focussed, List<MindMapNode> selecteds) {
+	public void invoke(NodeRepresentation focussed, List<NodeRepresentation> selecteds) {
 		mMindMapController.addHook(focussed, selecteds, _hookName, null);
 	}
 
@@ -129,12 +129,12 @@ public class NodeHookAction extends MindmapAction implements HookAction,
 				return listener.isSelected(pCheckItem, pAction);
 			}
 		}
-		MindMapNode focussed = mMindMapController.getSelected();
-		List<MindMapNode> selecteds = mMindMapController.getSelecteds();
+		NodeRepresentation focussed = mMindMapController.getSelected();
+		List<NodeRepresentation> selecteds = mMindMapController.getSelecteds();
 		HookInstanciationMethod instMethod = getInstanciationMethod(_hookName);
 		// get destination nodes
 		instMethod.getDestinationNodes(mMindMapController, focussed, selecteds);
-		MindMapNode adaptedFocussedNode = instMethod.getCenterNode(
+		NodeRepresentation adaptedFocussedNode = instMethod.getCenterNode(
 				mMindMapController, focussed, selecteds);
 		// test if hook already present
 		return instMethod.isAlreadyPresent(_hookName, adaptedFocussedNode);

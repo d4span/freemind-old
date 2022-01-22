@@ -31,7 +31,7 @@ import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
 import freemind.modes.MindIcon;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 public class IconContainedCondition implements Condition {
 	static final String ICON = "icon";
@@ -42,13 +42,13 @@ public class IconContainedCondition implements Condition {
 		this.iconName = iconName;
 	}
 
-	public boolean checkNode(Controller c, MindMapNode node) {
+	public boolean checkNode(Controller c, NodeRepresentation node) {
 		return Tools.iconFirstIndex(node, iconName) != -1
 				|| isStateIconContained(node, iconName);
 	}
 
-	private static boolean isStateIconContained(MindMapNode node,
-			String iconName) {
+	private static boolean isStateIconContained(NodeRepresentation node,
+                                                String iconName) {
 		Set<String> stateIcons = node.getStateIcons().keySet();
 		for (String nextIcon : stateIcons) {
 			if (iconName.equals(nextIcon))

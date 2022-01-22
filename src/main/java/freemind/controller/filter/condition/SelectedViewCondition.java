@@ -28,7 +28,7 @@ import javax.swing.JComponent;
 import freemind.controller.Controller;
 import freemind.main.Resources;
 import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.view.mindmapview.NodeView;
 
 public class SelectedViewCondition implements Condition {
@@ -50,7 +50,7 @@ public class SelectedViewCondition implements Condition {
 		return description;
 	}
 
-	public boolean checkNode(Controller c, MindMapNode node) {
+	public boolean checkNode(Controller c, NodeRepresentation node) {
 		NodeView viewer = c.getModeController().getNodeView(node);
 		return viewer != null && viewer.isSelected();
 	}

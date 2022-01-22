@@ -61,51 +61,51 @@ public interface ExtendedMapFeedback extends MapFeedback, MindMapActions {
 	 * Calling this method the map-unique identifier of the node is returned
 	 * (and created before, if not present)
 	 */
-	String getNodeID(MindMapNode selected);
+	String getNodeID(NodeRepresentation selected);
 
 	/**
 	 * @return
 	 */
-	MindMapNode getSelected();
+	NodeRepresentation getSelected();
 	
-	void select(MindMapNode pFocussed, List<MindMapNode> pSelecteds);
+	void select(NodeRepresentation pFocussed, List<NodeRepresentation> pSelecteds);
 
 	/**
 	 * @param pNewNode
 	 * @param pParent
 	 * @param pIndex
 	 */
-	void insertNodeInto(MindMapNode pNewNode, MindMapNode pParent, int pIndex);
+	void insertNodeInto(NodeRepresentation pNewNode, NodeRepresentation pParent, int pIndex);
 
 	/**
 	 * @param pUserObject is the string/html of the new node
 	 * @param pMap
 	 * @return the new node.
 	 */
-	MindMapNode newNode(Object pUserObject, MindMap pMap);
+	NodeRepresentation newNode(Object pUserObject, MindMap pMap);
 
 	/**
 	 * @param pSelectedNode
 	 */
-	void removeNodeFromParent(MindMapNode pSelectedNode);
+	void removeNodeFromParent(NodeRepresentation pSelectedNode);
 
 	/**
 	 * @return the factory used to create all xml actors.
 	 */
 	XmlActorFactory getActorFactory();
 
-	Transferable copy(MindMapNode node, boolean saveInvisible);
+	Transferable copy(NodeRepresentation node, boolean saveInvisible);
 
 	/**
 	 * @param pNodeList
 	 * @param pSaveInvisible
 	 * @return a MindMapNode list as Transferable (special FM flavor).
 	 */
-	Transferable copy(List<MindMapNode> pNodeList, boolean pSaveInvisible);
+	Transferable copy(List<NodeRepresentation> pNodeList, boolean pSaveInvisible);
 
 	void setWaitingCursor(boolean waiting);
 	
-	void nodeStyleChanged(MindMapNode pNode);
+	void nodeStyleChanged(NodeRepresentation pNode);
 	
 	HookFactory getHookFactory();
 

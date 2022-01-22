@@ -24,14 +24,14 @@ import java.awt.Point;
 
 import freemind.modes.ArrowLinkAdapter;
 import freemind.modes.MapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.view.mindmapview.MapView;
 import freemind.view.mindmapview.NodeView;
 
 public class MindMapArrowLinkModel extends ArrowLinkAdapter {
 
-	public MindMapArrowLinkModel(MindMapNode source, MindMapNode target,
-			MapFeedback pMapFeedback) {
+	public MindMapArrowLinkModel(NodeRepresentation source, NodeRepresentation target,
+                                 MapFeedback pMapFeedback) {
 		super(source, target, pMapFeedback);
 	}
 

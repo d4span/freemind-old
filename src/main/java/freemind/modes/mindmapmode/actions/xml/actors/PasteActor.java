@@ -59,7 +59,7 @@ import freemind.main.XMLParseException;
 import freemind.modes.ControllerAdapter;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MapAdapter;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.MindMapNodeModel;
@@ -136,7 +136,7 @@ public class PasteActor extends XmlActorAdapter {
 	}
 
 	/** URGENT: Change this method. */
-	public void paste(MindMapNode node, MindMapNode parent) {
+	public void paste(NodeRepresentation node, NodeRepresentation parent) {
 		if (node != null) {
 			insertNodeInto(node, parent);
 			getExMapFeedback().getMap().nodeStructureChanged(parent);
@@ -156,8 +156,8 @@ public class PasteActor extends XmlActorAdapter {
 	 *            decided on which side of root
 	 * @return true, if successfully executed.
 	 */
-	public boolean paste(Transferable t, MindMapNode target, boolean asSibling,
-			boolean isLeft) {
+	public boolean paste(Transferable t, NodeRepresentation target, boolean asSibling,
+                         boolean isLeft) {
 		UndoPasteNodeAction undoAction = new UndoPasteNodeAction();
 		PasteNodeAction pasteAction;
 		pasteAction = getPasteNodeAction(t, new NodeCoordinate(target,
@@ -178,39 +178,39 @@ public class PasteActor extends XmlActorAdapter {
 
 	public static class NodeCoordinate {
 
-		public MindMapNode target;
+		public NodeRepresentation target;
 		public boolean asSibling;
 		public boolean isLeft;
 
-		public NodeCoordinate(MindMapNode target, boolean asSibling,
-				boolean isLeft) {
+		public NodeCoordinate(NodeRepresentation target, boolean asSibling,
+                              boolean isLeft) {
 			this.target = target;
 			this.asSibling = asSibling;
 			this.isLeft = isLeft;
 		}
 
-		public MindMapNode getNode() {
+		public NodeRepresentation getNode() {
 			if (asSibling) {
-				MindMapNode parentNode = target.getParentNode();
-				return (MindMapNode) parentNode.getChildAt(parentNode
+				NodeRepresentation parentNode = target.getParentNode();
+				return (NodeRepresentation) parentNode.getChildAt(parentNode
 						.getChildPosition(target) - 1);
 			} else {
 				logger.finest("getChildCount = " + target.getChildCount()
 						+ ", target = " + target);
-				return (MindMapNode) target
+				return (NodeRepresentation) target
 						.getChildAt(target.getChildCount() - 1);
 			}
 		}
 
-		public NodeCoordinate(MindMapNode node, boolean isLeft) {
+		public NodeCoordinate(NodeRepresentation node, boolean isLeft) {
 			this.isLeft = isLeft;
-			MindMapNode parentNode = node.getParentNode();
+			NodeRepresentation parentNode = node.getParentNode();
 			int childPosition = parentNode.getChildPosition(node);
 			if (childPosition == parentNode.getChildCount() - 1) {
 				target = parentNode;
 				asSibling = false;
 			} else {
-				target = (MindMapNode) parentNode.getChildAt(childPosition + 1);
+				target = (NodeRepresentation) parentNode.getChildAt(childPosition + 1);
 				asSibling = true;
 			}
 		}
@@ -218,8 +218,8 @@ public class PasteActor extends XmlActorAdapter {
 
 	private interface DataFlavorHandler {
 
-		void paste(Object TransferData, MindMapNode target, boolean asSibling,
-				boolean isLeft, Transferable t)
+		void paste(Object TransferData, NodeRepresentation target, boolean asSibling,
+                   boolean isLeft, Transferable t)
 				throws UnsupportedFlavorException, IOException;
 
 		DataFlavor getDataFlavor();
@@ -227,12 +227,12 @@ public class PasteActor extends XmlActorAdapter {
 
 	private class FileListFlavorHandler implements DataFlavorHandler {
 
-		public void paste(Object TransferData, MindMapNode target,
+		public void paste(Object TransferData, NodeRepresentation target,
 				boolean asSibling, boolean isLeft, Transferable t) {
 			// TODO: Does not correctly interpret asSibling.
 			List<File> fileList = (List<File>) TransferData;
 			for (File file : fileList) {
-				MindMapNode node = getExMapFeedback().newNode(file.getName(),
+				NodeRepresentation node = getExMapFeedback().newNode(file.getName(),
 						target.getMap());
 				node.setLeft(isLeft);
 				node.setLink(Tools.fileToRelativeUrlString(file,
@@ -250,7 +250,7 @@ public class PasteActor extends XmlActorAdapter {
 
 	private class MindMapNodesFlavorHandler implements DataFlavorHandler {
 
-		public void paste(Object TransferData, MindMapNode target,
+		public void paste(Object TransferData, NodeRepresentation target,
 				boolean asSibling, boolean isLeft, Transferable t) {
 			String textFromClipboard = (String) TransferData;
 			if (textFromClipboard != null) {
@@ -268,7 +268,7 @@ public class PasteActor extends XmlActorAdapter {
 				mapContent += "</node></map>";
 				// logger.info("Pasting " + mapContent);
 				try {
-					MindMapNode node = getExMapFeedback().getMap().loadTree(
+					NodeRepresentation node = getExMapFeedback().getMap().loadTree(
 									new Tools.StringReaderCreator(
 											mapContent), MapAdapter.sDontAskInstance);
 					for (ListIterator i = node.childrenUnfolded(); i.hasNext();) {
@@ -321,8 +321,8 @@ public class PasteActor extends XmlActorAdapter {
 			mNodeCreator = new NodeCreator() {
 
 					@Override
-					public MindMapNode createChild(MindMapNode pParent) {
-						MindMapNode node = getExMapFeedback().newNode("",
+					public NodeRepresentation createChild(NodeRepresentation pParent) {
+						NodeRepresentation node = getExMapFeedback().newNode("",
 								getExMapFeedback().getMap());
 						insertNodeInto(node, pParent);
 						node.setParent(pParent);
@@ -331,19 +331,19 @@ public class PasteActor extends XmlActorAdapter {
 					}
 
 					@Override
-					public void setText(String pText, MindMapNode pNode) {
+					public void setText(String pText, NodeRepresentation pNode) {
 						pNode.setText(pText);
 						getExMapFeedback().nodeChanged(pNode);
 					}
 
 					@Override
-					public void setLink(String pLink, MindMapNode pNode) {
+					public void setLink(String pLink, NodeRepresentation pNode) {
 						pNode.setLink(pLink);
 						getExMapFeedback().nodeChanged(pNode);
 					}};
 		}
 
-		public void paste(Object transferData, MindMapNode target,
+		public void paste(Object transferData, NodeRepresentation target,
 				boolean asSibling, boolean isLeft, Transferable t)
 				throws UnsupportedFlavorException, IOException {
 			String textFromClipboard = (String) transferData;
@@ -396,7 +396,7 @@ public class PasteActor extends XmlActorAdapter {
 				textFromClipboard = HtmlTools
 						.unescapeHTMLUnicodeEntity(textFromClipboard);
 	
-				MindMapNode node = getExMapFeedback().newNode(textFromClipboard,
+				NodeRepresentation node = getExMapFeedback().newNode(textFromClipboard,
 						getExMapFeedback().getMap());
 				// if only one <a>...</a> element found, set link
 				Matcher m = HREF_PATTERN.matcher(textFromClipboard);
@@ -421,7 +421,7 @@ public class PasteActor extends XmlActorAdapter {
 
 	private class StringFlavorHandler implements DataFlavorHandler {
 
-		public void paste(Object TransferData, MindMapNode target,
+		public void paste(Object TransferData, NodeRepresentation target,
 				boolean asSibling, boolean isLeft, Transferable t)
 				throws UnsupportedFlavorException, IOException {
 			pasteStringWithoutRedisplay(t, target, asSibling, isLeft);
@@ -434,7 +434,7 @@ public class PasteActor extends XmlActorAdapter {
 
 	private class ImageFlavorHandler implements DataFlavorHandler {
 
-		public void paste(Object transferData, MindMapNode target,
+		public void paste(Object transferData, NodeRepresentation target,
 				boolean asSibling, boolean isLeft, Transferable t)
 				throws UnsupportedFlavorException, IOException {
 			logger.info("imageFlavor");
@@ -471,7 +471,7 @@ public class PasteActor extends XmlActorAdapter {
 			String strText = "<html><body><img src=\"" + imgfile
 					+ "\"/></body></html>";
 
-			MindMapNode node = getExMapFeedback().newNode(strText,
+			NodeRepresentation node = getExMapFeedback().newNode(strText,
 					getExMapFeedback().getMap());
 			// if only one <a>...</a> element found, set link
 
@@ -489,8 +489,8 @@ public class PasteActor extends XmlActorAdapter {
 	/*
      *
      */
-	private void _paste(Transferable t, MindMapNode target, boolean asSibling,
-			boolean isLeft) {
+	private void _paste(Transferable t, NodeRepresentation target, boolean asSibling,
+                        boolean isLeft) {
 		if (t == null) {
 			return;
 		}
@@ -531,8 +531,8 @@ public class PasteActor extends XmlActorAdapter {
 	}
 
 	public MindMapNodeModel pasteXMLWithoutRedisplay(String pasted,
-			MindMapNode target, boolean asSibling, boolean changeSide,
-			boolean isLeft, HashMap<String, NodeAdapter> pIDToTarget) throws XMLParseException {
+                                                     NodeRepresentation target, boolean asSibling, boolean changeSide,
+                                                     boolean isLeft, HashMap<String, NodeAdapter> pIDToTarget) throws XMLParseException {
 		// Call nodeStructureChanged(target) after this function.
 		logger.fine("Pasting " + pasted + " to " + target);
 		try {
@@ -549,9 +549,9 @@ public class PasteActor extends XmlActorAdapter {
 		}
 	}
 
-	private void insertNodeInto(MindMapNodeModel node, MindMapNode target,
+	private void insertNodeInto(MindMapNodeModel node, NodeRepresentation target,
 			boolean asSibling, boolean isLeft, boolean changeSide) {
-		MindMapNode parent;
+		NodeRepresentation parent;
 		if (asSibling) {
 			parent = target.getParentNode();
 		} else {
@@ -585,8 +585,8 @@ public class PasteActor extends XmlActorAdapter {
 	 * @param isLeft
 	 *            TODO
 	 */
-	private MindMapNode pasteStringWithoutRedisplay(Transferable t,
-			MindMapNode parent, boolean asSibling, boolean isLeft)
+	private NodeRepresentation pasteStringWithoutRedisplay(Transferable t,
+                                                           NodeRepresentation parent, boolean asSibling, boolean isLeft)
 			throws UnsupportedFlavorException, IOException {
 
 		String textFromClipboard = (String) t
@@ -608,7 +608,7 @@ public class PasteActor extends XmlActorAdapter {
 			parent = new MindMapNodeModel(getExMapFeedback().getMap());
 		}
 
-		ArrayList<MindMapNode> parentNodes = new ArrayList<>();
+		ArrayList<NodeRepresentation> parentNodes = new ArrayList<>();
 		ArrayList<Integer> parentNodesDepths = new ArrayList<>();
 
 		parentNodes.add(parent);
@@ -616,7 +616,7 @@ public class PasteActor extends XmlActorAdapter {
 
 		String[] linkPrefixes = { "http://", "ftp://", "https://" };
 
-		MindMapNode pastedNode = null;
+		NodeRepresentation pastedNode = null;
 
 		for (int i = 0; i < textLines.length; ++i) {
 			String text = textLines[i];
@@ -655,7 +655,7 @@ public class PasteActor extends XmlActorAdapter {
 				}
 			}
 
-			MindMapNode node = getExMapFeedback().newNode(visibleText,
+			NodeRepresentation node = getExMapFeedback().newNode(visibleText,
 					parent.getMap());
 			if (textLines.length == 1) {
 				pastedNode = node;
@@ -692,14 +692,14 @@ public class PasteActor extends XmlActorAdapter {
 			for (int j = parentNodes.size() - 1; j >= 0; --j) {
 				if (depth > ((Integer) parentNodesDepths.get(j)).intValue()) {
 					for (int k = j + 1; k < parentNodes.size(); ++k) {
-						MindMapNode n = (MindMapNode) parentNodes.get(k);
+						NodeRepresentation n = (NodeRepresentation) parentNodes.get(k);
 						if (n.getParentNode() == parent) {
 							// addUndoAction(n);
 						}
 						parentNodes.remove(k);
 						parentNodesDepths.remove(k);
 					}
-					MindMapNode target = (MindMapNode) parentNodes.get(j);
+					NodeRepresentation target = (NodeRepresentation) parentNodes.get(j);
 					node.setLeft(isLeft);
 					insertNodeInto(node, target);
 					parentNodes.add(node);
@@ -710,7 +710,7 @@ public class PasteActor extends XmlActorAdapter {
 		}
 
 		for (int k = 0; k < parentNodes.size(); ++k) {
-			MindMapNode n = (MindMapNode) parentNodes.get(k);
+			NodeRepresentation n = (NodeRepresentation) parentNodes.get(k);
 			if (n.getParentNode() == parent) {
 				// addUndoAction(n);
 			}
@@ -720,11 +720,11 @@ public class PasteActor extends XmlActorAdapter {
 
 	/**
      */
-	private void insertNodeInto(MindMapNodeModel node, MindMapNode parent, int i) {
+	private void insertNodeInto(MindMapNodeModel node, NodeRepresentation parent, int i) {
 		getExMapFeedback().insertNodeInto(node, parent, i);
 	}
 
-	private void insertNodeInto(MindMapNode node, MindMapNode parent) {
+	private void insertNodeInto(NodeRepresentation node, NodeRepresentation parent) {
 		getExMapFeedback().insertNodeInto(node, parent, parent.getChildCount());
 	}
 
@@ -872,7 +872,7 @@ public class PasteActor extends XmlActorAdapter {
 		handler.setNodeCreator(new NodeCreator() {
 
 			@Override
-			public MindMapNode createChild(MindMapNode pParent) {
+			public NodeRepresentation createChild(NodeRepresentation pParent) {
 				try {
 					MindMapNodeModel newNode = new MindMapNodeModel("",
 							getExMapFeedback().getMap());
@@ -886,12 +886,12 @@ public class PasteActor extends XmlActorAdapter {
 			}
 
 			@Override
-			public void setText(String pText, MindMapNode pNode) {
+			public void setText(String pText, NodeRepresentation pNode) {
 				pNode.setText(pText);
 			}
 
 			@Override
-			public void setLink(String pLink, MindMapNode pNode) {
+			public void setLink(String pLink, NodeRepresentation pNode) {
 			}});
 		handler.paste(t.getTransferData(handler.getDataFlavor()), parent, false, true, t);
 		final int childCount = parent.getChildCount();
@@ -920,9 +920,9 @@ public class PasteActor extends XmlActorAdapter {
 	/**
 	 *
 	 */
-	public void processUnfinishedLinksInHooks(MindMapNode node) {
-		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = i.next();
+	public void processUnfinishedLinksInHooks(NodeRepresentation node) {
+		for (Iterator<NodeRepresentation> i = node.childrenUnfolded(); i.hasNext();) {
+			NodeRepresentation child = i.next();
 			processUnfinishedLinksInHooks(child);
 		}
 		for (PermanentNodeHook hook : node.getHooks()) {

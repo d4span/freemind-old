@@ -39,7 +39,7 @@ import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.extensions.HookRegistration;
 import freemind.main.Tools;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.NodeHookAction;
@@ -58,11 +58,11 @@ public class JumpLastEditLocation extends MindMapNodeHookAdapter {
 
 	}
 
-	public void invoke(MindMapNode pNode) {
+	public void invoke(NodeRepresentation pNode) {
 		super.invoke(pNode);
 		try {
 			JumpLastEditLocationRegistration base = (JumpLastEditLocationRegistration) getPluginBaseClass();
-			MindMapNode node = base.getLastEditLocation(pNode);
+			NodeRepresentation node = base.getLastEditLocation(pNode);
 			if (node == null) {
 				return;
 			}
@@ -85,7 +85,7 @@ public class JumpLastEditLocation extends MindMapNodeHookAdapter {
 
 		private Vector<String> mLastEditLocations = new Vector<>();
 
-		public MindMapNode getLastEditLocation(MindMapNode pCurrentNode) {
+		public NodeRepresentation getLastEditLocation(NodeRepresentation pCurrentNode) {
 			int size = mLastEditLocations.size();
 			if (size == 0) {
 				return null;

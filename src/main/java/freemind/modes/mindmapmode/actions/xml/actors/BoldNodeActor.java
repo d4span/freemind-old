@@ -24,7 +24,7 @@ import freemind.controller.actions.generated.instance.BoldNodeAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
@@ -56,26 +56,26 @@ public class BoldNodeActor extends NodeXmlActorAdapter {
 		return BoldNodeAction.class;
 	}
 
-	public ActionPair apply(MindMap model, MindMapNode selected) {
+	public ActionPair apply(MindMap model, NodeRepresentation selected) {
 		// every node is set to the inverse of the focussed node.
 		boolean bold = getSelected().isBold();
 		return getActionPair(selected, !bold);
 	}
 
-	private ActionPair getActionPair(MindMapNode selected, boolean bold) {
+	private ActionPair getActionPair(NodeRepresentation selected, boolean bold) {
 		BoldNodeAction boldAction = toggleBold(selected, bold);
 		BoldNodeAction undoBoldAction = toggleBold(selected, selected.isBold());
 		return new ActionPair(boldAction, undoBoldAction);
 	}
 
-	private BoldNodeAction toggleBold(MindMapNode selected, boolean bold) {
+	private BoldNodeAction toggleBold(NodeRepresentation selected, boolean bold) {
 		BoldNodeAction boldAction = new BoldNodeAction();
 		boldAction.setNode(getNodeID(selected));
 		boldAction.setBold(bold);
 		return boldAction;
 	}
 
-	public void setBold(MindMapNode node, boolean bold) {
+	public void setBold(NodeRepresentation node, boolean bold) {
 		execute(getActionPair(node, bold));
 	}
 }

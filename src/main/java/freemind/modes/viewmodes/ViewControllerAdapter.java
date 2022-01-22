@@ -28,7 +28,7 @@ import java.awt.event.MouseEvent;
 import freemind.extensions.NodeHook;
 import freemind.extensions.PermanentNodeHookSubstituteUnknown;
 import freemind.modes.ControllerAdapter;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.Mode;
 import freemind.modes.common.CommonNodeKeyListener;
 import freemind.modes.common.CommonNodeKeyListener.EditHandler;
@@ -124,7 +124,7 @@ public abstract class ViewControllerAdapter extends ControllerAdapter {
 		return retValue;
 	}
 
-	public void setFolded(MindMapNode node, boolean folded) {
+	public void setFolded(NodeRepresentation node, boolean folded) {
 		if (node == null)
 			throw new IllegalArgumentException(
 					"setFolded was called with a null node.");
@@ -174,14 +174,14 @@ public abstract class ViewControllerAdapter extends ControllerAdapter {
 	 * @see freemind.modes.MindMap.MapFeedback#paste(freemind.modes.MindMapNode, freemind.modes.MindMapNode)
 	 */
 	@Override
-	public void paste(MindMapNode pNode, MindMapNode pParent) {
+	public void paste(NodeRepresentation pNode, NodeRepresentation pParent) {
 	}
 
 	/* (non-Javadoc)
 	 * @see freemind.modes.MapFeedback#createNodeHook(java.lang.String, freemind.modes.MindMapNode)
 	 */
 	@Override
-	public NodeHook createNodeHook(String pLoadName, MindMapNode pNode) {
+	public NodeHook createNodeHook(String pLoadName, NodeRepresentation pNode) {
 		return new PermanentNodeHookSubstituteUnknown(pLoadName);
 	}
 

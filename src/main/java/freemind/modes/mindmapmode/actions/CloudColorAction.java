@@ -31,7 +31,7 @@ import javax.swing.Action;
 import javax.swing.JMenuItem;
 import freemind.controller.Controller;
 import freemind.controller.MenuItemEnabledListener;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 
 @SuppressWarnings("serial")
@@ -54,7 +54,7 @@ public class CloudColorAction extends MindmapAction implements MenuItemEnabledLi
 		if (color == null) {
 			return;
 		}
-		for (MindMapNode selected : controller.getSelecteds()) {
+		for (NodeRepresentation selected : controller.getSelecteds()) {
 			controller.setCloudColor(selected, color);
 		}
 	}

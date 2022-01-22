@@ -33,7 +33,7 @@ import freemind.controller.Controller;
 import freemind.controller.MapModuleManager.MapTitleContributor;
 import freemind.main.Resources;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 import freemind.view.MapModule;
@@ -109,8 +109,8 @@ public abstract class DatabaseBasics extends MindMapNodeHookAdapter implements
 	}
 
 	protected static void togglePermanentHook(MindMapController controller) {
-		MindMapNode rootNode = controller.getRootNode();
-		List<MindMapNode> selecteds = Arrays.asList(new MindMapNode[] { rootNode });
+		NodeRepresentation rootNode = controller.getRootNode();
+		List<NodeRepresentation> selecteds = Arrays.asList(new NodeRepresentation[] { rootNode });
 		controller.addHook(rootNode, selecteds, SLAVE_HOOK_NAME, null);
 	}
 

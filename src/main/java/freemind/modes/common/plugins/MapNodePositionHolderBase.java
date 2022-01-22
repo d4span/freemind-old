@@ -29,7 +29,7 @@ import freemind.extensions.PermanentNodeHookAdapter;
 import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 /**
  * This base class is free of openstreetmap and similar classes.
@@ -73,7 +73,7 @@ public class MapNodePositionHolderBase extends PermanentNodeHookAdapter {
 		return sMapLocationIcon;
 	}
 
-	protected void setStateIcon(MindMapNode node, boolean enabled) {
+	protected void setStateIcon(NodeRepresentation node, boolean enabled) {
 		node.setStateIcon(NODE_MAP_LOCATION_ICON,
 				(enabled) ? getMapLocationIcon() : null);
 	}
@@ -102,7 +102,7 @@ public class MapNodePositionHolderBase extends PermanentNodeHookAdapter {
 	 * @see
 	 * freemind.extensions.NodeHookAdapter#invoke(freemind.modes.MindMapNode)
 	 */
-	public void invoke(MindMapNode pNode) {
+	public void invoke(NodeRepresentation pNode) {
 		super.invoke(pNode);
 		setStateIcon(pNode, true);
 		showTooltip();
@@ -149,7 +149,7 @@ public class MapNodePositionHolderBase extends PermanentNodeHookAdapter {
 		setToolTip(NODE_MAP_HOOK_NAME, null);		
 	}
 
-	public static MapNodePositionHolderBase getBaseHook(MindMapNode node) {
+	public static MapNodePositionHolderBase getBaseHook(NodeRepresentation node) {
 		for (PermanentNodeHook element : node.getActivatedHooks()) {
 			if (element instanceof MapNodePositionHolderBase) {
 				return (MapNodePositionHolderBase) element;

@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.view.mindmapview.NodeView;
 
 /**
@@ -72,22 +72,22 @@ public interface PermanentNodeHook extends NodeHook {
 	 * Ah, don't call propagate in this method, as paste introduces nodes with
 	 * the hook and you'll have them twice, ... see onNewChild
 	 */
-	void onAddChild(MindMapNode addedChildNode);
+	void onAddChild(NodeRepresentation addedChildNode);
 
 	/**
 	 * Is only called, if a new nodes is inserted as a child. Remark: In this
 	 * case onAddChild is called too and moreover *before* this method. see
 	 * onAddChild.
 	 */
-	void onNewChild(MindMapNode newChildNode);
+	void onNewChild(NodeRepresentation newChildNode);
 
 	/**
 	 * This method is called, if a child is added to me or to any of my
 	 * children. (See onUpdateChildrenHook)
 	 */
-	void onAddChildren(MindMapNode addedChild);
+	void onAddChildren(NodeRepresentation addedChild);
 
-	void onRemoveChild(MindMapNode oldChildNode);
+	void onRemoveChild(NodeRepresentation oldChildNode);
 
 	/**
 	 * This method is called, if a child is removed to me or to any of my
@@ -96,12 +96,12 @@ public interface PermanentNodeHook extends NodeHook {
 	 * @param oldDad
 	 *            TODO
 	 */
-	void onRemoveChildren(MindMapNode oldChildNode, MindMapNode oldDad);
+	void onRemoveChildren(NodeRepresentation oldChildNode, NodeRepresentation oldDad);
 
 	/**
 	 * If any of my children is updated, I get this notification.
 	 */
-	void onUpdateChildrenHook(MindMapNode updatedNode);
+	void onUpdateChildrenHook(NodeRepresentation updatedNode);
 
 	/**
 	 */

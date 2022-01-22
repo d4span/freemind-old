@@ -23,7 +23,7 @@ package freemind.modes.mindmapmode.actions.xml.actors;
 import freemind.controller.actions.generated.instance.AddLinkXmlAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
@@ -40,7 +40,7 @@ public class SetLinkActor extends XmlActorAdapter {
 		super(pMapFeedback);
 	}
 
-	public void setLink(MindMapNode node, String link) {
+	public void setLink(NodeRepresentation node, String link) {
 		execute(getActionPair(node, link));
 	}
 
@@ -57,13 +57,13 @@ public class SetLinkActor extends XmlActorAdapter {
 		return AddLinkXmlAction.class;
 	}
 
-	private ActionPair getActionPair(MindMapNode node, String link) {
+	private ActionPair getActionPair(NodeRepresentation node, String link) {
 		return new ActionPair(createAddLinkXmlAction(node, link),
 				createAddLinkXmlAction(node, node.getLink()));
 	}
 
-	private AddLinkXmlAction createAddLinkXmlAction(MindMapNode node,
-			String link) {
+	private AddLinkXmlAction createAddLinkXmlAction(NodeRepresentation node,
+                                                    String link) {
 		AddLinkXmlAction action = new AddLinkXmlAction();
 		action.setNode(getNodeID(node));
 		action.setDestination(link);

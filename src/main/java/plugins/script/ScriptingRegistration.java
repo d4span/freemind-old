@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import freemind.modes.NodeRepresentation;
 import plugins.script.ScriptEditorPanel.ScriptHolder;
 import plugins.script.ScriptEditorPanel.ScriptModel;
 import plugins.script.ScriptingEngine.ErrorHandler;
@@ -27,7 +28,6 @@ import freemind.main.HtmlTools;
 import freemind.main.Tools;
 import freemind.main.Tools.BooleanHolder;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.ApplyPatternAction.ExternalPatternAction;
@@ -174,7 +174,7 @@ public class ScriptingRegistration implements HookRegistration,
 		OptionPanel.removeContributor(mScriptingPluginPropertyContributor);
 	}
 
-	public void act(MindMapNode node, Pattern pattern) {
+	public void act(NodeRepresentation node, Pattern pattern) {
 		if (pattern.getPatternScript() != null
 				&& pattern.getPatternScript().getValue() != null) {
 			String scriptString = HtmlTools.toXMLUnescapedText(HtmlTools.unescapeHTMLUnicodeEntity(pattern
@@ -184,7 +184,7 @@ public class ScriptingRegistration implements HookRegistration,
 		}
 	}
 
-	private void executeScript(MindMapNode node, String scriptString) {
+	private void executeScript(NodeRepresentation node, String scriptString) {
 		ScriptingEngine.executeScript(node, new BooleanHolder(false),
 				scriptString, controller, new ErrorHandler() {
 					public void gotoLine(int pLineNumber) {

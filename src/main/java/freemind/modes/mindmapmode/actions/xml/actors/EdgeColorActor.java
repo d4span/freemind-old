@@ -27,7 +27,7 @@ import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.main.Tools;
 import freemind.modes.EdgeAdapter;
 import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapEdgeModel;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
@@ -44,7 +44,7 @@ public class EdgeColorActor extends XmlActorAdapter {
 		super(pMapFeedback);
 	}
 
-	public void setEdgeColor(MindMapNode node, Color color) {
+	public void setEdgeColor(NodeRepresentation node, Color color) {
 		EdgeColorFormatAction doAction = createEdgeColorFormatAction(node,
 				color);
 		EdgeColorFormatAction undoAction = createEdgeColorFormatAction(node,
@@ -64,7 +64,7 @@ public class EdgeColorActor extends XmlActorAdapter {
 		if (action instanceof EdgeColorFormatAction) {
 			EdgeColorFormatAction edgeAction = (EdgeColorFormatAction) action;
 			Color color = Tools.xmlToColor(edgeAction.getColor());
-			MindMapNode node = getNodeFromID(edgeAction.getNode());
+			NodeRepresentation node = getNodeFromID(edgeAction.getNode());
 			Color oldColor = ((EdgeAdapter) node.getEdge()).getRealColor();
 			if (!Tools.safeEquals(color, oldColor)) {
 				((MindMapEdgeModel) node.getEdge()).setColor(color);
@@ -73,8 +73,8 @@ public class EdgeColorActor extends XmlActorAdapter {
 		}
 	}
 
-	public EdgeColorFormatAction createEdgeColorFormatAction(MindMapNode node,
-			Color color) {
+	public EdgeColorFormatAction createEdgeColorFormatAction(NodeRepresentation node,
+                                                             Color color) {
 		EdgeColorFormatAction edgeAction = new EdgeColorFormatAction();
 		edgeAction.setNode(getNodeID(node));
 		if (color != null) {

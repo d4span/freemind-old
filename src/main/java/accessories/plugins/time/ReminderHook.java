@@ -22,7 +22,7 @@
 
 package accessories.plugins.time;
 
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.common.plugins.ReminderHookBase;
 import freemind.modes.mindmapmode.MindMapController;
 
@@ -32,7 +32,7 @@ public class ReminderHook extends ReminderHookBase {
 		super();
 	}
 
-	protected void nodeRefresh(MindMapNode node) {
+	protected void nodeRefresh(NodeRepresentation node) {
 		getMindMapController().nodeRefresh(node);
 	}
 
@@ -40,7 +40,7 @@ public class ReminderHook extends ReminderHookBase {
 		return (MindMapController) getController();
 	}
 
-	protected void setToolTip(MindMapNode node, String key, String value) {
+	protected void setToolTip(NodeRepresentation node, String key, String value) {
 		getMindMapController().setToolTip(node, key, value);
 	}
 

@@ -47,7 +47,7 @@ public interface ViewAbstraction {
 	 */
 	void deselect(NodeView node);
 
-	NodeView getNodeView(MindMapNode node);
+	NodeView getNodeView(NodeRepresentation node);
 
 	boolean isSelected(NodeView n);
 
@@ -59,6 +59,6 @@ public interface ViewAbstraction {
 	 * @return an ArrayList of MindMapNode objects. If both ancestor and
 	 *         descendant node are selected, only the ancestor is returned
 	 */
-	ArrayList<MindMapNode> getSelectedNodesSortedByY();
+	ArrayList<NodeRepresentation> getSelectedNodesSortedByY();
 
 }

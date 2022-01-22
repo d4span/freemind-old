@@ -27,7 +27,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import freemind.controller.actions.generated.instance.PasteNodeAction;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 
 @SuppressWarnings("serial")
@@ -52,7 +52,7 @@ public class PasteAction extends AbstractAction {
 	public void actionPerformed(ActionEvent e) {
 		Transferable clipboardContents = this.mMindMapController
 				.getClipboardContents();
-		MindMapNode selectedNode = this.mMindMapController.getSelected();
+		NodeRepresentation selectedNode = this.mMindMapController.getSelected();
 		this.mMindMapController.paste(clipboardContents, selectedNode);
 	}
 

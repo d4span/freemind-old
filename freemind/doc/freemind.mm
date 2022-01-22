@@ -1558,7 +1558,7 @@
     </p>
     <ul>
       <li>
-        node is the current node. It is a freemind.modes.MindMapNode. This node can be used to retrieve information about the contents, its children or its formatting. <i>Don't use the setter to change the node. Use the following instead:</i>
+        node is the current node. It is a freemind.modes.NodeRepresentation. This node can be used to retrieve information about the contents, its children or its formatting. <i>Don't use the setter to change the node. Use the following instead:</i>
       </li>
       <li>
         c is the current controller. It is a freemind.modes.mindmapmode.MindMapController. This controller <b>should</b>&#xa0; &#xa0;&#xa0;&#xa0;be used to change information. For example, if you want to change the nodes text or if you want to add children. The methods that can be used are sumarized in freemind.modes.mindmapmode.actions.MindMapActions.
@@ -1672,7 +1672,7 @@ calcWork(c.getRootNode());</pre>
 &#x9;&#x9;/** 
          * Sent, if a node is changed
          * */
-        void onUpdateNodeHook(freemind.modes.MindMapNode node){&#x9;&#x9;
+        void onUpdateNodeHook(freemind.modes.NodeRepresentation node){&#x9;&#x9;
 &#x9;&#x9;&#x9;calcWork(c.getRootNode());
 &#x9;&#x9;};
 
@@ -1687,7 +1687,7 @@ calcWork(c.getRootNode());</pre>
 &#x9;&#x9;/**
 &#x9;&#x9; * Is issued before a node is saved (eg. to save its notes, too, even if the notes is currently edited).
 &#x9;&#x9; */
-&#x9;&#x9;void onSaveNode(freemind.modes.MindMapNode node){};
+&#x9;&#x9;void onSaveNode(freemind.modes.NodeRepresentation node){};
 
 def calcWork(child) {
 &#x9;def sum = 0;
@@ -1723,7 +1723,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 &#x9;class IconComparator implements java.util.Comparator {
 &#x9;&#x9;&#x9;int compare(java.lang.Object pArg0, java.lang.Object pArg1) {
@@ -1783,7 +1783,7 @@ import freemind.modes.MindMapNode;
 &#x9;&#x9;/** 
          * Sent, if a node is changed
          * */
-        void onUpdateNodeHook(freemind.modes.MindMapNode node){&#x9;&#x9;
+        void onUpdateNodeHook(freemind.modes.NodeRepresentation node){&#x9;&#x9;
 &#x9;&#x9;};
 
         /** Is sent when a node is selected.
@@ -1810,7 +1810,7 @@ import freemind.modes.MindMapNode;
 &#x9;&#x9;/**
 &#x9;&#x9; * Is issued before a node is saved (eg. to save its notes, too, even if the notes is currently edited).
 &#x9;&#x9; */
-&#x9;&#x9;void onSaveNode(freemind.modes.MindMapNode node){};
+&#x9;&#x9;void onSaveNode(freemind.modes.NodeRepresentation node){};
 def foldEverybody(child, exception) {
 &#x9;&#x9;if(child == null || child.isRoot())
 &#x9;&#x9;&#x9;return;

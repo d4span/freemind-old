@@ -27,9 +27,9 @@ package freemind.modes;
  * @author Dimitri Polivaev 31.10.2005
  */
 public class NodeViewEvent {
-	MindMapNode node;
+	NodeRepresentation node;
 
-	public NodeViewEvent(MindMapNode node) {
+	public NodeViewEvent(NodeRepresentation node) {
 		super();
 		this.node = node;
 	}

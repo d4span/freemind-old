@@ -48,7 +48,7 @@ import freemind.controller.filter.condition.NoFilteringCondition;
 import freemind.controller.filter.condition.SelectedViewCondition;
 import freemind.main.Resources;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 @SuppressWarnings("serial")
 class FilterToolbar extends FreeMindToolBar {
@@ -157,9 +157,9 @@ class FilterToolbar extends FreeMindToolBar {
 					"images/unfold.png")));
 		}
 
-		private void unfoldAncestors(MindMapNode parent) {
-			for (Iterator<MindMapNode> i = parent.childrenUnfolded(); i.hasNext();) {
-				MindMapNode node = i.next();
+		private void unfoldAncestors(NodeRepresentation parent) {
+			for (Iterator<NodeRepresentation> i = parent.childrenUnfolded(); i.hasNext();) {
+				NodeRepresentation node = i.next();
 				if (showDescendants.isSelected()
 						|| node.getFilterInfo().isAncestor()) {
 					setFolded(node, false);
@@ -168,7 +168,7 @@ class FilterToolbar extends FreeMindToolBar {
 			}
 		}
 
-		private void setFolded(MindMapNode node, boolean state) {
+		private void setFolded(NodeRepresentation node, boolean state) {
 			if (node.hasChildren() && (node.isFolded() != state)) {
 				c.getModeController().setFolded(node, state);
 			}

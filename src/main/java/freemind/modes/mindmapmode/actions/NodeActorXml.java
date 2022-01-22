@@ -26,7 +26,7 @@
 package freemind.modes.mindmapmode.actions;
 
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 import freemind.modes.mindmapmode.actions.xml.ActorXml;
 
@@ -40,6 +40,6 @@ public interface NodeActorXml extends ActorXml {
 	 * @param model
 	 * @param selected
 	 */
-	ActionPair apply(MindMap model, MindMapNode selected);
+	ActionPair apply(MindMap model, NodeRepresentation selected);
 
 }

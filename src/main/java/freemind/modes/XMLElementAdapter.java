@@ -517,7 +517,7 @@ public class XMLElementAdapter extends XMLElement {
 				ArrowLinkTarget linkTarget = (ArrowLinkTarget) arrowObject;
 				// do the same as for ArrowLinkAdapter and start to search for the source.
 				String oldId = linkTarget.getSourceLabel();
-				MindMapNode source = (MindMapNode) registry.getTargetForId(oldId);
+				NodeRepresentation source = (NodeRepresentation) registry.getTargetForId(oldId);
 				// find oldId in target list:
 				if (mIdToTarget.containsKey(oldId)) {
 					// link source present in the paste as well and has probably
@@ -538,7 +538,7 @@ public class XMLElementAdapter extends XMLElement {
 				// has to be recreated.
 				// case IIIb: the arrowLink has to be doubled! First,
 				// distinguish between a and b.
-				MindMapNode target = linkTarget.getTarget();
+				NodeRepresentation target = linkTarget.getTarget();
 				String targetCurrentId = registry.getLabel(target);
 				if (!mIdToTarget.containsKey(targetCurrentId)) {
 					// the id of target has changed, we have case IIIb.

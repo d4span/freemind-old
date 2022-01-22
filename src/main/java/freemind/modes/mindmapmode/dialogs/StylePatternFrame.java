@@ -70,7 +70,7 @@ import freemind.main.FreeMind;
 import freemind.main.Tools;
 import freemind.modes.EdgeAdapter;
 import freemind.modes.MindIcon;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.ApplyPatternAction;
 import freemind.modes.mindmapmode.actions.IconAction;
@@ -344,7 +344,7 @@ public class StylePatternFrame extends JPanel implements TextTranslator,
 				SET_NODE_STYLE);
 		controls.add(mSetNodeStyle);
 		mNodeStyle = new ComboProperty(NODE_STYLE + ".tooltip", NODE_STYLE,
-				MindMapNode.NODE_STYLES, this);
+				NodeRepresentation.NODE_STYLES, this);
 		controls.add(mNodeStyle);
 		mIconInformationVector = new Vector<>();
 		MindMapController controller = mMindMapController;
@@ -474,7 +474,7 @@ public class StylePatternFrame extends JPanel implements TextTranslator,
 				mSetNodeBackgroundColor, mNodeBackgroundColor,
 				fmMain.getDefaultProperty(FreeMind.RESOURCES_BACKGROUND_COLOR));
 		setPatternControls(pattern.getPatternNodeStyle(), mSetNodeStyle,
-				mNodeStyle, MindMapNode.STYLE_AS_PARENT);
+				mNodeStyle, NodeRepresentation.STYLE_AS_PARENT);
 		setPatternControls(pattern.getPatternNodeText(), mSetNodeText,
 				mNodeText, "");
 		setPatternControls(pattern.getPatternEdgeColor(), mSetEdgeColor,

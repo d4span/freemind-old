@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Vector;
 
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 
 /**
@@ -52,13 +52,13 @@ public class ChangeNodeLevelAction extends MindMapNodeHookAdapter {
 	 * @see freemind.extensions.NodeHook#invoke(freemind.modes.MindMapNode,
 	 * java.util.List)
 	 */
-	public void invoke(MindMapNode rootNode) {
+	public void invoke(NodeRepresentation rootNode) {
 		// we dont need node.
-		MindMapNode selectedNode;
-		List<MindMapNode> selectedNodes;
+		NodeRepresentation selectedNode;
+		List<NodeRepresentation> selectedNodes;
 		{
-			MindMapNode focussed = getMindMapController().getSelected();
-			List<MindMapNode> selecteds = getMindMapController().getSelecteds();
+			NodeRepresentation focussed = getMindMapController().getSelected();
+			List<NodeRepresentation> selecteds = getMindMapController().getSelecteds();
 			selectedNode = focussed;
 			selectedNodes = selecteds;
 		}
@@ -78,8 +78,8 @@ public class ChangeNodeLevelAction extends MindMapNodeHookAdapter {
 		// (this restriction is to simplify the action, and could
 		// possibly be removed in the future, when we have undo)
 		// Also make sure that none of the selected nodes are the root node
-		MindMapNode selectedParent = selectedNode.getParentNode();
-		for (MindMapNode node : selectedNodes) {
+		NodeRepresentation selectedParent = selectedNode.getParentNode();
+		for (NodeRepresentation node : selectedNodes) {
 			if (node.getParentNode() != selectedParent) {
 				getMindMapController().getController().errorMessage(
 						getResourceString("cannot_add_parent_diff_parents"));
@@ -98,7 +98,7 @@ public class ChangeNodeLevelAction extends MindMapNodeHookAdapter {
 		// are not stored persistently.
 		getMap().getLinkRegistry().registerLocalHyperlinkId(selectedNodeId);
 		Vector<String> selectedNodesId = new Vector<>();
-		for (MindMapNode node : selectedNodes) {
+		for (NodeRepresentation node : selectedNodes) {
 			String nodeId = node.getObjectId(getController());
 			// WORKAROUND: Make target of local hyperlinks for the case, that
 			// ids are not stored persistently.
@@ -117,7 +117,7 @@ public class ChangeNodeLevelAction extends MindMapNodeHookAdapter {
 				return;
 			}
 			// determine child pos of parent
-			MindMapNode grandParent = selectedParent.getParentNode();
+			NodeRepresentation grandParent = selectedParent.getParentNode();
 			int parentPosition = grandParent.getChildPosition(selectedParent);
 			boolean isLeft = selectedParent.isLeft();
 			Transferable copy = getMindMapController().cut(selectedNodes);
@@ -126,7 +126,7 @@ public class ChangeNodeLevelAction extends MindMapNodeHookAdapter {
 			} else {
 				getMindMapController().paste(
 						copy,
-						(MindMapNode) grandParent
+						(NodeRepresentation) grandParent
 								.getChildAt(parentPosition + 1), true, isLeft);
 			}
 			select(selectedNodeId, selectedNodesId);
@@ -134,9 +134,9 @@ public class ChangeNodeLevelAction extends MindMapNodeHookAdapter {
 		} else {
 			int ownPosition = selectedParent.getChildPosition(selectedNode);
 			// find node above the own nodes:
-			MindMapNode directSibling = null;
+			NodeRepresentation directSibling = null;
 			for (int i = ownPosition - 1; i >= 0; --i) {
-				MindMapNode sibling = (MindMapNode) selectedParent
+				NodeRepresentation sibling = (NodeRepresentation) selectedParent
 						.getChildAt(i);
 				if ((!selectedNodes.contains(sibling))
 						&& selectedNode.isLeft() == sibling.isLeft()) {
@@ -148,7 +148,7 @@ public class ChangeNodeLevelAction extends MindMapNodeHookAdapter {
 				// start searching for a sibling after the selected block:
 				for (int i = ownPosition + 1; i < selectedParent
 						.getChildCount(); ++i) {
-					MindMapNode sibling = (MindMapNode) selectedParent
+					NodeRepresentation sibling = (NodeRepresentation) selectedParent
 							.getChildAt(i);
 					if ((!selectedNodes.contains(sibling))
 							&& selectedNode.isLeft() == sibling.isLeft()) {
@@ -170,9 +170,9 @@ public class ChangeNodeLevelAction extends MindMapNodeHookAdapter {
 
 	private void select(String selectedNodeId, List<String> selectedNodesIds) {
 		// get new nodes by object id:
-		MindMapNode newInstanceOfSelectedNode = getMindMapController()
+		NodeRepresentation newInstanceOfSelectedNode = getMindMapController()
 				.getNodeFromID(selectedNodeId);
-		List<MindMapNode> newSelecteds = new LinkedList<>();
+		List<NodeRepresentation> newSelecteds = new LinkedList<>();
 		for (String nodeId : selectedNodesIds) {
 			newSelecteds.add(getMindMapController().getNodeFromID(nodeId));
 		}

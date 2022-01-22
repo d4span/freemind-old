@@ -28,7 +28,7 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 
 import freemind.controller.Controller;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 
 @SuppressWarnings("serial")
@@ -48,7 +48,7 @@ public class NodeColorAction extends MindmapAction {
 		if (color == null) {
 			return;
 		}
-		for (MindMapNode selected : controller.getSelecteds()) {
+		for (NodeRepresentation selected : controller.getSelecteds()) {
 
 			controller.setNodeColor(selected, color);
 		}

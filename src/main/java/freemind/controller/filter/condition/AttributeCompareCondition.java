@@ -26,7 +26,7 @@ package freemind.controller.filter.condition;
 import freemind.controller.Controller;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.attributes.Attribute;
 
 /**
@@ -58,7 +58,7 @@ public class AttributeCompareCondition extends CompareConditionAdapter {
 	 * freemind.controller.filter.condition.Condition#checkNode(freemind.modes
 	 * .MindMapNode)
 	 */
-	public boolean checkNode(Controller c, MindMapNode node) {
+	public boolean checkNode(Controller c, NodeRepresentation node) {
 		for (int i = 0; i < node.getAttributeTableLength(); i++) {
 			try {
 				Attribute attribute2 = node.getAttribute(i);

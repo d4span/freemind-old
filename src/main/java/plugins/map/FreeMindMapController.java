@@ -74,6 +74,7 @@ import javax.swing.Timer;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import freemind.modes.NodeRepresentation;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapController;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
@@ -94,7 +95,6 @@ import freemind.controller.actions.generated.instance.Searchresults;
 import freemind.extensions.ExportHook;
 import freemind.main.Resources;
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
 import freemind.modes.common.plugins.MapNodePositionHolderBase;
 import freemind.modes.mindmapmode.MindMapController;
@@ -310,13 +310,13 @@ public class FreeMindMapController extends JMapController implements
 	private final class MapEditTextFieldControl implements
 			EditNodeBase.EditControl {
 		private final NodeView mNodeView;
-		private final MindMapNode mNewNode;
-		private final MindMapNode mTargetNode;
+		private final NodeRepresentation mNewNode;
+		private final NodeRepresentation mTargetNode;
 		private boolean mIsEditOfExistingNode;
 
 		private MapEditTextFieldControl(NodeView pNodeView,
-				MindMapNode pNewNode, MindMapNode pTargetNode,
-				boolean pIsEditOfExistingNode) {
+                                        NodeRepresentation pNewNode, NodeRepresentation pTargetNode,
+                                        boolean pIsEditOfExistingNode) {
 			mNodeView = pNodeView;
 			mNewNode = pNewNode;
 			mTargetNode = pTargetNode;
@@ -966,7 +966,7 @@ public class FreeMindMapController extends JMapController implements
 			Point pos = getMap().getMapPosition(
 					mCurrentPopupPositionHolder.getPosition(), true);
 			// unfold node (and its parents):
-			MindMapNode node = mCurrentPopupPositionHolder.getNode();
+			NodeRepresentation node = mCurrentPopupPositionHolder.getNode();
 			while (!node.isRoot()) {
 				if (node.isFolded()) {
 					mMindMapController.setFolded(node, false);
@@ -1132,7 +1132,7 @@ public class FreeMindMapController extends JMapController implements
 
 		public void actionPerformed(ActionEvent pE) {
 			if (mCurrentPopupPositionHolder != null) {
-				MindMapNode node = mCurrentPopupPositionHolder.getNode();
+				NodeRepresentation node = mCurrentPopupPositionHolder.getNode();
 				removeNodePosition(node);
 			}
 		}
@@ -1191,8 +1191,8 @@ public class FreeMindMapController extends JMapController implements
 
 	public static void addPictureToNode(MapNodePositionHolder positionHolder,
 			MindMapController mindMapController) {
-		MindMapNode selected = positionHolder.getNode();
-		MindMapNode addNewNode = mindMapController.addNewNode(selected, 0,
+		NodeRepresentation selected = positionHolder.getNode();
+		NodeRepresentation addNewNode = mindMapController.addNewNode(selected, 0,
 				selected.isLeft());
 		mindMapController
 				.setNodeText(addNewNode, positionHolder.getImageHtml());
@@ -1367,15 +1367,15 @@ public class FreeMindMapController extends JMapController implements
 	 * @param pSelected
 	 * @return
 	 */
-	protected MapNodePositionHolderBase placeNode(MindMapNode pSelected) {
+	protected MapNodePositionHolderBase placeNode(NodeRepresentation pSelected) {
 		Coordinate cursorPosition = getMap().getCursorPosition();
 		Coordinate position = map.getPosition();
 		int zoom = map.getZoom();
 		return placeNodeAt(pSelected, cursorPosition, position, zoom);
 	}
 
-	protected MapNodePositionHolderBase placeNodeAt(MindMapNode pSelected,
-			Coordinate cursorPosition, Coordinate position, int zoom) {
+	protected MapNodePositionHolderBase placeNodeAt(NodeRepresentation pSelected,
+                                                    Coordinate cursorPosition, Coordinate position, int zoom) {
 		MapNodePositionHolder hook = MapNodePositionHolder.getHook(pSelected);
 		if (hook == null) {
 			hook = addHookToNode(pSelected);
@@ -1400,7 +1400,7 @@ public class FreeMindMapController extends JMapController implements
 		return getMap().getTileController().getTileSource();
 	}
 
-	public void removeNodePosition(MindMapNode selected) {
+	public void removeNodePosition(NodeRepresentation selected) {
 		MapNodePositionHolderBase hook = MapNodePositionHolder
 				.getHook(selected);
 		if (hook != null) {
@@ -1412,8 +1412,8 @@ public class FreeMindMapController extends JMapController implements
 	/**
 	 */
 	public void showSelectedNodes() {
-		MindMapNode selected = mMindMapController.getSelected();
-		List<MindMapNode> selecteds = mMindMapController.getSelecteds();
+		NodeRepresentation selected = mMindMapController.getSelected();
+		List<NodeRepresentation> selecteds = mMindMapController.getSelecteds();
 		if (selecteds.size() == 1) {
 			MapNodePositionHolder hook = MapNodePositionHolder
 					.getHook(selected);
@@ -1428,7 +1428,7 @@ public class FreeMindMapController extends JMapController implements
 		int x_max = Integer.MIN_VALUE;
 		int y_max = Integer.MIN_VALUE;
 		int mapZoomMax = getMaxZoom();
-		for (MindMapNode node : selecteds) {
+		for (NodeRepresentation node : selecteds) {
 			MapNodePositionHolder hook = MapNodePositionHolder.getHook(node);
 
 			if (hook != null) {
@@ -1558,9 +1558,9 @@ public class FreeMindMapController extends JMapController implements
 		return source.getClass().getName();
 	}
 
-	public MapNodePositionHolder addHookToNode(MindMapNode selected) {
+	public MapNodePositionHolder addHookToNode(NodeRepresentation selected) {
 		MapNodePositionHolder hook;
-		List<MindMapNode> selecteds = Tools.getVectorWithSingleElement(selected);
+		List<NodeRepresentation> selecteds = Tools.getVectorWithSingleElement(selected);
 		mMindMapController.addHook(selected, selecteds,
 				MapNodePositionHolderBase.NODE_MAP_HOOK_NAME, null);
 		hook = MapNodePositionHolder.getHook(selected);
@@ -1653,8 +1653,8 @@ public class FreeMindMapController extends JMapController implements
 	 *            : location
 	 */
 	private void newNode(MouseEvent pEvent) {
-		final MindMapNode targetNode = mMindMapController.getSelected();
-		final MindMapNode newNode = insertNewNode(targetNode);
+		final NodeRepresentation targetNode = mMindMapController.getSelected();
+		final NodeRepresentation newNode = insertNewNode(targetNode);
 		final NodeView nodeView = mMindMapController.getNodeView(newNode);
 		mMindMapController.select(nodeView);
 		// inline editing:
@@ -1670,9 +1670,9 @@ public class FreeMindMapController extends JMapController implements
 		textfield.show();
 	}
 
-	public MindMapNode insertNewNode(final MindMapNode targetNode) {
+	public NodeRepresentation insertNewNode(final NodeRepresentation targetNode) {
 		int childPosition;
-		MindMapNode parent;
+		NodeRepresentation parent;
 		if (targetNode.isRoot()) {
 			parent = targetNode;
 			childPosition = 0;
@@ -1682,7 +1682,7 @@ public class FreeMindMapController extends JMapController implements
 			childPosition = parent.getChildPosition(targetNode);
 			childPosition++;
 		}
-		final MindMapNode newNode = mMindMapController.addNewNode(parent,
+		final NodeRepresentation newNode = mMindMapController.addNewNode(parent,
 				childPosition, targetNode.isLeft());
 		return newNode;
 	}
@@ -1694,7 +1694,7 @@ public class FreeMindMapController extends JMapController implements
 	 */
 	private void editNode(MapNodePositionHolder pPositionHolder,
 			MouseEvent pEvent) {
-		final MindMapNode editNode = pPositionHolder.getNode();
+		final NodeRepresentation editNode = pPositionHolder.getNode();
 		final NodeView nodeView = mMindMapController.getNodeView(editNode);
 		if (nodeView == null) {
 			return;
@@ -1888,9 +1888,9 @@ public class FreeMindMapController extends JMapController implements
 							getTileSourceAsString());
 				} else {
 					// select the node (single click)
-					MindMapNode node = mMapNodeMovingSource.getNode();
+					NodeRepresentation node = mMapNodeMovingSource.getNode();
 					if (e.isShiftDown()) {
-						Vector<MindMapNode> sel = new Vector<>(mMindMapController.getSelecteds());
+						Vector<NodeRepresentation> sel = new Vector<>(mMindMapController.getSelecteds());
 						if (sel.contains(node)) {
 							// remove:
 							sel.remove(node);
@@ -1908,12 +1908,12 @@ public class FreeMindMapController extends JMapController implements
 			}
 			if (mIsRectangularSelect) {
 				// gather all locations and select them:
-				Vector<MindMapNode> mapNodePositionHolders = new Vector<>();
+				Vector<NodeRepresentation> mapNodePositionHolders = new Vector<>();
 				// take only those elements in the correct rectangle:
 				Rectangle r = getMap().getRectangle(mRectangularStart,
 						coordinates);
 				if (r != null) {
-					MindMapNode last = null;
+					NodeRepresentation last = null;
 					for (MapNodePositionHolder holder : mMapHook.getMapNodePositionHolders()) {
 						Coordinate pointPosition = holder.getPosition();
 						Point mapPosition = getMap().getMapPosition(
@@ -2519,11 +2519,11 @@ public class FreeMindMapController extends JMapController implements
 	}
 
 	protected void selectContextMenuNode() {
-		MindMapNode node = mCurrentPopupPositionHolder.getNode();
+		NodeRepresentation node = mCurrentPopupPositionHolder.getNode();
 		selectNode(node);
 	}
 
-	protected void selectNode(MindMapNode node) {
+	protected void selectNode(NodeRepresentation node) {
 		mMindMapController.select(node, Tools.getVectorWithSingleElement(node));
 	}
 
@@ -2646,15 +2646,15 @@ public class FreeMindMapController extends JMapController implements
 	 * @param pSelected
 	 * @param pPlace
 	 */
-	public void addNode(MindMapNode pSelected, Place pPlace) {
+	public void addNode(NodeRepresentation pSelected, Place pPlace) {
 		addNode(pSelected, pPlace.getDisplayName(), pPlace.getLat(),
 				pPlace.getLon());
 	}
 
-	public void addNode(MindMapNode pSelected, String pText, double lat,
-			double lon) {
-		final MindMapNode targetNode = pSelected;
-		final MindMapNode newNode = insertNewNode(targetNode);
+	public void addNode(NodeRepresentation pSelected, String pText, double lat,
+                        double lon) {
+		final NodeRepresentation targetNode = pSelected;
+		final NodeRepresentation newNode = insertNewNode(targetNode);
 		mMindMapController.setNodeText(newNode, pText);
 		placeNodeAt(newNode, new Coordinate(lat, lon), map.getPosition(),
 				map.getZoom());
@@ -2684,7 +2684,7 @@ public class FreeMindMapController extends JMapController implements
 			mProgressDescription = new ProgressDescription(
 					MAP_DIALOG_ADD_PLACES,
 					new Object[] { place.getDisplayName() });
-			final MindMapNode selected = getMindMapController().getSelected();
+			final NodeRepresentation selected = getMindMapController().getSelected();
 			EventQueue.invokeAndWait(new Runnable() {
 				public void run() {
 					addNode(selected, place);

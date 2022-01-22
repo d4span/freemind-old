@@ -33,7 +33,7 @@ import freemind.controller.actions.generated.instance.AddIconAction;
 import freemind.main.Tools;
 import freemind.modes.IconInformation;
 import freemind.modes.MindIcon;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.xml.actors.AddIconActor;
 
@@ -77,19 +77,19 @@ public class IconAction extends MindmapAction implements IconInformation {
 	}
 
 	private void addLastIcon() {
-		for (MindMapNode selected : modeController.getSelecteds()) {
+		for (NodeRepresentation selected : modeController.getSelecteds()) {
 			getAddIconActor().addIcon(selected, icon);
 		}
 	}
 
 	private void removeIcon(boolean removeFirst) {
-		for (MindMapNode selected : modeController.getSelecteds()) {
+		for (NodeRepresentation selected : modeController.getSelecteds()) {
 			getAddIconActor().removeIcon(selected, icon, removeFirst);
 		}
 	}
 
 	private void removeAllIcons() {
-		for (MindMapNode selected : modeController.getSelecteds()) {
+		for (NodeRepresentation selected : modeController.getSelecteds()) {
 			if (selected.getIcons().size() > 0) {
 				modeController.removeAllIcons(selected);
 			}
@@ -99,8 +99,8 @@ public class IconAction extends MindmapAction implements IconInformation {
 	
 
 
-	protected AddIconAction createAddIconAction(MindMapNode node,
-			MindIcon icon, int iconIndex) {
+	protected AddIconAction createAddIconAction(NodeRepresentation node,
+                                                MindIcon icon, int iconIndex) {
 		return getAddIconActor().createAddIconAction(node, icon, iconIndex);
 	}
 

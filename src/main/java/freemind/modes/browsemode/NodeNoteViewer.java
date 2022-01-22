@@ -29,7 +29,7 @@ import javax.swing.JScrollPane;
 
 import freemind.controller.Controller.SplitComponentType;
 import freemind.modes.ControllerAdapter;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController.NodeSelectionListener;
 import freemind.modes.common.plugins.NodeNoteBase;
 import freemind.view.mindmapview.NodeView;
@@ -78,15 +78,15 @@ public class NodeNoteViewer extends NodeNoteBase implements
 		}
 	}
 
-	public void onSaveNode(MindMapNode pNode) {
+	public void onSaveNode(NodeRepresentation pNode) {
 	}
 
-	public void onUpdateNodeHook(MindMapNode pNode) {
+	public void onUpdateNodeHook(NodeRepresentation pNode) {
 		setStateIcon(pNode, true);
 	}
 
 	/** Copied from NodeNoteRegistration. */
-	protected void setStateIcon(MindMapNode node, boolean enabled) {
+	protected void setStateIcon(NodeRepresentation node, boolean enabled) {
 		// icon
 		if (noteIcon == null) {
 			noteIcon = freemind.view.ImageFactory.getInstance().createUnscaledIcon(

@@ -27,7 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.hooks.PermanentMindMapNodeHookAdapter;
 import freemind.view.mindmapview.NodeView;
 
@@ -76,7 +76,7 @@ public class LatexNodeHook extends PermanentMindMapNodeHookAdapter {
 
 	}
 
-	public void invoke(MindMapNode node) {
+	public void invoke(NodeRepresentation node) {
 		for(NodeView view : getMindMapController().getView().getViewers(node)) {
 			createViewer(view);
 		}

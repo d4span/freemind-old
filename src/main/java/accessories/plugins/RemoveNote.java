@@ -32,7 +32,7 @@ import freemind.controller.MenuItemEnabledListener;
 import freemind.extensions.HookRegistration;
 import freemind.main.FreeMind;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
@@ -46,7 +46,7 @@ public class RemoveNote extends MindMapNodeHookAdapter {
 		super();
 	}
 
-	public void invoke(MindMapNode rootNode) {
+	public void invoke(NodeRepresentation rootNode) {
 		super.invoke(rootNode);
 		int showResult = new OptionalDontShowMeAgainDialog(
 				getMindMapController().getFrame().getJFrame(),
@@ -61,14 +61,14 @@ public class RemoveNote extends MindMapNodeHookAdapter {
 			return;
 		}
 
-		for (MindMapNode node : getMindMapController().getSelecteds()) {
+		for (NodeRepresentation node : getMindMapController().getSelecteds()) {
 			if (node.getNoteText() != null) {
 				removeNote(node);
 			}
 		}
 	}
 
-	private void removeNote(MindMapNode node) {
+	private void removeNote(NodeRepresentation node) {
 		if (getMindMapController().getSelected() == node) {
 			NodeNoteRegistration.getHtmlEditorPanel()
 					.setCurrentDocumentContent("");
@@ -92,7 +92,7 @@ public class RemoveNote extends MindMapNodeHookAdapter {
 			if (controller == null)
 				return false;
 			boolean foundNote = false;
-			for (MindMapNode node : controller.getSelecteds()) {
+			for (NodeRepresentation node : controller.getSelecteds()) {
 				if (node.getNoteText() != null) {
 					foundNote = true;
 					break;

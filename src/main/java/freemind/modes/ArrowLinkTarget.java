@@ -39,8 +39,8 @@ public class ArrowLinkTarget extends ArrowLinkAdapter {
 	 * @param pTarget I am the target!
 	 * @param pMapFeedback
 	 */
-	public ArrowLinkTarget(MindMapNode pSource, MindMapNode pTarget,
-			MapFeedback pMapFeedback) {
+	public ArrowLinkTarget(NodeRepresentation pSource, NodeRepresentation pTarget,
+                           MapFeedback pMapFeedback) {
 		super(pSource, pTarget, pMapFeedback);
 	}
 

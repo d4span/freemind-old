@@ -26,6 +26,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.StringReader;
 
+import freemind.modes.NodeRepresentation;
 import tests.freemind.findreplace.TestMindMapNode;
 
 import com.lightdev.app.shtm.SHTMLPanel;
@@ -36,7 +37,6 @@ import freemind.main.Tools;
 import freemind.main.Tools.IntHolder;
 import freemind.main.XMLElement;
 import freemind.modes.ExtendedMapFeedbackImpl;
-import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapMapModel;
 import freemind.modes.mindmapmode.MindMapNodeModel;
 import freemind.modes.mindmapmode.actions.xml.actors.PasteActor;
@@ -551,12 +551,12 @@ public class HtmlConversionTests extends FreeMindTestBase {
 //			}}).traverse(Jsoup.parse(testHtml2));
 
 		
-		MindMapNode rootNode = new TestMindMapNode();
+		NodeRepresentation rootNode = new TestMindMapNode();
 		rootNode.setText("myRoot");
 		NodeCreator creator = new NodeCreator() {
 
 			@Override
-			public MindMapNode createChild(MindMapNode pParent) {
+			public NodeRepresentation createChild(NodeRepresentation pParent) {
 				created.increase();
 				System.out.println("Create new node as child of: " + pParent.getText());
 				TestMindMapNode newNode = new TestMindMapNode();
@@ -566,13 +566,13 @@ public class HtmlConversionTests extends FreeMindTestBase {
 			}
 
 			@Override
-			public void setText(String pText, MindMapNode pNode) {
+			public void setText(String pText, NodeRepresentation pNode) {
 				System.out.println("Text: " + pText);
 				pNode.setText(pText);
 			}
 
 			@Override
-			public void setLink(String pLink, MindMapNode pNode) {
+			public void setLink(String pLink, NodeRepresentation pNode) {
 			}
 			
 		};

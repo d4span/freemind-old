@@ -24,7 +24,7 @@ import freemind.controller.actions.generated.instance.NodeStyleFormatAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
@@ -44,13 +44,13 @@ public class NodeStyleActor extends XmlActorAdapter {
 		return NodeStyleFormatAction.class;
 	}
 
-	public void setStyle(MindMapNode node, String style) {
+	public void setStyle(NodeRepresentation node, String style) {
 		if(style == null) {
 			execute(getActionPair(node, null));
 			return;
 		}
-		for (int i = 0; i < MindMapNode.NODE_STYLES.length; i++) {
-			String dstyle = MindMapNode.NODE_STYLES[i];
+		for (int i = 0; i < NodeRepresentation.NODE_STYLES.length; i++) {
+			String dstyle = NodeRepresentation.NODE_STYLES[i];
 			if(Tools.safeEquals(style, dstyle)) {
 				execute(getActionPair(node, style));
 				return;
@@ -59,7 +59,7 @@ public class NodeStyleActor extends XmlActorAdapter {
 		throw new IllegalArgumentException("Unknown style " + style);
 	}
 
-	public ActionPair getActionPair(MindMapNode targetNode, String style) {
+	public ActionPair getActionPair(NodeRepresentation targetNode, String style) {
 		NodeStyleFormatAction styleAction = createNodeStyleFormatAction(
 				targetNode, style);
 		NodeStyleFormatAction undoStyleAction = createNodeStyleFormatAction(
@@ -68,7 +68,7 @@ public class NodeStyleActor extends XmlActorAdapter {
 	}
 
 	private NodeStyleFormatAction createNodeStyleFormatAction(
-			MindMapNode selected, String style) {
+            NodeRepresentation selected, String style) {
 		NodeStyleFormatAction nodeStyleAction = new NodeStyleFormatAction();
 		nodeStyleAction.setNode(getNodeID(selected));
 		nodeStyleAction.setStyle(style);
@@ -78,7 +78,7 @@ public class NodeStyleActor extends XmlActorAdapter {
 	public void act(XmlAction action) {
 		if (action instanceof NodeStyleFormatAction) {
 			NodeStyleFormatAction nodeStyleAction = (NodeStyleFormatAction) action;
-			MindMapNode node = getNodeFromID(nodeStyleAction.getNode());
+			NodeRepresentation node = getNodeFromID(nodeStyleAction.getNode());
 			String style = nodeStyleAction.getStyle();
 			if (!Tools.safeEquals(node.hasStyle() ? node.getBareStyle() : null,
 					style)) {

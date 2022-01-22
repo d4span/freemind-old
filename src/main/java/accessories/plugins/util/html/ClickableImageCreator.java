@@ -28,7 +28,7 @@ import java.util.Vector;
 import javax.swing.JComponent;
 
 import freemind.main.HtmlTools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.view.mindmapview.MapView;
 import freemind.view.mindmapview.NodeView;
@@ -61,7 +61,7 @@ public class ClickableImageCreator {
 
 	Vector<AreaHolder> area = new Vector<>();
 
-	private final MindMapNode root;
+	private final NodeRepresentation root;
 
 	private final ModeController modeController;
 
@@ -76,8 +76,8 @@ public class ClickableImageCreator {
 	 *            if for example the link abc must be replaced with FMabcFM,
 	 *            then this string has to be FM$1FM.
 	 */
-	public ClickableImageCreator(MindMapNode root,
-			ModeController modeController, String linkFormatter) {
+	public ClickableImageCreator(NodeRepresentation root,
+                                 ModeController modeController, String linkFormatter) {
 		super();
 		this.root = root;
 		this.linkFormatter = linkFormatter;
@@ -119,7 +119,7 @@ public class ClickableImageCreator {
 
 	/**
      */
-	private void createArea(MindMapNode node) {
+	private void createArea(NodeRepresentation node) {
 		if (mapView == null) {
 			return;
 		}
@@ -137,8 +137,8 @@ public class ClickableImageCreator {
 			holder.coordinates.width = content.getWidth();
 			holder.coordinates.height = content.getHeight();
 			area.add(holder);
-			for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
-				MindMapNode child = i.next();
+			for (Iterator<NodeRepresentation> i = node.childrenUnfolded(); i.hasNext();) {
+				NodeRepresentation child = i.next();
 				createArea(child);
 			}
 		}

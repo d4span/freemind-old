@@ -29,7 +29,7 @@ import java.util.Iterator;
 import freemind.main.Tools;
 import freemind.modes.EdgeAdapter;
 import freemind.modes.MindMapEdge;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 @SuppressWarnings("serial")
 class ForkMainView extends MainView {
@@ -37,7 +37,7 @@ class ForkMainView extends MainView {
 		Graphics2D g = (Graphics2D) graphics;
 
 		final NodeView nodeView = getNodeView();
-		final MindMapNode model = nodeView.getModel();
+		final NodeRepresentation model = nodeView.getModel();
 		if (model == null)
 			return;
 
@@ -87,7 +87,7 @@ class ForkMainView extends MainView {
 	 * @see freemind.view.mindmapview.NodeView#getStyle()
 	 */
 	String getStyle() {
-		return MindMapNode.STYLE_FORK;
+		return NodeRepresentation.STYLE_FORK;
 	}
 
 	/**
@@ -104,7 +104,7 @@ class ForkMainView extends MainView {
 	}
 
 	protected int getEdgeWidth() {
-		MindMapNode nodeModel = getNodeView().getModel();
+		NodeRepresentation nodeModel = getNodeView().getModel();
 		MindMapEdge edge = nodeModel.getEdge();
 		int edgeWidth = edge.getWidth();
 		if (edgeWidth == 0) {
@@ -116,8 +116,8 @@ class ForkMainView extends MainView {
 		case EdgeAdapter.INT_EDGESTYLE_SHARP_LINEAR:
 			// here, we take the maximum of width of children:
 			edgeWidth = 1;
-			for (Iterator<MindMapNode> it = nodeModel.childrenUnfolded(); it.hasNext();) {
-				MindMapNode child = it.next();
+			for (Iterator<NodeRepresentation> it = nodeModel.childrenUnfolded(); it.hasNext();) {
+				NodeRepresentation child = it.next();
 				edgeWidth = Math.max(edgeWidth, child.getEdge().getWidth());
 			}
 		}

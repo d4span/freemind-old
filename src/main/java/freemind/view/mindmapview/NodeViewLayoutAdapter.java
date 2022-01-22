@@ -27,7 +27,7 @@ import java.awt.Point;
 import javax.swing.JComponent;
 
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 /**
  * @author foltin
@@ -39,7 +39,7 @@ abstract public class NodeViewLayoutAdapter implements NodeViewLayout {
 	protected Point location = new Point();
 	private static Dimension minDimension;
 	private NodeView view;
-	private MindMapNode model;
+	private NodeRepresentation model;
 	private int childCount;
 	private JComponent content;
 	private int vGap;
@@ -156,7 +156,7 @@ abstract public class NodeViewLayoutAdapter implements NodeViewLayout {
 	/**
 	 * @return Returns the model.
 	 */
-	protected MindMapNode getModel() {
+	protected NodeRepresentation getModel() {
 		return model;
 	}
 

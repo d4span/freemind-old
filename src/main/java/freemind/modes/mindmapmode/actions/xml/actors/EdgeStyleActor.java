@@ -26,7 +26,7 @@ import freemind.main.Tools;
 import freemind.modes.EdgeAdapter;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindMapEdge;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
@@ -50,7 +50,7 @@ public class EdgeStyleActor extends XmlActorAdapter {
 	 * @param node
 	 * @param style use null to remove the style
 	 */
-	public void setEdgeStyle(MindMapNode node, String style) {
+	public void setEdgeStyle(NodeRepresentation node, String style) {
 		if (Tools.safeEquals(style, getStyle(node))) {
 			return;
 		}
@@ -72,7 +72,7 @@ public class EdgeStyleActor extends XmlActorAdapter {
 		execute(getActionPair(node, style));
 	}
 
-	public ActionPair getActionPair(MindMapNode selected, String style) {
+	public ActionPair getActionPair(NodeRepresentation selected, String style) {
 		EdgeStyleFormatAction styleAction = createNodeStyleFormatAction(
 				selected, style);
 		EdgeStyleFormatAction undoStyleAction = createNodeStyleFormatAction(
@@ -80,7 +80,7 @@ public class EdgeStyleActor extends XmlActorAdapter {
 		return new ActionPair(styleAction, undoStyleAction);
 	}
 
-	public String getStyle(MindMapNode selected) {
+	public String getStyle(NodeRepresentation selected) {
 		String oldStyle = selected.getEdge().getStyle();
 		if (!selected.getEdge().hasStyle()) {
 			oldStyle = null;
@@ -89,7 +89,7 @@ public class EdgeStyleActor extends XmlActorAdapter {
 	}
 
 	private EdgeStyleFormatAction createNodeStyleFormatAction(
-			MindMapNode selected, String style) {
+            NodeRepresentation selected, String style) {
 		EdgeStyleFormatAction edgeStyleAction = new EdgeStyleFormatAction();
 		edgeStyleAction.setNode(getNodeID(selected));
 		edgeStyleAction.setStyle(style);
@@ -99,7 +99,7 @@ public class EdgeStyleActor extends XmlActorAdapter {
 	public void act(XmlAction action) {
 		if (action instanceof EdgeStyleFormatAction) {
 			EdgeStyleFormatAction edgeStyleAction = (EdgeStyleFormatAction) action;
-			MindMapNode node = getNodeFromID(edgeStyleAction.getNode());
+			NodeRepresentation node = getNodeFromID(edgeStyleAction.getNode());
 			String newStyle = edgeStyleAction.getStyle();
 			MindMapEdge edge = node.getEdge();
 			if (!Tools.safeEquals(edge.hasStyle() ? edge.getStyle() : null,

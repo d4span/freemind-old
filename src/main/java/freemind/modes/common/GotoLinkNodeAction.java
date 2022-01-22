@@ -28,17 +28,17 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 
 /** Follow a graphical link (AKA connector) action. */
 @SuppressWarnings("serial")
 public class GotoLinkNodeAction extends AbstractAction {
-	MindMapNode source;
+	NodeRepresentation source;
 
 	private final ModeController controller;
 
-	public GotoLinkNodeAction(ModeController controller, MindMapNode source) {
+	public GotoLinkNodeAction(ModeController controller, NodeRepresentation source) {
 		super(controller.getText("goto_link_node_action"), freemind.view.ImageFactory.getInstance().createIcon(
 				controller.getResource("images/Link.png")));
 		this.controller = controller;

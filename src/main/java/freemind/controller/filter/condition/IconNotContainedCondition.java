@@ -34,7 +34,7 @@ import freemind.controller.Controller;
 import freemind.main.Resources;
 import freemind.main.XMLElement;
 import freemind.modes.MindIcon;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 public class IconNotContainedCondition implements Condition {
 	static final String ICON = "icon";
@@ -44,11 +44,11 @@ public class IconNotContainedCondition implements Condition {
 		this.iconName = iconName;
 	}
 
-	public boolean checkNode(Controller c, MindMapNode node) {
+	public boolean checkNode(Controller c, NodeRepresentation node) {
 		return iconFirstIndex(node, iconName) == -1 && !isStateIconContained(node, iconName);
 	}
 
-	static public int iconFirstIndex(MindMapNode node, String iconName) {
+	static public int iconFirstIndex(NodeRepresentation node, String iconName) {
 		List<MindIcon> icons = node.getIcons();
 		for (ListIterator<MindIcon> i=icons.listIterator(); i.hasNext(); ) {
 			MindIcon nextIcon =i.next() ;
@@ -58,7 +58,7 @@ public class IconNotContainedCondition implements Condition {
 		
 	}
 
-	static public int iconLastIndex(MindMapNode node, String iconName) {
+	static public int iconLastIndex(NodeRepresentation node, String iconName) {
 		List<MindIcon> icons = node.getIcons();
 		ListIterator<MindIcon> i=icons.listIterator(icons.size());
 		while ( i.hasPrevious()) {
@@ -69,7 +69,7 @@ public class IconNotContainedCondition implements Condition {
 		
 	}
 
-	private static boolean isStateIconContained(MindMapNode node, String iconName) {
+	private static boolean isStateIconContained(NodeRepresentation node, String iconName) {
 		Set<String> stateIcons = node.getStateIcons().keySet();
 		for(String nextIcon : stateIcons){
 			if (iconName.equals(nextIcon)) return true;		    

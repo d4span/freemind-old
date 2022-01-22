@@ -56,7 +56,7 @@ import freemind.modes.MapAdapter;
 import freemind.modes.MapFeedback;
 import freemind.modes.MindMap;
 import freemind.modes.MindMapLinkRegistry;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.NodeAdapter;
 
 @SuppressWarnings("serial")
@@ -110,7 +110,7 @@ public class MindMapMapModel extends MapAdapter {
 				+ getFile().getAbsolutePath();
 	}
 
-	public void changeNode(MindMapNode node, String newText) {
+	public void changeNode(NodeRepresentation node, String newText) {
 		if (node.toString().startsWith("<html>")) {
 			node.setUserObject(HtmlTools.unescapeHTMLUnicodeEntity(newText));
 		} else {
@@ -299,7 +299,7 @@ public class MindMapMapModel extends MapAdapter {
 	 * @throws IOException
 	 */
 	public void getXml(Writer fileout, boolean saveInvisible,
-			MindMapNode pRootNode) throws IOException {
+			NodeRepresentation pRootNode) throws IOException {
 		fileout.write("<map ");
 		fileout.write("version=\"" + FreeMind.XML_VERSION + "\"");
 		fileout.write(">\n");

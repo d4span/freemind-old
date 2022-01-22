@@ -60,7 +60,7 @@ import freemind.controller.actions.generated.instance.WindowConfigurationStorage
 import freemind.main.FreeMindCommon;
 import freemind.main.Resources;
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.Mode;
 import freemind.modes.common.plugins.ReminderHookBase;
 import freemind.modes.mindmapmode.MindMapController;
@@ -82,7 +82,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 
 	
 	private interface NodeFactory {
-		MindMapNode getNode(MindMapNode pNode);
+		NodeRepresentation getNode(NodeRepresentation pNode);
 	}
 
 	private class AppendDateAbstractAction extends AbstractAction {
@@ -99,9 +99,9 @@ public class TimeManagement extends MindMapHookAdapter implements
 		}
 
 		public void actionPerformed(ActionEvent actionEvent) {
-			MindMapNode lastElement = null;
-			Vector<MindMapNode> sel = new Vector<>();
-			for (MindMapNode element : getMindMapController().getSelecteds()) {
+			NodeRepresentation lastElement = null;
+			Vector<NodeRepresentation> sel = new Vector<>();
+			for (NodeRepresentation element : getMindMapController().getSelecteds()) {
 				element = mFactory.getNode(element);
 				DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
 				String dateAsString = df.format(getCalendarDate());
@@ -120,7 +120,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 		public AppendDateAction() {
 			init(new NodeFactory() {
 
-				public MindMapNode getNode(MindMapNode pNode) {
+				public NodeRepresentation getNode(NodeRepresentation pNode) {
 					return pNode;
 				}
 			}, "plugins/TimeManagement.xml_appendButton");
@@ -132,7 +132,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 		public AppendDateToChildAction() {
 			init(new NodeFactory() {
 
-				public MindMapNode getNode(MindMapNode pNode) {
+				public NodeRepresentation getNode(NodeRepresentation pNode) {
 					return getMindMapController().addNewNode(pNode,
 							pNode.getChildCount(), pNode.isLeft());
 				}
@@ -144,8 +144,8 @@ public class TimeManagement extends MindMapHookAdapter implements
 		public AppendDateToSiblingAction() {
 			init(new NodeFactory() {
 
-				public MindMapNode getNode(MindMapNode pNode) {
-					MindMapNode parent = pNode;
+				public NodeRepresentation getNode(NodeRepresentation pNode) {
+					NodeRepresentation parent = pNode;
 					if (!pNode.isRoot()) {
 						parent = pNode.getParentNode();
 					}
@@ -174,7 +174,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			for (MindMapNode node : getMindMapController().getSelecteds()) {
+			for (NodeRepresentation node : getMindMapController().getSelecteds()) {
 				ReminderHookBase alreadyPresentHook = TimeManagementOrganizer
 						.getHook(node);
 				if (alreadyPresentHook != null) {
@@ -443,7 +443,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 		Date date = getCalendarDate();
 		// add permanent node hook to the nodes and this hook checks
 		// permanently.
-		for (MindMapNode node : getMindMapController().getSelecteds()) {
+		for (NodeRepresentation node : getMindMapController().getSelecteds()) {
 			ReminderHookBase alreadyPresentHook = TimeManagementOrganizer.getHook(node);
 			if (alreadyPresentHook != null) {
 				// already present:
@@ -481,7 +481,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 	 * @param pRemindAt
 	 *            TODO
 	 */
-	private void addHook(MindMapNode node, long pRemindAt) {
+	private void addHook(NodeRepresentation node, long pRemindAt) {
 		// add the hook:
 		Properties properties = new Properties();
 		if (pRemindAt != 0L) {

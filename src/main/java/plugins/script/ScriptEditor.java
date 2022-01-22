@@ -25,12 +25,12 @@ package plugins.script;
 import java.io.PrintStream;
 import java.util.Vector;
 
+import freemind.modes.NodeRepresentation;
 import plugins.script.ScriptEditorPanel.ScriptHolder;
 import plugins.script.ScriptEditorPanel.ScriptModel;
 import plugins.script.ScriptingEngine.ErrorHandler;
 import freemind.controller.actions.generated.instance.ScriptEditorWindowConfigurationStorage;
 import freemind.main.Tools.BooleanHolder;
-import freemind.modes.MindMapNode;
 import freemind.modes.attributes.Attribute;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.hooks.MindMapHookAdapter;
@@ -56,11 +56,11 @@ public class ScriptEditor extends MindMapHookAdapter {
 		 * Of AttributeHolder
 		 */
 		private final Vector<AttributeHolder> mScripts;
-		private final MindMapNode mNode;
+		private final NodeRepresentation mNode;
 		private final MindMapController mMindMapController;
 		private boolean isDirty = false;
 
-		private NodeScriptModel(Vector<AttributeHolder> pScripts, MindMapNode node,
+		private NodeScriptModel(Vector<AttributeHolder> pScripts, NodeRepresentation node,
 				MindMapController pMindMapController) {
 			mScripts = pScripts;
 			mNode = node;
@@ -170,7 +170,7 @@ public class ScriptEditor extends MindMapHookAdapter {
 
 	public void startupMapHook() {
 		super.startupMapHook();
-		final MindMapNode node = getMindMapController().getSelected();
+		final NodeRepresentation node = getMindMapController().getSelected();
 		final Vector<AttributeHolder> scripts = new Vector<>();
 		for (int position = 0; position < node.getAttributeTableLength(); position++) {
 			Attribute attribute = node.getAttribute(position);

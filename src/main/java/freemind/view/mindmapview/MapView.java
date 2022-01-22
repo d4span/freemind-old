@@ -75,7 +75,7 @@ import freemind.main.Tools.Pair;
 import freemind.modes.MindMap;
 import freemind.modes.MindMapArrowLink;
 import freemind.modes.MindMapLink;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ViewAbstraction;
 import freemind.preferences.FreemindPropertyListener;
 
@@ -1101,8 +1101,8 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 	 * @return an ArrayList of MindMapNode objects. If both ancestor and
 	 *         descendant node are selected, only the ancestor is returned
 	 */
-	public ArrayList<MindMapNode> getSelectedNodesSortedByY() {
-		final HashSet<MindMapNode> selectedNodesSet = new HashSet<>();
+	public ArrayList<NodeRepresentation> getSelectedNodesSortedByY() {
+		final HashSet<NodeRepresentation> selectedNodesSet = new HashSet<>();
 		for (int i = 0; i < selected.size(); i++) {
 			selectedNodesSet.add(getSelected(i).getModel());
 		}
@@ -1111,8 +1111,8 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 		Point point = new Point();
 		iteration: for (int i = 0; i < selected.size(); i++) {
 			final NodeView view = getSelected(i);
-			final MindMapNode node = view.getModel();
-			for (MindMapNode parent = node.getParentNode(); parent != null; parent = parent
+			final NodeRepresentation node = view.getModel();
+			for (NodeRepresentation parent = node.getParentNode(); parent != null; parent = parent
 					.getParentNode()) {
 				if (selectedNodesSet.contains(parent)) {
 					continue iteration;
@@ -1132,9 +1132,9 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 			}
 		});
 
-		ArrayList<MindMapNode> selectedNodes = new ArrayList<>();
+		ArrayList<NodeRepresentation> selectedNodes = new ArrayList<>();
 		for (Iterator<Pair> it = pointNodePairs.iterator(); it.hasNext();) {
-			selectedNodes.add( (MindMapNode) it.next().getSecond());
+			selectedNodes.add( (NodeRepresentation) it.next().getSecond());
 		}
 
 		// logger.fine("Cutting #" + selectedNodes.size());
@@ -1149,8 +1149,8 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 	 * @return an ArrayList of MindMapNode objects. If both ancestor and
 	 *         descandant node are selected, only the ancestor ist returned
 	 */
-	public ArrayList<MindMapNode> getSingleSelectedNodes() {
-		ArrayList<MindMapNode> selectedNodes = new ArrayList<>(selected.size());
+	public ArrayList<NodeRepresentation> getSingleSelectedNodes() {
+		ArrayList<NodeRepresentation> selectedNodes = new ArrayList<>(selected.size());
 		for (int i = selected.size() - 1; i >= 0; i--) {
 			selectedNodes.add(getSelected(i).getModel().shallowCopy());
 		}
@@ -1611,7 +1611,7 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 		scrollRectToVisible(r);
 	}
 
-	public NodeView getNodeView(MindMapNode node) {
+	public NodeView getNodeView(NodeRepresentation node) {
 		if (node == null) {
 			return null;
 		}
@@ -1721,11 +1721,11 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 		return 0;
 	}
 
-	private HashMap<MindMapNode, Vector<NodeView> > views = null;
+	private HashMap<NodeRepresentation, Vector<NodeView> > views = null;
 
-	public Collection<NodeView> getViewers(MindMapNode pNode) {
+	public Collection<NodeView> getViewers(NodeRepresentation pNode) {
 		if (views == null) {
-			views = new HashMap<MindMapNode, Vector<NodeView>>();
+			views = new HashMap<NodeRepresentation, Vector<NodeView>>();
 		}
 		if(!views.containsKey(pNode)) {
 			views.put(pNode, new Vector<NodeView>());
@@ -1733,12 +1733,12 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 		return views.get(pNode);
 	}
 
-	public void addViewer(MindMapNode pNode, NodeView viewer) {
+	public void addViewer(NodeRepresentation pNode, NodeView viewer) {
 		getViewers(pNode).add(viewer);
 		pNode.addTreeModelListener(viewer);
 	}
 
-	public void removeViewer(MindMapNode pNode, NodeView viewer) {
+	public void removeViewer(NodeRepresentation pNode, NodeView viewer) {
 		Collection<NodeView> viewers = getViewers(pNode);
 		viewers.remove(viewer);
 		if(viewers.isEmpty()) {
@@ -1754,7 +1754,7 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 	 * freemind.modes.MindMapNode#acceptViewVisitor(freemind.view.mindmapview
 	 * .NodeViewVisitor)
 	 */
-	public void acceptViewVisitor(MindMapNode pNode, NodeViewVisitor visitor) {
+	public void acceptViewVisitor(NodeRepresentation pNode, NodeViewVisitor visitor) {
 		final Iterator<NodeView> iterator = getViewers(pNode).iterator();
 		while (iterator.hasNext()) {
 			visitor.visit( iterator.next());

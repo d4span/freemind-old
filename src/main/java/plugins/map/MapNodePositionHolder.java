@@ -24,12 +24,12 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
 
+import freemind.modes.NodeRepresentation;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.OsmMercator;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileSource;
 
 import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
 import freemind.modes.common.plugins.MapNodePositionHolderBase;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.view.mindmapview.NodeView;
@@ -55,7 +55,7 @@ public class MapNodePositionHolder extends MapNodePositionHolderBase {
 	 * @see
 	 * freemind.extensions.NodeHookAdapter#invoke(freemind.modes.MindMapNode)
 	 */
-	public void invoke(MindMapNode pNode) {
+	public void invoke(NodeRepresentation pNode) {
 		super.invoke(pNode);
 		getRegistration().registerMapNode(this);
 	}
@@ -195,7 +195,7 @@ public class MapNodePositionHolder extends MapNodePositionHolderBase {
 		return mPosition;
 	}
 
-	public static MapNodePositionHolder getHook(MindMapNode node) {
+	public static MapNodePositionHolder getHook(NodeRepresentation node) {
 		return (MapNodePositionHolder) getBaseHook(node);
 	}
 
@@ -233,7 +233,7 @@ public class MapNodePositionHolder extends MapNodePositionHolderBase {
 		mZoom = pZoom;
 	}
 
-	public MindMapNode getNode() {
+	public NodeRepresentation getNode() {
 		return super.getNode();
 	}
 

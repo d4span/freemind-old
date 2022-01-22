@@ -45,8 +45,8 @@ public abstract class ArrowLinkAdapter extends LinkAdapter implements
 	protected String endArrow;
 	protected boolean showControlPointsFlag;
 
-	public ArrowLinkAdapter(MindMapNode source, MindMapNode target,
-			MapFeedback pMapFeedback) {
+	public ArrowLinkAdapter(NodeRepresentation source, NodeRepresentation target,
+                            MapFeedback pMapFeedback) {
 		super(source, target, pMapFeedback);
 		startArrow = ARROW_NONE;
 		endArrow = ARROW_DEFAULT;

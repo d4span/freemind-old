@@ -33,7 +33,7 @@ import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.extensions.HookRegistration;
 import freemind.main.Tools;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
@@ -53,10 +53,10 @@ import freemind.view.mindmapview.NodeView;
 public class ChangeRootNode extends MindMapNodeHookAdapter {
 	private static final String TRANSACTION_NAME = "ChangeRootNode";
 
-	public void invoke(MindMapNode node) {
+	public void invoke(NodeRepresentation node) {
 		// we dont need node.
-		MindMapNode focussed = getMindMapController().getSelected();
-		MindMapNode rootNode = getMindMapController().getRootNode();
+		NodeRepresentation focussed = getMindMapController().getSelected();
+		NodeRepresentation rootNode = getMindMapController().getRootNode();
 
 		getMindMapController().doTransaction(
 				TRANSACTION_NAME,
@@ -69,7 +69,7 @@ public class ChangeRootNode extends MindMapNodeHookAdapter {
 	 *            the new root node.
 	 * @return the corresponding action.
 	 */
-	private XmlAction getAction(MindMapNode pNode) {
+	private XmlAction getAction(NodeRepresentation pNode) {
 		ChangeRootNodeAction action = new ChangeRootNodeAction();
 		action.setNode(getMindMapController().getNodeID(pNode));
 		return action;
@@ -130,7 +130,7 @@ public class ChangeRootNode extends MindMapNodeHookAdapter {
 		public void act(XmlAction pAction) {
 			if (pAction instanceof ChangeRootNodeAction) {
 				ChangeRootNodeAction rootNodeAction = (ChangeRootNodeAction) pAction;
-				MindMapNode focussed = controller.getNodeFromID(rootNodeAction.getNode());
+				NodeRepresentation focussed = controller.getNodeFromID(rootNodeAction.getNode());
 				if (focussed.isRoot()) {
 					// node is already root. Everything ok.
 					return;
@@ -141,16 +141,16 @@ public class ChangeRootNode extends MindMapNodeHookAdapter {
 				 * 3. deactivate all root hooks. this is possibly the best
 				 * solution as it is consequent. Method 3 is chosen.
 				 */
-				MindMapNode oldRoot = mMap.getRootNode();
+				NodeRepresentation oldRoot = mMap.getRootNode();
 				oldRoot.removeAllHooks();
 				// change the root node:
 				mMap.changeRoot(focussed);
 				// remove all viewers:
-				Vector<MindMapNode> nodes = new Vector<>();
+				Vector<NodeRepresentation> nodes = new Vector<>();
 				nodes.add(focussed);
 				MapView view = controller.getView();
 				while (!nodes.isEmpty()) {
-					MindMapNode child = (MindMapNode) nodes.firstElement();
+					NodeRepresentation child = (NodeRepresentation) nodes.firstElement();
 					logger.fine("Removing viewers for " + child);
 					nodes.remove(0);
 					nodes.addAll(child.getChildren());

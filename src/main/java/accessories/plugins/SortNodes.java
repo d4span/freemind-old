@@ -29,7 +29,7 @@ import java.util.Comparator;
 import java.util.Vector;
 
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 
 /**
@@ -37,10 +37,10 @@ import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
  */
 public class SortNodes extends MindMapNodeHookAdapter {
 
-	private final class NodeTextComparator implements Comparator<MindMapNode> {
+	private final class NodeTextComparator implements Comparator<NodeRepresentation> {
 		private boolean mNegative = false;
 
-		public int compare(MindMapNode node1, MindMapNode node2) {
+		public int compare(NodeRepresentation node1, NodeRepresentation node2) {
 
 			String nodeText1 = node1.getPlainTextContent();
 			String nodeText2 = node2.getPlainTextContent();
@@ -70,15 +70,15 @@ public class SortNodes extends MindMapNodeHookAdapter {
 	 * @see freemind.extensions.NodeHook#invoke(freemind.modes.MindMapNode,
 	 * java.util.List)
 	 */
-	public void invoke(MindMapNode node) {
+	public void invoke(NodeRepresentation node) {
 		// we want to sort the children of the node:
-		Vector<MindMapNode> sortVector = new Vector<>();
+		Vector<NodeRepresentation> sortVector = new Vector<>();
 		// put in all children of the node
 		sortVector.addAll(node.getChildren());
 		NodeTextComparator comparator = new NodeTextComparator();
-		MindMapNode last = null;
+		NodeRepresentation last = null;
 		boolean isOrdered = true;
-		for (MindMapNode listNode : sortVector) {
+		for (NodeRepresentation listNode : sortVector) {
 			if(last != null){
 				if(comparator.compare(listNode, last)<0){
 					isOrdered=false;
@@ -92,8 +92,8 @@ public class SortNodes extends MindMapNodeHookAdapter {
 		}
 		Collections.sort(sortVector, comparator);
 		// now, as it is sorted. we cut the children
-		for (MindMapNode child : sortVector) {
-			Vector<MindMapNode> childList = Tools.getVectorWithSingleElement(child);
+		for (NodeRepresentation child : sortVector) {
+			Vector<NodeRepresentation> childList = Tools.getVectorWithSingleElement(child);
 			Transferable cut = getMindMapController().cut(childList);
 			// paste directly again causes that the node is added as the last
 			// one.

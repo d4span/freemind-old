@@ -35,7 +35,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import freemind.main.FixedHTMLWriter;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 import freemind.view.mindmapview.MapView;
@@ -59,16 +59,16 @@ public class SplitNode extends MindMapNodeHookAdapter {
 	 * @see freemind.extensions.NodeHook#invoke(freemind.modes.MindMapNode,
 	 * java.util.List)
 	 */
-	public void invoke(MindMapNode node) {
+	public void invoke(NodeRepresentation node) {
 		super.invoke(node);
-		final List<MindMapNode> list = getMindMapController().getSelecteds();
+		final List<NodeRepresentation> list = getMindMapController().getSelecteds();
 		
-		for(MindMapNode next : list) {
+		for(NodeRepresentation next : list) {
 			splitNode(next);
 		}
 	}
 
-	private void splitNode(MindMapNode node) {
+	private void splitNode(NodeRepresentation node) {
 		if (node.isRoot()) {
 			return;
 		}
@@ -83,10 +83,10 @@ public class SplitNode extends MindMapNodeHookAdapter {
 			firstPartNumber++;
 		}
 		c.setNodeText(node, parts[firstPartNumber]);
-		MindMapNode parent = node.getParentNode();
+		NodeRepresentation parent = node.getParentNode();
 		final int nodePosition = parent.getChildPosition(node) + 1;
 		for (int i = parts.length - 1; i > firstPartNumber; i--) {
-			final MindMapNode lowerNode = c.addNewNode(parent, nodePosition,
+			final NodeRepresentation lowerNode = c.addNewNode(parent, nodePosition,
 					node.isLeft());
 			final String part = parts[i];
 			if (part == null) {

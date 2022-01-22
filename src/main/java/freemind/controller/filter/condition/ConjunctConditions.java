@@ -33,7 +33,7 @@ import freemind.controller.filter.FilterController;
 import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 /**
  * @author dimitri 08.05.2005
@@ -57,7 +57,7 @@ public class ConjunctConditions implements Condition {
 	 * freemind.controller.filter.condition.Condition#checkNode(freemind.modes
 	 * .MindMapNode)
 	 */
-	public boolean checkNode(Controller c, MindMapNode node) {
+	public boolean checkNode(Controller c, NodeRepresentation node) {
 		int i;
 		for (i = 0; i < conditions.length; i++) {
 			Condition cond = (Condition) conditions[i];

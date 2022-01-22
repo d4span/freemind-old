@@ -26,7 +26,7 @@ import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.extensions.PermanentNodeHook;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindMapLinkRegistry;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
@@ -54,7 +54,7 @@ public class NewChildActor extends XmlActorAdapter {
 		NewNodeAction addNodeAction = (NewNodeAction) action;
 		NodeAdapter parent = getNodeFromID(addNodeAction.getNode());
 		int index = addNodeAction.getIndex();
-		MindMapNode newNode = getExMapFeedback().newNode("", parent.getMap());
+		NodeRepresentation newNode = getExMapFeedback().newNode("", parent.getMap());
 		newNode.setLeft(addNodeAction.getPosition().equals("left"));
 		String newId = addNodeAction.getNewId();
 		String givenId = getLinkRegistry()
@@ -87,8 +87,8 @@ public class NewChildActor extends XmlActorAdapter {
 
 
 
-	public MindMapNode addNewNode(MindMapNode parent, int index,
-			boolean newNodeIsLeft) {
+	public NodeRepresentation addNewNode(NodeRepresentation parent, int index,
+                                         boolean newNodeIsLeft) {
 		if (index == -1) {
 			index = parent.getChildCount();
 		}
@@ -102,11 +102,11 @@ public class NewChildActor extends XmlActorAdapter {
 				.getDeleteNodeAction(newId);
 		getExMapFeedback().doTransaction(getExMapFeedback().getResourceString("new_child"),
 				new ActionPair(newNodeAction, deleteAction));
-		return (MindMapNode) parent.getChildAt(index);
+		return (NodeRepresentation) parent.getChildAt(index);
 	}
 
-	public NewNodeAction getAddNodeAction(MindMapNode parent, int index,
-			String newId, boolean newNodeIsLeft) {
+	public NewNodeAction getAddNodeAction(NodeRepresentation parent, int index,
+                                          String newId, boolean newNodeIsLeft) {
 		String pos = newNodeIsLeft ? "left" : "right";
 		NewNodeAction newNodeAction = new NewNodeAction();
 		newNodeAction.setNode(getNodeID(parent));

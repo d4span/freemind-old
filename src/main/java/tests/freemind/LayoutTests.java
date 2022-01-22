@@ -30,7 +30,7 @@ import javax.swing.JPanel;
 
 import freemind.controller.Controller;
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.MindMapMapModel;
 import freemind.modes.mindmapmode.MindMapMode;
@@ -205,7 +205,7 @@ public class LayoutTests extends FreeMindTestBase {
 		System.out.println("------------------");
 	}
 
-	protected int getYCoordinate(MindMapNode child2) {
+	protected int getYCoordinate(NodeRepresentation child2) {
 		assertTrue(mMapView.getViewers(child2).size() > 0);
 		NodeView nodeView = (NodeView) mMapView.getViewers(child2).iterator().next();
 		Point point = nodeView.getMainView().getLocation();
@@ -213,7 +213,7 @@ public class LayoutTests extends FreeMindTestBase {
 		return point.y;
 	}
 
-	protected int getYCoordinateToViewport(MindMapNode child2) {
+	protected int getYCoordinateToViewport(NodeRepresentation child2) {
 		assertTrue(mMapView.getViewers(child2).size() > 0);
 		NodeView nodeView = (NodeView) mMapView.getViewers(child2).iterator().next();
 		Point point = nodeView.getMainView().getLocation();

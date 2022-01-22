@@ -64,7 +64,7 @@ import freemind.main.FreeMind;
 import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.ModeController.NodeLifetimeListener;
 import freemind.modes.ModeController.NodeSelectionListener;
@@ -79,22 +79,22 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 		private boolean mDontUpdateModel = false;
 		
-		private MindMapNode mCurrentNode = null;
+		private NodeRepresentation mCurrentNode = null;
 		
 		@Override
-		public void onCreateNodeHook(MindMapNode pNode) {
+		public void onCreateNodeHook(NodeRepresentation pNode) {
 		}
 
 		@Override
-		public void onPreDeleteNode(MindMapNode pNode) {
+		public void onPreDeleteNode(NodeRepresentation pNode) {
 		}
 
 		@Override
-		public void onPostDeleteNode(MindMapNode pNode, MindMapNode pParent) {
+		public void onPostDeleteNode(NodeRepresentation pNode, NodeRepresentation pParent) {
 		}
 
 		@Override
-		public void onUpdateNodeHook(MindMapNode pNode) {
+		public void onUpdateNodeHook(NodeRepresentation pNode) {
 			if(mDontUpdateModel) {
 				return;
 			}
@@ -107,14 +107,14 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 		@Override
 		public void onFocusNode(NodeView pNode) {
-			MindMapNode node = pNode.getModel();
+			NodeRepresentation node = pNode.getModel();
 			setModelFromNode(node);
 		}
 
 		/**
 		 * @param node
 		 */
-		private void setModelFromNode(MindMapNode node) {
+		private void setModelFromNode(NodeRepresentation node) {
 			mAttributeTableModel.clear();
 			for (int position = 0; position < node.getAttributeTableLength(); position++) {
 				Attribute attribute = node.getAttribute(position);
@@ -130,7 +130,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		}
 
 		@Override
-		public void onSaveNode(MindMapNode pNode) {
+		public void onSaveNode(NodeRepresentation pNode) {
 			if(mAttributeTable.isEditing()) {
 	            // This will dispose editor and call setValueAt() of your model as normally happens
 	            mAttributeTable.getCellEditor().stopCellEditing();

@@ -117,7 +117,7 @@ import freemind.controller.actions.generated.instance.CompoundAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.modes.EdgeAdapter;
 import freemind.modes.MindIcon;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.view.mindmapview.NodeView;
 
@@ -1409,20 +1409,20 @@ public class Tools {
 	}
 
 	public static class MindMapNodePair {
-		MindMapNode first;
+		NodeRepresentation first;
 
-		MindMapNode second;
+		NodeRepresentation second;
 
-		public MindMapNodePair(MindMapNode first, MindMapNode second) {
+		public MindMapNodePair(NodeRepresentation first, NodeRepresentation second) {
 			this.first = first;
 			this.second = second;
 		}
 
-		public MindMapNode getCorresponding() {
+		public NodeRepresentation getCorresponding() {
 			return first;
 		}
 
-		public MindMapNode getCloneNode() {
+		public NodeRepresentation getCloneNode() {
 			return second;
 		}
 	}
@@ -1568,7 +1568,7 @@ public class Tools {
 		}
 	}
 
-	public static String getFileNameProposal(MindMapNode node) {
+	public static String getFileNameProposal(NodeRepresentation node) {
 		String rootText = node.getPlainTextContent();
 		rootText = rootText.replaceAll("[&:/\\\\\0%$#~\\?\\*]+", "");
 		return rootText;
@@ -1815,8 +1815,8 @@ public class Tools {
 	 * @param pMindMapController
 	 * @return
 	 */
-	public static String getNodeTextHierarchy(MindMapNode pNode,
-			MindMapController pMindMapController) {
+	public static String getNodeTextHierarchy(NodeRepresentation pNode,
+                                              MindMapController pMindMapController) {
 		return pNode.getShortText(pMindMapController)
 				+ ((pNode.isRoot()) ? "" : (" <- " + getNodeTextHierarchy(
 						pNode.getParentNode(), pMindMapController)));
@@ -1832,15 +1832,15 @@ public class Tools {
 	/**
 	 * @return a list of MindMapNode s if they are currently contained in the clipboard. An empty list otherwise.
 	 */
-	public static Vector<MindMapNode> getMindMapNodesFromClipboard(MindMapController pMindMapController) {
-		Vector<MindMapNode> mindMapNodes = new Vector<MindMapNode>();
+	public static Vector<NodeRepresentation> getMindMapNodesFromClipboard(MindMapController pMindMapController) {
+		Vector<NodeRepresentation> mindMapNodes = new Vector<NodeRepresentation>();
 		Transferable clipboardContents = pMindMapController.getClipboardContents();
 		if (clipboardContents != null) {
 			try {
 				List<String> transferData = (List<String>) clipboardContents.getTransferData(MindMapNodesSelection.copyNodeIdsFlavor);
 				for (Iterator<String> it = transferData.iterator(); it.hasNext();) {
 					String nodeId = (String) it.next();
-					MindMapNode node = pMindMapController.getNodeFromID(nodeId);
+					NodeRepresentation node = pMindMapController.getNodeFromID(nodeId);
 					mindMapNodes.add(node);
 				}
 			} catch (Exception e) {
@@ -2116,7 +2116,7 @@ public class Tools {
 		return Integer.valueOf(value).intValue();
 	}
 
-	static public int iconFirstIndex(MindMapNode node, String iconName) {
+	static public int iconFirstIndex(NodeRepresentation node, String iconName) {
 		List<MindIcon> icons = node.getIcons();
 		for (ListIterator<MindIcon> i = icons.listIterator(); i.hasNext();) {
 			MindIcon nextIcon = i.next();
@@ -2127,7 +2127,7 @@ public class Tools {
 	
 	}
 
-	static public int iconLastIndex(MindMapNode node, String iconName) {
+	static public int iconLastIndex(NodeRepresentation node, String iconName) {
 		List<MindIcon> icons = node.getIcons();
 		ListIterator<MindIcon> i = icons.listIterator(icons.size());
 		while (i.hasPrevious()) {

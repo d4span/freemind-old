@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Vector;
 
 import freemind.controller.actions.generated.instance.Plugin;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 public interface HookFactory {
 
@@ -62,8 +62,8 @@ public interface HookFactory {
 	/**
 	 * @return null if not present, the hook otherwise.
 	 */
-	public abstract PermanentNodeHook getHookInNode(MindMapNode node,
-			String hookName);
+	public abstract PermanentNodeHook getHookInNode(NodeRepresentation node,
+                                                    String hookName);
 
 	/**
 	 * @return returns a list of menu position strings for the

@@ -29,7 +29,7 @@ package freemind.modes.mindmapmode.actions;
 
 import freemind.controller.actions.generated.instance.Pattern;
 import freemind.modes.EdgeAdapter;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.StylePatternFactory;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin;
@@ -40,7 +40,7 @@ import freemind.modes.mindmapmode.MindMapNodeModel;
 public class ApplyPatternAction extends NodeGeneralAction implements
 		SingleNodeOperation {
 	public interface ExternalPatternAction extends MindMapControllerPlugin {
-		public void act(MindMapNode node, Pattern pattern);
+		public void act(NodeRepresentation node, Pattern pattern);
 	}
 
 	private Pattern mpattern;

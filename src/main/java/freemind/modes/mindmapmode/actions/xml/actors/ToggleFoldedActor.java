@@ -29,7 +29,7 @@ import freemind.main.FreeMind;
 import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.common.CommonToggleFoldedAction;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
@@ -57,13 +57,13 @@ public class ToggleFoldedActor extends XmlActorAdapter {
 		execute(new ActionPair(doAction, undoAction));
 	}
 
-	private CompoundAction createFoldAction(ListIterator<MindMapNode> iterator,
+	private CompoundAction createFoldAction(ListIterator<NodeRepresentation> iterator,
 			boolean fold, boolean undo) {
 		CompoundAction comp = new CompoundAction();
 		// sort selectedNodes list by depth, in order to guarantee that sons
 		// are deleted first:
-		for (ListIterator<MindMapNode> it = iterator; it.hasNext();) {
-			MindMapNode node = it.next();
+		for (ListIterator<NodeRepresentation> it = iterator; it.hasNext();) {
+			NodeRepresentation node = it.next();
 			FoldAction foldAction = createSingleFoldAction(fold, node, undo);
 			if (foldAction != null) {
 				if (!undo) {
@@ -86,7 +86,7 @@ public class ToggleFoldedActor extends XmlActorAdapter {
 	/**
 	 * @return null if node cannot be folded.
 	 */
-	private FoldAction createSingleFoldAction(boolean fold, MindMapNode node,
+	private FoldAction createSingleFoldAction(boolean fold, NodeRepresentation node,
 			boolean undo) {
 		FoldAction foldAction = null;
 		if ((undo && (node.isFolded() == fold))
@@ -106,7 +106,7 @@ public class ToggleFoldedActor extends XmlActorAdapter {
 	public void act(XmlAction action) {
 		if (action instanceof FoldAction) {
 			FoldAction foldAction = (FoldAction) action;
-			MindMapNode node = getNodeFromID(foldAction
+			NodeRepresentation node = getNodeFromID(foldAction
 					.getNode());
 			boolean folded = foldAction.getFolded();
 			// no root folding, fc, 16.5.2004
@@ -130,7 +130,7 @@ public class ToggleFoldedActor extends XmlActorAdapter {
 
 	/**
 	 */
-	public void setFolded(MindMapNode node, boolean folded) {
+	public void setFolded(NodeRepresentation node, boolean folded) {
 		FoldAction doAction = createSingleFoldAction(folded, node, false);
 		FoldAction undoAction = createSingleFoldAction(!folded, node, true);
 		if (doAction == null || undoAction == null) {

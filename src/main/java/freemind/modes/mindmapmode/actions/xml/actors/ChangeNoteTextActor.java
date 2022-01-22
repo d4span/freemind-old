@@ -25,7 +25,7 @@ import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.main.HtmlTools;
 import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
@@ -42,7 +42,7 @@ public class ChangeNoteTextActor extends XmlActorAdapter {
 	public void act(XmlAction action) {
 		if (action instanceof EditNoteToNodeAction) {
 			EditNoteToNodeAction noteTextAction = (EditNoteToNodeAction) action;
-			MindMapNode node = getNodeFromID(noteTextAction
+			NodeRepresentation node = getNodeFromID(noteTextAction
 					.getNode());
 			String newText = noteTextAction.getText();
 			String oldText = node.getNoteText();
@@ -57,8 +57,8 @@ public class ChangeNoteTextActor extends XmlActorAdapter {
 		return EditNoteToNodeAction.class;
 	}
 
-	public EditNoteToNodeAction createEditNoteToNodeAction(MindMapNode node,
-			String text) {
+	public EditNoteToNodeAction createEditNoteToNodeAction(NodeRepresentation node,
+                                                           String text) {
 		EditNoteToNodeAction nodeAction = new EditNoteToNodeAction();
 		nodeAction.setNode(getNodeID(node));
 		if (text != null
@@ -71,7 +71,7 @@ public class ChangeNoteTextActor extends XmlActorAdapter {
 		return nodeAction;
 	}
 
-	public void setNoteText(MindMapNode node, String text) {
+	public void setNoteText(NodeRepresentation node, String text) {
 		String oldNoteText = node.getNoteText();
 		if (Tools.safeEquals(text, oldNoteText)) {
 			// they are equal.

@@ -51,7 +51,7 @@ import freemind.main.XMLParseException;
 import freemind.modes.MapAdapter;
 import freemind.modes.MindMap;
 import freemind.modes.MindMapLink;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.Mode;
 import freemind.modes.ModeController;
 import freemind.modes.NodeAdapter;
@@ -127,7 +127,7 @@ public class BrowseController extends ViewControllerAdapter {
 		}
 
 		protected MapNodePositionHolderBase getHook() {
-			MindMapNode selected = modeController.getSelected();
+			NodeRepresentation selected = modeController.getSelected();
 			MapNodePositionHolderBase hook = MapNodePositionHolderBase
 					.getBaseHook(selected);
 			return hook;
@@ -181,7 +181,7 @@ public class BrowseController extends ViewControllerAdapter {
 		if (component.isInFollowLinkRegion(e.getX())) {
 			loadURL();
 		} else {
-			MindMapNode node = (component).getNodeView().getModel();
+			NodeRepresentation node = (component).getNodeView().getModel();
 			if (!node.hasChildren()) {
 				// the emulate the plain click.
 				doubleClick(e);
@@ -226,7 +226,7 @@ public class BrowseController extends ViewControllerAdapter {
 	// foldOthers(parent);
 	// }
 
-	public MindMapNode newNode(Object userObject, MindMap map) {
+	public NodeRepresentation newNode(Object userObject, MindMap map) {
 		return new BrowseNodeModel(userObject, map);
 	}
 
@@ -249,7 +249,7 @@ public class BrowseController extends ViewControllerAdapter {
 
 			arrowLinkPopup.addSeparator();
 			// add all links from target and from source:
-			HashSet<MindMapNode> nodeAlreadyVisited = new HashSet<>();
+			HashSet<NodeRepresentation> nodeAlreadyVisited = new HashSet<>();
 			nodeAlreadyVisited.add(link.getSource());
 			nodeAlreadyVisited.add(link.getTarget());
 			Vector<MindMapLink> links = getModel().getLinkRegistry().getAllLinks(link.getSource());
@@ -273,7 +273,7 @@ public class BrowseController extends ViewControllerAdapter {
 
 	/**
 	 */
-	private GotoLinkNodeAction getGotoLinkNodeAction(MindMapNode destination) {
+	private GotoLinkNodeAction getGotoLinkNodeAction(NodeRepresentation destination) {
 		return new GotoLinkNodeAction(this, destination);
 	}
 
@@ -356,7 +356,7 @@ public class BrowseController extends ViewControllerAdapter {
 		super.newMap(mapModel, modeController);
 	}
 
-	private void setNoteIcon(MindMapNode node) {
+	private void setNoteIcon(NodeRepresentation node) {
 		String noteText = node.getNoteText();
 		if (noteText != null && !noteText.equals("")) {
 			// icon
@@ -366,9 +366,9 @@ public class BrowseController extends ViewControllerAdapter {
 			}
 			node.setStateIcon(NodeNoteBase.NODE_NOTE_ICON, noteIcon);
 		}
-		ListIterator<MindMapNode> children = node.childrenUnfolded();
+		ListIterator<NodeRepresentation> children = node.childrenUnfolded();
 		while (children.hasNext()) {
-			setNoteIcon((MindMapNode) children.next());
+			setNoteIcon((NodeRepresentation) children.next());
 		}
 
 	}

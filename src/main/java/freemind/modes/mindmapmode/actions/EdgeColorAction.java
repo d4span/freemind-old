@@ -26,7 +26,7 @@ package freemind.modes.mindmapmode.actions;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import freemind.controller.Controller;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 
 @SuppressWarnings("serial")
@@ -45,7 +45,7 @@ public class EdgeColorAction extends MindmapAction {
 				.getEdge().getColor());
 		if (color == null)
 			return;
-		for (MindMapNode selected : controller.getSelecteds()) {
+		for (NodeRepresentation selected : controller.getSelecteds()) {
 
 			controller.setEdgeColor(selected, color);
 		}

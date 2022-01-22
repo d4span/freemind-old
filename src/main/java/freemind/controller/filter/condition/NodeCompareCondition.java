@@ -26,7 +26,7 @@ package freemind.controller.filter.condition;
 import freemind.controller.Controller;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 class NodeCompareCondition extends CompareConditionAdapter {
 
@@ -44,7 +44,7 @@ class NodeCompareCondition extends CompareConditionAdapter {
 		this.succeed = succeed;
 	}
 
-	public boolean checkNode(Controller c, MindMapNode node) {
+	public boolean checkNode(Controller c, NodeRepresentation node) {
 		try {
 			return succeed == (compareTo(node.getText()) == comparationResult);
 		} catch (NumberFormatException fne) {

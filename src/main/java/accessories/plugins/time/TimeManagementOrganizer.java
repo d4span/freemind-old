@@ -29,7 +29,7 @@ import freemind.controller.MenuItemEnabledListener;
 import freemind.extensions.HookRegistration;
 import freemind.extensions.PermanentNodeHook;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.common.plugins.ReminderHookBase;
 import freemind.modes.mindmapmode.actions.NodeHookAction;
@@ -69,7 +69,7 @@ public class TimeManagementOrganizer implements HookRegistration,
 			String hookName = ((NodeHookAction) action).getHookName();
 			if (hookName.equals("plugins/time/RemoveReminderHook.java")) {
 				boolean visible = false;
-				for (MindMapNode node : controller.getSelecteds()) {
+				for (NodeRepresentation node : controller.getSelecteds()) {
 					if (TimeManagementOrganizer.getHook(node) != null) {
 						visible = true;
 					}
@@ -82,7 +82,7 @@ public class TimeManagementOrganizer implements HookRegistration,
 
 	/**
 	 */
-	public static ReminderHookBase getHook(MindMapNode node) {
+	public static ReminderHookBase getHook(NodeRepresentation node) {
 		for (PermanentNodeHook element : node.getActivatedHooks()) {
 			if (element instanceof ReminderHookBase) {
 				return (ReminderHookBase) element;

@@ -29,7 +29,7 @@ import java.util.ListIterator;
 import freemind.controller.Controller;
 import freemind.controller.filter.condition.Condition;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.view.mindmapview.MapView;
 import freemind.view.mindmapview.NodeView;
 
@@ -67,7 +67,7 @@ public class DefaultFilter implements Filter {
 				c.getFrame().setWaitingCursor(true);
 				MindMap map = c.getModel();
 				MapView mapView = c.getView();
-				MindMapNode root = map.getRootNode();
+				NodeRepresentation root = map.getRootNode();
 				resetFilter(root);
 				if (filterChildren(root, c, condition.checkNode(c, root), false)) {
 					addFilterResult(root, FILTER_SHOW_ANCESTOR);
@@ -110,21 +110,21 @@ public class DefaultFilter implements Filter {
 	 * @param c
 	 *            TODO
 	 */
-	private boolean filterChildren(MindMapNode parent, Controller c,
-			boolean isAncestorSelected, boolean isAncestorEclipsed) {
-		ListIterator<MindMapNode> iterator = parent.childrenUnfolded();
+	private boolean filterChildren(NodeRepresentation parent, Controller c,
+                                   boolean isAncestorSelected, boolean isAncestorEclipsed) {
+		ListIterator<NodeRepresentation> iterator = parent.childrenUnfolded();
 		boolean isDescendantSelected = false;
 		while (iterator.hasNext()) {
-			MindMapNode node = (MindMapNode) iterator.next();
+			NodeRepresentation node = (NodeRepresentation) iterator.next();
 			isDescendantSelected = applyFilter(node, c, isAncestorSelected,
 					isAncestorEclipsed, isDescendantSelected);
 		}
 		return isDescendantSelected;
 	}
 
-	private boolean applyFilter(MindMapNode node, Controller c,
-			boolean isAncestorSelected, boolean isAncestorEclipsed,
-			boolean isDescendantSelected) {
+	private boolean applyFilter(NodeRepresentation node, Controller c,
+                                boolean isAncestorSelected, boolean isAncestorEclipsed,
+                                boolean isDescendantSelected) {
 		resetFilter(node);
 		if (isAncestorSelected)
 			addFilterResult(node, FILTER_SHOW_DESCENDANT);
@@ -152,7 +152,7 @@ public class DefaultFilter implements Filter {
 	 * @see
 	 * freemind.controller.filter.Filter#isVisible(freemind.modes.MindMapNode)
 	 */
-	public boolean isVisible(MindMapNode node) {
+	public boolean isVisible(NodeRepresentation node) {
 		if (condition == null)
 			return true;
 		int filterResult = node.getFilterInfo().get();
@@ -161,11 +161,11 @@ public class DefaultFilter implements Filter {
 
 	}
 
-	static public void resetFilter(MindMapNode node) {
+	static public void resetFilter(NodeRepresentation node) {
 		node.getFilterInfo().reset();
 	}
 
-	static void addFilterResult(MindMapNode node, int flag) {
+	static void addFilterResult(NodeRepresentation node, int flag) {
 		node.getFilterInfo().add(flag);
 	}
 

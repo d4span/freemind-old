@@ -64,7 +64,7 @@ import freemind.controller.StructuredMenuHolder;
 import freemind.controller.actions.generated.instance.ManageStyleEditorWindowConfigurationStorage;
 import freemind.controller.actions.generated.instance.Pattern;
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.StylePatternFactory;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.dialogs.StylePatternFrame;
@@ -438,7 +438,7 @@ public class ManagePatternsPopupDialog extends JDialog implements
 		writePatternBackToModel();
 		setLastSelectedPattern(null);
 		Pattern pattern = mPatternListModel.get(selectedIndex);
-		for (MindMapNode node : mController.getSelecteds()) {
+		for (NodeRepresentation node : mController.getSelecteds()) {
 			mController.applyPattern(node, pattern);
 		}
 	}

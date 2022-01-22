@@ -26,7 +26,7 @@ package freemind.controller.filter.condition;
 import freemind.controller.Controller;
 import freemind.main.Resources;
 import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.attributes.Attribute;
 
 /**
@@ -51,7 +51,7 @@ public class AttributeNotExistsCondition extends NodeCondition {
 	 * freemind.controller.filter.condition.Condition#checkNode(freemind.modes
 	 * .MindMapNode)
 	 */
-	public boolean checkNode(Controller c, MindMapNode node) {
+	public boolean checkNode(Controller c, NodeRepresentation node) {
 		for (int i = 0; i < node.getAttributeTableLength(); i++) {
 			Attribute attribute2 = node.getAttribute(i);
 			if (attribute2.getName().equals(attribute))

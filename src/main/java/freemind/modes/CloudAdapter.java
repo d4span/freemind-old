@@ -41,7 +41,7 @@ public abstract class CloudAdapter extends LineAdapter implements MindMapCloud {
 	//
 	// Constructors
 	//
-	public CloudAdapter(MindMapNode target, MapFeedback pMapFeedback) {
+	public CloudAdapter(NodeRepresentation target, MapFeedback pMapFeedback) {
 		super(target, pMapFeedback);
 		NORMAL_WIDTH = 3;
 		iterativeLevel = -1;
@@ -57,10 +57,10 @@ public abstract class CloudAdapter extends LineAdapter implements MindMapCloud {
 	 * size
 	 */
 
-	private void calcIterativeLevel(MindMapNode target) {
+	private void calcIterativeLevel(NodeRepresentation target) {
 		iterativeLevel = 0;
 		if (target != null) {
-			for (MindMapNode parentNode = target.getParentNode(); parentNode != null; parentNode = parentNode
+			for (NodeRepresentation parentNode = target.getParentNode(); parentNode != null; parentNode = parentNode
 					.getParentNode()) {
 				MindMapCloud cloud = parentNode.getCloud();
 				if (cloud != null) {
@@ -71,7 +71,7 @@ public abstract class CloudAdapter extends LineAdapter implements MindMapCloud {
 		}
 	}
 
-	public void setTarget(MindMapNode target) {
+	public void setTarget(NodeRepresentation target) {
 		super.setTarget(target);
 	}
 

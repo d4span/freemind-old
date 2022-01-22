@@ -29,7 +29,7 @@ import javax.swing.Action;
 import javax.swing.JMenuItem;
 
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 
 /**
@@ -49,8 +49,8 @@ public class AddArrowLinkAction extends MindmapAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		MindMapNode selected = modeController.getSelected();
-		Vector<MindMapNode> nodesFromClipboard = Tools
+		NodeRepresentation selected = modeController.getSelected();
+		Vector<NodeRepresentation> nodesFromClipboard = Tools
 				.getMindMapNodesFromClipboard(modeController);
 		if (nodesFromClipboard.size() == 0) {
 			modeController.getController().errorMessage(
@@ -58,7 +58,7 @@ public class AddArrowLinkAction extends MindmapAction {
 			return;
 		}
 		boolean identicalError = false;
-		for (MindMapNode destination : nodesFromClipboard) {
+		for (NodeRepresentation destination : nodesFromClipboard) {
 			if(selected != destination) {
 				getMindMapController().addLink(selected, destination);				
 			} else {

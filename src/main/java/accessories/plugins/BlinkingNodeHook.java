@@ -27,7 +27,7 @@ import java.util.Vector;
 
 import javax.swing.SwingUtilities;
 
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.hooks.PermanentMindMapNodeHookAdapter;
 import freemind.view.mindmapview.NodeView;
 import freemind.view.mindmapview.NodeViewVisitor;
@@ -53,7 +53,7 @@ public class BlinkingNodeHook extends PermanentMindMapNodeHookAdapter {
 	 * 
 	 * @see freemind.modes.NodeHook#startupMapHook(java.lang.String)
 	 */
-	public void invoke(MindMapNode node) {
+	public void invoke(NodeRepresentation node) {
 		super.invoke(node);
 		if (timer == null) {
 			timer = new Timer();

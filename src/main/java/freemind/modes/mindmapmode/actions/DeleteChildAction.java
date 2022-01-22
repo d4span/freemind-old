@@ -29,7 +29,7 @@ import javax.swing.JOptionPane;
 import freemind.common.OptionalDontShowMeAgainDialog;
 import freemind.controller.actions.generated.instance.DeleteNodeAction;
 import freemind.main.FreeMind;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 
 @SuppressWarnings("serial")
@@ -43,7 +43,7 @@ public class DeleteChildAction extends MindmapAction  {
 
 	public void actionPerformed(ActionEvent e) {
 		// ask user if not root is selected:
-		for (MindMapNode node : mMindMapController.getSelecteds()) {
+		for (NodeRepresentation node : mMindMapController.getSelecteds()) {
 			if (node.isRoot()) {
 				mMindMapController.getController().errorMessage(
 						mMindMapController.getFrame().getResourceString(

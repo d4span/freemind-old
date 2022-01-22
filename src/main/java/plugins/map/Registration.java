@@ -33,6 +33,7 @@ import java.util.Vector;
 import javax.swing.Action;
 import javax.swing.JMenuItem;
 
+import freemind.modes.NodeRepresentation;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.MemoryTileCache;
 import org.openstreetmap.gui.jmapviewer.OsmFileCacheTileLoader;
@@ -57,7 +58,6 @@ import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.main.Tools.IntHolder;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.NodeHookAction;
@@ -336,7 +336,7 @@ public class Registration implements HookRegistration, ActorXml,
 	public void changePosition(MapNodePositionHolder pHolder,
 			Coordinate pPosition, Coordinate pMapCenter, int pZoom,
 			String pTileSource) {
-		MindMapNode node = pHolder.getNode();
+		NodeRepresentation node = pHolder.getNode();
 		PlaceNodeXmlAction doAction = createPlaceNodeXmlActionAction(node,
 				pPosition, pMapCenter, pZoom, pTileSource);
 		PlaceNodeXmlAction undoAction = createPlaceNodeXmlActionAction(node,
@@ -356,8 +356,8 @@ public class Registration implements HookRegistration, ActorXml,
 	 * @return
 	 */
 	private PlaceNodeXmlAction createPlaceNodeXmlActionAction(
-			MindMapNode pNode, Coordinate pPosition, Coordinate pMapCenter,
-			int pZoom, String pTileSource) {
+            NodeRepresentation pNode, Coordinate pPosition, Coordinate pMapCenter,
+            int pZoom, String pTileSource) {
 		logger.info("Setting position of node " + pNode);
 		PlaceNodeXmlAction action = new PlaceNodeXmlAction();
 		action.setNode(controller.getNodeID(pNode));
@@ -380,7 +380,7 @@ public class Registration implements HookRegistration, ActorXml,
 	public void act(XmlAction pAction) {
 		if (pAction instanceof PlaceNodeXmlAction) {
 			PlaceNodeXmlAction placeAction = (PlaceNodeXmlAction) pAction;
-			MindMapNode node = controller.getNodeFromID(placeAction.getNode());
+			NodeRepresentation node = controller.getNodeFromID(placeAction.getNode());
 			MapNodePositionHolder hook = MapNodePositionHolder.getHook(node);
 			if (hook != null) {
 				hook.setMapCenter(new Coordinate(placeAction
@@ -451,7 +451,7 @@ public class Registration implements HookRegistration, ActorXml,
 						.equals(hookName)
 				|| AddMapImageToNodeAction.NODE_CONTEXT_PLUGIN_NAME
 						.equals(hookName)) {
-			for (MindMapNode node : controller.getSelecteds()) {
+			for (NodeRepresentation node : controller.getSelecteds()) {
 				MapNodePositionHolder hook = MapNodePositionHolder
 						.getHook(node);
 				if (hook != null) {

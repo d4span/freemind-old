@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 
@@ -39,12 +39,12 @@ public class ShowCloneNodes extends MindMapNodeHookAdapter{
 	/* (non-Javadoc)
 	 * @see freemind.extensions.NodeHookAdapter#invoke(freemind.modes.MindMapNode)
 	 */
-	public void invoke(MindMapNode pNode) {
+	public void invoke(NodeRepresentation pNode) {
 		super.invoke(pNode);
-		final Vector<MindMapNode> newSelecteds = new Vector<>();
+		final Vector<NodeRepresentation> newSelecteds = new Vector<>();
 		final MindMapController mindMapController = getMindMapController();
-		List<MindMapNode> selecteds = mindMapController.getSelecteds();
-		for (MindMapNode node : selecteds) {
+		List<NodeRepresentation> selecteds = mindMapController.getSelecteds();
+		for (NodeRepresentation node : selecteds) {
 			addClonesToList(newSelecteds, node);
 			newSelecteds.remove(node);
 		}
@@ -52,17 +52,17 @@ public class ShowCloneNodes extends MindMapNodeHookAdapter{
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					mindMapController.select(
-							(MindMapNode) newSelecteds.get(0), newSelecteds);
+							(NodeRepresentation) newSelecteds.get(0), newSelecteds);
 				}
 			});
 		}
 	}
 
-	protected void addClonesToList(Vector<MindMapNode> newSelecteds, MindMapNode node) {
+	protected void addClonesToList(Vector<NodeRepresentation> newSelecteds, NodeRepresentation node) {
 		ClonePlugin hook = ClonePlugin.getHook(node);
 		if(hook != null) {
 			// original found. 
-			HashSet<MindMapNode> clones = hook.getCloneNodes();
+			HashSet<NodeRepresentation> clones = hook.getCloneNodes();
 			newSelecteds.addAll(clones);
 		}
 	}

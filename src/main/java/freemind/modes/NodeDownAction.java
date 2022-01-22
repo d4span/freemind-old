@@ -38,8 +38,8 @@ public class NodeDownAction extends MindmapAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		MindMapNode selected = modeController.getSelected();
-		List<MindMapNode> selecteds = modeController.getSelecteds();
+		NodeRepresentation selected = modeController.getSelected();
+		List<NodeRepresentation> selecteds = modeController.getSelecteds();
 		modeController.moveNodes(selected, selecteds, 1);
 		modeController.select(selected, selecteds);
 

@@ -20,6 +20,18 @@
 
 package freemind.modes;
 
+import freemind.controller.filter.FilterInfo;
+import freemind.extensions.NodeHook;
+import freemind.extensions.PermanentNodeHook;
+import freemind.main.XMLElement;
+import freemind.modes.attributes.Attribute;
+import freemind.modes.mindmapmode.actions.MindMapActions;
+
+import javax.swing.ImageIcon;
+import javax.swing.event.EventListenerList;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.IOException;
@@ -30,20 +42,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.SortedMap;
 
-import javax.swing.ImageIcon;
-import javax.swing.event.EventListenerList;
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreePath;
-
-import freemind.controller.filter.FilterInfo;
-import freemind.extensions.NodeHook;
-import freemind.extensions.PermanentNodeHook;
-import freemind.main.XMLElement;
-import freemind.modes.attributes.Attribute;
-import freemind.modes.mindmapmode.actions.MindMapActions;
-
-public interface MindMapNode extends MutableTreeNode {
+public interface NodeRepresentation extends MutableTreeNode {
 
 	public static final String STYLE_BUBBLE = "bubble";
 	public static final String STYLE_FORK = "fork";
@@ -109,33 +108,33 @@ public interface MindMapNode extends MutableTreeNode {
 	 * @return returns a ListIterator of all children of the node if the node is
 	 *         unfolded. EMPTY_LIST_ITERATOR otherwise.
 	 * */
-	ListIterator<MindMapNode> childrenFolded();
+	ListIterator<NodeRepresentation> childrenFolded();
 
 	/**
 	 * @return returns a ListIterator of all (and not only the unfolded ones!!)
 	 *         children of the node.
 	 * */
-	ListIterator<MindMapNode> childrenUnfolded();
+	ListIterator<NodeRepresentation> childrenUnfolded();
 
 	/**
 	 * @return returns a ListIterator of all (and not only the unfolded ones!!)
 	 *         children of the node sorted in the way they occur (if called from root, this
 	 *         has the effect to sort the children first left then right).
 	 * */
-	ListIterator<MindMapNode> sortedChildrenUnfolded();
+	ListIterator<NodeRepresentation> sortedChildrenUnfolded();
 	
 	/**
 	 * @return a list of (unmodifiable) children (all ones, folded and unfolded)
 	 *         of type MindMapNode.
 	 */
-	List<MindMapNode> getChildren();
+	List<NodeRepresentation> getChildren();
 
 	boolean hasChildren();
 
 	public FilterInfo getFilterInfo();
 
 	/** @return -1 if the argument childNode is not a child. */
-	int getChildPosition(MindMapNode childNode);
+	int getChildPosition(NodeRepresentation childNode);
 
 	int getNodeLevel();
 
@@ -167,7 +166,7 @@ public interface MindMapNode extends MutableTreeNode {
 	// returns false if and only if the style is inherited from parent
 	boolean hasStyle();
 
-	MindMapNode getParentNode();
+	NodeRepresentation getParentNode();
 
 	boolean isBold();
 
@@ -193,7 +192,7 @@ public interface MindMapNode extends MutableTreeNode {
 	 * Returns whether the argument is parent or parent of one of the grandpa's
 	 * of this node. (transitive)
 	 */
-	boolean isDescendantOf(MindMapNode node);
+	boolean isDescendantOf(NodeRepresentation node);
 
 	/**
 	 * If the test node is identical or in the same family and elder as the
@@ -202,7 +201,7 @@ public interface MindMapNode extends MutableTreeNode {
 	 * 
 	 * @see isDecendantOf
 	 */
-	boolean isDescendantOfOrEqual(MindMapNode pParentNode);
+	boolean isDescendantOfOrEqual(NodeRepresentation pParentNode);
 
 	boolean isRoot();
 
@@ -315,7 +314,7 @@ public interface MindMapNode extends MutableTreeNode {
 	/**
 	 * Is only used to store encrypted content of an encrypted mind map node.
 	 * 
-	 * @see MindMapNode.setAdditionalInfo(String)
+	 * @see NodeRepresentation.setAdditionalInfo(String)
 	 */
 	public String getAdditionalInfo();
 
@@ -323,7 +322,7 @@ public interface MindMapNode extends MutableTreeNode {
 	 * @return a flat copy of this node including all extras like notes, etc.
 	 *         But the children are not copied!
 	 */
-	MindMapNode shallowCopy();
+	NodeRepresentation shallowCopy();
 
 	/**
 	 * @param saveHidden

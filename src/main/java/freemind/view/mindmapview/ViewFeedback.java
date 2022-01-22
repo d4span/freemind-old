@@ -30,7 +30,7 @@ import freemind.controller.NodeDropListener;
 import freemind.controller.NodeKeyListener;
 import freemind.controller.NodeMotionListener;
 import freemind.controller.NodeMouseMotionListener;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 /**
  * ViewFeedback is an interface implemented by the ModeController classes
@@ -61,7 +61,7 @@ public interface ViewFeedback {
 	 * @param pModel
 	 * @param pFold true means, that the node should be folded.
 	 */
-	void setFolded(MindMapNode pModel, boolean pFold);
+	void setFolded(NodeRepresentation pModel, boolean pFold);
 
 	/**
 	 * @param pNewView

@@ -33,7 +33,7 @@ import freemind.controller.MenuItemEnabledListener;
 import freemind.extensions.HookRegistration;
 import freemind.modes.MapAdapter;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.common.dialogs.EnterPasswordDialog;
 import freemind.modes.mindmapmode.EncryptedMindMapNode;
@@ -117,7 +117,7 @@ public class EncryptNode extends MindMapNodeHookAdapter {
 		super();
 	}
 
-	public void invoke(MindMapNode node) {
+	public void invoke(NodeRepresentation node) {
 		super.invoke(node);
 		String actionType = getResourceString("action");
 		if (actionType.equals("encrypt")) {
@@ -164,7 +164,7 @@ public class EncryptNode extends MindMapNodeHookAdapter {
 
 	/**
      */
-	private void encrypt(MindMapNode node) {
+	private void encrypt(NodeRepresentation node) {
 		final StringBuffer password = getUsersPassword();
 		if (password == null) {
 			return;
@@ -173,7 +173,7 @@ public class EncryptNode extends MindMapNodeHookAdapter {
 		// FIXME: not multithreading safe
 		mindmapcontroller.setNewNodeCreator(new NewNodeCreator() {
 
-			public MindMapNode createNode(Object userObject, MindMap map) {
+			public NodeRepresentation createNode(Object userObject, MindMap map) {
 				EncryptedMindMapNode encryptedMindMapNode = new EncryptedMindMapNode(
 						userObject, map);
 				encryptedMindMapNode.setPassword(password);
@@ -207,7 +207,7 @@ public class EncryptNode extends MindMapNodeHookAdapter {
 
 	/**
      */
-	private void toggleCryptState(MindMapNode node) {
+	private void toggleCryptState(NodeRepresentation node) {
 		final MindMapController mindMapController = getMindMapController();
 		if (node instanceof EncryptedMindMapNode) {
 			EncryptedMindMapNode encNode = (EncryptedMindMapNode) node;

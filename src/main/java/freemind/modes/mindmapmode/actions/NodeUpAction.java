@@ -26,7 +26,7 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.logging.Logger;
 
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 
 @SuppressWarnings("serial")
@@ -44,8 +44,8 @@ public class NodeUpAction extends MindmapAction  {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		MindMapNode selected = modeController.getSelected();
-		List<MindMapNode> selecteds = modeController.getSelecteds();
+		NodeRepresentation selected = modeController.getSelected();
+		List<NodeRepresentation> selecteds = modeController.getSelecteds();
 		modeController.moveNodes(selected, selecteds, -1);
 		modeController.select(selected, selecteds);
 	}

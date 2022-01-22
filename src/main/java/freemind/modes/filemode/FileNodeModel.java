@@ -29,7 +29,7 @@ import java.util.ListIterator;
 
 import freemind.main.Tools;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.NodeAdapter;
 
 /**
@@ -53,7 +53,7 @@ public class FileNodeModel extends NodeAdapter {
 
 	// Overwritten get Methods
 	public String getStyle() {
-		return MindMapNode.STYLE_FORK;
+		return NodeRepresentation.STYLE_FORK;
 		// // This condition shows the code is not quite logical:
 		// // ordinary file should not be considered folded and
 		// // therefore the clause !isLeaf() should not be necessary.
@@ -115,7 +115,7 @@ public class FileNodeModel extends NodeAdapter {
 	/**
      * 
      */
-	public ListIterator<MindMapNode> childrenFolded() {
+	public ListIterator<NodeRepresentation> childrenFolded() {
 		if (!isRoot()) {
 			if (isFolded() || isLeaf()) {
 				return Collections.emptyListIterator();
@@ -125,7 +125,7 @@ public class FileNodeModel extends NodeAdapter {
 		return childrenUnfolded();
 	}
 
-	public ListIterator<MindMapNode> childrenUnfolded() {
+	public ListIterator<NodeRepresentation> childrenUnfolded() {
 		if (children != null) {
 			return children.listIterator();
 		}
@@ -149,7 +149,7 @@ public class FileNodeModel extends NodeAdapter {
 		} catch (SecurityException se) {
 		}
 		// return children.listIterator();
-		return children != null ? children.listIterator() : Collections.<MindMapNode>emptyListIterator();
+		return children != null ? children.listIterator() : Collections.<NodeRepresentation>emptyListIterator();
 	}
 
 	public boolean isLeaf() {

@@ -28,7 +28,7 @@ import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindIcon;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
@@ -48,15 +48,15 @@ public class RemoveIconActor extends NodeXmlActorAdapter {
 		return RemoveIconXmlAction.class;
 	}
 	
-	public RemoveIconXmlAction createRemoveIconXmlAction(MindMapNode node,
-			int iconPosition) {
+	public RemoveIconXmlAction createRemoveIconXmlAction(NodeRepresentation node,
+                                                         int iconPosition) {
 		RemoveIconXmlAction action = new RemoveIconXmlAction();
 		action.setNode(getNodeID(node));
 		action.setIconPosition(iconPosition);
 		return action;
 	}
 
-	private ActionPair apply(MindMapNode selected) {
+	private ActionPair apply(NodeRepresentation selected) {
 		List<MindIcon> icons = selected.getIcons();
 		if (icons.size() == 0)
 			return null;
@@ -65,7 +65,7 @@ public class RemoveIconActor extends NodeXmlActorAdapter {
 		return new ActionPair(
 				createRemoveIconXmlAction(selected, MindIcon.LAST), undoAction);
 	}
-	public int removeLastIcon(MindMapNode node) {
+	public int removeLastIcon(NodeRepresentation node) {
 		execute(apply(node));
 		return node.getIcons().size();
 	}
@@ -77,7 +77,7 @@ public class RemoveIconActor extends NodeXmlActorAdapter {
 	public void act(XmlAction action) {
 		if (action instanceof freemind.controller.actions.generated.instance.RemoveIconXmlAction) {
 			freemind.controller.actions.generated.instance.RemoveIconXmlAction removeAction = (freemind.controller.actions.generated.instance.RemoveIconXmlAction) action;
-			MindMapNode node = getNodeFromID(removeAction
+			NodeRepresentation node = getNodeFromID(removeAction
 					.getNode());
 			int position = removeAction.getIconPosition();
 			node.removeIcon(position);
@@ -89,7 +89,7 @@ public class RemoveIconActor extends NodeXmlActorAdapter {
 	 * @see freemind.modes.mindmapmode.actions.NodeActorXml#apply(freemind.modes.MindMap, freemind.modes.MindMapNode)
 	 */
 	@Override
-	public ActionPair apply(MindMap pModel, MindMapNode pSelected) {
+	public ActionPair apply(MindMap pModel, NodeRepresentation pSelected) {
 		return apply(pSelected);
 	}
 

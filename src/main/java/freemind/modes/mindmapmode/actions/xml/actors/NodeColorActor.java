@@ -26,7 +26,7 @@ import freemind.controller.actions.generated.instance.NodeColorFormatAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
@@ -42,7 +42,7 @@ public class NodeColorActor extends XmlActorAdapter {
 		super(pMapFeedback);
 	}
 
-	public void setNodeColor(MindMapNode node, Color color) {
+	public void setNodeColor(NodeRepresentation node, Color color) {
 		if (Tools.safeEquals(color, node.getColor())) {
 			return;
 		}
@@ -53,8 +53,8 @@ public class NodeColorActor extends XmlActorAdapter {
 		execute(new ActionPair(doAction, undoAction));
 	}
 
-	public NodeColorFormatAction createNodeColorFormatAction(MindMapNode node,
-			Color color) {
+	public NodeColorFormatAction createNodeColorFormatAction(NodeRepresentation node,
+                                                             Color color) {
 		NodeColorFormatAction nodeAction = new NodeColorFormatAction();
 		nodeAction.setNode(getNodeID(node));
 		nodeAction.setColor(Tools.colorToXml(color));
@@ -65,7 +65,7 @@ public class NodeColorActor extends XmlActorAdapter {
 		if (action instanceof NodeColorFormatAction) {
 			NodeColorFormatAction nodeColorAction = (NodeColorFormatAction) action;
 			Color color = Tools.xmlToColor(nodeColorAction.getColor());
-			MindMapNode node = getNodeFromID(nodeColorAction
+			NodeRepresentation node = getNodeFromID(nodeColorAction
 					.getNode());
 			Color oldColor = node.getColor();
 			if (!Tools.safeEquals(color, oldColor)) {

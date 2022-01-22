@@ -34,7 +34,7 @@ import javax.swing.SwingUtilities;
 
 import freemind.main.HtmlTools;
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 /**
  * Base class for all node views.
@@ -316,7 +316,7 @@ public abstract class MainView extends JLabel {
 	}
 
 	public boolean isInFollowLinkRegion(double xCoord) {
-		final MindMapNode model = getNodeView().getModel();
+		final NodeRepresentation model = getNodeView().getModel();
 		return model.getLink() != null
 				&& (model.isRoot() || !model.hasChildren() || isInVerticalRegion(
 						xCoord, 1. / 2));

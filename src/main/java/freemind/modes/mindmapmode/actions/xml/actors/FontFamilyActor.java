@@ -26,7 +26,7 @@ import freemind.controller.actions.generated.instance.FontNodeAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
@@ -50,11 +50,11 @@ public class FontFamilyActor extends XmlActorAdapter {
 
 	/**
      */
-	public void setFontFamily(MindMapNode node, String fontFamilyValue) {
+	public void setFontFamily(NodeRepresentation node, String fontFamilyValue) {
 		execute(getActionPair(node, fontFamilyValue));
 	}
 
-	public ActionPair getActionPair(MindMapNode node, String fontFamilyValue) {
+	public ActionPair getActionPair(NodeRepresentation node, String fontFamilyValue) {
 		FontNodeAction fontFamilyAction = createFontNodeAction(node,
 				fontFamilyValue);
 		FontNodeAction undoFontFamilyAction = createFontNodeAction(node,
@@ -62,8 +62,8 @@ public class FontFamilyActor extends XmlActorAdapter {
 		return new ActionPair(fontFamilyAction, undoFontFamilyAction);
 	}
 
-	private FontNodeAction createFontNodeAction(MindMapNode node,
-			String fontValue) {
+	private FontNodeAction createFontNodeAction(NodeRepresentation node,
+                                                String fontValue) {
 		FontNodeAction fontFamilyAction = new FontNodeAction();
 		fontFamilyAction.setNode(getNodeID(node));
 		fontFamilyAction.setFont(fontValue);
@@ -78,7 +78,7 @@ public class FontFamilyActor extends XmlActorAdapter {
 	public void act(XmlAction action) {
 		if (action instanceof FontNodeAction) {
 			FontNodeAction fontFamilyAction = (FontNodeAction) action;
-			MindMapNode node = getNodeFromID(fontFamilyAction.getNode());
+			NodeRepresentation node = getNodeFromID(fontFamilyAction.getNode());
 			String fontFamily = fontFamilyAction.getFont();
 			if (!Tools.safeEquals(node.getFontFamilyName(), fontFamily)) {
 				((NodeAdapter) node).establishOwnFont();

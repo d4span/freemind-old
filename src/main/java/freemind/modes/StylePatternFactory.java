@@ -140,7 +140,7 @@ public class StylePatternFactory {
 		writer.close();
 	}
 
-	public static Pattern createPatternFromNode(MindMapNode node) {
+	public static Pattern createPatternFromNode(NodeRepresentation node) {
 		Pattern pattern = new Pattern();
 
 		if (node.getColor() != null) {
@@ -353,10 +353,10 @@ public class StylePatternFactory {
 		return null;
 	}
 
-	public static Pattern createPatternFromSelected(MindMapNode focussed,
-			List<MindMapNode> selected) {
+	public static Pattern createPatternFromSelected(NodeRepresentation focussed,
+                                                    List<NodeRepresentation> selected) {
 		Pattern nodePattern = createPatternFromNode(focussed);
-		for (MindMapNode node : selected) {
+		for (NodeRepresentation node : selected) {
 			Pattern tempNodePattern = createPatternFromNode(node);
 			nodePattern = intersectPattern(nodePattern, tempNodePattern);
 		}
@@ -384,7 +384,7 @@ public class StylePatternFactory {
 	}
 	
 	@Deprecated 
-	public static void applyPattern(Pattern pattern, MindMapNode pNode, MapFeedback pFeedback) {
+	public static void applyPattern(Pattern pattern, NodeRepresentation pNode, MapFeedback pFeedback) {
 		if (pattern.getPatternNodeColor() != null) {
 			pNode.setColor(Tools.xmlToColor(pattern
 					.getPatternNodeColor().getValue()));
@@ -485,8 +485,8 @@ public class StylePatternFactory {
 		}
 	}
 	
-	public static void applyPattern(MindMapNode node, Pattern pattern, 
-			List<Pattern> pPatternList, Set<MindMapControllerPlugin> pPlugins, ExtendedMapFeedback pMapFeedback) {
+	public static void applyPattern(NodeRepresentation node, Pattern pattern,
+                                    List<Pattern> pPatternList, Set<MindMapControllerPlugin> pPlugins, ExtendedMapFeedback pMapFeedback) {
 		if (pattern.getPatternNodeText() != null) {
 			if (pattern.getPatternNodeText().getValue() != null) {
 				pMapFeedback.setNodeText(node, pattern.getPatternNodeText()

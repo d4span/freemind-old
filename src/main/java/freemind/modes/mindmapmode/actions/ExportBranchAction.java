@@ -30,7 +30,7 @@ import javax.swing.JOptionPane;
 
 import freemind.main.Tools;
 import freemind.modes.FreeMindFileDialog;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.MindMapMapModel;
@@ -137,7 +137,7 @@ public class ExportBranchAction extends MindmapAction {
 				return;
 			}
 			// new node instead:
-			final MindMapNode newNode = mMindMapController.addNewNode(parent,
+			final NodeRepresentation newNode = mMindMapController.addNewNode(parent,
 					nodePosition, node.isLeft());
 			// TODO: Keep formatting of node.
 			mMindMapController.setNodeText(newNode, node.getText());

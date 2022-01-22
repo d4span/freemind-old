@@ -27,10 +27,10 @@ import javax.swing.JComponent;
 
 import freemind.controller.Controller;
 import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 public interface Condition {
-	boolean checkNode(Controller c, MindMapNode node);
+	boolean checkNode(Controller c, NodeRepresentation node);
 
 	public JComponent getListCellRendererComponent();
 

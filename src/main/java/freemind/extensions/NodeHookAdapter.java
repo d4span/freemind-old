@@ -20,7 +20,7 @@
 package freemind.extensions;
 
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 /**
  * Straight forward implementation with some helpers.
@@ -32,7 +32,7 @@ public abstract class NodeHookAdapter extends HookAdapter implements NodeHook {
 
 	private MindMap map;
 
-	private MindMapNode node;
+	private NodeRepresentation node;
 
 	/**
 	 * 
@@ -46,19 +46,19 @@ public abstract class NodeHookAdapter extends HookAdapter implements NodeHook {
 	 * 
 	 * @see freemind.modes.NodeHook#invoke()
 	 */
-	public void invoke(MindMapNode node) {
+	public void invoke(NodeRepresentation node) {
 		logger.finest("invoke(node) called.");
 	}
 
 	/**
 	 */
-	public MindMapNode getNode() {
+	public NodeRepresentation getNode() {
 		return node;
 	}
 
 	/**
 	 */
-	public void setNode(MindMapNode node) {
+	public void setNode(NodeRepresentation node) {
 		this.node = node;
 	}
 
@@ -70,7 +70,7 @@ public abstract class NodeHookAdapter extends HookAdapter implements NodeHook {
 
 	/**
 	 */
-	protected void nodeChanged(MindMapNode node) {
+	protected void nodeChanged(NodeRepresentation node) {
 		getController().nodeChanged(node);
 	}
 

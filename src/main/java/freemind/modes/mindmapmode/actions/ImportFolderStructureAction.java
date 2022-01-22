@@ -28,7 +28,7 @@ import javax.swing.JFileChooser;
 import freemind.main.FreeMindMain;
 import freemind.main.Tools;
 import freemind.modes.FreeMindFileDialog;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 
 @SuppressWarnings("serial")
@@ -78,7 +78,7 @@ public class ImportFolderStructureAction extends MindmapAction {
 		return controller.getFrame();
 	}
 
-	public void importFolderStructure(File folder, MindMapNode target,
+	public void importFolderStructure(File folder, NodeRepresentation target,
 			boolean redisplay) throws MalformedURLException {
 		logger.fine("Entering folder: " + folder);
 
@@ -90,7 +90,7 @@ public class ImportFolderStructureAction extends MindmapAction {
 				for (int i = 0; i < list.length; i++) {
 					if (list[i].isDirectory()) {
 						// Insert a new node
-						MindMapNode node = addNode(target, list[i].getName(),
+						NodeRepresentation node = addNode(target, list[i].getName(),
 								Tools.fileToUrl(list[i]).toString());
 						importFolderStructure(list[i], node, false);
 					}
@@ -110,9 +110,9 @@ public class ImportFolderStructureAction extends MindmapAction {
 
 	/**
      */
-	private MindMapNode addNode(MindMapNode target, String nodeContent,
-			String link) {
-		MindMapNode node = controller.addNewNode(target,
+	private NodeRepresentation addNode(NodeRepresentation target, String nodeContent,
+                                       String link) {
+		NodeRepresentation node = controller.addNewNode(target,
 				target.getChildCount(), target.isNewChildLeft());
 		controller.setNodeText(node, nodeContent);
 		controller.setLink(node, link);

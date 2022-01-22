@@ -23,13 +23,13 @@ package freemind.modes.browsemode;
 import freemind.main.XMLElement;
 import freemind.modes.ArrowLinkAdapter;
 import freemind.modes.MapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.view.mindmapview.MapView;
 
 public class BrowseArrowLinkModel extends ArrowLinkAdapter {
 
-	public BrowseArrowLinkModel(MindMapNode source, MindMapNode target,
-			MapFeedback pMapFeedback) {
+	public BrowseArrowLinkModel(NodeRepresentation source, NodeRepresentation target,
+                                MapFeedback pMapFeedback) {
 		super(source, target, pMapFeedback);
 	}
 

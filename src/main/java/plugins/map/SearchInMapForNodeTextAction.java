@@ -29,7 +29,7 @@ import freemind.common.OptionalDontShowMeAgainDialog;
 import freemind.common.TextTranslator;
 import freemind.main.FreeMind;
 import freemind.main.HtmlTools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 
 /**
@@ -50,12 +50,12 @@ public class SearchInMapForNodeTextAction extends MindMapNodeHookAdapter {
 	 * @see
 	 * freemind.extensions.NodeHookAdapter#invoke(freemind.modes.MindMapNode)
 	 */
-	public void invoke(MindMapNode pNode) {
+	public void invoke(NodeRepresentation pNode) {
 		// generate string to search for
 		StringBuffer sb = new StringBuffer();
 
-		List<MindMapNode> selecteds = getMindMapController().getSelecteds();
-		for (MindMapNode node : selecteds) {
+		List<NodeRepresentation> selecteds = getMindMapController().getSelecteds();
+		for (NodeRepresentation node : selecteds) {
 			// Convert to plain text
 			final String plainText = HtmlTools.htmlToPlain(node.getText());
 			if(sb.length()!=0) {

@@ -38,33 +38,33 @@ public interface MapFeedback {
 	 * Is issued before a node is deleted. It is issued via
 	 * NodeLifetimeListener.
 	 */
-	void fireNodePreDeleteEvent(MindMapNode node);
+	void fireNodePreDeleteEvent(NodeRepresentation node);
 	
 	/**
 	 * Is issued after a node is deleted. It is issued via
 	 * NodeLifetimeListener.
 	 */
-	void fireNodePostDeleteEvent(MindMapNode node, MindMapNode parent);
+	void fireNodePostDeleteEvent(NodeRepresentation node, NodeRepresentation parent);
 	
 	/**
 	 * @param pNode
 	 */
-	void firePreSaveEvent(MindMapNode pNode);
+	void firePreSaveEvent(NodeRepresentation pNode);
 	/**
 	 * Invoke this method after you've changed how a node is to be represented
 	 * in the tree.
 	 */
-	void nodeChanged(MindMapNode node);
+	void nodeChanged(NodeRepresentation node);
 
-	void nodeRefresh(MindMapNode node);
+	void nodeRefresh(NodeRepresentation node);
 
-	void fireRecursiveNodeCreateEvent(MindMapNode node);
+	void fireRecursiveNodeCreateEvent(NodeRepresentation node);
 	
 	/**
-	 * @see ModeController#paste(MindMapNode, MindMapNode)
+	 * @see ModeController#paste(NodeRepresentation, NodeRepresentation)
 	 */
-	void paste(MindMapNode pNode,
-			MindMapNode pParent);
+	void paste(NodeRepresentation pNode,
+               NodeRepresentation pParent);
 	/**
 	 * @param pTextId
 	 * @return the string from Resources_<lang>.properties belonging to the pResourceId.
@@ -110,13 +110,13 @@ public interface MapFeedback {
 	 * @param pNode
 	 * @return
 	 */
-	NodeHook createNodeHook(String pLoadName, MindMapNode pNode);
+	NodeHook createNodeHook(String pLoadName, NodeRepresentation pNode);
 
 	/**
 	 * @param pNode
 	 * @param pModel
 	 */
-	void invokeHooksRecursively(MindMapNode pNode, MindMap pModel);
+	void invokeHooksRecursively(NodeRepresentation pNode, MindMap pModel);
 
 	/**
 	 * @return a ViewAbstraction, if a view is attached, null otherwise.
@@ -128,7 +128,7 @@ public interface MapFeedback {
 	 */
 	ViewFeedback getViewFeedback();
 
-	void sortNodesByDepth(List<MindMapNode> inPlaceList);
+	void sortNodesByDepth(List<NodeRepresentation> inPlaceList);
 	
 }
 

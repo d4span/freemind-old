@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 
 import freemind.main.HtmlTools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.view.mindmapview.MapView;
 
@@ -41,18 +41,18 @@ public class JoinNodesAction extends MindmapAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		MindMapNode selectedNode = controller.getView().getSelected()
+		NodeRepresentation selectedNode = controller.getView().getSelected()
 				.getModel();
-		ArrayList<MindMapNode> selectedNodes = controller.getView()
+		ArrayList<NodeRepresentation> selectedNodes = controller.getView()
 				.getSelectedNodesSortedByY();
 		joinNodes(selectedNode, selectedNodes);
 	}
 
-	public void joinNodes(MindMapNode selectedNode, List<MindMapNode> selectedNodes) {
+	public void joinNodes(NodeRepresentation selectedNode, List<NodeRepresentation> selectedNodes) {
 		String newContent = "";
 		// Make sure the selected node do not have children
 		final MapView mapView = controller.getView();
-		for (MindMapNode node :selectedNodes) {
+		for (NodeRepresentation node :selectedNodes) {
 			if (node.hasChildren()) {
 				JOptionPane.showMessageDialog(mapView,
 						controller.getText("cannot_join_nodes_with_children"),
@@ -63,7 +63,7 @@ public class JoinNodesAction extends MindmapAction {
 
 		// Join
 		boolean isHtml = false;
-		for (MindMapNode node : selectedNodes) {
+		for (NodeRepresentation node : selectedNodes) {
 			final String nodeContent = node.toString();
 			final boolean isHtmlNode = HtmlTools.isHtmlNode(nodeContent);
 			newContent = addContent(newContent, isHtml, nodeContent, isHtmlNode);

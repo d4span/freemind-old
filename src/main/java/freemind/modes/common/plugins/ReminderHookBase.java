@@ -34,7 +34,7 @@ import javax.swing.Timer;
 import freemind.extensions.PermanentNodeHookAdapter;
 import freemind.main.XMLElement;
 import freemind.modes.MindIcon;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 /**
  * @author foltin
@@ -99,7 +99,7 @@ public abstract class ReminderHookBase extends PermanentNodeHookAdapter {
 		super.shutdownMapHook();
 	}
 
-	public void invoke(MindMapNode node) {
+	public void invoke(NodeRepresentation node) {
 		super.invoke(node);
 		if (remindUserAt == 0) {
 			return;
@@ -184,7 +184,7 @@ public abstract class ReminderHookBase extends PermanentNodeHookAdapter {
 
 	}
 
-	public void displayState(int stateAdded, MindMapNode pNode, boolean recurse) {
+	public void displayState(int stateAdded, NodeRepresentation pNode, boolean recurse) {
 		ImageIcon icon = null;
 		if (stateAdded == CLOCK_VISIBLE) {
 			icon = getClockIcon();
@@ -202,10 +202,10 @@ public abstract class ReminderHookBase extends PermanentNodeHookAdapter {
 		}
 	}
 
-	protected abstract void nodeRefresh(MindMapNode node);
+	protected abstract void nodeRefresh(NodeRepresentation node);
 
-	protected abstract void setToolTip(MindMapNode node, String key,
-			String value);
+	protected abstract void setToolTip(NodeRepresentation node, String key,
+                                       String value);
 
 	public long getRemindUserAt() {
 		return remindUserAt;

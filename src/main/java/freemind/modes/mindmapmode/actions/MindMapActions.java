@@ -33,7 +33,7 @@ import freemind.modes.MindIcon;
 import freemind.modes.MindMap;
 import freemind.modes.MindMapArrowLink;
 import freemind.modes.MindMapLink;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.attributes.Attribute;
 
 /**
@@ -62,9 +62,9 @@ public interface MindMapActions {
 	 * */
 	public void edit(KeyEvent e, boolean addNew, boolean editLong);
 
-	public void setNodeText(MindMapNode selected, String newText);
+	public void setNodeText(NodeRepresentation selected, String newText);
 
-	public void setNoteText(MindMapNode selected, String newText);
+	public void setNoteText(NodeRepresentation selected, String newText);
 
 	/**
 	 * Another variant of addNew. If the index of the new node as a child of
@@ -76,9 +76,9 @@ public interface MindMapActions {
 	 *            here, normally parent.isLeft() or null is used.
 	 * @return returns the new node.
 	 */
-	MindMapNode addNewNode(MindMapNode parent, int index, boolean newNodeIsLeft);
+	NodeRepresentation addNewNode(NodeRepresentation parent, int index, boolean newNodeIsLeft);
 
-	public void deleteNode(MindMapNode selectedNode);
+	public void deleteNode(NodeRepresentation selectedNode);
 
 	public Transferable cut();
 
@@ -87,17 +87,17 @@ public interface MindMapActions {
 	 *            a list of MindMapNode elements
 	 * @return the result of the cut operation.
 	 */
-	public Transferable cut(List<MindMapNode> nodeList);
+	public Transferable cut(List<NodeRepresentation> nodeList);
 
 	/**
 	 * moves selected and selecteds (if they are child of the same parent and
 	 * adjacent) in the direction specified (up = -1, down = 1).
 	 * */
-	void moveNodes(MindMapNode selected, List<MindMapNode> selecteds, int direction);
+	void moveNodes(NodeRepresentation selected, List<NodeRepresentation> selecteds, int direction);
 
 	/**
 	 */
-	void setFolded(MindMapNode node, boolean folded);
+	void setFolded(NodeRepresentation node, boolean folded);
 
 	/**
 	 * Switches the folding state of all selected nodes. In fact, it determines
@@ -106,46 +106,46 @@ public interface MindMapActions {
 	 */
 	void toggleFolded();
 
-	public void setBold(MindMapNode node, boolean bolded);
+	public void setBold(NodeRepresentation node, boolean bolded);
 
-	public void setStrikethrough(MindMapNode node, boolean strikethrough);
+	public void setStrikethrough(NodeRepresentation node, boolean strikethrough);
 	
-	public void setItalic(MindMapNode node, boolean isItalic);
+	public void setItalic(NodeRepresentation node, boolean isItalic);
 
-	public void setNodeColor(MindMapNode node, Color color);
+	public void setNodeColor(NodeRepresentation node, Color color);
 
-	public void setNodeBackgroundColor(MindMapNode node, Color color);
+	public void setNodeBackgroundColor(NodeRepresentation node, Color color);
 
-	public void blendNodeColor(MindMapNode node);
+	public void blendNodeColor(NodeRepresentation node);
 
-	public void setFontFamily(MindMapNode node, String fontFamily);
+	public void setFontFamily(NodeRepresentation node, String fontFamily);
 
-	public void setFontSize(MindMapNode node, String fontSizeValue);
+	public void setFontSize(NodeRepresentation node, String fontSizeValue);
 
 	/**
 	 * This method is nice, but how to get a MindIcon ? see
 	 * freemind.modes.MindIcon.factory(String)
 	 */
-	public void addIcon(MindMapNode node, MindIcon icon);
+	public void addIcon(NodeRepresentation node, MindIcon icon);
 
-	public int removeLastIcon(MindMapNode node);
+	public int removeLastIcon(NodeRepresentation node);
 
-	public void removeAllIcons(MindMapNode node);
+	public void removeAllIcons(NodeRepresentation node);
 
-	public void applyPattern(MindMapNode node, Pattern pattern);
+	public void applyPattern(NodeRepresentation node, Pattern pattern);
 
-	public void setNodeStyle(MindMapNode node, String style);
+	public void setNodeStyle(NodeRepresentation node, String style);
 
-	public void setEdgeColor(MindMapNode node, Color color);
+	public void setEdgeColor(NodeRepresentation node, Color color);
 
 	/** The widths range from -1 (for equal to parent) to 0 (thin), 1, 2, 4, 8. */
-	public void setEdgeWidth(MindMapNode node, int width);
+	public void setEdgeWidth(NodeRepresentation node, int width);
 
-	public void setEdgeStyle(MindMapNode node, String style);
+	public void setEdgeStyle(NodeRepresentation node, String style);
 
-	public void setCloud(MindMapNode node, boolean enable);
+	public void setCloud(NodeRepresentation node, boolean enable);
 
-	public void setCloudColor(MindMapNode node, Color color);
+	public void setCloudColor(NodeRepresentation node, Color color);
 
 	// public void setCloudWidth(MindMapNode node, int width);
 	// public void setCloudStyle(MindMapNode node, String style);
@@ -153,7 +153,7 @@ public interface MindMapActions {
 	 * Source holds the MindMapArrowLinkModel and points to the id placed in
 	 * target.
 	 */
-	public void addLink(MindMapNode source, MindMapNode target);
+	public void addLink(NodeRepresentation source, NodeRepresentation target);
 
 	public void removeReference(MindMapLink arrowLink);
 
@@ -168,7 +168,7 @@ public interface MindMapActions {
 	/**
 	 * Adds a textual hyperlink to a node (e.g. http:/freemind.sourceforge.net)
 	 */
-	public void setLink(MindMapNode node, String link);
+	public void setLink(NodeRepresentation node, String link);
 
 	/**
 	 * @param t the content to be pasted
@@ -179,15 +179,15 @@ public interface MindMapActions {
 	 *            right.
 	 * @return true, if successfully.
 	 */
-	public boolean paste(Transferable t, MindMapNode target, boolean asSibling,
-			boolean isLeft);
+	public boolean paste(Transferable t, NodeRepresentation target, boolean asSibling,
+                         boolean isLeft);
 
-	public void paste(MindMapNode node, MindMapNode parent);
+	public void paste(NodeRepresentation node, NodeRepresentation parent);
 
 	// hooks, fc 28.2.2004:
-	public void addHook(MindMapNode focussed, List<MindMapNode> selecteds, String hookName, Properties pHookProperties);
+	public void addHook(NodeRepresentation focussed, List<NodeRepresentation> selecteds, String hookName, Properties pHookProperties);
 
-	public void removeHook(MindMapNode focussed, List<MindMapNode> selecteds, String hookName);
+	public void removeHook(NodeRepresentation focussed, List<NodeRepresentation> selecteds, String hookName);
 
 	/**
 	 * This is the only way to instanciate new Hooks. THEY HAVE TO BE INVOKED
@@ -196,25 +196,25 @@ public interface MindMapActions {
 	 * PermanentNodeHook. If the hook policy specifies, that only one instance
 	 * may exist per node, it returns this instance if it already exists.
 	 * */
-	NodeHook createNodeHook(String hookName, MindMapNode node);
+	NodeHook createNodeHook(String hookName, NodeRepresentation node);
 	
-	void invokeHooksRecursively(MindMapNode node, MindMap map);
+	void invokeHooksRecursively(NodeRepresentation node, MindMap map);
 
 	// end hooks
 
 	/**
 	 * Moves the node to a new position.
 	 */
-	public void moveNodePosition(MindMapNode node, int vGap, int hGap,
-			int shiftY);
+	public void moveNodePosition(NodeRepresentation node, int vGap, int hGap,
+                                 int shiftY);
 
-	void setAttribute(MindMapNode node, int pPosition, Attribute pAttribute);
+	void setAttribute(NodeRepresentation node, int pPosition, Attribute pAttribute);
 	
 	/**
 	 * Inserts a new attribute at a given place of the attributes table.
-	 * To insert an attribute as the last item, {link {@link #addAttribute(MindMapNode, Attribute)} instead.
+	 * To insert an attribute as the last item, {link {@link #addAttribute(NodeRepresentation, Attribute)} instead.
 	 */
-	void insertAttribute(MindMapNode node, int pPosition, Attribute pAttribute);
+	void insertAttribute(NodeRepresentation node, int pPosition, Attribute pAttribute);
 
 	/**
 	 * Inserts a new attribute at the end of the attributes table.
@@ -225,7 +225,7 @@ public interface MindMapActions {
 	 *            itself
 	 * @return the index of the new attribute.
 	 */
-	int addAttribute(MindMapNode node, Attribute pAttribute);
+	int addAttribute(NodeRepresentation node, Attribute pAttribute);
 
 	/**
 	 * Removes the attribute at the given position
@@ -233,7 +233,7 @@ public interface MindMapActions {
 	 * @param pPosition
 	 *            the position to delete.
 	 * */
-	void removeAttribute(MindMapNode node, int pPosition);
+	void removeAttribute(NodeRepresentation node, int pPosition);
 
 
 }

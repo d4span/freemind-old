@@ -35,7 +35,7 @@ public interface MindMapLine extends Cloneable {
 	public String toString();
 
 	/** The node to which this line is associated. */
-	public void setTarget(MindMapNode node);
+	public void setTarget(NodeRepresentation node);
 
 	public Object clone();
 }

@@ -53,7 +53,7 @@ import com.inet.jortho.SpellChecker;
 import freemind.main.FreeMindCommon;
 import freemind.main.Resources;
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 
 /**
@@ -112,7 +112,7 @@ public class EditNodeTextField extends EditNodeBase {
 		// Set textFields's properties
 
 		final NodeView nodeView = getNode();
-		final MindMapNode model = nodeView.getModel();
+		final NodeRepresentation model = nodeView.getModel();
 		int xSize = nodeView.getMainView().getTextWidth() + widthAddition;
 		xOffset += nodeView.getMainView().getTextX();
 		int xExtraWidth = 0;

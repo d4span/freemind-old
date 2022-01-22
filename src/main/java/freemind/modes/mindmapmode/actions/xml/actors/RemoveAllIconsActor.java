@@ -26,7 +26,7 @@ import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindIcon;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
@@ -43,7 +43,7 @@ public class RemoveAllIconsActor extends NodeXmlActorAdapter {
 	}
 
 	public RemoveAllIconsXmlAction createRemoveAllIconsXmlAction(
-			MindMapNode node) {
+			NodeRepresentation node) {
 		RemoveAllIconsXmlAction action = new RemoveAllIconsXmlAction();
 		action.setNode(getNodeID(node));
 		return action;
@@ -52,7 +52,7 @@ public class RemoveAllIconsActor extends NodeXmlActorAdapter {
 	public void act(XmlAction action) {
 		if (action instanceof RemoveAllIconsXmlAction) {
 			RemoveAllIconsXmlAction removeAction = (RemoveAllIconsXmlAction) action;
-			MindMapNode node = getNodeFromID(removeAction
+			NodeRepresentation node = getNodeFromID(removeAction
 					.getNode());
 			while (node.getIcons().size() > 0) {
 				node.removeIcon(MindIcon.LAST);
@@ -61,7 +61,7 @@ public class RemoveAllIconsActor extends NodeXmlActorAdapter {
 		}
 	}
 
-	public void removeAllIcons(MindMapNode node) {
+	public void removeAllIcons(NodeRepresentation node) {
 		getExMapFeedback().doTransaction(
 				this.getClass().getName(), apply(getExMapFeedback().getMap(), node));
 	}
@@ -70,7 +70,7 @@ public class RemoveAllIconsActor extends NodeXmlActorAdapter {
 		return RemoveAllIconsXmlAction.class;
 	}
 
-	public ActionPair apply(MindMap model, MindMapNode selected) {
+	public ActionPair apply(MindMap model, NodeRepresentation selected) {
 		CompoundAction undoAction = new CompoundAction();
 		for (MindIcon icon : selected.getIcons()) {
 			undoAction.addChoice(getExMapFeedback().getActorFactory().getAddIconActor().createAddIconAction(selected,

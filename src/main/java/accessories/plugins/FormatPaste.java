@@ -26,7 +26,7 @@ package accessories.plugins;
 import javax.swing.JOptionPane;
 
 import freemind.controller.actions.generated.instance.Pattern;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.StylePatternFactory;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 
@@ -41,7 +41,7 @@ public class FormatPaste extends MindMapNodeHookAdapter {
 		super();
 	}
 
-	public void invoke(MindMapNode node) {
+	public void invoke(NodeRepresentation node) {
 		super.invoke(node);
 		String actionType = getResourceString("actionType");
 		if (actionType.equals("copy_format")) {
@@ -53,7 +53,7 @@ public class FormatPaste extends MindMapNodeHookAdapter {
 
 	/**
      */
-	private void pasteFormat(MindMapNode node) {
+	private void pasteFormat(NodeRepresentation node) {
 		if (pattern == null) {
 			JOptionPane.showMessageDialog(getMindMapController().getFrame()
 					.getContentPane(),
@@ -66,7 +66,7 @@ public class FormatPaste extends MindMapNodeHookAdapter {
 
 	/**
      */
-	private void copyFormat(MindMapNode node) {
+	private void copyFormat(NodeRepresentation node) {
 		pattern = StylePatternFactory.createPatternFromNode(node);
 	}
 

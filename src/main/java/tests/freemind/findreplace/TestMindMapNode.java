@@ -50,11 +50,11 @@ import freemind.modes.MindMap;
 import freemind.modes.MindMapCloud;
 import freemind.modes.MindMapEdge;
 import freemind.modes.MindMapLinkRegistry;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.attributes.Attribute;
 
-public final class TestMindMapNode implements MindMapNode {
+public final class TestMindMapNode implements NodeRepresentation {
 	private String text = "";
 	private Vector<TestMindMapNode> children = new Vector<TestMindMapNode>();
 	private TestMindMapNode mNewParent;
@@ -96,15 +96,15 @@ public final class TestMindMapNode implements MindMapNode {
 		return null;
 	}
 
-	public int getChildPosition(MindMapNode childNode) {
+	public int getChildPosition(NodeRepresentation childNode) {
 		return children.indexOf(childNode);
 	}
 
-	public MindMapNode getPreferredChild() {
+	public NodeRepresentation getPreferredChild() {
 		return null;
 	}
 
-	public void setPreferredChild(MindMapNode node) {
+	public void setPreferredChild(NodeRepresentation node) {
 	}
 
 	public int getNodeLevel() {
@@ -138,7 +138,7 @@ public final class TestMindMapNode implements MindMapNode {
 		return false;
 	}
 
-	public MindMapNode getParentNode() {
+	public NodeRepresentation getParentNode() {
 		return mNewParent;
 	}
 
@@ -174,7 +174,7 @@ public final class TestMindMapNode implements MindMapNode {
 		return null;
 	}
 
-	public boolean isDescendantOf(MindMapNode node) {
+	public boolean isDescendantOf(NodeRepresentation node) {
 		return false;
 	}
 
@@ -298,7 +298,7 @@ public final class TestMindMapNode implements MindMapNode {
 		return null;
 	}
 
-	public MindMapNode shallowCopy() {
+	public NodeRepresentation shallowCopy() {
 		return null;
 	}
 
@@ -465,7 +465,7 @@ public final class TestMindMapNode implements MindMapNode {
 		return true;
 	}
 
-	public boolean isDescendantOfOrEqual(MindMapNode pParentNode) {
+	public boolean isDescendantOfOrEqual(NodeRepresentation pParentNode) {
 		// TODO Auto-generated method stub
 		return false;
 	}

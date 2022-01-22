@@ -22,11 +22,11 @@ package freemind.modes.mindmapmode;
 
 import freemind.modes.CloudAdapter;
 import freemind.modes.MapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 public class MindMapCloudModel extends CloudAdapter {
 
-	public MindMapCloudModel(MindMapNode node, MapFeedback pMapFeedback) {
+	public MindMapCloudModel(NodeRepresentation node, MapFeedback pMapFeedback) {
 		super(node, pMapFeedback);
 	}
 

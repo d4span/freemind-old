@@ -25,7 +25,7 @@ package freemind.modes.attributes;
 
 import javax.swing.table.TableModel;
 
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 /**
  * @author Dimitri Polivaev 10.07.2005
@@ -39,7 +39,7 @@ public interface AttributeTableModel extends TableModel {
 
 	void setValueAt(Object o, int row, int col);
 
-	MindMapNode getNode();
+	NodeRepresentation getNode();
 
 	void fireTableDataChanged();
 }

@@ -22,7 +22,7 @@ package freemind.modes.mindmapmode.actions.xml.actors;
 
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindMapLinkRegistry;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
@@ -92,7 +92,7 @@ public abstract class XmlActorAdapter implements ActorXml {
 	/**
 	 * @return
 	 */
-	protected MindMapNode getSelected() {
+	protected NodeRepresentation getSelected() {
 		return getExMapFeedback().getSelected();
 	}
 
@@ -100,7 +100,7 @@ public abstract class XmlActorAdapter implements ActorXml {
 	 * @param pSelected
 	 * @return
 	 */
-	protected String getNodeID(MindMapNode pNode) {
+	protected String getNodeID(NodeRepresentation pNode) {
 		return getExMapFeedback().getNodeID(pNode);
 	}
 

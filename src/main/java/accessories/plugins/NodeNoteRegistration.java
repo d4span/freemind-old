@@ -56,7 +56,7 @@ import freemind.main.FreeMindCommon;
 import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.ModeController.NodeLifetimeListener;
 import freemind.modes.ModeController.NodeSelectionListener;
@@ -106,7 +106,7 @@ public class NodeNoteRegistration implements HookRegistration,
 	}
 
 	private final class NoteDocumentListener implements DocumentListener {
-		private MindMapNode mNode;
+		private NodeRepresentation mNode;
 
 		public void changedUpdate(DocumentEvent arg0) {
 			docEvent();
@@ -139,7 +139,7 @@ public class NodeNoteRegistration implements HookRegistration,
 			docEvent();
 		}
 
-		public void setNode(MindMapNode pNode) {
+		public void setNode(NodeRepresentation pNode) {
 			mNode = pNode;
 		}
 	}
@@ -149,7 +149,7 @@ public class NodeNoteRegistration implements HookRegistration,
 	private final class NotesManager implements NodeSelectionListener,
 			NodeLifetimeListener {
 
-		private MindMapNode node;
+		private NodeRepresentation node;
 
 		public NotesManager() {
 		}
@@ -190,7 +190,7 @@ public class NodeNoteRegistration implements HookRegistration,
 			document.addDocumentListener(mNoteDocumentListener);
 		}
 
-		public void onSaveNode(MindMapNode node) {
+		public void onSaveNode(NodeRepresentation node) {
 			if (this.node != node) {
 				return;
 			}
@@ -232,13 +232,13 @@ public class NodeNoteRegistration implements HookRegistration,
 			}
 		}
 
-		public void onCreateNodeHook(MindMapNode node) {
+		public void onCreateNodeHook(NodeRepresentation node) {
 			if (node.getXmlNoteText() != null) {
 				setStateIcon(node, true);
 			}
 		}
 		
-		public void onUpdateNodeHook(MindMapNode node) {
+		public void onUpdateNodeHook(NodeRepresentation node) {
 			// update display only, if the node is displayed.
 			String newText = node.getNoteText();
 			if (node == controller.getSelected()
@@ -250,10 +250,10 @@ public class NodeNoteRegistration implements HookRegistration,
 			setStateIcon(node, !(newText == null || newText.equals("")));
 		}
 		
-		public void onPreDeleteNode(MindMapNode node) {
+		public void onPreDeleteNode(NodeRepresentation node) {
 		}
 
-		public void onPostDeleteNode(MindMapNode pNode, MindMapNode pParent) {
+		public void onPostDeleteNode(NodeRepresentation pNode, NodeRepresentation pParent) {
 		}
 
 		public void onSelectionChange(NodeView pNode, boolean pIsSelected) {
@@ -287,7 +287,7 @@ public class NodeNoteRegistration implements HookRegistration,
 
 	private static ImageIcon noteIcon = null;
 
-	protected void setStateIcon(MindMapNode node, boolean enabled) {
+	protected void setStateIcon(NodeRepresentation node, boolean enabled) {
 		// icon
 		if (noteIcon == null) {
 			noteIcon = freemind.view.ImageFactory.getInstance().createUnscaledIcon(

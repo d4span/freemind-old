@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Vector;
 
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 import freemind.view.mindmapview.MapView;
 
@@ -67,13 +67,13 @@ public class NewParentNode extends MindMapNodeHookAdapter {
 	 * @see freemind.extensions.NodeHook#invoke(freemind.modes.MindMapNode,
 	 * java.util.List)
 	 */
-	public void invoke(MindMapNode rootNode) {
+	public void invoke(NodeRepresentation rootNode) {
 		final MapView mapView = getMindMapController().getView();
 		// we dont need node.
-		MindMapNode focussed = getMindMapController().getSelected();
-		List<MindMapNode> selecteds = getMindMapController().getSelecteds();
-		MindMapNode selectedNode = focussed;
-		List<MindMapNode> selectedNodes = selecteds;
+		NodeRepresentation focussed = getMindMapController().getSelected();
+		List<NodeRepresentation> selecteds = getMindMapController().getSelecteds();
+		NodeRepresentation selectedNode = focussed;
+		List<NodeRepresentation> selectedNodes = selecteds;
 
 		// bug fix: sort to make independent by user's selection:
 		getMindMapController().sortNodesByDepth(selectedNodes);
@@ -81,19 +81,19 @@ public class NewParentNode extends MindMapNodeHookAdapter {
 		if (focussed.isRoot()) {
 			if (selecteds.size() == 1) {
 				// only root is selected. we try to create a new root:
-				Vector<MindMapNode> children = new Vector<>(rootNode.getChildren());
+				Vector<NodeRepresentation> children = new Vector<>(rootNode.getChildren());
 				// copy only root.
 				Transferable rootContent = getMindMapController().copySingle();
 				// and paste it directly again.
 				getMindMapController().paste(rootContent, rootNode);
-				Vector<MindMapNode> childrenNew = new Vector<>(rootNode.getChildren());
+				Vector<NodeRepresentation> childrenNew = new Vector<>(rootNode.getChildren());
 				/*
 				 * look for the new node as the difference between former
 				 * children and new children.
 				 */
-				MindMapNode rootCopy = null;
+				NodeRepresentation rootCopy = null;
 				boolean found = false;
-				for (Iterator<MindMapNode> it = childrenNew.iterator(); it.hasNext();) {
+				for (Iterator<NodeRepresentation> it = childrenNew.iterator(); it.hasNext();) {
 					rootCopy = it.next();
 					if (!children.contains(rootCopy)) {
 						found = true;
@@ -115,7 +115,7 @@ public class NewParentNode extends MindMapNodeHookAdapter {
 			return;
 		}
 
-		MindMapNode newNode = moveToNewParent(rootNode, selectedNode,
+		NodeRepresentation newNode = moveToNewParent(rootNode, selectedNode,
 				selectedNodes);
 		if (newNode == null) {
 			return;
@@ -129,18 +129,18 @@ public class NewParentNode extends MindMapNodeHookAdapter {
 		// selectedParent.getViewer(), null, false, false, false);
 	}
 
-	private MindMapNode moveToNewParent(MindMapNode rootNode,
-			MindMapNode selectedNode, List<MindMapNode> selectedNodes) {
+	private NodeRepresentation moveToNewParent(NodeRepresentation rootNode,
+                                               NodeRepresentation selectedNode, List<NodeRepresentation> selectedNodes) {
 		// Create new node in the position of the selectedNode
-		MindMapNode selectedParent = selectedNode.getParentNode();
+		NodeRepresentation selectedParent = selectedNode.getParentNode();
 		int childPosition = selectedParent.getChildPosition(selectedNode);
-		MindMapNode newNode = getMindMapController().addNewNode(selectedParent,
+		NodeRepresentation newNode = getMindMapController().addNewNode(selectedParent,
 				childPosition, selectedNode.isLeft());
 		return moveToOtherNode(rootNode, selectedNodes, selectedParent, newNode);
 	}
 
-	private MindMapNode moveToOtherNode(MindMapNode rootNode,
-			List<MindMapNode> nodesToBeMoved, MindMapNode selectedParent, MindMapNode newNode) {
+	private NodeRepresentation moveToOtherNode(NodeRepresentation rootNode,
+                                               List<NodeRepresentation> nodesToBeMoved, NodeRepresentation selectedParent, NodeRepresentation newNode) {
 		if (nodesToBeMoved.size() == 0) {
 			// nothing to do.
 			return newNode;
@@ -149,7 +149,7 @@ public class NewParentNode extends MindMapNodeHookAdapter {
 		// (this restriction is to simplify the action, and could
 		// possibly be removed in the future, when we have undo)
 		// Also make sure that none of the selected nodes are the root node
-		for (MindMapNode node :nodesToBeMoved) {
+		for (NodeRepresentation node :nodesToBeMoved) {
 			if (node.getParentNode() != selectedParent) {
 				getMindMapController().getController().errorMessage(
 						getResourceString("cannot_add_parent_diff_parents"));

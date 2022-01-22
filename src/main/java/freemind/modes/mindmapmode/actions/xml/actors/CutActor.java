@@ -29,7 +29,7 @@ import freemind.controller.actions.generated.instance.CutNodeAction;
 import freemind.controller.actions.generated.instance.UndoPasteNodeAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 import freemind.modes.mindmapmode.actions.xml.actors.PasteActor.NodeCoordinate;
 
@@ -46,13 +46,13 @@ public class CutActor extends XmlActorAdapter {
 		super(pMapFeedback);
 	}
 
-	public CutNodeAction getCutNodeAction(MindMapNode node) {
+	public CutNodeAction getCutNodeAction(NodeRepresentation node) {
 		CutNodeAction cutAction = new CutNodeAction();
 		cutAction.setNode(getNodeID(node));
 		return cutAction;
 	}
 
-	public Transferable cut(List<MindMapNode> nodeList) {
+	public Transferable cut(List<NodeRepresentation> nodeList) {
 		getExMapFeedback().sortNodesByDepth(nodeList);
 		Transferable totalCopy = getExMapFeedback().copy(nodeList, true);
 		// Do-action
@@ -61,8 +61,8 @@ public class CutActor extends XmlActorAdapter {
 		CompoundAction undo = new CompoundAction();
 		// sort selectedNodes list by depth, in order to guarantee that sons are
 		// deleted first:
-		for (Iterator<MindMapNode> i = nodeList.iterator(); i.hasNext();) {
-			MindMapNode node = i.next();
+		for (Iterator<NodeRepresentation> i = nodeList.iterator(); i.hasNext();) {
+			NodeRepresentation node = i.next();
 			if (node.getParentNode() == null)
 				continue;
 			CutNodeAction cutNodeAction = getCutNodeAction(node);
@@ -92,7 +92,7 @@ public class CutActor extends XmlActorAdapter {
 	 */
 	public void act(XmlAction action) {
 		CutNodeAction cutAction = (CutNodeAction) action;
-		MindMapNode selectedNode = getNodeFromID(cutAction
+		NodeRepresentation selectedNode = getNodeFromID(cutAction
 				.getNode());
 		getXmlActorFactory().getDeleteChildActor().deleteWithoutUndo(selectedNode);
 	}

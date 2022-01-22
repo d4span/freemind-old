@@ -40,6 +40,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import freemind.modes.NodeRepresentation;
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGeneratorContext.GraphicContextDefaults;
@@ -49,7 +50,6 @@ import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 
 import freemind.extensions.ExportHook;
-import freemind.modes.MindMapNode;
 import freemind.view.mindmapview.MapView;
 import freemind.view.mindmapview.NodeView;
 
@@ -84,7 +84,7 @@ public class ExportVectorGraphic extends ExportHook {
 		return g2d;
 	}
 
-	protected SVGGraphics2D fillSVGGraphics2D(MapView view, MindMapNode pNode) {
+	protected SVGGraphics2D fillSVGGraphics2D(MapView view, NodeRepresentation pNode) {
 		SVGGraphics2D g2d = createSvgGraphics2D();
 		try {
 			view.preparePrinting();

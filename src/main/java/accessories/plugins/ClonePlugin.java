@@ -34,7 +34,7 @@ import accessories.plugins.ClonePasteAction.Registration;
 import freemind.extensions.PermanentNodeHook;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController.NodeLifetimeListener;
 import freemind.modes.mindmapmode.hooks.PermanentMindMapNodeHookAdapter;
 
@@ -57,7 +57,7 @@ public class ClonePlugin extends PermanentMindMapNodeHookAdapter implements
 	 * Includes the original node. This is a cached list with the MindMapNodes
 	 * belonging to the {@link ClonePlugin#mCloneNodeIds mCloneNodeIds}.
 	 */
-	private HashSet<MindMapNode> mCloneNodes;
+	private HashSet<NodeRepresentation> mCloneNodes;
 
 	private String mCloneId;
 	private boolean mDisabled = false;
@@ -67,12 +67,12 @@ public class ClonePlugin extends PermanentMindMapNodeHookAdapter implements
 	public ClonePlugin() {
 	}
 
-	public void invoke(MindMapNode node) {
+	public void invoke(NodeRepresentation node) {
 		super.invoke(node);
 		registerPlugin();
 	}
 
-	public void addClone(MindMapNode cloneNode) {
+	public void addClone(NodeRepresentation cloneNode) {
 		mCloneNodeIds.add(getMindMapController().getNodeID(cloneNode));
 		clearCloneCache();
 	}
@@ -101,7 +101,7 @@ public class ClonePlugin extends PermanentMindMapNodeHookAdapter implements
 	protected void removeHook() {
 		// first deactivate cloning for this node (otherwise, the deactivation will be cloned, too!)
 		deregisterCloning();
-		Vector<MindMapNode> selecteds = Tools.getVectorWithSingleElement(getNode());
+		Vector<NodeRepresentation> selecteds = Tools.getVectorWithSingleElement(getNode());
 		getMindMapController()
 				.addHook(getNode(), selecteds, PLUGIN_LABEL, null);
 	}
@@ -170,13 +170,13 @@ public class ClonePlugin extends PermanentMindMapNodeHookAdapter implements
 		 * child of clone, this is here not reachable, as the plugin remains
 		 * active and is not newly invoked. Hmm, what to do?
 		 */
-		MindMapNode originalNode = getNode();
-		HashSet<MindMapNode> cloneNodes = getCloneNodes();
+		NodeRepresentation originalNode = getNode();
+		HashSet<NodeRepresentation> cloneNodes = getCloneNodes();
 		logger.fine("Invoke shadow class with orig: "
 				+ printNodeId(originalNode) + " and clones "
 				+ printNodeIds(cloneNodes));
 		// check for error case that clones are descendant of one another.
-		for (MindMapNode cloneNode : cloneNodes) {
+		for (NodeRepresentation cloneNode : cloneNodes) {
 			if (originalNode != null && originalNode.isDescendantOf(cloneNode)) {
 				disablePlugin();
 				return;
@@ -216,10 +216,10 @@ public class ClonePlugin extends PermanentMindMapNodeHookAdapter implements
 		getRegistration().deregisterClone(mCloneId, this);
 	}
 
-	public void onCreateNodeHook(MindMapNode node) {
-		HashSet<MindMapNode> cloneNodes = getCloneNodes();
-		for (MindMapNode clone :cloneNodes) {
-			for (MindMapNode clone2 : cloneNodes) {
+	public void onCreateNodeHook(NodeRepresentation node) {
+		HashSet<NodeRepresentation> cloneNodes = getCloneNodes();
+		for (NodeRepresentation clone :cloneNodes) {
+			for (NodeRepresentation clone2 : cloneNodes) {
 				if (clone != clone2) {
 					checkForChainError(clone, node, clone2);
 				}
@@ -227,19 +227,19 @@ public class ClonePlugin extends PermanentMindMapNodeHookAdapter implements
 		}
 	}
 
-	public void onPreDeleteNode(MindMapNode node) {
+	public void onPreDeleteNode(NodeRepresentation node) {
 	}
 
-	public void onPostDeleteNode(MindMapNode node, MindMapNode parent) {
+	public void onPostDeleteNode(NodeRepresentation node, NodeRepresentation parent) {
 	}
 
 	/**
-	 * @return a list of {@link MindMapNode}s including the original node!
+	 * @return a list of {@link NodeRepresentation}s including the original node!
 	 */
-	HashSet<MindMapNode> getCloneNodes() {
+	HashSet<NodeRepresentation> getCloneNodes() {
 		// is list up to date?
 		if (mCloneNodes != null) {
-			for (MindMapNode cloneNode :mCloneNodes) {
+			for (NodeRepresentation cloneNode :mCloneNodes) {
 				if (cloneNode.getParentNode() == null) {
 					clearCloneCache();
 				}
@@ -267,7 +267,7 @@ public class ClonePlugin extends PermanentMindMapNodeHookAdapter implements
 	 * @param pCloneNode
 	 * @return
 	 */
-	private String printNodeId(MindMapNode pCloneNode) {
+	private String printNodeId(NodeRepresentation pCloneNode) {
 		try {
 			return getMindMapController().getNodeID(pCloneNode) + ": '"
 					+ (pCloneNode.getShortText(getMindMapController())) + "'";
@@ -280,16 +280,16 @@ public class ClonePlugin extends PermanentMindMapNodeHookAdapter implements
 	 * @param pTargets
 	 * @return
 	 */
-	private String printNodeIds(Collection<MindMapNode> pTargets) {
+	private String printNodeIds(Collection<NodeRepresentation> pTargets) {
 		Vector<String> strings = new Vector<>();
-		for (MindMapNode node : pTargets) {
+		for (NodeRepresentation node : pTargets) {
 			strings.add(printNodeId(node));
 		}
 		return "" + strings;
 	}
 
-	private void checkForChainError(MindMapNode originalNode, MindMapNode node,
-			MindMapNode cloneNode) {
+	private void checkForChainError(NodeRepresentation originalNode, NodeRepresentation node,
+                                    NodeRepresentation cloneNode) {
 		if (cloneNode.isDescendantOfOrEqual(node)
 				&& node.isDescendantOfOrEqual(originalNode)) {
 			// orig -> .... -> node -> .. -> clone
@@ -297,7 +297,7 @@ public class ClonePlugin extends PermanentMindMapNodeHookAdapter implements
 		}
 	}
 
-	public void removeClone(MindMapNode pCloneNode) {
+	public void removeClone(NodeRepresentation pCloneNode) {
 		String nodeID = getMindMapController().getNodeID(pCloneNode);
 		mCloneNodeIds.remove(nodeID);
 		clearCloneCache();
@@ -310,7 +310,7 @@ public class ClonePlugin extends PermanentMindMapNodeHookAdapter implements
 		}
 	}
 
-	public static ClonePlugin getHook(MindMapNode originalNode) {
+	public static ClonePlugin getHook(NodeRepresentation originalNode) {
 		if (originalNode == null) {
 			return null;
 		}
@@ -333,13 +333,13 @@ public class ClonePlugin extends PermanentMindMapNodeHookAdapter implements
 		super.processUnfinishedLinks();
 		if (mDisabled)
 			return;
-		HashSet<MindMapNode> cloneNodes = getCloneNodes();
+		HashSet<NodeRepresentation> cloneNodes = getCloneNodes();
 		// activate other clones, if not already activated.
-		for (MindMapNode cloneNode : cloneNodes) {
+		for (NodeRepresentation cloneNode : cloneNodes) {
 			ClonePlugin hook = getHook(cloneNode);
 			if (hook == null && cloneNode != null) {
 				// add hook to clone partner:
-				Vector<MindMapNode> selecteds = Tools.getVectorWithSingleElement(cloneNode);
+				Vector<NodeRepresentation> selecteds = Tools.getVectorWithSingleElement(cloneNode);
 				// Transport the data to the plugin, as this method calls
 				// invoke.
 				Properties hookProperties = new Properties();

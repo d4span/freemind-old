@@ -27,7 +27,7 @@ import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.LineAdapter;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
@@ -43,15 +43,15 @@ public class CloudColorActor extends XmlActorAdapter {
 		super(pMapFeedback);
 	}
 
-	public void setCloudColor(MindMapNode node, Color color) {
+	public void setCloudColor(NodeRepresentation node, Color color) {
 		CloudColorXmlAction doAction = createCloudColorXmlAction(node, color);
 		CloudColorXmlAction undoAction = createCloudColorXmlAction(node,
 				(node.getCloud() == null) ? null : node.getCloud().getColor());
 		execute(new ActionPair(doAction, undoAction));
 	}
 
-	public CloudColorXmlAction createCloudColorXmlAction(MindMapNode node,
-			Color color) {
+	public CloudColorXmlAction createCloudColorXmlAction(NodeRepresentation node,
+                                                         Color color) {
 		CloudColorXmlAction nodeAction = new CloudColorXmlAction();
 		nodeAction.setNode(getNodeID(node));
 		nodeAction.setColor(Tools.colorToXml(color));
@@ -62,7 +62,7 @@ public class CloudColorActor extends XmlActorAdapter {
 		if (action instanceof CloudColorXmlAction) {
 			CloudColorXmlAction nodeColorAction = (CloudColorXmlAction) action;
 			Color color = Tools.xmlToColor(nodeColorAction.getColor());
-			MindMapNode node = getNodeFromID(nodeColorAction
+			NodeRepresentation node = getNodeFromID(nodeColorAction
 					.getNode());
 			// this is not necessary, as this action is not enabled if there is
 			// no cloud.

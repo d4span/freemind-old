@@ -26,7 +26,7 @@ import freemind.main.Tools;
 public abstract class LineAdapter implements MindMapLine {
 
 	protected MapFeedback mMapFeedback;
-	protected MindMapNode target;
+	protected NodeRepresentation target;
 
 	public static final int DEFAULT_WIDTH = -1;
 	protected int NORMAL_WIDTH = 1;
@@ -39,7 +39,7 @@ public abstract class LineAdapter implements MindMapLine {
 	//
 	// Constructors
 	//
-	public LineAdapter(MindMapNode target, MapFeedback pMapFeedback) {
+	public LineAdapter(NodeRepresentation target, MapFeedback pMapFeedback) {
 		this.mMapFeedback = pMapFeedback;
 		this.target = target;
 		width = DEFAULT_WIDTH;
@@ -121,7 +121,7 @@ public abstract class LineAdapter implements MindMapLine {
 		return "";
 	}
 
-	public void setTarget(MindMapNode target) {
+	public void setTarget(NodeRepresentation target) {
 		this.target = target;
 	}
 
@@ -132,7 +132,7 @@ public abstract class LineAdapter implements MindMapLine {
 	 * I see no reason to hide the node, the line belongs to, to the public,
 	 * but... fc.
 	 */
-	public MindMapNode getTarget() {
+	public NodeRepresentation getTarget() {
 		return target;
 	}
 

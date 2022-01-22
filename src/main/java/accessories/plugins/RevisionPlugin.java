@@ -27,7 +27,7 @@ import java.awt.Color;
 
 import freemind.controller.actions.generated.instance.EditNodeAction;
 import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.actions.xml.ActionHandler;
 import freemind.modes.mindmapmode.hooks.PermanentMindMapNodeHookAdapter;
@@ -55,7 +55,7 @@ public class RevisionPlugin extends PermanentMindMapNodeHookAdapter implements
 	 * 
 	 * @see freemind.extensions.NodeHook#invoke(freemind.modes.MindMapNode)
 	 */
-	public void invoke(MindMapNode node) {
+	public void invoke(NodeRepresentation node) {
 		super.invoke(node);
 		if (alreadyUsed == false) {
 			color = Color.YELLOW;

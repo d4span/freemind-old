@@ -32,7 +32,7 @@ import java.util.ListIterator;
 import javax.swing.JOptionPane;
 
 import freemind.controller.MindMapNodesSelection;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.MindMapMapModel;
 import freemind.modes.mindmapmode.MindMapNodeModel;
@@ -63,9 +63,9 @@ public class MindMapNodeDropListener implements DropTargetListener {
 	}
 
 	private boolean isDropAcceptable(DropTargetDropEvent event) {
-		MindMapNode node = ((MainView) event.getDropTargetContext()
+		NodeRepresentation node = ((MainView) event.getDropTargetContext()
 				.getComponent()).getNodeView().getModel();
-		MindMapNode selected = mMindMapController.getSelected();
+		NodeRepresentation selected = mMindMapController.getSelected();
 		if (!node.isWriteable())
 			return false;
 		return ((node != selected) && !node.isDescendantOf(selected));
@@ -80,7 +80,7 @@ public class MindMapNodeDropListener implements DropTargetListener {
 			final MainView mainView = (MainView) dtde.getDropTargetContext()
 					.getComponent();
 			NodeView targetNodeView = mainView.getNodeView();
-			MindMapNode targetNode = targetNodeView.getModel();
+			NodeRepresentation targetNode = targetNodeView.getModel();
 			MindMapNodeModel targetNodeModel = (MindMapNodeModel) targetNode;
 
 			// Intra application DnD
@@ -199,7 +199,7 @@ public class MindMapNodeDropListener implements DropTargetListener {
 				// if move, verify, that the target is not a son of the sources.
 				List selecteds = mMindMapController.getSelecteds();
 				if (DnDConstants.ACTION_MOVE == dropAction) {
-					MindMapNode actualNode = targetNode;
+					NodeRepresentation actualNode = targetNode;
 					do {
 						if (selecteds.contains(actualNode)) {
 							String message = mMindMapController

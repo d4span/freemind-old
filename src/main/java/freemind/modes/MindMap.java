@@ -19,6 +19,13 @@
 
 package freemind.modes;
 
+import freemind.controller.filter.Filter;
+import freemind.controller.filter.util.SortedListModel;
+import freemind.main.Tools;
+import freemind.main.XMLParseException;
+
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -28,17 +35,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
-
-import freemind.controller.filter.Filter;
-import freemind.controller.filter.util.SortedListModel;
-import freemind.main.Tools;
-import freemind.main.XMLParseException;
-
 public interface MindMap extends TreeModel {
 
-	MindMapNode getRootNode();
+	NodeRepresentation getRootNode();
 
 	// nodeChanged has moved to the modeController. (fc, 2.5.2004)
 	void nodeChanged(TreeNode node);
@@ -47,11 +46,11 @@ public interface MindMap extends TreeModel {
 
 	MapFeedback getMapFeedback();
 
-	String getAsPlainText(List<MindMapNode> mindMapNodes);
+	String getAsPlainText(List<NodeRepresentation> mindMapNodes);
 
-	String getAsRTF(List<MindMapNode> mindMapNodes);
+	String getAsRTF(List<NodeRepresentation> mindMapNodes);
 
-	String getAsHTML(List<MindMapNode> mindMapNodes);
+	String getAsHTML(List<NodeRepresentation> mindMapNodes);
 
 	/**
 	 * Returns the file name of the map edited or null if not possible.
@@ -185,7 +184,7 @@ public interface MindMap extends TreeModel {
 	 *            one of the nodes, that is now root. The others are grouped
 	 *            around.
 	 */
-	void changeRoot(MindMapNode newRoot);
+	void changeRoot(NodeRepresentation newRoot);
 
 	/**
 	 * @return a list of all icons present in the mindmap. Convenience method
@@ -204,17 +203,17 @@ public interface MindMap extends TreeModel {
 
 	ArrowLinkTarget createArrowLinkTarget(NodeAdapter source, NodeAdapter target);
 
-	public abstract MindMapNode loadTree(Tools.ReaderCreator pReaderCreator, AskUserBeforeUpdateCallback pAskUserBeforeUpdateCallback)
+	public abstract NodeRepresentation loadTree(Tools.ReaderCreator pReaderCreator, AskUserBeforeUpdateCallback pAskUserBeforeUpdateCallback)
 			throws XMLParseException, IOException;
 
-	public abstract MindMapNode createNodeTreeFromXml(Reader pReader, HashMap<String, NodeAdapter>  pIDToTarget)
+	public abstract NodeRepresentation createNodeTreeFromXml(Reader pReader, HashMap<String, NodeAdapter>  pIDToTarget)
 			throws XMLParseException, IOException;
 
 	NodeAdapter createEncryptedNode(String additionalInfo);
 
-	void insertNodeInto(MindMapNode pNode,
-			MindMapNode pParentNode, int pIndex);
+	void insertNodeInto(NodeRepresentation pNode,
+						NodeRepresentation pParentNode, int pIndex);
 	
-	void removeNodeFromParent(MindMapNode node);
+	void removeNodeFromParent(NodeRepresentation node);
 
 }

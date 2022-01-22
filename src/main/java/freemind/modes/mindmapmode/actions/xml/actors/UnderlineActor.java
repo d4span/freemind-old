@@ -24,7 +24,7 @@ import freemind.controller.actions.generated.instance.UnderlinedNodeAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
@@ -54,13 +54,13 @@ public class UnderlineActor extends NodeXmlActorAdapter {
 		return UnderlinedNodeAction.class;
 	}
 
-	public ActionPair apply(MindMap model, MindMapNode selected) {
+	public ActionPair apply(MindMap model, NodeRepresentation selected) {
 		// every node is set to the inverse of the focussed node.
 		boolean underlined = getExMapFeedback().getSelected().isUnderlined();
 		return getActionPair(selected, !underlined);
 	}
 
-	private ActionPair getActionPair(MindMapNode selected, boolean underlined) {
+	private ActionPair getActionPair(NodeRepresentation selected, boolean underlined) {
 		UnderlinedNodeAction underlinedAction = toggleUnderlined(selected,
 				underlined);
 		UnderlinedNodeAction undoUnderlinedAction = toggleUnderlined(selected,
@@ -68,15 +68,15 @@ public class UnderlineActor extends NodeXmlActorAdapter {
 		return new ActionPair(underlinedAction, undoUnderlinedAction);
 	}
 
-	private UnderlinedNodeAction toggleUnderlined(MindMapNode selected,
-			boolean underlined) {
+	private UnderlinedNodeAction toggleUnderlined(NodeRepresentation selected,
+                                                  boolean underlined) {
 		UnderlinedNodeAction underlinedAction = new UnderlinedNodeAction();
 		underlinedAction.setNode(getNodeID(selected));
 		underlinedAction.setUnderlined(underlined);
 		return underlinedAction;
 	}
 
-	public void setUnderlined(MindMapNode node, boolean underlined) {
+	public void setUnderlined(NodeRepresentation node, boolean underlined) {
 		execute(getActionPair(node, underlined));
 	}
 

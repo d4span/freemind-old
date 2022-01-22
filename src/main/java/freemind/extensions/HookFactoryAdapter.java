@@ -24,7 +24,7 @@ package freemind.extensions;
 
 import java.util.HashMap;
 
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 /**
  * @author foltin
@@ -45,7 +45,7 @@ public abstract class HookFactoryAdapter implements HookFactory {
 	/**
 	 * @return null if not present, the hook otherwise.
 	 */
-	public PermanentNodeHook getHookInNode(MindMapNode node, String hookName) {
+	public PermanentNodeHook getHookInNode(NodeRepresentation node, String hookName) {
 		// search for already instanciated hooks of this type:
 		for (PermanentNodeHook otherHook : node.getActivatedHooks()) {
 			if (otherHook.getName().equals(hookName)) {

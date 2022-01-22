@@ -44,7 +44,7 @@ import freemind.main.Tools;
 import freemind.modes.MapAdapter;
 import freemind.modes.MapFeedbackAdapter;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapMapModel;
 
 /**
@@ -91,7 +91,7 @@ public class IndependantMapViewCreator extends MapFeedbackAdapter {
 			IOException, URISyntaxException {
 		mMap = new MindMapMapModel(this);
 		Tools.FileReaderCreator readerCreator = new Tools.FileReaderCreator(new File(inputFileName));
-		MindMapNode node = mMap.loadTree(readerCreator, MapAdapter.sDontAskInstance);
+		NodeRepresentation node = mMap.loadTree(readerCreator, MapAdapter.sDontAskInstance);
 		mMap.setRoot(node);
 		MapView mapView = new MapView(mMap, this); 
 		parent.add(mapView, BorderLayout.CENTER);
@@ -175,7 +175,7 @@ public class IndependantMapViewCreator extends MapFeedbackAdapter {
 	 * @see freemind.modes.MapFeedback#createNodeHook(java.lang.String, freemind.modes.MindMapNode)
 	 */
 	@Override
-	public NodeHook createNodeHook(String pLoadName, MindMapNode pNode) {
+	public NodeHook createNodeHook(String pLoadName, NodeRepresentation pNode) {
 		return new PermanentNodeHookSubstituteUnknown(pLoadName);
 	}
 

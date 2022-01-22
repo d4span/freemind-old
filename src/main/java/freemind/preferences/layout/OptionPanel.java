@@ -74,7 +74,7 @@ import freemind.main.FreeMindCommon;
 import freemind.main.Tools;
 import freemind.modes.IconInformation;
 import freemind.modes.MindIcon;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.IconAction;
@@ -589,12 +589,12 @@ public class OptionPanel implements TextTranslator {
 		controls.add(new NewTabProperty("Defaults"));
 		controls.add(new SeparatorProperty("default_styles"));
 		controls.add(new ComboProperty("standardnodestyle.tooltip",
-				FreeMind.RESOURCES_NODE_STYLE, MindMapNode.NODE_STYLES, this)); // as_parent
+				FreeMind.RESOURCES_NODE_STYLE, NodeRepresentation.NODE_STYLES, this)); // as_parent
 
 		controls.add(new ComboProperty("standardrootnodestyle.tooltip",
 				FreeMind.RESOURCES_ROOT_NODE_STYLE, new String[] {
-						MindMapNode.STYLE_FORK, MindMapNode.STYLE_BUBBLE,
-						MindMapNode.STYLE_COMBINED }, this)); // fork
+						NodeRepresentation.STYLE_FORK, NodeRepresentation.STYLE_BUBBLE,
+						NodeRepresentation.STYLE_COMBINED }, this)); // fork
 
 		controls.add(new NextLineProperty());
 		controls.add(new SeparatorProperty("default_colors"));

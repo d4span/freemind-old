@@ -36,11 +36,11 @@ public abstract class LinkAdapter extends LineAdapter implements MindMapLink {
 
 	String destinationLabel;
 	String referenceText;
-	MindMapNode source;
+	NodeRepresentation source;
 	private String uniqueId;
 
-	public LinkAdapter(MindMapNode source, MindMapNode target,
-			MapFeedback pMapFeedback) {
+	public LinkAdapter(NodeRepresentation source, NodeRepresentation target,
+                       MapFeedback pMapFeedback) {
 		super(target, pMapFeedback);
 		this.source = source;
 		destinationLabel = null;
@@ -59,11 +59,11 @@ public abstract class LinkAdapter extends LineAdapter implements MindMapLink {
 		return referenceText;
 	}
 
-	public MindMapNode getSource() {
+	public NodeRepresentation getSource() {
 		return source;
 	}
 
-	public void setSource(MindMapNode source) {
+	public void setSource(NodeRepresentation source) {
 		this.source = source;
 	}
 

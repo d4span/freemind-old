@@ -34,6 +34,7 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
+import freemind.modes.NodeRepresentation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -45,7 +46,6 @@ import org.w3c.dom.Element;
 
 import freemind.controller.Controller;
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
 import freemind.view.mindmapview.MapView;
 
 /**
@@ -60,10 +60,10 @@ public class ExportPdf extends ExportVectorGraphic {
 		boolean nodeExport = Tools.safeEquals("node",
 				getResourceString("export_type"));
 		HashMap<TranscodingHints.Key, Float>  transcodingHints = null;
-		List<MindMapNode> selecteds = getController().getSelecteds();
+		List<NodeRepresentation> selecteds = getController().getSelecteds();
 		Vector<File> documentsToOpen = new Vector<>();
 		while (!selecteds.isEmpty()) {
-			MindMapNode selectedNode = (MindMapNode) selecteds.remove(0);
+			NodeRepresentation selectedNode = (NodeRepresentation) selecteds.remove(0);
 			String nameExtension = null;
 			if (nodeExport) {
 				nameExtension = " "
@@ -156,12 +156,12 @@ public class ExportPdf extends ExportVectorGraphic {
 	}
 
 	/** For compatibility with groovy export scripts. */
-	public boolean exportAsPdf(boolean nodeExport, MindMapNode selectedNode,
+	public boolean exportAsPdf(boolean nodeExport, NodeRepresentation selectedNode,
 			File chosenFile) throws Exception {
 		return exportAsPdf(nodeExport, selectedNode, chosenFile, null);
 	}
 
-	public boolean exportAsPdf(boolean nodeExport, MindMapNode selectedNode,
+	public boolean exportAsPdf(boolean nodeExport, NodeRepresentation selectedNode,
 			File chosenFile, HashMap<TranscodingHints.Key, Float> pTranscoderHints) throws Exception {
 		MapView view = getController().getView();
 		if (view == null)

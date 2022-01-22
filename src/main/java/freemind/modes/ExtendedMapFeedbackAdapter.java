@@ -77,7 +77,7 @@ public abstract class ExtendedMapFeedbackAdapter extends MapFeedbackAdapter
 	}
 
 	protected ActionRegistry mActionRegistry;
-	private MindMapNode mSelectedNode;
+	private NodeRepresentation mSelectedNode;
 	protected XmlActorFactory mActorFactory;
 	private MindMapHookFactory mNodeHookFactory;
 
@@ -107,23 +107,23 @@ public abstract class ExtendedMapFeedbackAdapter extends MapFeedbackAdapter
 	}
 
 	@Override
-	public String getNodeID(MindMapNode selected) {
+	public String getNodeID(NodeRepresentation selected) {
 		return getMap().getLinkRegistry().registerLinkTarget(selected);
 	}
 
 	@Override
-	public void insertNodeInto(MindMapNode pNewNode, MindMapNode pParent,
-			int pIndex) {
+	public void insertNodeInto(NodeRepresentation pNewNode, NodeRepresentation pParent,
+                               int pIndex) {
 		getMap().insertNodeInto(pNewNode, pParent, pIndex);
 	}
 
 	@Override
-	public MindMapNode newNode(Object pUserObject, MindMap pMap) {
+	public NodeRepresentation newNode(Object pUserObject, MindMap pMap) {
 		return null;
 	}
 
 	@Override
-	public void removeNodeFromParent(MindMapNode pSelectedNode) {
+	public void removeNodeFromParent(NodeRepresentation pSelectedNode) {
 		getMap().removeNodeFromParent(pSelectedNode);
 	}
 
@@ -135,11 +135,11 @@ public abstract class ExtendedMapFeedbackAdapter extends MapFeedbackAdapter
 	}
 	
 	@Override
-	public void nodeStyleChanged(MindMapNode node) {
+	public void nodeStyleChanged(NodeRepresentation node) {
 		nodeChanged(node);
-		final ListIterator<MindMapNode> childrenFolded = node.childrenFolded();
+		final ListIterator<NodeRepresentation> childrenFolded = node.childrenFolded();
 		while (childrenFolded.hasNext()) {
-			MindMapNode child = (MindMapNode) childrenFolded.next();
+			NodeRepresentation child = (NodeRepresentation) childrenFolded.next();
 			if (!(child.hasStyle() && child.getEdge().hasStyle())) {
 				nodeStyleChanged(child);
 			}
@@ -157,7 +157,7 @@ public abstract class ExtendedMapFeedbackAdapter extends MapFeedbackAdapter
 	}
 
 	@Override
-	public MindMapNode getSelected() {
+	public NodeRepresentation getSelected() {
 		return mSelectedNode;
 	}
 
@@ -166,7 +166,7 @@ public abstract class ExtendedMapFeedbackAdapter extends MapFeedbackAdapter
 		return mActorFactory;
 	}
 
-	public Transferable copy(MindMapNode node, boolean saveInvisible) {
+	public Transferable copy(NodeRepresentation node, boolean saveInvisible) {
 		return new DummyTransferable();
 	}
 	
@@ -174,7 +174,7 @@ public abstract class ExtendedMapFeedbackAdapter extends MapFeedbackAdapter
 	 * @see freemind.modes.ExtendedMapFeedback#copy(java.util.List, boolean)
 	 */
 	@Override
-	public Transferable copy(List<MindMapNode> pNodeList, boolean pSaveInvisible) {
+	public Transferable copy(List<NodeRepresentation> pNodeList, boolean pSaveInvisible) {
 		return new DummyTransferable();
 	}
 
@@ -190,7 +190,7 @@ public abstract class ExtendedMapFeedbackAdapter extends MapFeedbackAdapter
 	}
 
 	@Override
-	public void select(MindMapNode pFocussed, List<MindMapNode> pSelecteds) {
+	public void select(NodeRepresentation pFocussed, List<NodeRepresentation> pSelecteds) {
 		mSelectedNode = pFocussed;
 	}
 
@@ -213,23 +213,23 @@ public abstract class ExtendedMapFeedbackAdapter extends MapFeedbackAdapter
 	}
 
 	@Override
-	public void setNodeText(MindMapNode pSelected, String pNewText) {
+	public void setNodeText(NodeRepresentation pSelected, String pNewText) {
 		getActorFactory().getEditActor().setNodeText(pSelected, pNewText);
 	}
 
 	@Override
-	public void setNoteText(MindMapNode pSelected, String pNewText) {
+	public void setNoteText(NodeRepresentation pSelected, String pNewText) {
 		getActorFactory().getChangeNoteTextActor().setNoteText(pSelected, pNewText);
 	}
 
 	@Override
-	public MindMapNode addNewNode(MindMapNode pParent, int pIndex,
-			boolean pNewNodeIsLeft) {
+	public NodeRepresentation addNewNode(NodeRepresentation pParent, int pIndex,
+                                         boolean pNewNodeIsLeft) {
 		return mActorFactory.getNewChildActor().addNewNode(pParent, pIndex, pNewNodeIsLeft);
 	}
 
 	@Override
-	public void deleteNode(MindMapNode pSelectedNode) {
+	public void deleteNode(NodeRepresentation pSelectedNode) {
 		mActorFactory.getDeleteChildActor().deleteNode(pSelectedNode);
 	}
 
@@ -239,12 +239,12 @@ public abstract class ExtendedMapFeedbackAdapter extends MapFeedbackAdapter
 	}
 
 	@Override
-	public Transferable cut(List<MindMapNode> pNodeList) {
+	public Transferable cut(List<NodeRepresentation> pNodeList) {
 		return getActorFactory().getCutActor().cut(pNodeList);
 	}
 
 	@Override
-	public void moveNodes(MindMapNode pSelected, List<MindMapNode> pSelecteds, int pDirection) {
+	public void moveNodes(NodeRepresentation pSelected, List<NodeRepresentation> pSelecteds, int pDirection) {
 		getActorFactory().getNodeUpActor().moveNodes(pSelected, pSelecteds, pDirection);
 	}
 
@@ -254,104 +254,104 @@ public abstract class ExtendedMapFeedbackAdapter extends MapFeedbackAdapter
 	}
 
 	@Override
-	public void setFolded(MindMapNode pModel, boolean pFold) {
+	public void setFolded(NodeRepresentation pModel, boolean pFold) {
 		getActorFactory().getToggleFoldedActor().setFolded(pModel, pFold);
 		
 	}
 
 	@Override
-	public void setBold(MindMapNode pNode, boolean pBolded) {
+	public void setBold(NodeRepresentation pNode, boolean pBolded) {
 		mActorFactory.getBoldActor().setBold(pNode, pBolded);
 	}
 
 	@Override
-	public void setStrikethrough(MindMapNode pNode, boolean pStrikethroughed) {
+	public void setStrikethrough(NodeRepresentation pNode, boolean pStrikethroughed) {
 		mActorFactory.getStrikethroughActor().setStrikethrough(pNode, pStrikethroughed);
 	}
 	
 	@Override
-	public void setItalic(MindMapNode pNode, boolean pIsItalic) {
+	public void setItalic(NodeRepresentation pNode, boolean pIsItalic) {
 		mActorFactory.getItalicActor().setItalic(pNode, pIsItalic);
 	}
 
 	@Override
-	public void setNodeColor(MindMapNode pNode, Color pColor) {
+	public void setNodeColor(NodeRepresentation pNode, Color pColor) {
 		getActorFactory().getNodeColorActor().setNodeColor(pNode, pColor);
 	}
 
 	@Override
-	public void setNodeBackgroundColor(MindMapNode pNode, Color pColor) {
+	public void setNodeBackgroundColor(NodeRepresentation pNode, Color pColor) {
 		getActorFactory().getNodeBackgroundColorActor().setNodeBackgroundColor(pNode, pColor);
 	}
 
 	@Override
-	public void blendNodeColor(MindMapNode pNode) {
+	public void blendNodeColor(NodeRepresentation pNode) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void setFontFamily(MindMapNode pNode, String pFontFamily) {
+	public void setFontFamily(NodeRepresentation pNode, String pFontFamily) {
 		getActorFactory().getFontFamilyActor().setFontFamily(pNode, pFontFamily);
 	}
 
 	@Override
-	public void setFontSize(MindMapNode pNode, String pFontSizeValue) {
+	public void setFontSize(NodeRepresentation pNode, String pFontSizeValue) {
 		getActorFactory().getFontSizeActor().setFontSize(pNode, pFontSizeValue);
 		
 	}
 
 	@Override
-	public void addIcon(MindMapNode pNode, MindIcon pIcon) {
+	public void addIcon(NodeRepresentation pNode, MindIcon pIcon) {
 		mActorFactory.getAddIconActor().addIcon(pNode, pIcon);		
 	}
 
 	@Override
-	public int removeLastIcon(MindMapNode pNode) {
+	public int removeLastIcon(NodeRepresentation pNode) {
 		return mActorFactory.getRemoveIconActor().removeLastIcon(pNode);
 	}
 
 	@Override
-	public void removeAllIcons(MindMapNode pNode) {
+	public void removeAllIcons(NodeRepresentation pNode) {
 		mActorFactory.getRemoveAllIconsActor().removeAllIcons(pNode);
 	}
 
 	@Override
-	public void applyPattern(MindMapNode pNode, Pattern pPattern) {
+	public void applyPattern(NodeRepresentation pNode, Pattern pPattern) {
 		StylePatternFactory.applyPattern(pNode, pPattern, Collections.<Pattern>emptyList(), Collections.<MindMapControllerPlugin>emptySet(), this);
 	}
 
 	@Override
-	public void setNodeStyle(MindMapNode pNode, String pStyle) {
+	public void setNodeStyle(NodeRepresentation pNode, String pStyle) {
 		getActorFactory().getNodeStyleActor().setStyle(pNode, pStyle);
 	}
 
 	@Override
-	public void setEdgeColor(MindMapNode pNode, Color pColor) {
+	public void setEdgeColor(NodeRepresentation pNode, Color pColor) {
 		getActorFactory().getEdgeColorActor().setEdgeColor(pNode, pColor);		
 	}
 
 	@Override
-	public void setEdgeWidth(MindMapNode pNode, int pWidth) {
+	public void setEdgeWidth(NodeRepresentation pNode, int pWidth) {
 		getActorFactory().getEdgeWidthActor().setEdgeWidth(pNode, pWidth);
 	}
 
 	@Override
-	public void setEdgeStyle(MindMapNode pNode, String pStyle) {
+	public void setEdgeStyle(NodeRepresentation pNode, String pStyle) {
 		getActorFactory().getEdgeStyleActor().setEdgeStyle(pNode, pStyle);
 	}
 
 	@Override
-	public void setCloud(MindMapNode pNode, boolean pEnable) {
+	public void setCloud(NodeRepresentation pNode, boolean pEnable) {
 		mActorFactory.getCloudActor().setCloud(pNode, pEnable);
 	}
 
 	@Override
-	public void setCloudColor(MindMapNode pNode, Color pColor) {
+	public void setCloudColor(NodeRepresentation pNode, Color pColor) {
 		mActorFactory.getCloudColorActor().setCloudColor(pNode, pColor);
 	}
 
 	@Override
-	public void addLink(MindMapNode pSource, MindMapNode pTarget) {		
+	public void addLink(NodeRepresentation pSource, NodeRepresentation pTarget) {
 		getActorFactory().getAddArrowLinkActor().addLink(pSource, pTarget);
 	}
 
@@ -380,56 +380,56 @@ public abstract class ExtendedMapFeedbackAdapter extends MapFeedbackAdapter
 	}
 
 	@Override
-	public void setLink(MindMapNode pNode, String pLink) {
+	public void setLink(NodeRepresentation pNode, String pLink) {
 		getActorFactory().getSetLinkActor().setLink(pNode, pLink);
 	}
 
 	@Override
-	public boolean paste(Transferable pT, MindMapNode pTarget,
+	public boolean paste(Transferable pT, NodeRepresentation pTarget,
 			boolean pAsSibling, boolean pIsLeft) {
 		return mActorFactory.getPasteActor().paste(pT, pTarget, pAsSibling, pIsLeft);
 	}
 
 	@Override
-	public void addHook(MindMapNode pFocussed, List<MindMapNode> pSelecteds,
-			String pHookName, Properties pHookProperties) {
+	public void addHook(NodeRepresentation pFocussed, List<NodeRepresentation> pSelecteds,
+                        String pHookName, Properties pHookProperties) {
 		getActorFactory().getAddHookActor().addHook(pFocussed, pSelecteds, pHookName, pHookProperties);
 	}
 
 	@Override
-	public void removeHook(MindMapNode pFocussed, List<MindMapNode> pSelecteds,
-			String pHookName) {
+	public void removeHook(NodeRepresentation pFocussed, List<NodeRepresentation> pSelecteds,
+                           String pHookName) {
 		getActorFactory().getAddHookActor().removeHook(pFocussed, pSelecteds, pHookName);
 	}
 
 	@Override
-	public void moveNodePosition(MindMapNode pNode, int pVGap, int pHGap,
-			int pShiftY) {
+	public void moveNodePosition(NodeRepresentation pNode, int pVGap, int pHGap,
+                                 int pShiftY) {
 		getActorFactory().getMoveNodeActor().moveNodeTo(pNode, pVGap, pHGap, pShiftY);
 
 	}
 
 	@Override
-	public void setAttribute(MindMapNode pNode, int pPosition,
-			Attribute pAttribute) {
+	public void setAttribute(NodeRepresentation pNode, int pPosition,
+                             Attribute pAttribute) {
 		getActorFactory().getSetAttributeActor().setAttribute(pNode, pPosition, pAttribute);
 		
 	}
 
 	@Override
-	public void insertAttribute(MindMapNode pNode, int pPosition,
-			Attribute pAttribute) {
+	public void insertAttribute(NodeRepresentation pNode, int pPosition,
+                                Attribute pAttribute) {
 		getActorFactory().getInsertAttributeActor().insertAttribute(pNode, pPosition, pAttribute);
 		
 	}
 
 	@Override
-	public int addAttribute(MindMapNode pNode, Attribute pAttribute) {
+	public int addAttribute(NodeRepresentation pNode, Attribute pAttribute) {
 		return getActorFactory().getAddAttributeActor().addAttribute(pNode, pAttribute);
 	}
 
 	@Override
-	public void removeAttribute(MindMapNode pNode, int pPosition) {
+	public void removeAttribute(NodeRepresentation pNode, int pPosition) {
 		getActorFactory().getRemoveAttributeActor().removeAttribute(pNode, pPosition);
 	}
 

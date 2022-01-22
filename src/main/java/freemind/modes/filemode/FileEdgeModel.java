@@ -22,11 +22,11 @@ package freemind.modes.filemode;
 
 import freemind.modes.EdgeAdapter;
 import freemind.modes.MapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 
 public class FileEdgeModel extends EdgeAdapter {
 
-	public FileEdgeModel(MindMapNode node, MapFeedback pMapFeedback) {
+	public FileEdgeModel(NodeRepresentation node, MapFeedback pMapFeedback) {
 		super(node, pMapFeedback);
 	}
 }

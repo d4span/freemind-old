@@ -24,7 +24,7 @@ import freemind.controller.actions.generated.instance.FontSizeNodeAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
@@ -46,7 +46,7 @@ public class FontSizeActor extends XmlActorAdapter {
 
 	/**
      */
-	public void setFontSize(MindMapNode node, String fontSizeValue) {
+	public void setFontSize(NodeRepresentation node, String fontSizeValue) {
 		if (Tools.safeEquals(fontSizeValue, node.getFontSize())) {
 			return;
 		}
@@ -54,7 +54,7 @@ public class FontSizeActor extends XmlActorAdapter {
 
 	}
 
-	public ActionPair getActionPair(MindMapNode node, String fontSizeValue) {
+	public ActionPair getActionPair(NodeRepresentation node, String fontSizeValue) {
 		FontSizeNodeAction fontSizeAction = createFontSizeNodeAction(node,
 				fontSizeValue);
 		FontSizeNodeAction undoFontSizeAction = createFontSizeNodeAction(node,
@@ -62,8 +62,8 @@ public class FontSizeActor extends XmlActorAdapter {
 		return new ActionPair(fontSizeAction, undoFontSizeAction);
 	}
 
-	private FontSizeNodeAction createFontSizeNodeAction(MindMapNode node,
-			String fontSizeValue) {
+	private FontSizeNodeAction createFontSizeNodeAction(NodeRepresentation node,
+                                                        String fontSizeValue) {
 		FontSizeNodeAction fontSizeAction = new FontSizeNodeAction();
 		fontSizeAction.setNode(getNodeID(node));
 		fontSizeAction.setSize(fontSizeValue);
@@ -78,7 +78,7 @@ public class FontSizeActor extends XmlActorAdapter {
 	public void act(XmlAction action) {
 		if (action instanceof FontSizeNodeAction) {
 			FontSizeNodeAction fontSizeAction = (FontSizeNodeAction) action;
-			MindMapNode node = getNodeFromID(fontSizeAction.getNode());
+			NodeRepresentation node = getNodeFromID(fontSizeAction.getNode());
 			try {
 				int size = Integer.valueOf(fontSizeAction.getSize()).intValue();
 				if (!node.getFontSize().equals(fontSizeAction.getSize())) {

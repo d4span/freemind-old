@@ -24,7 +24,7 @@ import freemind.controller.actions.generated.instance.ItalicNodeAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
@@ -55,27 +55,27 @@ public class ItalicNodeActor extends NodeXmlActorAdapter {
 		return ItalicNodeAction.class;
 	}
 
-	public ActionPair apply(MindMap model, MindMapNode selected) {
+	public ActionPair apply(MindMap model, NodeRepresentation selected) {
 		// every node is set to the inverse of the focussed node.
 		boolean italic = getSelected().isItalic();
 		return getActionPair(selected, !italic);
 	}
 
-	private ActionPair getActionPair(MindMapNode selected, boolean italic) {
+	private ActionPair getActionPair(NodeRepresentation selected, boolean italic) {
 		ItalicNodeAction italicAction = toggleItalic(selected, italic);
 		ItalicNodeAction undoItalicAction = toggleItalic(selected,
 				selected.isItalic());
 		return new ActionPair(italicAction, undoItalicAction);
 	}
 
-	private ItalicNodeAction toggleItalic(MindMapNode selected, boolean italic) {
+	private ItalicNodeAction toggleItalic(NodeRepresentation selected, boolean italic) {
 		ItalicNodeAction italicAction = new ItalicNodeAction();
 		italicAction.setNode(getNodeID(selected));
 		italicAction.setItalic(italic);
 		return italicAction;
 	}
 
-	public void setItalic(MindMapNode node, boolean italic) {
+	public void setItalic(NodeRepresentation node, boolean italic) {
 		execute(getActionPair(node, italic));
 	}
 

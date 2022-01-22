@@ -29,7 +29,7 @@ import java.lang.reflect.InvocationTargetException;
 import freemind.extensions.DontSaveMarker;
 import freemind.extensions.PermanentNodeHook;
 import freemind.main.XMLElement;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 import freemind.view.mindmapview.NodeView;
 
@@ -75,28 +75,28 @@ public class DatabaseConnectionHook extends DatabaseBasics implements
 		mUpdateThread.shutdown(false);
 	}
 
-	public void onAddChild(MindMapNode pAddedChildNode) {
+	public void onAddChild(NodeRepresentation pAddedChildNode) {
 	}
 
-	public void onAddChildren(MindMapNode pAddedChild) {
+	public void onAddChildren(NodeRepresentation pAddedChild) {
 	}
 
 	public void onLostFocusNode(NodeView pNodeView) {
 	}
 
-	public void onNewChild(MindMapNode pNewChildNode) {
+	public void onNewChild(NodeRepresentation pNewChildNode) {
 	}
 
-	public void onRemoveChild(MindMapNode pOldChildNode) {
+	public void onRemoveChild(NodeRepresentation pOldChildNode) {
 	}
 
-	public void onRemoveChildren(MindMapNode pOldChildNode, MindMapNode pOldDad) {
+	public void onRemoveChildren(NodeRepresentation pOldChildNode, NodeRepresentation pOldDad) {
 	}
 
 	public void onFocusNode(NodeView pNodeView) {
 	}
 
-	public void onUpdateChildrenHook(MindMapNode pUpdatedNode) {
+	public void onUpdateChildrenHook(NodeRepresentation pUpdatedNode) {
 	}
 
 	public void onUpdateNodeHook() {

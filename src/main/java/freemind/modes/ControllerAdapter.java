@@ -139,7 +139,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	// Methods that should be overloaded
 	//
 
-	public abstract MindMapNode newNode(Object userObject, MindMap map);
+	public abstract NodeRepresentation newNode(Object userObject, MindMap map);
 
 	/**
 	 * You _must_ implement this if you use one of the following actions:
@@ -164,7 +164,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	 * Currently, this method is called by the mapAdapter. This is buggy, and is
 	 * to be changed.
 	 */
-	public void nodeChanged(MindMapNode node) {
+	public void nodeChanged(NodeRepresentation node) {
 		setSaved(false);
 		nodeRefresh(node, true);
 	}
@@ -177,11 +177,11 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	}
 
 
-	public void nodeRefresh(MindMapNode node) {
+	public void nodeRefresh(NodeRepresentation node) {
 		nodeRefresh(node, false);
 	}
 
-	private void nodeRefresh(MindMapNode node, boolean isUpdate) {
+	private void nodeRefresh(NodeRepresentation node, boolean isUpdate) {
 		logger.finest("nodeChanged called for node " + node + " parent="
 				+ node.getParentNode());
 		if (isUpdate) {
@@ -198,12 +198,12 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	}
 
 	public void refreshMap() {
-		final MindMapNode root = getMap().getRootNode();
+		final NodeRepresentation root = getMap().getRootNode();
 		refreshMapFrom(root);
 	}
 
-	public void refreshMapFrom(MindMapNode node) {
-		for(MindMapNode child : node.getChildren()) {
+	public void refreshMapFrom(NodeRepresentation node) {
+		for(NodeRepresentation child : node.getChildren()) {
 			refreshMapFrom(child);
 		}
 		((MapAdapter) getMap()).nodeChangedInternal(node);
@@ -212,14 +212,14 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 
 	/**
 	 */
-	public void nodeStructureChanged(MindMapNode node) {
+	public void nodeStructureChanged(NodeRepresentation node) {
 		getMap().nodeStructureChanged(node);
 	}
 
 	/**
 	 * Overwrite this method to perform additional operations to an node update.
 	 */
-	protected void updateNode(MindMapNode node) {
+	protected void updateNode(NodeRepresentation node) {
 		for (NodeSelectionListener listener : mNodeSelectionListeners) {
 			listener.onUpdateNodeHook(node);
 		}
@@ -326,23 +326,23 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		return mNodeLifetimeListeners;
 	}
 
-	public void fireNodePreDeleteEvent(MindMapNode node) {
+	public void fireNodePreDeleteEvent(NodeRepresentation node) {
 		// call lifetime listeners:
 		for (NodeLifetimeListener listener : mNodeLifetimeListeners) {
 			listener.onPreDeleteNode(node);
 		}
 	}
 
-	public void fireNodePostDeleteEvent(MindMapNode node, MindMapNode parent) {
+	public void fireNodePostDeleteEvent(NodeRepresentation node, NodeRepresentation parent) {
 		// call lifetime listeners:
 		for (NodeLifetimeListener listener : mNodeLifetimeListeners) {
 			listener.onPostDeleteNode(node, parent);
 		}
 	}
 
-	public void fireRecursiveNodeCreateEvent(MindMapNode node) {
-		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = i.next();
+	public void fireRecursiveNodeCreateEvent(NodeRepresentation node) {
+		for (Iterator<NodeRepresentation> i = node.childrenUnfolded(); i.hasNext();) {
+			NodeRepresentation child = i.next();
 			fireRecursiveNodeCreateEvent(child);
 		}
 		// call lifetime listeners:
@@ -351,7 +351,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		}
 	}
 
-	public void firePreSaveEvent(MindMapNode node) {
+	public void firePreSaveEvent(NodeRepresentation node) {
 		// copy to prevent concurrent modification.
 		HashSet<NodeSelectionListener> listenerCopy = new HashSet<>(mNodeSelectionListeners);
 		for (NodeSelectionListener listener : listenerCopy) {
@@ -443,15 +443,15 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 			ModeController modeController = newModeController;
 			// Zoom must be set on combo box, too.
 			getController().setZoom(store.getLastZoom());
-			MindMapNode sel = null;
+			NodeRepresentation sel = null;
 			try {
 				// Selected:
 				sel = modeController.getNodeFromID(store.getLastSelected());
 				modeController.centerNode(sel);
-				List<MindMapNode> selected = new Vector<>();
+				List<NodeRepresentation> selected = new Vector<>();
 				for (Iterator<NodeListMember> iter = store.getListNodeListMemberList().iterator(); iter.hasNext();) {
 					NodeListMember member = iter.next();
-					MindMapNode selNode = modeController.getNodeFromID(member.getNode());
+					NodeRepresentation selNode = modeController.getNodeFromID(member.getNode());
 					selected.add(selNode);
 				}
 				modeController.select(sel, selected);
@@ -596,8 +596,8 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	 * 
 	 * @return returns a list of MindMapNode s.
 	 */
-	public List<MindMapNode> getSelecteds() {
-		LinkedList<MindMapNode> selecteds = new LinkedList<>();
+	public List<NodeRepresentation> getSelecteds() {
+		LinkedList<NodeRepresentation> selecteds = new LinkedList<>();
 		ListIterator<NodeView> it = getView().getSelecteds().listIterator();
 		if (it != null) {
 			while (it.hasNext()) {
@@ -613,17 +613,17 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		getView().select(node);
 	}
 
-	public void select(MindMapNode primarySelected, List<MindMapNode> selecteds) {
+	public void select(NodeRepresentation primarySelected, List<NodeRepresentation> selecteds) {
 		// are they visible?
-		for (MindMapNode node : selecteds) {
+		for (NodeRepresentation node : selecteds) {
 			displayNode(node);
 		}
 		final NodeView focussedNodeView = getNodeView(primarySelected);
 		if (focussedNodeView != null) {
 			getView().selectAsTheOnlyOneSelected(focussedNodeView);
 			getView().scrollNodeToVisible(focussedNodeView);
-			for (Iterator<MindMapNode> i = selecteds.iterator(); i.hasNext();) {
-				MindMapNode node = i.next();
+			for (Iterator<NodeRepresentation> i = selecteds.iterator(); i.hasNext();) {
+				NodeRepresentation node = i.next();
 				NodeView nodeView = getNodeView(node);
 				if (nodeView != null) {
 					getView().makeTheSelected(nodeView);
@@ -638,9 +638,9 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		getView().selectBranch(selected, extend);
 	}
 
-	public List<MindMapNode> getSelectedsByDepth() {
+	public List<NodeRepresentation> getSelectedsByDepth() {
 		// return an ArrayList of MindMapNodes.
-		List<MindMapNode> result = getSelecteds();
+		List<NodeRepresentation> result = getSelecteds();
 		sortNodesByDepth(result);
 		return result;
 	}
@@ -952,8 +952,8 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 			String lastSelected = this.getNodeID(this.getSelected());
 			store.setLastSelected(lastSelected);
 			store.clearNodeListMemberList();
-			List<MindMapNode> selecteds = this.getSelecteds();
-			for (MindMapNode node : selecteds) {
+			List<NodeRepresentation> selecteds = this.getSelecteds();
+			for (NodeRepresentation node : selecteds) {
 				NodeListMember member = new NodeListMember();
 				member.setNode(this.getNodeID(node));
 				store.addNodeListMember(member);
@@ -1087,8 +1087,8 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		return mModel;
 	}
 
-	public MindMapNode getRootNode() {
-		return (MindMapNode) getMap().getRoot();
+	public NodeRepresentation getRootNode() {
+		return (NodeRepresentation) getMap().getRoot();
 	}
 
 	public URL getResource(String name) {
@@ -1154,7 +1154,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		getController().getMapModuleManager().updateMapModuleName();
 	}
 
-	public MindMapNode getSelected() {
+	public NodeRepresentation getSelected() {
 		final NodeView selectedView = getSelectedView();
 		if (selectedView != null)
 			return selectedView.getModel();
@@ -1295,7 +1295,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		}
 	}
 
-	public Transferable copy(MindMapNode node, boolean saveInvisible) {
+	public Transferable copy(NodeRepresentation node, boolean saveInvisible) {
 		throw new IllegalArgumentException("No copy so far.");
 	}
 
@@ -1305,11 +1305,11 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 
 	public Transferable copySingle() {
 
-		final ArrayList<MindMapNode> selectedNodes = getView().getSingleSelectedNodes();
+		final ArrayList<NodeRepresentation> selectedNodes = getView().getSingleSelectedNodes();
 		return copy(selectedNodes, false);
 	}
 
-	public Transferable copy(List<MindMapNode> selectedNodes, boolean copyInvisible) {
+	public Transferable copy(List<NodeRepresentation> selectedNodes, boolean copyInvisible) {
 		try {
 			String forNodesFlavor = createForNodesFlavor(selectedNodes,
 					copyInvisible);
@@ -1330,11 +1330,11 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		return null;
 	}
 
-	public String createForNodesFlavor(List<MindMapNode> selectedNodes, boolean copyInvisible)
+	public String createForNodesFlavor(List<NodeRepresentation> selectedNodes, boolean copyInvisible)
 			throws UnsupportedFlavorException, IOException {
 		String forNodesFlavor = "";
 		boolean firstLoop = true;
-		for (MindMapNode tmpNode : selectedNodes) {
+		for (NodeRepresentation tmpNode : selectedNodes) {
 			if (firstLoop) {
 				firstLoop = false;
 			} else {
@@ -1347,11 +1347,11 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		return forNodesFlavor;
 	}
 
-	public List<String> createForNodeIdsFlavor(List<MindMapNode> selectedNodes, boolean copyInvisible)
+	public List<String> createForNodeIdsFlavor(List<NodeRepresentation> selectedNodes, boolean copyInvisible)
 			throws UnsupportedFlavorException, IOException {
 		Vector<String> forNodesFlavor = new Vector<>();
 
-		for (MindMapNode tmpNode : selectedNodes) {
+		for (NodeRepresentation tmpNode : selectedNodes) {
 			forNodesFlavor.add(getNodeID(tmpNode));
 		}
 		return forNodesFlavor;
@@ -1397,13 +1397,13 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 				new MindMapMouseWheelEventHandler(this));
 	}
 
-	public String getLinkShortText(MindMapNode node) {
+	public String getLinkShortText(NodeRepresentation node) {
 		String adaptedText = node.getLink();
 		if (adaptedText == null)
 			return null;
 		if (adaptedText.startsWith("#")) {
 			try {
-				MindMapNode dest = getNodeFromID(adaptedText.substring(1));
+				NodeRepresentation dest = getNodeFromID(adaptedText.substring(1));
 				return dest.getShortText(this);
 			} catch (Exception e) {
 				return getText("link_not_available_any_more");
@@ -1412,7 +1412,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		return adaptedText;
 	}
 
-	public void displayNode(MindMapNode node) {
+	public void displayNode(NodeRepresentation node) {
 		displayNode(node, null);
 	}
 
@@ -1420,12 +1420,12 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	 * Display a node in the display (used by find and the goto action by arrow
 	 * link actions).
 	 */
-	public void displayNode(MindMapNode node, ArrayList<MindMapNode> nodesUnfoldedByDisplay) {
+	public void displayNode(NodeRepresentation node, ArrayList<NodeRepresentation> nodesUnfoldedByDisplay) {
 		// Unfold the path to the node
 		Object[] path = getMap().getPathToRoot(node);
 		// Iterate the path with the exception of the last node
 		for (int i = 0; i < path.length - 1; i++) {
-			MindMapNode nodeOnPath = (MindMapNode) path[i];
+			NodeRepresentation nodeOnPath = (NodeRepresentation) path[i];
 			// System.out.println(nodeOnPath);
 			if (nodeOnPath.isFolded()) {
 				if (nodesUnfoldedByDisplay != null)
@@ -1442,7 +1442,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		getView().selectAsTheOnlyOneSelected(node);
 	}
 
-	public void centerNode(MindMapNode node) {
+	public void centerNode(NodeRepresentation node) {
 		NodeView view = null;
 		if (node != null) {
 			view = getController().getView().getNodeView(node);
@@ -1457,7 +1457,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	}
 
 	@Override
-	public NodeView getNodeView(MindMapNode node) {
+	public NodeView getNodeView(NodeRepresentation node) {
 		return getView().getNodeView(node);
 	}
 
@@ -1477,7 +1477,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 				.getModuleGivenModeController(this);
 	}
 
-	public void setToolTip(MindMapNode node, String key, String value) {
+	public void setToolTip(NodeRepresentation node, String key, String value) {
 		node.setToolTip(key, value);
 		nodeRefresh(node);
 	}
@@ -1556,7 +1556,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	}
 
 	@Override
-	public String getNodeID(MindMapNode selected) {
+	public String getNodeID(NodeRepresentation selected) {
 		return getMap().getLinkRegistry().registerLinkTarget(selected);
 	}
 

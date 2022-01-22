@@ -52,7 +52,7 @@ public abstract class EdgeAdapter extends LineAdapter implements MindMapEdge {
 
 	// private static Color standardEdgeColor = new Color(0);
 
-	public EdgeAdapter(MindMapNode target, MapFeedback pMapFeedback) {
+	public EdgeAdapter(NodeRepresentation target, MapFeedback pMapFeedback) {
 		super(target, pMapFeedback);
 		NORMAL_WIDTH = WIDTH_PARENT;
 		if (listener == null) {
@@ -115,7 +115,7 @@ public abstract class EdgeAdapter extends LineAdapter implements MindMapEdge {
 	// Private Methods
 	// ///////
 
-	private MindMapNode getSource() {
+	private NodeRepresentation getSource() {
 		return target.getParentNode();
 	}
 

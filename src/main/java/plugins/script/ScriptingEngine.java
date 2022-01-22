@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 
 import javax.swing.JOptionPane;
 
+import freemind.modes.NodeRepresentation;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.control.CompilationFailedException;
@@ -45,7 +46,6 @@ import freemind.main.FreeMindMain;
 import freemind.main.FreeMindSecurityManager;
 import freemind.main.Tools;
 import freemind.main.Tools.BooleanHolder;
-import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.hooks.MindMapHookAdapter;
 import groovy.lang.Binding;
@@ -69,7 +69,7 @@ public class ScriptingEngine extends MindMapHookAdapter {
 
 	public void startupMapHook() {
 		super.startupMapHook();
-		MindMapNode node = getMindMapController().getMap().getRootNode();
+		NodeRepresentation node = getMindMapController().getMap().getRootNode();
 		BooleanHolder booleanHolder = new BooleanHolder(false);
 		// check for installed script:
 		String scriptLocation = getResourceString("ScriptLocation");
@@ -87,7 +87,7 @@ public class ScriptingEngine extends MindMapHookAdapter {
 	}
 
 	private void performExternalScript(String pScriptLocation,
-			MindMapNode pNode, BooleanHolder pBooleanHolder) {
+                                       NodeRepresentation pNode, BooleanHolder pBooleanHolder) {
 		// get cookies from base plugin:
 		ScriptingRegistration reg = (ScriptingRegistration) getPluginBaseClass();
 		String scriptContent = Tools.getFile(new File(pScriptLocation));
@@ -101,11 +101,11 @@ public class ScriptingEngine extends MindMapHookAdapter {
 				}, System.out, reg.getScriptCookies());
 	}
 
-	private void performScriptOperation(MindMapNode node,
-			BooleanHolder pAlreadyAScriptExecuted) {
+	private void performScriptOperation(NodeRepresentation node,
+                                        BooleanHolder pAlreadyAScriptExecuted) {
 		// depth first:
-		for (Iterator<MindMapNode> iter = node.childrenUnfolded(); iter.hasNext();) {
-			MindMapNode element = iter.next();
+		for (Iterator<NodeRepresentation> iter = node.childrenUnfolded(); iter.hasNext();) {
+			NodeRepresentation element = iter.next();
 			performScriptOperation(element, pAlreadyAScriptExecuted);
 		}
 		// FIXME: Scripts
@@ -152,11 +152,11 @@ public class ScriptingEngine extends MindMapHookAdapter {
 	 * @return true, if further scripts can be executed, false, if the user
 	 *         canceled or an error occurred.
 	 */
-	static boolean executeScript(MindMapNode node,
-			BooleanHolder pAlreadyAScriptExecuted, String script,
-			final MindMapController pMindMapController,
-			ErrorHandler pErrorHandler, PrintStream pOutStream,
-			HashMap pScriptCookies) {
+	static boolean executeScript(NodeRepresentation node,
+                                 BooleanHolder pAlreadyAScriptExecuted, String script,
+                                 final MindMapController pMindMapController,
+                                 ErrorHandler pErrorHandler, PrintStream pOutStream,
+                                 HashMap pScriptCookies) {
 		// ask user if first script:
 		FreeMindMain frame = pMindMapController.getFrame();
 		if (!pAlreadyAScriptExecuted.getValue()) {

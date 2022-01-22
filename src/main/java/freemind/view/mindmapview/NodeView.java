@@ -60,7 +60,7 @@ import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.MindIcon;
 import freemind.modes.MindMapCloud;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.NodeAdapter;
 import freemind.preferences.FreemindPropertyListener;
 
@@ -78,7 +78,7 @@ public class NodeView extends JComponent implements TreeModelListener {
 
 	static private int FOLDING_SYMBOL_WIDTH = -1;
 
-	protected MindMapNode model;
+	protected NodeRepresentation model;
 	protected MapView mapView;
 	private MainView mainView;
 	protected final static Color dragColor = Color.lightGray; // the Color of
@@ -113,8 +113,8 @@ public class NodeView extends JComponent implements TreeModelListener {
 
 	private NodeFoldingComponent mFoldingListener;
 
-	protected NodeView(MindMapNode model, int position, MapView map,
-			Container parent) {
+	protected NodeView(NodeRepresentation model, int position, MapView map,
+                       Container parent) {
 		if (logger == null) {
 			logger = Resources.getInstance()
 					.getLogger(this.getClass().getName());
@@ -255,7 +255,7 @@ public class NodeView extends JComponent implements TreeModelListener {
 		return (this == myNodeView.getParentView());
 	}
 
-	public MindMapNode getModel() {
+	public NodeRepresentation getModel() {
 		return model;
 	}
 
@@ -366,7 +366,7 @@ public class NodeView extends JComponent implements TreeModelListener {
 		return getModel().isLeft();
 	}
 
-	protected void setModel(MindMapNode model) {
+	protected void setModel(NodeRepresentation model) {
 		this.model = model;
 	}
 
@@ -779,7 +779,7 @@ public class NodeView extends JComponent implements TreeModelListener {
 	//
 
 	void insert() {
-		ListIterator<MindMapNode> it = getModel().childrenFolded();
+		ListIterator<NodeRepresentation> it = getModel().childrenFolded();
 		while (it.hasNext()) {
 			insert(it.next(), 0);
 		}
@@ -790,7 +790,7 @@ public class NodeView extends JComponent implements TreeModelListener {
 	 * attribute according to this view.
 	 */
 
-	NodeView insert(MindMapNode newNode, int position) {
+	NodeView insert(NodeRepresentation newNode, int position) {
 		NodeView newView = NodeViewFactory.getInstance().newNodeView(newNode,
 				position, getMap(), this);
 		newView.insert();
@@ -1297,7 +1297,7 @@ public class NodeView extends JComponent implements TreeModelListener {
 
 		for (int i = 0; i < childIndices.length; i++) {
 			int index = childIndices[i];
-			insert((MindMapNode) getModel().getChildAt(index), index);
+			insert((NodeRepresentation) getModel().getChildAt(index), index);
 		}
 		revalidate();
 

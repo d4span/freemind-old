@@ -43,7 +43,7 @@ public final class ExtendedMapFeedbackImpl extends ExtendedMapFeedbackAdapter {
 	}
 
 	@Override
-	public MindMapNode newNode(Object pUserObject, MindMap pMap) {
+	public NodeRepresentation newNode(Object pUserObject, MindMap pMap) {
 		return new MindMapNodeModel(pUserObject, pMap);
 	}
 
@@ -64,7 +64,7 @@ public final class ExtendedMapFeedbackImpl extends ExtendedMapFeedbackAdapter {
 	 * , boolean)
 	 */
 	@Override
-	public Transferable copy(MindMapNode pNode, boolean pSaveInvisible) {
+	public Transferable copy(NodeRepresentation pNode, boolean pSaveInvisible) {
 		StringWriter stringWriter = new StringWriter();
 		try {
 			((MindMapNodeModel) pNode).save(stringWriter, getMap()

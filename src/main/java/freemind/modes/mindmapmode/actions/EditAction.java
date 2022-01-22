@@ -36,7 +36,7 @@ import freemind.common.OptionalDontShowMeAgainDialog;
 import freemind.main.FreeMind;
 import freemind.main.HtmlTools;
 import freemind.main.Tools;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.view.mindmapview.EditNodeBase;
 import freemind.view.mindmapview.EditNodeDialog;
@@ -229,7 +229,7 @@ public class EditAction extends MindmapAction {
 											// to the parent
 							mMindMapController.getView()
 									.selectAsTheOnlyOneSelected(node);
-							Vector<MindMapNode> nodeList = new Vector<>();
+							Vector<NodeRepresentation> nodeList = new Vector<>();
 							nodeList.add(node.getModel());
 							mMindMapController.cut(nodeList);
 							mMindMapController.select(prevSelected);

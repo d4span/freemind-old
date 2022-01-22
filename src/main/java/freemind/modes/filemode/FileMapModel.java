@@ -32,7 +32,7 @@ import freemind.modes.EdgeAdapter;
 import freemind.modes.MapAdapter;
 import freemind.modes.MindMap;
 import freemind.modes.MindMapLinkRegistry;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.NodeAdapter;
 
@@ -92,7 +92,7 @@ public class FileMapModel extends MapAdapter {
 		return "File: " + getRoot().toString();
 	}
 
-	public void changeNode(MindMapNode node, String newText) {
+	public void changeNode(NodeRepresentation node, String newText) {
 		// File file = ((FileNodeModel)node).getFile();
 		// File newFile = new File(file.getParentFile(), newText);
 		// file.renameTo(newFile);

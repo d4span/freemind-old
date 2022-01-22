@@ -123,7 +123,7 @@ public interface ModeController extends TextTranslator, MapFeedback,
 	 * Calling this method the map-unique identifier of the node is returned
 	 * (and created before, if not present)
 	 */
-	String getNodeID(MindMapNode selected);
+	String getNodeID(NodeRepresentation selected);
 
 	/**
 	 * Single selection: the node is the only one selected after calling this
@@ -135,24 +135,24 @@ public interface ModeController extends TextTranslator, MapFeedback,
 	 * Multiple selection. All MindMapNode s from the selecteds list are
 	 * selected, and the focused is moreover focused.
 	 */
-	public void select(MindMapNode focused, List<MindMapNode> selecteds);
+	public void select(NodeRepresentation focused, List<NodeRepresentation> selecteds);
 
 	public void selectBranch(NodeView selected, boolean extend);
 
-	MindMapNode getSelected();
+	NodeRepresentation getSelected();
 
 	NodeView getSelectedView();
 
 	/**
 	 * @return a List of MindMapNode s.
 	 */
-	List<MindMapNode> getSelecteds();
+	List<NodeRepresentation> getSelecteds();
 
 	/**
 	 * @return a LinkedList of MindMapNodes ordered by depth. nodes with greater
 	 *         depth occur first.
 	 */
-	List<MindMapNode> getSelectedsByDepth();
+	List<NodeRepresentation> getSelectedsByDepth();
 
 	/**
 	 * nodes with greater depth occur first.
@@ -160,7 +160,7 @@ public interface ModeController extends TextTranslator, MapFeedback,
 	 * @param inPlaceList
 	 *            the given list is sorted by reference.
 	 */
-	public void sortNodesByDepth(List<MindMapNode> inPlaceList);
+	public void sortNodesByDepth(List<NodeRepresentation> inPlaceList);
 
 	/**
 	 * This extends the currently selected nodes.
@@ -173,7 +173,7 @@ public interface ModeController extends TextTranslator, MapFeedback,
 	 * Invoke this method after you've changed how a node is to be represented
 	 * in the tree.
 	 */
-	void nodeChanged(MindMapNode n);
+	void nodeChanged(NodeRepresentation n);
 
 	/**
 	 * @param pIsClean
@@ -202,7 +202,7 @@ public interface ModeController extends TextTranslator, MapFeedback,
 		/**
 		 * Sent, if a node is changed
 		 * */
-		void onUpdateNodeHook(MindMapNode node);
+		void onUpdateNodeHook(NodeRepresentation node);
 
 		/**
 		 * Is sent when a node is focused (this means, that it is *the* selected
@@ -219,7 +219,7 @@ public interface ModeController extends TextTranslator, MapFeedback,
 		 * Is issued before a node is saved (eg. to save its notes, too, even if
 		 * the notes is currently edited).
 		 */
-		void onSaveNode(MindMapNode node);
+		void onSaveNode(NodeRepresentation node);
 
 		/**
 		 * Informs whether or not the node belongs to the group of selected
@@ -250,7 +250,7 @@ public interface ModeController extends TextTranslator, MapFeedback,
 	 * Is issued before a node is saved (eg. to save its notes, too, even if the
 	 * notes is currently edited). It is issued via NodeSelectionListener.
 	 */
-	void firePreSaveEvent(MindMapNode node);
+	void firePreSaveEvent(NodeRepresentation node);
 
 	/** */
 	public interface NodeLifetimeListener {
@@ -258,18 +258,18 @@ public interface ModeController extends TextTranslator, MapFeedback,
 		/**
 		 * Sent, if a node is created (on map startup or during operations).
 		 * */
-		void onCreateNodeHook(MindMapNode node);
+		void onCreateNodeHook(NodeRepresentation node);
 
 		/**
 		 * Is sent before a node is deleted (on map shutdown, too).
 		 */
-		void onPreDeleteNode(MindMapNode node);
+		void onPreDeleteNode(NodeRepresentation node);
 
 		/**
 		 * Is sent before after a node is deleted (on map shutdown, this event
 		 * is *not* send).
 		 */
-		void onPostDeleteNode(MindMapNode node, MindMapNode parent);
+		void onPostDeleteNode(NodeRepresentation node, NodeRepresentation parent);
 
 	}
 
@@ -289,7 +289,7 @@ public interface ModeController extends TextTranslator, MapFeedback,
 	 * Is issued before a node is deleted. It is issued via
 	 * NodeLifetimeListener.
 	 */
-	void fireNodePreDeleteEvent(MindMapNode node);
+	void fireNodePreDeleteEvent(NodeRepresentation node);
 
 	/**
 	 * The position of this method is an exception. Normally, every method that
@@ -298,20 +298,20 @@ public interface ModeController extends TextTranslator, MapFeedback,
 	 * NodeView getNeighbour(int directionCode)), we make this exception here
 	 * (fc, 6.11.2005).
 	 */
-	void setFolded(MindMapNode node, boolean folded);
+	void setFolded(NodeRepresentation node, boolean folded);
 
 	/**
 	 * Unfolds a node if necessary.
 	 */
-	void displayNode(MindMapNode node);
+	void displayNode(NodeRepresentation node);
 
 	/**
 	 * Node is displayed and selected as the only one selected. It is moved to
 	 * the center of the screen.
 	 */
-	void centerNode(MindMapNode node);
+	void centerNode(NodeRepresentation node);
 
-	String getLinkShortText(MindMapNode node);
+	String getLinkShortText(NodeRepresentation node);
 
 	public JToolBar getModeToolBar();
 
@@ -359,19 +359,19 @@ public interface ModeController extends TextTranslator, MapFeedback,
 
 	URL getResource(String path);
 
-	void nodeRefresh(MindMapNode node);
+	void nodeRefresh(NodeRepresentation node);
 
-	NodeView getNodeView(MindMapNode node);
+	NodeView getNodeView(NodeRepresentation node);
 
 	void refreshMap();
 
-	Transferable copy(MindMapNode node, boolean saveInvisible);
+	Transferable copy(NodeRepresentation node, boolean saveInvisible);
 
 	Transferable copy();
 
 	Transferable copySingle();
 
-	public Transferable copy(List<MindMapNode> selectedNodes, boolean copyInvisible);
+	public Transferable copy(List<NodeRepresentation> selectedNodes, boolean copyInvisible);
 
 	FreeMindFileDialog getFileChooser(FileFilter filter);
 
@@ -391,6 +391,6 @@ public interface ModeController extends TextTranslator, MapFeedback,
 	 * @param value
 	 *            null if you want to delete this tooltip.
 	 */
-	public void setToolTip(MindMapNode node, String key, String value);
+	public void setToolTip(NodeRepresentation node, String key, String value);
 
 }

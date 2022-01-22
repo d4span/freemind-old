@@ -22,7 +22,7 @@ package freemind.modes.mindmapmode.hooks;
 
 import freemind.extensions.PermanentNodeHook;
 import freemind.extensions.PermanentNodeHookAdapter;
-import freemind.modes.MindMapNode;
+import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 
 /**
@@ -51,7 +51,7 @@ public class PermanentMindMapNodeHookAdapter extends PermanentNodeHookAdapter {
 	 *            the child node the hook should be propagated to.
 	 * @return returns the new hook or null if there is already such a hook.
 	 */
-	protected PermanentNodeHook propagate(MindMapNode child) {
+	protected PermanentNodeHook propagate(NodeRepresentation child) {
 		PermanentNodeHook hook = (PermanentNodeHook) getMindMapController()
 				.createNodeHook(getName(), child);
 		// invocation:

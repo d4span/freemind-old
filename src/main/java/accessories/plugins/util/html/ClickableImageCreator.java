@@ -28,7 +28,7 @@ import java.util.Vector;
 import javax.swing.JComponent;
 
 import freemind.main.HtmlTools;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.view.mindmapview.MapView;
 import freemind.view.mindmapview.NodeView;

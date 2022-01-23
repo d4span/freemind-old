@@ -24,12 +24,12 @@
 
 package freemind.modes.mindmapmode.actions;
 
+import freemind.controller.Controller;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.modes.mindmapmode.MindMapController;
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-
-import freemind.controller.Controller;
-import freemind.modes.NodeRepresentation;
-import freemind.modes.mindmapmode.MindMapController;
 
 @SuppressWarnings("serial")
 public class NodeColorAction extends MindmapAction {

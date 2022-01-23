@@ -34,7 +34,7 @@ import javax.swing.SwingUtilities;
 
 import freemind.main.HtmlTools;
 import freemind.main.Tools;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 /**
  * Base class for all node views.

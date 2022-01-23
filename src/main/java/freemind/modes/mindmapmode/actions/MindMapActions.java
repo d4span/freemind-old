@@ -20,21 +20,21 @@
 
 package freemind.modes.mindmapmode.actions;
 
+import freemind.controller.actions.generated.instance.Pattern;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.extensions.NodeHook;
+import freemind.modes.MindIcon;
+import freemind.modes.MindMap;
+import freemind.modes.MindMapArrowLink;
+import freemind.modes.MindMapLink;
+import freemind.modes.attributes.Attribute;
+
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Properties;
-
-import freemind.controller.actions.generated.instance.Pattern;
-import freemind.extensions.NodeHook;
-import freemind.modes.MindIcon;
-import freemind.modes.MindMap;
-import freemind.modes.MindMapArrowLink;
-import freemind.modes.MindMapLink;
-import freemind.modes.NodeRepresentation;
-import freemind.modes.attributes.Attribute;
 
 /**
  * This is the central method interface of actions that can be undertaken on

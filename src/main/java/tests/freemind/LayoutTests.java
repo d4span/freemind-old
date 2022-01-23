@@ -30,7 +30,7 @@ import javax.swing.JPanel;
 
 import freemind.controller.Controller;
 import freemind.main.Tools;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.MindMapMapModel;
 import freemind.modes.mindmapmode.MindMapMode;

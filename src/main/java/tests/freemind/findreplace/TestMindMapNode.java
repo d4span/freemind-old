@@ -50,7 +50,7 @@ import freemind.modes.MindMap;
 import freemind.modes.MindMapCloud;
 import freemind.modes.MindMapEdge;
 import freemind.modes.MindMapLinkRegistry;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.attributes.Attribute;
 

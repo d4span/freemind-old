@@ -23,6 +23,8 @@
  */
 package freemind.modes;
 
+import freemind.dependencies.view.swing.NodeRepresentation;
+
 /**
  * @author Dimitri Polivaev 31.10.2005
  */

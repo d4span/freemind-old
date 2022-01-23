@@ -29,7 +29,7 @@ import javax.swing.JLabel;
 import freemind.controller.Controller;
 import freemind.main.Resources;
 import freemind.main.XMLElement;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 public class NoFilteringCondition implements Condition {
 

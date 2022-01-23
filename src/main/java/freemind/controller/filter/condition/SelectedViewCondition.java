@@ -28,7 +28,7 @@ import javax.swing.JComponent;
 import freemind.controller.Controller;
 import freemind.main.Resources;
 import freemind.main.XMLElement;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.view.mindmapview.NodeView;
 
 public class SelectedViewCondition implements Condition {

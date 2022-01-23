@@ -22,7 +22,7 @@ package freemind.modes.mindmapmode;
 
 import freemind.modes.EdgeAdapter;
 import freemind.modes.MapFeedback;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 public class MindMapEdgeModel extends EdgeAdapter {
 

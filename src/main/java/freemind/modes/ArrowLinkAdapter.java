@@ -22,6 +22,7 @@ package freemind.modes;
 
 import java.awt.Point;
 
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
 

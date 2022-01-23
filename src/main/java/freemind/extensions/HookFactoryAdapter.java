@@ -24,7 +24,7 @@ package freemind.extensions;
 
 import java.util.HashMap;
 
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 /**
  * @author foltin

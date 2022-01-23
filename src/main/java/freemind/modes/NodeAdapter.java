@@ -19,6 +19,28 @@
 
 package freemind.modes;
 
+import freemind.controller.Controller;
+import freemind.controller.filter.Filter;
+import freemind.controller.filter.FilterInfo;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.extensions.DontSaveMarker;
+import freemind.extensions.NodeHook;
+import freemind.extensions.PermanentNodeHook;
+import freemind.main.FreeMind;
+import freemind.main.FreeMindCommon;
+import freemind.main.HtmlTools;
+import freemind.main.Resources;
+import freemind.main.Tools;
+import freemind.main.XMLElement;
+import freemind.modes.attributes.Attribute;
+import freemind.preferences.FreemindPropertyListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.event.EventListenerList;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.font.TextAttribute;
@@ -41,28 +63,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
-
-import javax.swing.ImageIcon;
-import javax.swing.event.EventListenerList;
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-
-import freemind.controller.Controller;
-import freemind.controller.filter.Filter;
-import freemind.controller.filter.FilterInfo;
-import freemind.extensions.DontSaveMarker;
-import freemind.extensions.NodeHook;
-import freemind.extensions.PermanentNodeHook;
-import freemind.main.FreeMind;
-import freemind.main.FreeMindCommon;
-import freemind.main.HtmlTools;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.main.XMLElement;
-import freemind.modes.attributes.Attribute;
-import freemind.preferences.FreemindPropertyListener;
 
 /**
  * This class represents a single Node of a Tree. It contains direct handles to

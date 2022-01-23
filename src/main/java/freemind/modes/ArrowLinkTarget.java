@@ -20,6 +20,7 @@
 
 package freemind.modes;
 
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.main.XMLElement;
 import freemind.modes.mindmapmode.MindMapArrowLinkModel;
 import freemind.view.mindmapview.MapView;

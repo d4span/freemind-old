@@ -25,7 +25,7 @@ package freemind.modes.attributes;
 
 import javax.swing.table.TableModel;
 
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 /**
  * @author Dimitri Polivaev 10.07.2005

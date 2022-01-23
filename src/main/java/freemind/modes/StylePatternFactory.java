@@ -50,6 +50,7 @@ import freemind.controller.actions.generated.instance.PatternNodeFontStrikethrou
 import freemind.controller.actions.generated.instance.PatternNodeStyle;
 import freemind.controller.actions.generated.instance.PatternPropertyBase;
 import freemind.controller.actions.generated.instance.Patterns;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin;

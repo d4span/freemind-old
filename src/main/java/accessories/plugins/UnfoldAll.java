@@ -23,18 +23,18 @@
  */
 package accessories.plugins;
 
-import java.awt.event.InputEvent;
-import java.awt.event.MouseWheelEvent;
-import java.util.Iterator;
-
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.extensions.HookRegistration;
 import freemind.main.Tools;
 import freemind.modes.MindMap;
-import freemind.modes.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 import freemind.view.mindmapview.ViewFeedback.MouseWheelEventHandler;
+
+import java.awt.event.InputEvent;
+import java.awt.event.MouseWheelEvent;
+import java.util.Iterator;
 
 /**
  * @author foltin

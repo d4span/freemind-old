@@ -30,7 +30,7 @@ import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.ExtendedMapFeedbackImpl;
 import freemind.modes.MapAdapter;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapMapModel;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 

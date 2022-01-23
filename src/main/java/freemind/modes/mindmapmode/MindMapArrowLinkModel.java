@@ -24,7 +24,7 @@ import java.awt.Point;
 
 import freemind.modes.ArrowLinkAdapter;
 import freemind.modes.MapFeedback;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.view.mindmapview.MapView;
 import freemind.view.mindmapview.NodeView;
 

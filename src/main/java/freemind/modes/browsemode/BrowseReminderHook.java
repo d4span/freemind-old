@@ -22,7 +22,7 @@
 
 package freemind.modes.browsemode;
 
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.common.plugins.ReminderHookBase;
 
 /**

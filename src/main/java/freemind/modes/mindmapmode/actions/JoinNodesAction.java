@@ -19,17 +19,16 @@
  */
 package freemind.modes.mindmapmode.actions;
 
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.main.HtmlTools;
+import freemind.modes.mindmapmode.MindMapController;
+import freemind.view.mindmapview.MapView;
+
+import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import javax.swing.JOptionPane;
-
-import freemind.main.HtmlTools;
-import freemind.modes.NodeRepresentation;
-import freemind.modes.mindmapmode.MindMapController;
-import freemind.view.mindmapview.MapView;
 
 @SuppressWarnings("serial")
 public class JoinNodesAction extends MindmapAction {

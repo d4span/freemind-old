@@ -22,11 +22,11 @@
 /*$Id: HookFactory.java,v 1.1.4.9.2.1 2006/07/25 20:28:20 christianfoltin Exp $*/
 package freemind.extensions;
 
+import freemind.controller.actions.generated.instance.Plugin;
+import freemind.dependencies.view.swing.NodeRepresentation;
+
 import java.util.List;
 import java.util.Vector;
-
-import freemind.controller.actions.generated.instance.Plugin;
-import freemind.modes.NodeRepresentation;
 
 public interface HookFactory {
 

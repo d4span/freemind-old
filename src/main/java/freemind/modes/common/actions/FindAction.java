@@ -19,6 +19,22 @@
  */
 package freemind.modes.common.actions;
 
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.main.FreeMind;
+import freemind.main.HtmlTools;
+import freemind.main.Resources;
+import freemind.main.Tools;
+import freemind.modes.ControllerAdapter;
+import freemind.modes.FreemindAction;
+
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -31,23 +47,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.ListIterator;
-
-import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-
-import freemind.main.FreeMind;
-import freemind.main.HtmlTools;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.modes.ControllerAdapter;
-import freemind.modes.FreemindAction;
-import freemind.modes.NodeRepresentation;
 
 @SuppressWarnings("serial")
 public class FindAction extends FreemindAction {

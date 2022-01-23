@@ -20,7 +20,7 @@
 package freemind.extensions;
 
 import freemind.modes.MindMap;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 /**
  * Straight forward implementation with some helpers.

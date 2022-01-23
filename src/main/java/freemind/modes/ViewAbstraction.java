@@ -23,6 +23,7 @@ package freemind.modes;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.view.mindmapview.NodeView;
 
 /**

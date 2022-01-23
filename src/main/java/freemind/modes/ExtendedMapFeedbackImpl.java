@@ -27,6 +27,7 @@ import java.io.StringWriter;
 import java.util.Vector;
 
 import freemind.controller.MindMapNodesSelection;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.main.Tools;
 import freemind.modes.mindmapmode.MindMapNodeModel;
 

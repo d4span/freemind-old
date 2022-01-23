@@ -22,15 +22,14 @@
 
 package freemind.modes.mindmapmode.actions;
 
-import java.awt.event.ActionEvent;
-import java.util.Vector;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.main.Tools;
+import freemind.modes.mindmapmode.MindMapController;
 
 import javax.swing.Action;
 import javax.swing.JMenuItem;
-
-import freemind.main.Tools;
-import freemind.modes.NodeRepresentation;
-import freemind.modes.mindmapmode.MindMapController;
+import java.awt.event.ActionEvent;
+import java.util.Vector;
 
 /**
  * @author foltin

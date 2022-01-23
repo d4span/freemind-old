@@ -18,12 +18,20 @@
  */
 
 
-package freemind.modes;
+package freemind.dependencies.view.swing;
 
 import freemind.controller.filter.FilterInfo;
 import freemind.extensions.NodeHook;
 import freemind.extensions.PermanentNodeHook;
 import freemind.main.XMLElement;
+import freemind.modes.HistoryInformation;
+import freemind.modes.MapFeedback;
+import freemind.modes.MindIcon;
+import freemind.modes.MindMap;
+import freemind.modes.MindMapCloud;
+import freemind.modes.MindMapEdge;
+import freemind.modes.MindMapLinkRegistry;
+import freemind.modes.ModeController;
 import freemind.modes.attributes.Attribute;
 import freemind.modes.mindmapmode.actions.MindMapActions;
 

@@ -20,6 +20,21 @@
 
 package freemind.modes;
 
+import freemind.controller.filter.DefaultFilter;
+import freemind.controller.filter.Filter;
+import freemind.controller.filter.condition.NoFilteringCondition;
+import freemind.controller.filter.util.SortedMapListModel;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.main.FreeMind;
+import freemind.main.Resources;
+import freemind.main.Tools;
+import freemind.main.XMLParseException;
+
+import javax.swing.event.EventListenerList;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -35,21 +50,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 import java.util.logging.Logger;
-
-import javax.swing.event.EventListenerList;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-
-import freemind.controller.filter.DefaultFilter;
-import freemind.controller.filter.Filter;
-import freemind.controller.filter.condition.NoFilteringCondition;
-import freemind.controller.filter.util.SortedMapListModel;
-import freemind.main.FreeMind;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.main.XMLParseException;
 
 @SuppressWarnings("serial")
 public abstract class MapAdapter extends DefaultTreeModel implements MindMap {

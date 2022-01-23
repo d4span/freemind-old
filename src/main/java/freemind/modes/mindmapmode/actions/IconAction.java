@@ -23,19 +23,18 @@
 
 package freemind.modes.mindmapmode.actions;
 
-import java.awt.event.ActionEvent;
+import freemind.controller.actions.generated.instance.AddIconAction;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.main.Tools;
+import freemind.modes.IconInformation;
+import freemind.modes.MindIcon;
+import freemind.modes.mindmapmode.MindMapController;
+import freemind.modes.mindmapmode.actions.xml.actors.AddIconActor;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
-
-import freemind.controller.actions.generated.instance.AddIconAction;
-import freemind.main.Tools;
-import freemind.modes.IconInformation;
-import freemind.modes.MindIcon;
-import freemind.modes.NodeRepresentation;
-import freemind.modes.mindmapmode.MindMapController;
-import freemind.modes.mindmapmode.actions.xml.actors.AddIconActor;
+import java.awt.event.ActionEvent;
 
 @SuppressWarnings("serial")
 public class IconAction extends MindmapAction implements IconInformation {

@@ -32,7 +32,7 @@ import java.util.ListIterator;
 import javax.swing.JOptionPane;
 
 import freemind.controller.MindMapNodesSelection;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.MindMapMapModel;
 import freemind.modes.mindmapmode.MindMapNodeModel;

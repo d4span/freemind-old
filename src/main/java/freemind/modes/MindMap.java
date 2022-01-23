@@ -21,6 +21,7 @@ package freemind.modes;
 
 import freemind.controller.filter.Filter;
 import freemind.controller.filter.util.SortedListModel;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.main.Tools;
 import freemind.main.XMLParseException;
 

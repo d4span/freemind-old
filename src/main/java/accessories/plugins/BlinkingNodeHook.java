@@ -27,7 +27,7 @@ import java.util.Vector;
 
 import javax.swing.SwingUtilities;
 
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.mindmapmode.hooks.PermanentMindMapNodeHookAdapter;
 import freemind.view.mindmapview.NodeView;
 import freemind.view.mindmapview.NodeViewVisitor;

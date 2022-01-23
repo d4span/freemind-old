@@ -31,7 +31,7 @@ import javax.swing.JScrollPane;
 
 import freemind.controller.NodeMotionListener.NodeMotionAdapter;
 import freemind.main.Tools;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.view.mindmapview.MapView;

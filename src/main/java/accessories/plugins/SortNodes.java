@@ -29,7 +29,7 @@ import java.util.Comparator;
 import java.util.Vector;
 
 import freemind.main.Tools;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 
 /**

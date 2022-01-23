@@ -33,7 +33,7 @@ import freemind.controller.filter.FilterController;
 import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 /**
  * @author dimitri 08.05.2005

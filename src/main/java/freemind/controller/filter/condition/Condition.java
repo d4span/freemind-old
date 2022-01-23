@@ -27,7 +27,7 @@ import javax.swing.JComponent;
 
 import freemind.controller.Controller;
 import freemind.main.XMLElement;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 public interface Condition {
 	boolean checkNode(Controller c, NodeRepresentation node);

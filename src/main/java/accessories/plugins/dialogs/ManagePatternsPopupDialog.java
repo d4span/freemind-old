@@ -64,7 +64,7 @@ import freemind.controller.StructuredMenuHolder;
 import freemind.controller.actions.generated.instance.ManageStyleEditorWindowConfigurationStorage;
 import freemind.controller.actions.generated.instance.Pattern;
 import freemind.main.Tools;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.StylePatternFactory;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.dialogs.StylePatternFrame;

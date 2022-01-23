@@ -27,7 +27,7 @@ import freemind.main.XMLParseException;
 import freemind.modes.ExtendedMapFeedbackAdapter;
 import freemind.modes.MapAdapter;
 import freemind.modes.MindMap;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.StylePatternFactory;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.MindMapMapModel;

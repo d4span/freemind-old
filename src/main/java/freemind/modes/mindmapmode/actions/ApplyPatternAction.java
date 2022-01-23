@@ -29,7 +29,7 @@ package freemind.modes.mindmapmode.actions;
 
 import freemind.controller.actions.generated.instance.Pattern;
 import freemind.modes.EdgeAdapter;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.StylePatternFactory;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin;

@@ -31,7 +31,7 @@ import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
 import freemind.modes.MindIcon;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 public class IconContainedCondition implements Condition {
 	static final String ICON = "icon";

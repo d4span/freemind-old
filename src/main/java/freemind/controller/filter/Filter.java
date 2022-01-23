@@ -24,7 +24,7 @@
 package freemind.controller.filter;
 
 import freemind.controller.Controller;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 /**
  * @author dimitri 07.05.2005

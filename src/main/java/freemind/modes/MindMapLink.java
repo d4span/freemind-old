@@ -21,6 +21,8 @@
 package freemind.modes;
 
 
+import freemind.dependencies.view.swing.NodeRepresentation;
+
 public interface MindMapLink extends MindMapLine {
 
 	// public Color getColor();

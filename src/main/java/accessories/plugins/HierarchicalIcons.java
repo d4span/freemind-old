@@ -26,7 +26,7 @@ import java.util.TreeSet;
 
 import freemind.extensions.UndoEventReceiver;
 import freemind.modes.MindIcon;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.mindmapmode.hooks.PermanentMindMapNodeHookAdapter;
 import freemind.view.mindmapview.MultipleImage;
 

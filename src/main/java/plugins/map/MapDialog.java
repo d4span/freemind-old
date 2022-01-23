@@ -60,7 +60,7 @@ import freemind.controller.actions.generated.instance.Place;
 import freemind.controller.actions.generated.instance.TableColumnSetting;
 import freemind.main.Resources;
 import freemind.main.Tools;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.Mode;
 import freemind.modes.ModeController.NodeSelectionListener;
 import freemind.modes.mindmapmode.MindMapController;

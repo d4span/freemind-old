@@ -20,13 +20,6 @@
 
 package freemind.modes;
 
-import java.awt.Font;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 import freemind.controller.MapMouseMotionListener;
 import freemind.controller.MapMouseWheelListener;
 import freemind.controller.NodeDragListener;
@@ -34,12 +27,20 @@ import freemind.controller.NodeDropListener;
 import freemind.controller.NodeKeyListener;
 import freemind.controller.NodeMotionListener;
 import freemind.controller.NodeMouseMotionListener;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.extensions.NodeHook;
 import freemind.extensions.PermanentNodeHook;
 import freemind.extensions.PermanentNodeHookSubstituteUnknown;
 import freemind.main.Resources;
 import freemind.view.mindmapview.NodeView;
 import freemind.view.mindmapview.ViewFeedback;
+
+import java.awt.Font;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author foltin

@@ -25,7 +25,7 @@ package freemind.controller.filter.condition;
 
 import freemind.controller.Controller;
 import freemind.main.XMLElement;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 class NodeContainsCondition extends NodeCondition {
 	static final String VALUE = "value";

@@ -53,7 +53,7 @@ import freemind.controller.actions.generated.instance.Pattern;
 import freemind.controller.actions.generated.instance.Patterns;
 import freemind.extensions.HookRegistration;
 import freemind.modes.MindMap;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.StylePatternFactory;
 import freemind.modes.mindmapmode.MindMapController;

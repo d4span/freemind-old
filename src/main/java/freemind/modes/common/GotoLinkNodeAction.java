@@ -23,13 +23,12 @@
 
 package freemind.modes.common;
 
-import java.awt.event.ActionEvent;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.modes.ModeController;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-
-import freemind.modes.NodeRepresentation;
-import freemind.modes.ModeController;
+import java.awt.event.ActionEvent;
 
 /** Follow a graphical link (AKA connector) action. */
 @SuppressWarnings("serial")

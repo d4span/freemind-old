@@ -46,7 +46,7 @@ import freemind.modes.MapFeedback;
 import freemind.modes.MapFeedbackAdapter;
 import freemind.modes.MindMap;
 import freemind.modes.MindMapLinkRegistry;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.NodeAdapter;
 
 /** */

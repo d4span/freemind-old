@@ -24,15 +24,15 @@
 
 package freemind.modes.mindmapmode.actions;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
+import freemind.controller.Controller;
+import freemind.controller.MenuItemEnabledListener;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.modes.mindmapmode.MindMapController;
 
 import javax.swing.Action;
 import javax.swing.JMenuItem;
-import freemind.controller.Controller;
-import freemind.controller.MenuItemEnabledListener;
-import freemind.modes.NodeRepresentation;
-import freemind.modes.mindmapmode.MindMapController;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
 
 @SuppressWarnings("serial")
 public class CloudColorAction extends MindmapAction implements MenuItemEnabledListener {

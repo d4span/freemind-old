@@ -19,6 +19,22 @@
 
 package freemind.modes;
 
+import freemind.common.TextTranslator;
+import freemind.controller.Controller;
+import freemind.controller.MapModuleManager;
+import freemind.controller.StructuredMenuHolder;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.extensions.HookFactory;
+import freemind.main.FreeMindMain;
+import freemind.main.XMLParseException;
+import freemind.view.MapModule;
+import freemind.view.mindmapview.MapView;
+import freemind.view.mindmapview.NodeView;
+import freemind.view.mindmapview.ViewFeedback;
+
+import javax.swing.JPopupMenu;
+import javax.swing.JToolBar;
+import javax.swing.filechooser.FileFilter;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.datatransfer.Transferable;
@@ -29,22 +45,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
-
-import javax.swing.JPopupMenu;
-import javax.swing.JToolBar;
-import javax.swing.filechooser.FileFilter;
-
-import freemind.common.TextTranslator;
-import freemind.controller.Controller;
-import freemind.controller.MapModuleManager;
-import freemind.controller.StructuredMenuHolder;
-import freemind.extensions.HookFactory;
-import freemind.main.FreeMindMain;
-import freemind.main.XMLParseException;
-import freemind.view.MapModule;
-import freemind.view.mindmapview.MapView;
-import freemind.view.mindmapview.NodeView;
-import freemind.view.mindmapview.ViewFeedback;
 
 public interface ModeController extends TextTranslator, MapFeedback,
 		ViewFeedback {

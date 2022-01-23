@@ -29,7 +29,7 @@ import freemind.common.OptionalDontShowMeAgainDialog;
 import freemind.common.TextTranslator;
 import freemind.main.FreeMind;
 import freemind.main.HtmlTools;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 
 /**

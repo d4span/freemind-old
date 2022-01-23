@@ -21,6 +21,8 @@
 package freemind.modes;
 
 import java.awt.Color;
+
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.main.Tools;
 
 public abstract class LineAdapter implements MindMapLine {

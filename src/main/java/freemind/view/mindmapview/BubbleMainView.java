@@ -28,7 +28,7 @@ import java.awt.Point;
 import java.awt.Stroke;
 
 import freemind.main.Tools;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 @SuppressWarnings("serial")
 class BubbleMainView extends MainView {

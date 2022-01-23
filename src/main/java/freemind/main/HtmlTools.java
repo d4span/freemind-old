@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 import javax.swing.text.BadLocationException;
 import javax.xml.parsers.SAXParserFactory;
 
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;

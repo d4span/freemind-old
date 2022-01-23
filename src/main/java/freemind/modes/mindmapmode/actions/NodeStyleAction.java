@@ -24,15 +24,15 @@
 
 package freemind.modes.mindmapmode.actions;
 
-import javax.swing.Action;
-import javax.swing.JMenuItem;
-
 import freemind.controller.MenuItemSelectedListener;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.main.Tools;
-import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.MindMapNodeModel;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
+
+import javax.swing.Action;
+import javax.swing.JMenuItem;
 
 @SuppressWarnings("serial")
 public class NodeStyleAction extends NodeGeneralAction implements MenuItemSelectedListener {

@@ -25,7 +25,7 @@ import java.awt.Color;
 import freemind.main.XMLElement;
 import freemind.modes.EdgeAdapter;
 import freemind.modes.MapFeedback;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 public class BrowseEdgeModel extends EdgeAdapter {
 

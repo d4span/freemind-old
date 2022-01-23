@@ -48,7 +48,7 @@ import freemind.controller.filter.condition.NoFilteringCondition;
 import freemind.controller.filter.condition.SelectedViewCondition;
 import freemind.main.Resources;
 import freemind.modes.MindMap;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 @SuppressWarnings("serial")
 class FilterToolbar extends FreeMindToolBar {

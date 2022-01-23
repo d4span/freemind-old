@@ -20,6 +20,25 @@
 
 package freemind.view.mindmapview;
 
+import freemind.controller.Controller;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.main.FreeMind;
+import freemind.main.FreeMindMain;
+import freemind.main.HtmlTools;
+import freemind.main.Resources;
+import freemind.main.Tools;
+import freemind.modes.MindIcon;
+import freemind.modes.MindMapCloud;
+import freemind.modes.NodeAdapter;
+import freemind.preferences.FreemindPropertyListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.SwingConstants;
+import javax.swing.ToolTipManager;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeNode;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -43,26 +62,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
-
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.SwingConstants;
-import javax.swing.ToolTipManager;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.TreeNode;
-
-import freemind.controller.Controller;
-import freemind.main.FreeMind;
-import freemind.main.FreeMindMain;
-import freemind.main.HtmlTools;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.modes.MindIcon;
-import freemind.modes.MindMapCloud;
-import freemind.modes.NodeRepresentation;
-import freemind.modes.NodeAdapter;
-import freemind.preferences.FreemindPropertyListener;
 
 /**
  * This class represents a single Node of a MindMap (in analogy to

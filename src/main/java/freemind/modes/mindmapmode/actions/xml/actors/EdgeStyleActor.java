@@ -26,7 +26,7 @@ import freemind.main.Tools;
 import freemind.modes.EdgeAdapter;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindMapEdge;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**

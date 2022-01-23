@@ -26,7 +26,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.StringReader;
 
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import tests.freemind.findreplace.TestMindMapNode;
 
 import com.lightdev.app.shtm.SHTMLPanel;

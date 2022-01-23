@@ -3133,7 +3133,7 @@
     </p>
     <ul>
       <li>
-        node is the current node. It is a freemind.modes.NodeRepresentation. This node can be used to retrieve information about the contents, its children or its formatting. <i>Don't use the setter to change the node. Use the following instead:</i>
+        node is the current node. It is a freemind.dependencies.view.swing.NodeRepresentation. This node can be used to retrieve information about the contents, its children or its formatting. <i>Don't use the setter to change the node. Use the following instead:</i>
       </li>
       <li>
         c is the current controller. It is a freemind.modes.mindmapmode.MindMapController. This controller <b>should</b>&#160; &#160;&#160;&#160;be used to change information. For example, if you want to change the nodes text or if you want to add children. The methods that can be used are sumarized in freemind.modes.mindmapmode.actions.MindMapActions.
@@ -3247,7 +3247,7 @@ calcWork(c.getRootNode());</pre>
 		/** 
          * Sent, if a node is changed
          * */
-        void onUpdateNodeHook(freemind.modes.NodeRepresentation node){
+        void onUpdateNodeHook(freemind.dependencies.view.swing.NodeRepresentation node){
 			calcWork(c.getRootNode());
 		};
 
@@ -3262,7 +3262,7 @@ calcWork(c.getRootNode());</pre>
 		/**
 		 * Is issued before a node is saved (eg. to save its notes, too, even if the notes is currently edited).
 		 */
-		void onSaveNode(freemind.modes.NodeRepresentation node){};
+		void onSaveNode(freemind.dependencies.view.swing.NodeRepresentation node){};
 
 def calcWork(child) {
 	def sum = 0;
@@ -3298,7 +3298,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 	class IconComparator implements java.util.Comparator {
 			int compare(java.lang.Object pArg0, java.lang.Object pArg1) {
@@ -3358,7 +3358,7 @@ import freemind.modes.NodeRepresentation;
 		/** 
          * Sent, if a node is changed
          * */
-        void onUpdateNodeHook(freemind.modes.NodeRepresentation node){
+        void onUpdateNodeHook(freemind.dependencies.view.swing.NodeRepresentation node){
 		};
 
         /** Is sent when a node is selected.
@@ -3385,7 +3385,7 @@ import freemind.modes.NodeRepresentation;
 		/**
 		 * Is issued before a node is saved (eg. to save its notes, too, even if the notes is currently edited).
 		 */
-		void onSaveNode(freemind.modes.NodeRepresentation node){};
+		void onSaveNode(freemind.dependencies.view.swing.NodeRepresentation node){};
 def foldEverybody(child, exception) {
 		if(child == null || child.isRoot())
 			return;

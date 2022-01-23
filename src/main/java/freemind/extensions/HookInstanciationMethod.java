@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Vector;
 
 import freemind.modes.MapFeedback;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 public class HookInstanciationMethod {
 	private static interface DestinationNodesGetter {

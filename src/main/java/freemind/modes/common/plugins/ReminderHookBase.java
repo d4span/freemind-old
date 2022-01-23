@@ -34,7 +34,7 @@ import javax.swing.Timer;
 import freemind.extensions.PermanentNodeHookAdapter;
 import freemind.main.XMLElement;
 import freemind.modes.MindIcon;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 /**
  * @author foltin

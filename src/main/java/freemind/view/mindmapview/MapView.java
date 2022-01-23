@@ -75,7 +75,7 @@ import freemind.main.Tools.Pair;
 import freemind.modes.MindMap;
 import freemind.modes.MindMapArrowLink;
 import freemind.modes.MindMapLink;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.ViewAbstraction;
 import freemind.preferences.FreemindPropertyListener;
 

@@ -31,7 +31,7 @@ import javax.swing.AbstractAction;
 
 import freemind.main.Tools;
 import freemind.modes.ControllerAdapter;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 /**
  * @author foltin

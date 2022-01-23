@@ -23,7 +23,7 @@ package plugins.map;
 import java.util.Arrays;
 import java.util.List;
 
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.common.plugins.MapNodePositionHolderBase;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 

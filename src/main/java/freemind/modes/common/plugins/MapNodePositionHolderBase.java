@@ -29,7 +29,7 @@ import freemind.extensions.PermanentNodeHookAdapter;
 import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 /**
  * This base class is free of openstreetmap and similar classes.

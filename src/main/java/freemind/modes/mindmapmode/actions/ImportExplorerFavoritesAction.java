@@ -19,17 +19,16 @@
  */
 package freemind.modes.mindmapmode.actions;
 
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.main.Tools;
+import freemind.modes.FreeMindFileDialog;
+import freemind.modes.mindmapmode.MindMapController;
+
+import javax.swing.JFileChooser;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-
-import javax.swing.JFileChooser;
-
-import freemind.main.Tools;
-import freemind.modes.FreeMindFileDialog;
-import freemind.modes.NodeRepresentation;
-import freemind.modes.mindmapmode.MindMapController;
 
 @SuppressWarnings("serial")
 public class ImportExplorerFavoritesAction extends MindmapAction {

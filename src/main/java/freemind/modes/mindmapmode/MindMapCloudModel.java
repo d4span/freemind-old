@@ -22,7 +22,7 @@ package freemind.modes.mindmapmode;
 
 import freemind.modes.CloudAdapter;
 import freemind.modes.MapFeedback;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 public class MindMapCloudModel extends CloudAdapter {
 

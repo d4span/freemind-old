@@ -33,7 +33,7 @@ import freemind.controller.MenuItemEnabledListener;
 import freemind.extensions.HookRegistration;
 import freemind.modes.MapAdapter;
 import freemind.modes.MindMap;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.common.dialogs.EnterPasswordDialog;
 import freemind.modes.mindmapmode.EncryptedMindMapNode;

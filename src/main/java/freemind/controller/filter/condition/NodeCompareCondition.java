@@ -26,7 +26,7 @@ package freemind.controller.filter.condition;
 import freemind.controller.Controller;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 class NodeCompareCondition extends CompareConditionAdapter {
 

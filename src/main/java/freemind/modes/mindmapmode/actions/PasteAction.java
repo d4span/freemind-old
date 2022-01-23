@@ -22,13 +22,13 @@
 
 package freemind.modes.mindmapmode.actions;
 
-import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
+import freemind.controller.actions.generated.instance.PasteNodeAction;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.modes.mindmapmode.MindMapController;
 
 import javax.swing.AbstractAction;
-import freemind.controller.actions.generated.instance.PasteNodeAction;
-import freemind.modes.NodeRepresentation;
-import freemind.modes.mindmapmode.MindMapController;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
 
 @SuppressWarnings("serial")
 public class PasteAction extends AbstractAction {

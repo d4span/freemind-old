@@ -39,7 +39,7 @@ import freemind.extensions.HookFactory;
 import freemind.main.XMLParseException;
 import freemind.modes.MapAdapter;
 import freemind.modes.MindMap;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.Mode;
 import freemind.modes.ModeController;
 import freemind.modes.common.actions.NewMapAction;

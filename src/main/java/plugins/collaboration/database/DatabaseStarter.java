@@ -30,7 +30,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Vector;
 
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import plugins.collaboration.socket.FormDialog;
 import plugins.collaboration.socket.FormDialog.FormDialogValidator;
 import freemind.common.NumberProperty;

@@ -27,7 +27,7 @@ import java.awt.LayoutManager;
 import javax.swing.JComponent;
 
 import freemind.modes.EdgeAdapter;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 class NodeViewFactory {
 

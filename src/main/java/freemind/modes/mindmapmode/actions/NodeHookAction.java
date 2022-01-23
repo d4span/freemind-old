@@ -22,20 +22,19 @@
 
 package freemind.modes.mindmapmode.actions;
 
-import java.awt.event.ActionEvent;
-import java.util.List;
-import java.util.logging.Logger;
+import freemind.controller.MenuItemEnabledListener;
+import freemind.controller.MenuItemSelectedListener;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.extensions.HookFactory;
+import freemind.extensions.HookInstanciationMethod;
+import freemind.modes.mindmapmode.MindMapController;
 
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
-
-import freemind.controller.MenuItemEnabledListener;
-import freemind.controller.MenuItemSelectedListener;
-import freemind.extensions.HookFactory;
-import freemind.extensions.HookInstanciationMethod;
-import freemind.modes.NodeRepresentation;
-import freemind.modes.mindmapmode.MindMapController;
+import java.awt.event.ActionEvent;
+import java.util.List;
+import java.util.logging.Logger;
 
 @SuppressWarnings("serial")
 public class NodeHookAction extends MindmapAction implements HookAction,

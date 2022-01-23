@@ -25,6 +25,7 @@ import java.awt.Color;
 import java.awt.Stroke;
 
 import freemind.controller.Controller;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.main.FreeMind;
 import freemind.main.Tools;
 import freemind.main.XMLElement;

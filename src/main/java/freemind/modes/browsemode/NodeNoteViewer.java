@@ -29,7 +29,7 @@ import javax.swing.JScrollPane;
 
 import freemind.controller.Controller.SplitComponentType;
 import freemind.modes.ControllerAdapter;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.ModeController.NodeSelectionListener;
 import freemind.modes.common.plugins.NodeNoteBase;
 import freemind.view.mindmapview.NodeView;

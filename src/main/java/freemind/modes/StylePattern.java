@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
 

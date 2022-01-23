@@ -21,7 +21,7 @@ package plugins.map;
 
 
 
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 @SuppressWarnings("serial")
 public class MapMarkerLocation extends MapMarkerBase {

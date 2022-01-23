@@ -29,7 +29,7 @@ import java.util.ListIterator;
 import freemind.controller.Controller;
 import freemind.controller.filter.condition.Condition;
 import freemind.modes.MindMap;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.view.mindmapview.MapView;
 import freemind.view.mindmapview.NodeView;
 

@@ -20,6 +20,21 @@
 
 package freemind.modes.mindmapmode;
 
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.main.FreeMind;
+import freemind.main.HtmlTools;
+import freemind.main.Resources;
+import freemind.main.Tools;
+import freemind.modes.ArrowLinkAdapter;
+import freemind.modes.ArrowLinkTarget;
+import freemind.modes.CloudAdapter;
+import freemind.modes.EdgeAdapter;
+import freemind.modes.MapAdapter;
+import freemind.modes.MapFeedback;
+import freemind.modes.MindMap;
+import freemind.modes.MindMapLinkRegistry;
+import freemind.modes.NodeAdapter;
+
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.io.BufferedReader;
@@ -43,21 +58,6 @@ import java.util.ListIterator;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
-
-import freemind.main.FreeMind;
-import freemind.main.HtmlTools;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.modes.ArrowLinkAdapter;
-import freemind.modes.ArrowLinkTarget;
-import freemind.modes.CloudAdapter;
-import freemind.modes.EdgeAdapter;
-import freemind.modes.MapAdapter;
-import freemind.modes.MapFeedback;
-import freemind.modes.MindMap;
-import freemind.modes.MindMapLinkRegistry;
-import freemind.modes.NodeRepresentation;
-import freemind.modes.NodeAdapter;
 
 @SuppressWarnings("serial")
 public class MindMapMapModel extends MapAdapter {

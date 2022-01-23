@@ -26,7 +26,7 @@ package accessories.plugins;
 import java.text.MessageFormat;
 import java.util.Iterator;
 
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.mindmapmode.hooks.PermanentMindMapNodeHookAdapter;
 
 /**

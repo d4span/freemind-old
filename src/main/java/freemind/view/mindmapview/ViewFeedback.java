@@ -20,9 +20,6 @@
 
 package freemind.view.mindmapview;
 
-import java.awt.Font;
-import java.awt.event.MouseWheelEvent;
-
 import freemind.controller.MapMouseMotionListener;
 import freemind.controller.MapMouseWheelListener;
 import freemind.controller.NodeDragListener;
@@ -30,7 +27,10 @@ import freemind.controller.NodeDropListener;
 import freemind.controller.NodeKeyListener;
 import freemind.controller.NodeMotionListener;
 import freemind.controller.NodeMouseMotionListener;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
+
+import java.awt.Font;
+import java.awt.event.MouseWheelEvent;
 
 /**
  * ViewFeedback is an interface implemented by the ModeController classes

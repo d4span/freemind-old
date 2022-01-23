@@ -20,6 +20,8 @@
 
 package freemind.modes;
 
+import freemind.dependencies.view.swing.NodeRepresentation;
+
 import java.awt.Color;
 
 public interface MindMapLine extends Cloneable {

@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.ListIterator;
 import java.util.Vector;
 
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.main.Tools;
 
 /**

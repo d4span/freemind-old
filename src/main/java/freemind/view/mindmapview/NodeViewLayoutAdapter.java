@@ -27,7 +27,7 @@ import java.awt.Point;
 import javax.swing.JComponent;
 
 import freemind.main.Tools;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 /**
  * @author foltin

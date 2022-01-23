@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import freemind.main.XMLElement;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.view.mindmapview.NodeView;
 
 /**

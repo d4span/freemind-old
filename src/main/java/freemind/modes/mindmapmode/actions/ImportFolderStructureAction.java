@@ -19,17 +19,16 @@
  */
 package freemind.modes.mindmapmode.actions;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.net.MalformedURLException;
-
-import javax.swing.JFileChooser;
-
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.main.FreeMindMain;
 import freemind.main.Tools;
 import freemind.modes.FreeMindFileDialog;
-import freemind.modes.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
+
+import javax.swing.JFileChooser;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.net.MalformedURLException;
 
 @SuppressWarnings("serial")
 public class ImportFolderStructureAction extends MindmapAction {

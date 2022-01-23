@@ -22,6 +22,39 @@ package freemind.main;
 
 //maybe move this class to another package like tools or something...
 
+import freemind.common.UnicodeReader;
+import freemind.common.XmlBindingTools;
+import freemind.controller.MindMapNodesSelection;
+import freemind.controller.actions.generated.instance.CompoundAction;
+import freemind.controller.actions.generated.instance.XmlAction;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.modes.EdgeAdapter;
+import freemind.modes.MindIcon;
+import freemind.modes.mindmapmode.MindMapController;
+import freemind.view.mindmapview.NodeView;
+
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
+import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
+import javax.swing.Action;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.swing.UIManager;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -86,40 +119,6 @@ import java.util.Vector;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
-
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.PBEParameterSpec;
-import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
-import javax.swing.Action;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import javax.swing.UIManager;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import freemind.common.UnicodeReader;
-import freemind.common.XmlBindingTools;
-import freemind.controller.MindMapNodesSelection;
-import freemind.controller.actions.generated.instance.CompoundAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.modes.EdgeAdapter;
-import freemind.modes.MindIcon;
-import freemind.modes.NodeRepresentation;
-import freemind.modes.mindmapmode.MindMapController;
-import freemind.view.mindmapview.NodeView;
 
 /**
  * @author foltin

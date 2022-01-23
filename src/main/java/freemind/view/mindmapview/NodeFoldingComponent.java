@@ -46,7 +46,7 @@ import javax.swing.plaf.basic.BasicButtonUI;
 import freemind.main.FreeMind;
 import freemind.main.Resources;
 import freemind.main.Tools;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 /**
  * @author Foltin

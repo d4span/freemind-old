@@ -23,6 +23,7 @@ package freemind.modes;
 import java.awt.Color;
 
 import freemind.controller.Controller;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.main.FreeMind;
 import freemind.main.Tools;
 import freemind.main.XMLElement;

@@ -33,7 +33,7 @@ import javax.swing.Action;
 import freemind.main.FreeMind;
 import freemind.main.Tools;
 import freemind.modes.IconInformation;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.common.dialogs.IconSelectionPopupDialog;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.IconAction;

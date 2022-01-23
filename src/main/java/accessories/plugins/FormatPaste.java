@@ -26,7 +26,7 @@ package accessories.plugins;
 import javax.swing.JOptionPane;
 
 import freemind.controller.actions.generated.instance.Pattern;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.StylePatternFactory;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 

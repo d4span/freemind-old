@@ -23,7 +23,7 @@ package freemind.extensions;
 import accessories.plugins.ApplyFormatPlugin;
 import accessories.plugins.AutomaticLayout;
 import freemind.modes.MindMap;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 /**
  * This is a general base interface for hooks that implement actions belonging to nodes.

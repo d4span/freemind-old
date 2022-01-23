@@ -29,7 +29,7 @@ import java.util.Iterator;
 import freemind.main.Tools;
 import freemind.modes.EdgeAdapter;
 import freemind.modes.MindMapEdge;
-import freemind.modes.NodeRepresentation;
+import freemind.dependencies.view.swing.NodeRepresentation;
 
 @SuppressWarnings("serial")
 class ForkMainView extends MainView {

@@ -1,5 +1,8 @@
 package freemind.adapters.view
 
-enum class NodeStyle {
-    STYLE_FORK, STYLE_BUBBLE, STYLE_AS_PARENT, STYLE_COMBINED
+enum class NodeStyle(val settingName: String) {
+    BUBBLE("bubble"),
+    FORK("fork"),
+    COMBINED("combined"),
+    AS_PARENT("as_parent");
 }

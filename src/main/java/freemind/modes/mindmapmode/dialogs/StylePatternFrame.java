@@ -22,20 +22,9 @@
 
 package freemind.modes.mindmapmode.dialogs;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.HeadlessException;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Vector;
-
-import javax.swing.JPanel;
-
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-
+import freemind.adapters.view.NodeStyle;
 import freemind.common.BooleanProperty;
 import freemind.common.ColorProperty;
 import freemind.common.ComboProperty;
@@ -70,10 +59,20 @@ import freemind.main.FreeMind;
 import freemind.main.Tools;
 import freemind.modes.EdgeAdapter;
 import freemind.modes.MindIcon;
-import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.ApplyPatternAction;
 import freemind.modes.mindmapmode.actions.IconAction;
+
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.HeadlessException;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author foltin
@@ -344,7 +343,7 @@ public class StylePatternFrame extends JPanel implements TextTranslator,
 				SET_NODE_STYLE);
 		controls.add(mSetNodeStyle);
 		mNodeStyle = new ComboProperty(NODE_STYLE + ".tooltip", NODE_STYLE,
-				NodeRepresentation.NODE_STYLES, this);
+				Arrays.stream(NodeStyle.values()).map(NodeStyle::getSettingName).toArray(String[]::new), this);
 		controls.add(mNodeStyle);
 		mIconInformationVector = new Vector<>();
 		MindMapController controller = mMindMapController;
@@ -474,7 +473,7 @@ public class StylePatternFrame extends JPanel implements TextTranslator,
 				mSetNodeBackgroundColor, mNodeBackgroundColor,
 				fmMain.getDefaultProperty(FreeMind.RESOURCES_BACKGROUND_COLOR));
 		setPatternControls(pattern.getPatternNodeStyle(), mSetNodeStyle,
-				mNodeStyle, NodeRepresentation.STYLE_AS_PARENT);
+				mNodeStyle, NodeStyle.AS_PARENT.getSettingName());
 		setPatternControls(pattern.getPatternNodeText(), mSetNodeText,
 				mNodeText, "");
 		setPatternControls(pattern.getPatternEdgeColor(), mSetEdgeColor,

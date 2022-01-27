@@ -255,8 +255,10 @@ interface NodeRepresentation : MutableTreeNode {
      */
     @Throws(IOException::class)
     fun save(
-        writer: Writer?, registry: MindMapLinkRegistry?,
-        saveHidden: Boolean, saveChildren: Boolean
+        writer: Writer?,
+        registry: MindMapLinkRegistry?,
+        saveHidden: Boolean,
+        saveChildren: Boolean
     ): XMLElement?
     // fc, 10.2.2005:
     /**
@@ -368,20 +370,4 @@ interface NodeRepresentation : MutableTreeNode {
      * @return true, if one of its parents is folded. If itself is folded, doesn't matter.
      */
     fun hasFoldedParents(): Boolean
-
-    companion object {
-        @JvmField
-        public final val STYLE_BUBBLE = "bubble"
-        @JvmField
-        public final val STYLE_FORK = "fork"
-        @JvmField
-        public final val STYLE_COMBINED = "combined"
-        @JvmField
-        public final val STYLE_AS_PARENT = "as_parent"
-        @JvmField
-        public final val NODE_STYLES = arrayOf(
-            STYLE_FORK,
-            STYLE_BUBBLE, STYLE_AS_PARENT, STYLE_COMBINED
-        )
-    }
 }

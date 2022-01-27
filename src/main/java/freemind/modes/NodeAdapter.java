@@ -19,6 +19,7 @@
 
 package freemind.modes;
 
+import freemind.adapters.view.NodeStyle;
 import freemind.controller.Controller;
 import freemind.controller.filter.Filter;
 import freemind.controller.filter.FilterInfo;
@@ -337,25 +338,25 @@ public abstract class NodeAdapter implements NodeRepresentation {
 			} else {
 				String stdstyle = getMapFeedback().getProperty(
 						FreeMind.RESOURCES_NODE_STYLE);
-				if (stdstyle.equals(NodeRepresentation.STYLE_AS_PARENT)) {
+				if (stdstyle.equals(NodeStyle.AS_PARENT.getSettingName())) {
 					returnedString = getParentNode().getStyle();
 				} else {
 					returnedString = stdstyle;
 				}
 			}
-		} else if (this.isRoot() && style.equals(NodeRepresentation.STYLE_AS_PARENT)) {
+		} else if (this.isRoot() && style.equals(NodeStyle.AS_PARENT.getSettingName())) {
 			returnedString = getMapFeedback().getProperty(
 					FreeMind.RESOURCES_ROOT_NODE_STYLE);
-		} else if (style.equals(NodeRepresentation.STYLE_AS_PARENT)) {
+		} else if (style.equals(NodeStyle.AS_PARENT.getSettingName())) {
 			returnedString = getParentNode().getStyle();
 		}
 
 		// Handle the combined node style
-		if (returnedString.equals(NodeRepresentation.STYLE_COMBINED)) {
+		if (returnedString.equals(NodeStyle.COMBINED.getSettingName())) {
 			if (this.isFolded()) {
-				return NodeRepresentation.STYLE_BUBBLE;
+				return NodeStyle.BUBBLE.getSettingName();
 			} else {
-				return NodeRepresentation.STYLE_FORK;
+				return NodeStyle.FORK.getSettingName();
 			}
 		}
 		return returnedString;

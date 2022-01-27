@@ -19,6 +19,7 @@
 
 package freemind.modes.mindmapmode;
 
+import freemind.adapters.view.NodeStyle;
 import freemind.common.OptionalDontShowMeAgainDialog;
 import freemind.common.XmlBindingTools;
 import freemind.controller.MenuBar;
@@ -568,8 +569,8 @@ public class MindMapController extends ControllerAdapter implements
 		edgeColor = new EdgeColorAction(this);
 		nodeColor = new NodeColorAction(this);
 		nodeColorBlend = new NodeColorBlendAction(this);
-		fork = new NodeStyleAction(this, NodeRepresentation.STYLE_FORK);
-		bubble = new NodeStyleAction(this, NodeRepresentation.STYLE_BUBBLE);
+		fork = new NodeStyleAction(this, NodeStyle.FORK.getSettingName());
+		bubble = new NodeStyleAction(this, NodeStyle.BUBBLE.getSettingName());
 		// this is an unknown icon and thus corrected by mindicon:
 		removeLastIconAction = new RemoveIconAction(this);
 		// this action handles the xml stuff: (undo etc.)

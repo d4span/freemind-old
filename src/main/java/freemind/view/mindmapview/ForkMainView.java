@@ -19,17 +19,18 @@
 
 package freemind.view.mindmapview;
 
+import freemind.adapters.view.NodeStyle;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.main.Tools;
+import freemind.modes.EdgeAdapter;
+import freemind.modes.MindMapEdge;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.Iterator;
-
-import freemind.main.Tools;
-import freemind.modes.EdgeAdapter;
-import freemind.modes.MindMapEdge;
-import freemind.dependencies.view.swing.NodeRepresentation;
 
 @SuppressWarnings("serial")
 class ForkMainView extends MainView {
@@ -87,7 +88,7 @@ class ForkMainView extends MainView {
 	 * @see freemind.view.mindmapview.NodeView#getStyle()
 	 */
 	String getStyle() {
-		return NodeRepresentation.STYLE_FORK;
+		return NodeStyle.FORK.getSettingName();
 	}
 
 	/**

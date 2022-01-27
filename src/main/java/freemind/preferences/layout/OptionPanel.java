@@ -22,36 +22,11 @@
 
 package freemind.preferences.layout;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Vector;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
-
+import freemind.adapters.view.NodeStyle;
 import freemind.common.BooleanProperty;
 import freemind.common.ColorProperty;
 import freemind.common.ComboProperty;
@@ -74,12 +49,36 @@ import freemind.main.FreeMindCommon;
 import freemind.main.Tools;
 import freemind.modes.IconInformation;
 import freemind.modes.MindIcon;
-import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.IconAction;
 import freemind.preferences.FreemindPropertyContributor;
 import freemind.preferences.layout.GrabKeyDialog.KeyBinding;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * @author foltin
@@ -589,12 +588,12 @@ public class OptionPanel implements TextTranslator {
 		controls.add(new NewTabProperty("Defaults"));
 		controls.add(new SeparatorProperty("default_styles"));
 		controls.add(new ComboProperty("standardnodestyle.tooltip",
-				FreeMind.RESOURCES_NODE_STYLE, NodeRepresentation.NODE_STYLES, this)); // as_parent
+				FreeMind.RESOURCES_NODE_STYLE, Arrays.stream(NodeStyle.values()).map(NodeStyle::getSettingName).toArray(String[]::new), this)); // as_parent
 
 		controls.add(new ComboProperty("standardrootnodestyle.tooltip",
 				FreeMind.RESOURCES_ROOT_NODE_STYLE, new String[] {
-						NodeRepresentation.STYLE_FORK, NodeRepresentation.STYLE_BUBBLE,
-						NodeRepresentation.STYLE_COMBINED }, this)); // fork
+						NodeStyle.FORK.getSettingName(), NodeStyle.BUBBLE.getSettingName(),
+						NodeStyle.COMBINED.getSettingName() }, this)); // fork
 
 		controls.add(new NextLineProperty());
 		controls.add(new SeparatorProperty("default_colors"));

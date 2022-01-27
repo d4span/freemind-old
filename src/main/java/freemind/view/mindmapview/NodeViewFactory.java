@@ -19,15 +19,15 @@
 
 package freemind.view.mindmapview;
 
+import freemind.adapters.view.NodeStyle;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.modes.EdgeAdapter;
+
+import javax.swing.JComponent;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
-
-import javax.swing.JComponent;
-
-import freemind.modes.EdgeAdapter;
-import freemind.dependencies.view.swing.NodeRepresentation;
 
 class NodeViewFactory {
 
@@ -185,9 +185,9 @@ class NodeViewFactory {
 		if (model.isRoot()) {
 			return new RootMainView();
 		}
-		if (model.getStyle().equals(NodeRepresentation.STYLE_FORK)) {
+		if (model.getStyle().equals(NodeStyle.FORK.getSettingName())) {
 			return new ForkMainView();
-		} else if (model.getStyle().equals(NodeRepresentation.STYLE_BUBBLE)) {
+		} else if (model.getStyle().equals(NodeStyle.BUBBLE.getSettingName())) {
 			return new BubbleMainView();
 		} else {
 			System.err.println("Tried to create a NodeView of unknown Style.");

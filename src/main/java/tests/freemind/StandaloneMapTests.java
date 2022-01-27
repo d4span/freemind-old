@@ -20,15 +20,9 @@
 
 package tests.freemind;
 
-import java.awt.Color;
-import java.awt.GraphicsEnvironment;
-import java.awt.Point;
-import java.awt.datatransfer.StringSelection;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Vector;
-
+import freemind.adapters.view.NodeStyle;
 import freemind.controller.actions.generated.instance.Pattern;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.main.FreeMind;
 import freemind.main.Tools;
 import freemind.modes.EdgeAdapter;
@@ -37,11 +31,17 @@ import freemind.modes.MapAdapter;
 import freemind.modes.MindIcon;
 import freemind.modes.MindMapArrowLink;
 import freemind.modes.MindMapLink;
-import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.StylePatternFactory;
 import freemind.modes.attributes.Attribute;
 import freemind.modes.mindmapmode.MindMapMapModel;
-import freemind.modes.mindmapmode.MindMapNodeModel;
+
+import java.awt.Color;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
+import java.awt.datatransfer.StringSelection;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Vector;
 
 /**
  * @author foltin
@@ -192,8 +192,8 @@ public class StandaloneMapTests extends FreeMindTestBase {
 		assertEquals(20, root.getVGap());
 		assertEquals(30, firstChild.getHGap());
 		assertEquals(17, firstChild.getShiftY());
-		mapFeedback.setNodeStyle(firstChild, NodeRepresentation.STYLE_FORK);
-		assertEquals(MindMapNodeModel.STYLE_FORK, firstChild.getStyle());
+		mapFeedback.setNodeStyle(firstChild, NodeStyle.FORK.getSettingName());
+		assertEquals(NodeStyle.FORK.getSettingName(), firstChild.getStyle());
 		assertTrue(firstChild.hasStyle());
 		mapFeedback.setNodeStyle(firstChild, null);
 		assertFalse(firstChild.hasStyle());

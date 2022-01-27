@@ -20,6 +20,7 @@
 
 package freemind.modes.mindmapmode.actions.xml.actors;
 
+import freemind.adapters.view.NodeStyle;
 import freemind.controller.actions.generated.instance.NodeStyleFormatAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.main.Tools;
@@ -49,9 +50,9 @@ public class NodeStyleActor extends XmlActorAdapter {
 			execute(getActionPair(node, null));
 			return;
 		}
-		for (int i = 0; i < NodeRepresentation.NODE_STYLES.length; i++) {
-			String dstyle = NodeRepresentation.NODE_STYLES[i];
-			if(Tools.safeEquals(style, dstyle)) {
+
+		for (var dstyle : NodeStyle.values()) {
+			if(Tools.safeEquals(style, dstyle.getSettingName())) {
 				execute(getActionPair(node, style));
 				return;
 			}

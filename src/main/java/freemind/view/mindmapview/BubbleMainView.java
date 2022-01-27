@@ -19,6 +19,10 @@
 
 package freemind.view.mindmapview;
 
+import freemind.adapters.view.NodeStyle;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.main.Tools;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -26,9 +30,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Stroke;
-
-import freemind.main.Tools;
-import freemind.dependencies.view.swing.NodeRepresentation;
 
 @SuppressWarnings("serial")
 class BubbleMainView extends MainView {
@@ -124,7 +125,7 @@ class BubbleMainView extends MainView {
 	 * @see freemind.view.mindmapview.NodeView#getStyle()
 	 */
 	String getStyle() {
-		return NodeRepresentation.STYLE_BUBBLE;
+		return NodeStyle.BUBBLE.getSettingName();
 	}
 
 	/**

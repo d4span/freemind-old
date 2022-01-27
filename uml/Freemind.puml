@@ -12,7 +12,8 @@ package "Freemind (Java)" {
 }
 
 package "Freemind (Kotlin)" {
-    [Adapters] <<freemind.adapters.view..>>
+    [Adapters] <<freemind.adapters..>>
+    [External Dependencies] <<freemind.dependencies..>>
 }
 
 package "Tests and Accessories" {
@@ -34,6 +35,7 @@ package "Third-party libs" {
     [JIBX] <<org.jibx..>>
     [JGoodies] <<com.jgoodies..>>
     [Core SAX API] <<org.xml.sax..>>
+    [Jetbrains Libs] <<org.jetbrains.annotations..>>
 }
 
 [Swing] --> [Java Swing]
@@ -51,12 +53,14 @@ package "Third-party libs" {
 [Controllers] --> [Common]
 [Controllers] --> [Main]
 [Controllers] --> [Modes]
+[Controllers] --> [External Dependencies]
 [Controllers] --> [Preferences]
 [Controllers] --> [Java Swing]
 
 [Extensions] --> [Main]
 [Extensions] --> [Views]
 [Extensions] --> [Controllers]
+[Extensions] --> [External Dependencies]
 [Extensions] --> [Modes]
 [Extensions] --> [Java Swing]
 
@@ -64,6 +68,8 @@ package "Third-party libs" {
 [Views] --> [Extensions]
 [Views] --> [Freemind accessories]
 [Views] --> [Freemind Tests]
+[Views] --> [External Dependencies]
+[Views] --> [Adapters]
 [Views] --> [Java Swing]
 [Views] --> [Java Image I/O API]
 [Views] --> [Modes]
@@ -75,6 +81,7 @@ package "Third-party libs" {
 [Preferences] --> [Common]
 [Preferences] --> [Main]
 [Preferences] --> [Modes]
+[Preferences] --> [Adapters]
 [Preferences] --> [JGoodies]
 [Preferences] --> [Controllers]
 [Preferences] --> [Java Swing]
@@ -83,6 +90,8 @@ package "Third-party libs" {
 [Modes] --> [Controllers]
 [Modes] --> [Views]
 [Modes] --> [Main]
+[Modes] --> [External Dependencies]
+[Modes] --> [Adapters]
 [Modes] --> [Extensions]
 [Modes] --> [Common]
 [Modes] --> [Java Swing]
@@ -96,6 +105,7 @@ package "Third-party libs" {
 [Main] --> [Views]
 [Main] --> [Controllers]
 [Main] --> [Modes]
+[Main] --> [External Dependencies]
 [Main] --> [Java Swing]
 [Main] --> [JSoup]
 [Main] --> [JAXP]
@@ -103,5 +113,14 @@ package "Third-party libs" {
 [Main] --> [JOrtho]
 [Main] --> [Core SAX API]
 [Main] --> [Freemind Tests]
+
+[Adapters] --> [Jetbrains Libs]
+
+[External Dependencies] --> [Modes]
+[External Dependencies] --> [Controllers]
+[External Dependencies] --> [Main]
+[External Dependencies] --> [Extensions]
+[External Dependencies] --> [Jetbrains Libs]
+[External Dependencies] --> [Java Swing]
 
 @enduml

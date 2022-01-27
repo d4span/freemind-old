@@ -20,17 +20,18 @@
 
 package freemind.modes.filemode;
 
+import freemind.adapters.view.NodeStyle;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.main.Tools;
+import freemind.modes.MindMap;
+import freemind.modes.NodeAdapter;
+
 import java.awt.Color;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.ListIterator;
-
-import freemind.main.Tools;
-import freemind.modes.MindMap;
-import freemind.dependencies.view.swing.NodeRepresentation;
-import freemind.modes.NodeAdapter;
 
 /**
  * This class represents a single Node of a Tree. It contains direct handles to
@@ -53,7 +54,7 @@ public class FileNodeModel extends NodeAdapter {
 
 	// Overwritten get Methods
 	public String getStyle() {
-		return NodeRepresentation.STYLE_FORK;
+		return NodeStyle.FORK.getSettingName();
 		// // This condition shows the code is not quite logical:
 		// // ordinary file should not be considered folded and
 		// // therefore the clause !isLeaf() should not be necessary.

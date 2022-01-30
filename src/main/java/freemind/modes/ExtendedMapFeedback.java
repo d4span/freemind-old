@@ -83,7 +83,7 @@ public interface ExtendedMapFeedback extends MapFeedback, MindMapActions {
 	 * @param pMap
 	 * @return the new node.
 	 */
-	NodeRepresentation newNode(Object pUserObject, MindMap pMap);
+	NodeRepresentation newNode(String pUserObject, MindMap pMap);
 
 	/**
 	 * @param pSelectedNode

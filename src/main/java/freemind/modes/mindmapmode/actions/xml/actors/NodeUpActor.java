@@ -20,20 +20,20 @@
 
 package freemind.modes.mindmapmode.actions.xml.actors;
 
+import freemind.controller.actions.generated.instance.MoveNodesAction;
+import freemind.controller.actions.generated.instance.NodeListMember;
+import freemind.controller.actions.generated.instance.XmlAction;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.modes.ExtendedMapFeedback;
+import freemind.modes.MindMap;
+import freemind.modes.mindmapmode.actions.xml.ActionPair;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.Vector;
-
-import freemind.controller.actions.generated.instance.MoveNodesAction;
-import freemind.controller.actions.generated.instance.NodeListMember;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMap;
-import freemind.dependencies.view.swing.NodeRepresentation;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
  * @author foltin
@@ -73,8 +73,8 @@ public class NodeUpActor extends XmlActorAdapter {
 			for (NodeRepresentation node : selecteds) {
 				if (node.getParent() != parent) {
 					logger.warning("Not all selected nodes (here: "
-							+ node.getText() + ") have the same parent "
-							+ parent.getText() + ".");
+							+ node.getNode().getText() + ") have the same parent "
+							+ parent.getNode().getText() + ".");
 					return;
 				}
 				range.add(new Integer(sortedChildren.indexOf(node)));

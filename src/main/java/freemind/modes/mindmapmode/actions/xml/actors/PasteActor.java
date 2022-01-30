@@ -20,6 +20,31 @@
 
 package freemind.modes.mindmapmode.actions.xml.actors;
 
+import freemind.controller.MindMapNodesSelection;
+import freemind.controller.actions.generated.instance.PasteNodeAction;
+import freemind.controller.actions.generated.instance.TransferableContent;
+import freemind.controller.actions.generated.instance.TransferableFile;
+import freemind.controller.actions.generated.instance.UndoPasteNodeAction;
+import freemind.controller.actions.generated.instance.XmlAction;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.extensions.PermanentNodeHook;
+import freemind.main.FreeMind;
+import freemind.main.FreeMindCommon;
+import freemind.main.HtmlTools;
+import freemind.main.HtmlTools.NodeCreator;
+import freemind.main.Resources;
+import freemind.main.Tools;
+import freemind.main.XMLParseException;
+import freemind.modes.ControllerAdapter;
+import freemind.modes.ExtendedMapFeedback;
+import freemind.modes.MapAdapter;
+import freemind.modes.ModeController;
+import freemind.modes.NodeAdapter;
+import freemind.modes.mindmapmode.MindMapNodeModel;
+import freemind.modes.mindmapmode.actions.xml.ActionPair;
+
+import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -38,32 +63,6 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.imageio.ImageIO;
-import javax.swing.JOptionPane;
-
-import freemind.controller.MindMapNodesSelection;
-import freemind.controller.actions.generated.instance.PasteNodeAction;
-import freemind.controller.actions.generated.instance.TransferableContent;
-import freemind.controller.actions.generated.instance.TransferableFile;
-import freemind.controller.actions.generated.instance.UndoPasteNodeAction;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.extensions.PermanentNodeHook;
-import freemind.main.FreeMind;
-import freemind.main.FreeMindCommon;
-import freemind.main.HtmlTools;
-import freemind.main.HtmlTools.NodeCreator;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.main.XMLParseException;
-import freemind.modes.ControllerAdapter;
-import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MapAdapter;
-import freemind.dependencies.view.swing.NodeRepresentation;
-import freemind.modes.ModeController;
-import freemind.modes.NodeAdapter;
-import freemind.modes.mindmapmode.MindMapNodeModel;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
  * @author foltin
@@ -332,7 +331,7 @@ public class PasteActor extends XmlActorAdapter {
 
 					@Override
 					public void setText(String pText, NodeRepresentation pNode) {
-						pNode.setText(pText);
+						pNode.getNode().setText(pText);
 						getExMapFeedback().nodeChanged(pNode);
 					}
 
@@ -887,7 +886,7 @@ public class PasteActor extends XmlActorAdapter {
 
 			@Override
 			public void setText(String pText, NodeRepresentation pNode) {
-				pNode.setText(pText);
+				pNode.getNode().setText(pText);
 			}
 
 			@Override

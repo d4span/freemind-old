@@ -20,19 +20,6 @@
 
 package freemind.main;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.text.BadLocationException;
-import javax.xml.parsers.SAXParserFactory;
-
 import freemind.dependencies.view.swing.NodeRepresentation;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -43,6 +30,18 @@ import org.jsoup.select.NodeVisitor;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import javax.swing.text.BadLocationException;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** */
 public class HtmlTools {
@@ -772,7 +771,7 @@ public class HtmlTools {
 							mCurrentNode = mCreator.createChild(mParentNode);
 						}
 //						System.out.println("TEXT+: " + text);
-						mCreator.setText(mCurrentNode.getText() + text, mCurrentNode);
+						mCreator.setText(mCurrentNode.getNode().getText() + text, mCurrentNode);
 						if(mLink != null) {
 							mCreator.setLink(mLink, mCurrentNode);
 							mLink = null;
@@ -809,7 +808,7 @@ public class HtmlTools {
 									|| element.tagName().equals("br") || element
 									.tagName().equals("li"))) {
 								isNewline = true;
-								if (mCurrentNode == null || !mCurrentNode.getText().isEmpty()) {
+								if (mCurrentNode == null || !mCurrentNode.getNode().getText().isEmpty()) {
 									// next sibling, same parent, only if already content present.
 									mCurrentNode = null;
 								}

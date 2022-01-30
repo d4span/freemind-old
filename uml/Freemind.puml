@@ -12,6 +12,7 @@ package "Freemind (Java)" {
 }
 
 package "Freemind (Kotlin)" {
+    [Model] <<freemind.model..>>
     [Adapters between logic and external components] <<freemind.adapters..>>
     [Wrappers around external dependencies] <<freemind.dependencies..>>
 }
@@ -38,6 +39,8 @@ package "Third-party libs" {
     [Jetbrains Libs] <<org.jetbrains.annotations..>>
 }
 
+[Model] --> [Jetbrains Libs]
+
 [Swing] --> [Java Swing]
 
 [Common] --> [Main]
@@ -53,6 +56,7 @@ package "Third-party libs" {
 [Controllers] --> [Common]
 [Controllers] --> [Main]
 [Controllers] --> [Modes]
+[Controllers] --> [Model]
 [Controllers] --> [Wrappers around external dependencies]
 [Controllers] --> [Preferences]
 [Controllers] --> [Java Swing]
@@ -90,6 +94,7 @@ package "Third-party libs" {
 [Modes] --> [Controllers]
 [Modes] --> [Views]
 [Modes] --> [Main]
+[Modes] --> [Model]
 [Modes] --> [Wrappers around external dependencies]
 [Modes] --> [Adapters between logic and external components]
 [Modes] --> [Extensions]
@@ -105,6 +110,7 @@ package "Third-party libs" {
 [Main] --> [Views]
 [Main] --> [Controllers]
 [Main] --> [Modes]
+[Main] --> [Model]
 [Main] --> [Wrappers around external dependencies]
 [Main] --> [Java Swing]
 [Main] --> [JSoup]
@@ -117,6 +123,7 @@ package "Third-party libs" {
 [Adapters between logic and external components] --> [Jetbrains Libs]
 
 [Wrappers around external dependencies] --> [Modes]
+[Wrappers around external dependencies] --> [Model]
 [Wrappers around external dependencies] --> [Controllers]
 [Wrappers around external dependencies] --> [Main]
 [Wrappers around external dependencies] --> [Extensions]

@@ -22,6 +22,7 @@ import freemind.controller.filter.FilterInfo
 import freemind.extensions.NodeHook
 import freemind.extensions.PermanentNodeHook
 import freemind.main.XMLElement
+import freemind.model.MindmapNode
 import freemind.modes.HistoryInformation
 import freemind.modes.MapFeedback
 import freemind.modes.MindIcon
@@ -43,24 +44,9 @@ import javax.swing.tree.MutableTreeNode
 import javax.swing.tree.TreePath
 
 interface NodeRepresentation : MutableTreeNode {
-    /**
-     * @return the text representation of the nodes content. HTML is represented
-     * as <html>....</html> see getXmlText
-     */
-    /**
-     * Sets both text and xmlText.
-     */
-    var text: String?
-    /**
-     * @return the text representation of the nodes content as valid XML. HTML
-     * is represented as <html>....</html> with proper tags (like \<br></br>/\>
-     * instead of \<br></br>\>
-     * and so on).
-     */
-    /**
-     * Sets both text and xmlText.
-     */
-    var xmlText: String?
+
+    val node: MindmapNode
+
     /**
      * @return the text representation of the notes content as valid XML. HTML
      * is represented as <html>....</html> with proper tags (like <br></br>

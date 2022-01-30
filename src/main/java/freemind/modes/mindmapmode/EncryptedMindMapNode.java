@@ -20,15 +20,7 @@
 
 package freemind.modes.mindmapmode;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ListIterator;
-import java.util.Vector;
-
-import javax.swing.ImageIcon;
-import javax.swing.tree.MutableTreeNode;
-
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.main.HtmlTools;
 import freemind.main.Tools;
 import freemind.main.Tools.SingleDesEncrypter;
@@ -37,8 +29,15 @@ import freemind.modes.MapAdapter;
 import freemind.modes.MindIcon;
 import freemind.modes.MindMap;
 import freemind.modes.MindMapLinkRegistry;
-import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.ModeController;
+
+import javax.swing.ImageIcon;
+import javax.swing.tree.MutableTreeNode;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ListIterator;
+import java.util.Vector;
 
 public class EncryptedMindMapNode extends MindMapNodeModel {
 
@@ -74,7 +73,7 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
 
 	/**
      */
-	public EncryptedMindMapNode(Object userObject, MindMap map) {
+	public EncryptedMindMapNode(String userObject, MindMap map) {
 		super(userObject, map);
 		if (encryptedIcon == null) {
 			encryptedIcon = MindIcon.factory("encrypted").getIcon();

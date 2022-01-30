@@ -46,7 +46,7 @@ class NodeCompareCondition extends CompareConditionAdapter {
 
 	public boolean checkNode(Controller c, NodeRepresentation node) {
 		try {
-			return succeed == (compareTo(node.getText()) == comparationResult);
+			return succeed == (compareTo(node.getNode().getText()) == comparationResult);
 		} catch (NumberFormatException fne) {
 			return false;
 		}

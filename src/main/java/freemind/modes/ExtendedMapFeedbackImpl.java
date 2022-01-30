@@ -20,16 +20,16 @@
 
 package freemind.modes;
 
+import freemind.controller.MindMapNodesSelection;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.main.Tools;
+import freemind.modes.mindmapmode.MindMapNodeModel;
+
 import java.awt.Font;
 import java.awt.datatransfer.Transferable;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Vector;
-
-import freemind.controller.MindMapNodesSelection;
-import freemind.dependencies.view.swing.NodeRepresentation;
-import freemind.main.Tools;
-import freemind.modes.mindmapmode.MindMapNodeModel;
 
 /**
  * @author foltin
@@ -44,7 +44,7 @@ public final class ExtendedMapFeedbackImpl extends ExtendedMapFeedbackAdapter {
 	}
 
 	@Override
-	public NodeRepresentation newNode(Object pUserObject, MindMap pMap) {
+	public NodeRepresentation newNode(String pUserObject, MindMap pMap) {
 		return new MindMapNodeModel(pUserObject, pMap);
 	}
 

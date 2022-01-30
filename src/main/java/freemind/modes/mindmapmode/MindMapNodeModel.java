@@ -46,7 +46,7 @@ public class MindMapNodeModel extends NodeAdapter {
 		this(null,pMap);
 	}
 
-	public MindMapNodeModel(Object userObject, MindMap pMap) {
+	public MindMapNodeModel(String userObject, MindMap pMap) {
 		super(userObject, pMap);
 		children = new LinkedList<>();
 		setEdge(new MindMapEdgeModel(this, getMapFeedback()));

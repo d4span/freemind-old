@@ -33,6 +33,7 @@ import freemind.main.HtmlTools;
 import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
+import freemind.model.MindmapNode;
 import freemind.modes.attributes.Attribute;
 import freemind.preferences.FreemindPropertyListener;
 
@@ -83,8 +84,7 @@ public abstract class NodeAdapter implements NodeRepresentation {
 
 	private HashSet<PermanentNodeHook> activatedHooks;
 	private List<PermanentNodeHook> hooks;
-	protected Object userObject = "no text";
-	private String xmlText = "no text";
+	private MindmapNode node = new MindmapNode("no text", null);
 	private String link = null; // Change this to vector in future for full
 								// graph support
 	private static final String TOOLTIP_PREVIEW_KEY = "preview";
@@ -142,14 +142,14 @@ public abstract class NodeAdapter implements NodeRepresentation {
 	private static FreemindPropertyListener sSaveIdPropertyChangeListener;
 	private static boolean sSaveOnlyIntrinsicallyNeededIds = false;
 	private Vector<Attribute> mAttributeVector = null;
-	
+
 	//
 	// Constructors
 	//
 
-	protected NodeAdapter(Object userObject, MindMap pMap) {
+	protected NodeAdapter(String nodeText, MindMap pMap) {
 		this.map = pMap;
-		setText((String) userObject);
+		setText(nodeText);
 		hooks = null; // lazy, fc, 30.6.2005.
 		activatedHooks = null; // lazy, fc, 30.6.2005
 		if (logger == null)
@@ -180,31 +180,35 @@ public abstract class NodeAdapter implements NodeRepresentation {
 		this.map = pMap;
 	}
 
+	public MindmapNode getNode() {
+		return node;
+	}
+
 	public String getText() {
 		String string = "";
-		if (userObject != null) {
-			string = userObject.toString();
+		if (node != null) {
+			string = node.getText();
 		}
 		return string;
 	}
 
 	public final void setText(String text) {
 		if (text == null) {
-			userObject = null;
-			xmlText = null;
+			node.setText(null);
+			node.setXmlText(null);
 			return;
 		}
-		userObject = HtmlTools.makeValidXml(text);
-		xmlText = HtmlTools.getInstance().toXhtml((String) userObject);
+		node.setText(HtmlTools.makeValidXml(text));
+		node.setXmlText(HtmlTools.getInstance().toXhtml(node.getText()));
 	}
 
 	public final String getXmlText() {
-		return xmlText;
+		return node.getXmlText();
 	}
 
 	public final void setXmlText(String pXmlText) {
-		this.xmlText = HtmlTools.makeValidXml(pXmlText);
-		userObject = HtmlTools.getInstance().toHtml(xmlText);
+		node.setXmlText(HtmlTools.makeValidXml(pXmlText));
+		node.setText(HtmlTools.getInstance().toHtml(this.node.getText()));
 	}
 
 	/* ************************************************************
@@ -323,11 +327,11 @@ public abstract class NodeAdapter implements NodeRepresentation {
 		}
 	}
 
-	
+
 	public String getBareStyle(){
 		return style;
 	}
-	
+
 	/** A Node-Style like MindMapNode.STYLE_FORK or MindMapNode.STYLE_BUBBLE */
 	public String getStyle() {
 		String returnedString = style; /* Style string returned */
@@ -420,7 +424,7 @@ public abstract class NodeAdapter implements NodeRepresentation {
 			toggleStrikethrough();
 		}
 	}
-	
+
 	public void toggleStrikethrough() {
 		establishOwnFont();
 		Map  attributes = font.getAttributes();
@@ -507,7 +511,7 @@ public abstract class NodeAdapter implements NodeRepresentation {
 		}
 		return false;
 	}
-	
+
 	public boolean isFolded() {
 		return folded;
 	}
@@ -654,7 +658,7 @@ public abstract class NodeAdapter implements NodeRepresentation {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.modes.MindMapNode#sortedChildrenUnfolded()
 	 */
 	public ListIterator<NodeRepresentation> sortedChildrenUnfolded() {
@@ -902,7 +906,7 @@ public abstract class NodeAdapter implements NodeRepresentation {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.modes.MindMapNode#addHook(freemind.modes.NodeHook)
 	 */
 	public PermanentNodeHook addHook(PermanentNodeHook hook) {
@@ -969,7 +973,7 @@ public abstract class NodeAdapter implements NodeRepresentation {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.modes.MindMapNode#getHooks()
 	 */
 	public List<PermanentNodeHook> getHooks() {
@@ -980,7 +984,7 @@ public abstract class NodeAdapter implements NodeRepresentation {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.modes.MindMapNode#getActivatedHooks()
 	 */
 	public Collection<PermanentNodeHook> getActivatedHooks() {
@@ -992,7 +996,7 @@ public abstract class NodeAdapter implements NodeRepresentation {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.modes.MindMapNode#removeHook(freemind.modes.NodeHook)
 	 */
 	public void removeHook(PermanentNodeHook hook) {
@@ -1065,7 +1069,7 @@ public abstract class NodeAdapter implements NodeRepresentation {
 					}
 				} catch (Exception e) {
 					freemind.main.Resources.getInstance().logException(e);
-				} 
+				}
 			}
 		} else {
 			if(result.containsKey(TOOLTIP_PREVIEW_KEY)){
@@ -1101,7 +1105,7 @@ public abstract class NodeAdapter implements NodeRepresentation {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see freemind.modes.MindMapNode#getNodeId()
 	 */
 	public String getObjectId(ModeController controller) {
@@ -1462,7 +1466,7 @@ public abstract class NodeAdapter implements NodeRepresentation {
 		}
 		return Collections.unmodifiableList(mAttributeVector);
 	}
-	
+
 	@Override
 	public int getAttributeTableLength() {
 		if(mAttributeVector==null) {
@@ -1528,7 +1532,7 @@ public abstract class NodeAdapter implements NodeRepresentation {
 		getAttributeVector().add(pAttribute);
 		return getAttributeVector().indexOf(pAttribute);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see freemind.modes.MindMapNode#insertAttribute(int, freemind.modes.attributes.Attribute)
 	 */
@@ -1537,13 +1541,13 @@ public abstract class NodeAdapter implements NodeRepresentation {
 		checkAttributePosition(pPosition);
 		getAttributeVector().add(pPosition, pAttribute);
 	}
-	
+
 	@Override
 	public void removeAttribute(int pPosition) {
 		checkAttributePosition(pPosition);
 		mAttributeVector.remove(pPosition);
 	}
-	
+
 	private Vector<Attribute> getAttributeVector() {
 		if(mAttributeVector==null) {
 			mAttributeVector = new Vector<Attribute>();

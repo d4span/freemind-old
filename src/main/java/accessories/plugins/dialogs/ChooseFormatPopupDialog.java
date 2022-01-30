@@ -246,7 +246,7 @@ public class ChooseFormatPopupDialog extends JDialog implements TextTranslator,
 				public void propertyChange(PropertyChangeEvent pEvt) {
 					super.propertyChange(pEvt);
 					if(mNode != null) {
-						mDemoNode.setText(mNode.getText());
+						mDemoNode.getNode().setText(mNode.getNode().getText());
 					}
 					mDemoNodeMapFeedback.select(mDemoNode, Tools.getVectorWithSingleElement(mDemoNode));
 					mDemoNodeMapFeedback.applyPattern(mDemoNode, mResetPattern);

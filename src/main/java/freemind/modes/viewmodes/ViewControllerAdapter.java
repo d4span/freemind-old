@@ -22,13 +22,10 @@
 
 package freemind.modes.viewmodes;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.extensions.NodeHook;
 import freemind.extensions.PermanentNodeHookSubstituteUnknown;
 import freemind.modes.ControllerAdapter;
-import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.Mode;
 import freemind.modes.common.CommonNodeKeyListener;
 import freemind.modes.common.CommonNodeKeyListener.EditHandler;
@@ -40,11 +37,14 @@ import freemind.modes.common.listeners.CommonNodeMouseMotionListener;
 import freemind.view.mindmapview.MainView;
 import freemind.view.mindmapview.NodeView;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+
 /**
  * @author foltin
  * 
  */
-public abstract class ViewControllerAdapter extends ControllerAdapter {
+public abstract class ViewControllerAdapter<N> extends ControllerAdapter<N> {
 
 	public CommonToggleFoldedAction toggleFolded = null;
 

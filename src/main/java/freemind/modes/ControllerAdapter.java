@@ -102,7 +102,7 @@ import java.util.logging.Level;
  * MindMapController as a sample.
  */
 @SuppressWarnings("serial")
-public abstract class ControllerAdapter extends MapFeedbackAdapter implements ModeController,
+public abstract class ControllerAdapter<N> extends MapFeedbackAdapter implements ModeController,
 		DirectoryResultListener {
 
 
@@ -139,7 +139,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	// Methods that should be overloaded
 	//
 
-	public abstract NodeRepresentation newNode(Object userObject, MindMap map);
+	public abstract NodeRepresentation newNode(N userObject, MindMap map);
 
 	/**
 	 * You _must_ implement this if you use one of the following actions:

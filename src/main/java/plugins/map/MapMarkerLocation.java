@@ -42,7 +42,7 @@ public class MapMarkerLocation extends MapMarkerBase {
 	 */
 	public void update() {
 		NodeRepresentation node = mNodePositionHolder.getNode();
-		setText(node.getText());
+		setText(node.getNode().getText());
 		setForeground(node.getColor());
 		setSize(getPreferredSize());
 	}
@@ -57,7 +57,7 @@ public class MapMarkerLocation extends MapMarkerBase {
 
 	public String toString() {
 		return "MapMarkerLocation for node "
-				+ mNodePositionHolder.getNode().getText() + " at " + getLat()
+				+ mNodePositionHolder.getNode().getNode().getText() + " at " + getLat()
 				+ " " + getLon();
 	}
 

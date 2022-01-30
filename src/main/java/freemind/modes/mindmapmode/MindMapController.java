@@ -213,7 +213,7 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Matcher;
 @SuppressWarnings("serial")
-public class MindMapController extends ControllerAdapter implements
+public class MindMapController extends ControllerAdapter<String> implements
 		ExtendedMapFeedback, MapSourceChangedObserver {
 
 	public static final String REGEXP_FOR_NUMBERS_IN_STRINGS = "([+\\-]?[0-9]*[.,]?[0-9]+)\\b";
@@ -266,7 +266,7 @@ public class MindMapController extends ControllerAdapter implements
 				if (mIsInterrupted) {
 					return;
 				}
-				Matcher m = p.matcher(selectedNode.getText());
+				Matcher m = p.matcher(selectedNode.getNode().getText());
 				while (m.find()) {
 					String number = m.group();
 					try {
@@ -1025,12 +1025,12 @@ public class MindMapController extends ControllerAdapter implements
 	private XmlActorFactory mActorFactory;
 
 	public interface NewNodeCreator {
-		NodeRepresentation createNode(Object userObject, MindMap map);
+		NodeRepresentation createNode(String userObject, MindMap map);
 	}
 
 	public class DefaultMindMapNodeCreator implements NewNodeCreator {
 
-		public NodeRepresentation createNode(Object userObject, MindMap map) {
+		public NodeRepresentation createNode(String userObject, MindMap map) {
 			return new MindMapNodeModel(userObject, map);
 		}
 
@@ -1040,7 +1040,7 @@ public class MindMapController extends ControllerAdapter implements
 		myNewNodeCreator = creator;
 	}
 
-	public NodeRepresentation newNode(Object userObject, MindMap map) {
+	public NodeRepresentation newNode(String userObject, MindMap map) {
 		// singleton default:
 		if (myNewNodeCreator == null) {
 			myNewNodeCreator = new DefaultMindMapNodeCreator();

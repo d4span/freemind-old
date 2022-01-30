@@ -20,17 +20,16 @@
 
 package plugins.map;
 
-import java.text.MessageFormat;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import freemind.common.OptionalDontShowMeAgainDialog;
 import freemind.common.TextTranslator;
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.main.FreeMind;
 import freemind.main.HtmlTools;
-import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
+
+import javax.swing.JOptionPane;
+import java.text.MessageFormat;
+import java.util.List;
 
 /**
  * @author foltin
@@ -57,7 +56,7 @@ public class SearchInMapForNodeTextAction extends MindMapNodeHookAdapter {
 		List<NodeRepresentation> selecteds = getMindMapController().getSelecteds();
 		for (NodeRepresentation node : selecteds) {
 			// Convert to plain text
-			final String plainText = HtmlTools.htmlToPlain(node.getText());
+			final String plainText = HtmlTools.htmlToPlain(node.getNode().getText());
 			if(sb.length()!=0) {
 				sb.append(" ");
 			}

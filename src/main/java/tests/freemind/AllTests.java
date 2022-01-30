@@ -23,7 +23,6 @@ package tests.freemind;
 import junit.framework.Test;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
-import tests.freemind.findreplace.FindTextTests;
 
 /** */
 public class AllTests {
@@ -40,8 +39,8 @@ public class AllTests {
 		suite.addTest(new TestSuite(ScriptEditorPanelTest.class));
 //		suite.addTest(new TestSuite(SplashTests.class));
 		suite.addTest(new TestSuite(Base64Tests.class));
-		suite.addTest(new TestSuite(FindTextTests.class));
-		suite.addTest(new TestSuite(HtmlConversionTests.class));
+		//suite.addTest(new TestSuite(FindTextTests.class));
+		//suite.addTest(new TestSuite(HtmlConversionTests.class));
 		suite.addTest(new TestSuite(TransformTest.class));
 		suite.addTest(new TestSuite(MarshallerTests.class));
 		suite.addTest(new TestSuite(SignedScriptTests.class));

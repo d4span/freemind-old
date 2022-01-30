@@ -22,28 +22,25 @@
 
 package accessories.plugins.time;
 
-import java.awt.Container;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.text.DateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EventListener;
-import java.util.Iterator;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.Vector;
-import java.util.regex.Pattern;
+import freemind.common.ScalableJTable;
+import freemind.controller.MapModuleManager.MapModuleChangeObserver;
+import freemind.controller.MenuItemSelectedListener;
+import freemind.controller.StructuredMenuHolder;
+import freemind.controller.actions.generated.instance.TimeWindowColumnSetting;
+import freemind.controller.actions.generated.instance.TimeWindowConfigurationStorage;
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.main.HtmlTools;
+import freemind.main.Resources;
+import freemind.main.Tools;
+import freemind.modes.MindIcon;
+import freemind.modes.Mode;
+import freemind.modes.ModeController;
+import freemind.modes.common.plugins.ReminderHookBase;
+import freemind.modes.mindmapmode.MindMapController;
+import freemind.modes.mindmapmode.hooks.MindMapHookAdapter;
+import freemind.view.MapModule;
+import freemind.view.mindmapview.MultipleImage;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -68,26 +65,28 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-
-import freemind.common.ScalableJTable;
-import freemind.controller.MapModuleManager.MapModuleChangeObserver;
-import freemind.controller.MenuItemSelectedListener;
-import freemind.controller.StructuredMenuHolder;
-import freemind.controller.actions.generated.instance.TimeWindowColumnSetting;
-import freemind.controller.actions.generated.instance.TimeWindowConfigurationStorage;
-import freemind.controller.actions.generated.instance.WindowConfigurationStorage;
-import freemind.main.HtmlTools;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.modes.MindIcon;
-import freemind.dependencies.view.swing.NodeRepresentation;
-import freemind.modes.Mode;
-import freemind.modes.ModeController;
-import freemind.modes.common.plugins.ReminderHookBase;
-import freemind.modes.mindmapmode.MindMapController;
-import freemind.modes.mindmapmode.hooks.MindMapHookAdapter;
-import freemind.view.MapModule;
-import freemind.view.mindmapview.MultipleImage;
+import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.text.DateFormat;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EventListener;
+import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.Vector;
+import java.util.regex.Pattern;
 
 /**
  * @author foltin
@@ -550,7 +549,7 @@ public class TimeList extends MindMapHookAdapter implements
 		int length = info.getLength();
 		for (int i = 0; i < length; i++) {
 			NodeHolder nodeHolder = info.getNodeHolderAt(i);
-			String text = nodeHolder.node.getText();
+			String text = nodeHolder.node.getNode().getText();
 			String replaceResult = HtmlTools.getInstance().getReplaceResult(p,
 					replacement, text);
 			if (!Tools.safeEquals(text, replaceResult)) {
@@ -866,7 +865,7 @@ public class TimeList extends MindMapHookAdapter implements
 			if(row>= 0 && colIndex >= 0) {
 				if (colIndex == NODE_TEXT_COLUMN) {
 					NodeRepresentation mindMapNode = getMindMapNode(row);
-					return mindMapNode.getText();
+					return mindMapNode.getNode().getText();
 				}
 				if (colIndex == NODE_NOTES_COLUMN) {
 					NodeRepresentation mindMapNode = getMindMapNode(row);
@@ -943,7 +942,7 @@ public class TimeList extends MindMapHookAdapter implements
 		}
 
 		public String getUntaggedNodeText() {
-			String nodeText = node.getText();
+			String nodeText = node.getNode().getText();
 			// cache empty or dirty?:
 			if (untaggedNodeText == null
 					|| (originalNodeText != null && !originalNodeText

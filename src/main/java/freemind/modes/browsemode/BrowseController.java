@@ -20,6 +20,31 @@
 
 package freemind.modes.browsemode;
 
+import freemind.controller.MenuBar;
+import freemind.controller.MenuItemEnabledListener;
+import freemind.controller.StructuredMenuHolder;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.extensions.HookFactory;
+import freemind.main.Tools;
+import freemind.main.XMLParseException;
+import freemind.modes.MapAdapter;
+import freemind.modes.MindMap;
+import freemind.modes.MindMapLink;
+import freemind.modes.Mode;
+import freemind.modes.ModeController;
+import freemind.modes.NodeAdapter;
+import freemind.modes.common.GotoLinkNodeAction;
+import freemind.modes.common.plugins.MapNodePositionHolderBase;
+import freemind.modes.common.plugins.NodeNoteBase;
+import freemind.modes.viewmodes.ViewControllerAdapter;
+import freemind.view.mindmapview.MainView;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JToolBar;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -35,34 +60,8 @@ import java.util.ListIterator;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JToolBar;
-
-import freemind.controller.MenuBar;
-import freemind.controller.MenuItemEnabledListener;
-import freemind.controller.StructuredMenuHolder;
-import freemind.extensions.HookFactory;
-import freemind.main.Tools;
-import freemind.main.XMLParseException;
-import freemind.modes.MapAdapter;
-import freemind.modes.MindMap;
-import freemind.modes.MindMapLink;
-import freemind.dependencies.view.swing.NodeRepresentation;
-import freemind.modes.Mode;
-import freemind.modes.ModeController;
-import freemind.modes.NodeAdapter;
-import freemind.modes.common.GotoLinkNodeAction;
-import freemind.modes.common.plugins.MapNodePositionHolderBase;
-import freemind.modes.common.plugins.NodeNoteBase;
-import freemind.modes.viewmodes.ViewControllerAdapter;
-import freemind.view.mindmapview.MainView;
-
 @SuppressWarnings("serial")
-public class BrowseController extends ViewControllerAdapter {
+public class BrowseController extends ViewControllerAdapter<String> {
 
 	private JPopupMenu popupmenu;
 	private JToolBar toolbar;
@@ -226,7 +225,7 @@ public class BrowseController extends ViewControllerAdapter {
 	// foldOthers(parent);
 	// }
 
-	public NodeRepresentation newNode(Object userObject, MindMap map) {
+	public NodeRepresentation newNode(String userObject, MindMap map) {
 		return new BrowseNodeModel(userObject, map);
 	}
 

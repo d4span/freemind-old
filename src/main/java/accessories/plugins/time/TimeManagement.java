@@ -22,6 +22,33 @@
 
 package accessories.plugins.time;
 
+import freemind.common.XmlBindingTools;
+import freemind.controller.MapModuleManager.MapModuleChangeObserver;
+import freemind.controller.StructuredMenuHolder;
+import freemind.controller.actions.generated.instance.CalendarMarking;
+import freemind.controller.actions.generated.instance.CalendarMarkings;
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.main.FreeMindCommon;
+import freemind.main.Resources;
+import freemind.main.Tools;
+import freemind.modes.Mode;
+import freemind.modes.common.plugins.ReminderHookBase;
+import freemind.modes.mindmapmode.MindMapController;
+import freemind.modes.mindmapmode.hooks.MindMapHookAdapter;
+import freemind.view.MapModule;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.GridBagConstraints;
@@ -38,34 +65,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Vector;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
-
-import freemind.common.XmlBindingTools;
-import freemind.controller.MapModuleManager.MapModuleChangeObserver;
-import freemind.controller.StructuredMenuHolder;
-import freemind.controller.actions.generated.instance.CalendarMarking;
-import freemind.controller.actions.generated.instance.CalendarMarkings;
-import freemind.controller.actions.generated.instance.WindowConfigurationStorage;
-import freemind.main.FreeMindCommon;
-import freemind.main.Resources;
-import freemind.main.Tools;
-import freemind.dependencies.view.swing.NodeRepresentation;
-import freemind.modes.Mode;
-import freemind.modes.common.plugins.ReminderHookBase;
-import freemind.modes.mindmapmode.MindMapController;
-import freemind.modes.mindmapmode.hooks.MindMapHookAdapter;
-import freemind.view.MapModule;
 
 //FIXME: Reminder: more than once. (later)
 
@@ -106,7 +105,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 				DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
 				String dateAsString = df.format(getCalendarDate());
 				getMindMapController().setNodeText(element,
-						element.getText() + " " + dateAsString);
+						element.getNode().getText() + " " + dateAsString);
 				lastElement = element;
 				sel.add(element);
 			}

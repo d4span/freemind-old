@@ -20,6 +20,24 @@
 
 package freemind.modes.filemode;
 
+import freemind.controller.MenuBar;
+import freemind.controller.StructuredMenuHolder;
+import freemind.dependencies.view.swing.NodeRepresentation;
+import freemind.extensions.HookFactory;
+import freemind.main.XMLParseException;
+import freemind.modes.MapAdapter;
+import freemind.modes.MindMap;
+import freemind.modes.Mode;
+import freemind.modes.ModeController;
+import freemind.modes.common.actions.NewMapAction;
+import freemind.modes.viewmodes.ViewControllerAdapter;
+import freemind.view.mindmapview.MainView;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.JToolBar;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -27,27 +45,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.JToolBar;
-
-import freemind.controller.MenuBar;
-import freemind.controller.StructuredMenuHolder;
-import freemind.extensions.HookFactory;
-import freemind.main.XMLParseException;
-import freemind.modes.MapAdapter;
-import freemind.modes.MindMap;
-import freemind.dependencies.view.swing.NodeRepresentation;
-import freemind.modes.Mode;
-import freemind.modes.ModeController;
-import freemind.modes.common.actions.NewMapAction;
-import freemind.modes.viewmodes.ViewControllerAdapter;
-import freemind.view.mindmapview.MainView;
-
 @SuppressWarnings("serial")
-public class FileController extends ViewControllerAdapter {
+public class FileController extends ViewControllerAdapter<File> {
 
 	Action newMap = new NewMapAction(this);
 	Action center = new CenterAction();
@@ -69,8 +68,8 @@ public class FileController extends ViewControllerAdapter {
 		return model;
 	}
 
-	public NodeRepresentation newNode(Object userObject, MindMap map) {
-		return new FileNodeModel((File) userObject, map);
+	public NodeRepresentation newNode(File userObject, MindMap map) {
+		return new FileNodeModel(userObject, map);
 	}
 
 	public JPopupMenu getPopupMenu() {

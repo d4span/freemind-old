@@ -20,18 +20,6 @@
 
 package freemind.modes;
 
-import java.awt.Font;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
-
 import freemind.common.TextTranslator;
 import freemind.common.XmlBindingTools;
 import freemind.controller.actions.generated.instance.Pattern;
@@ -55,6 +43,18 @@ import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin;
 import freemind.modes.mindmapmode.actions.ApplyPatternAction.ExternalPatternAction;
+
+import java.awt.Font;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
 
 /**
  * This class constructs patterns from files or from nodes and saves them back.
@@ -407,10 +407,10 @@ public class StylePatternFactory {
 		}
 		if (pattern.getPatternNodeText() != null) {
 			if (pattern.getPatternNodeText().getValue() != null) {
-				pNode.setText(pattern.getPatternNodeText().getValue());
+				pNode.getNode().setText(pattern.getPatternNodeText().getValue());
 			} else {
 				// clear text:
-				pNode.setText("");
+				pNode.getNode().setText("");
 			}
 		}
 		if (pattern.getPatternIcon() != null) {

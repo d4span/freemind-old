@@ -20,21 +20,20 @@
 
 package freemind.modes.mindmapmode.actions;
 
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.net.MalformedURLException;
-
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
+import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.main.Tools;
 import freemind.modes.FreeMindFileDialog;
-import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.modes.ModeController;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.MindMapMapModel;
 import freemind.modes.mindmapmode.MindMapNodeModel;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.net.MalformedURLException;
 
 /** */
 @SuppressWarnings("serial")
@@ -140,7 +139,7 @@ public class ExportBranchAction extends MindmapAction {
 			final NodeRepresentation newNode = mMindMapController.addNewNode(parent,
 					nodePosition, node.isLeft());
 			// TODO: Keep formatting of node.
-			mMindMapController.setNodeText(newNode, node.getText());
+			mMindMapController.setNodeText(newNode, node.getNode().getText());
 
 			final String linkString = Tools.fileToRelativeUrlString(chosenFile, mMindMapController.getModel().getFile());
 			mMindMapController.setLink(newNode, linkString);

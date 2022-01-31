@@ -52,4 +52,9 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation("com.tngtech.archunit:archunit:0.22.0")
+
+    testImplementation("io.kotest:kotest-property:5.1.0")
+    testImplementation("io.kotest:kotest-runner-junit5:5.1.0")
+
+    testImplementation("io.mockk:mockk:1.12.2")
 }

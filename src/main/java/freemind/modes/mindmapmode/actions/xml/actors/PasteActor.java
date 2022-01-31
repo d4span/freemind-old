@@ -865,7 +865,7 @@ public class PasteActor extends XmlActorAdapter {
 		// create a new node for testing purposes.
 		MindMapNodeModel parent = new MindMapNodeModel(
 				getExMapFeedback().getMap());
-		parent.setText("ROOT");
+		parent.getNode().setText("ROOT");
 		DirectHtmlFlavorHandler handler = new DirectHtmlFlavorHandler();
 		// creator, that only creates dummy nodes.
 		handler.setNodeCreator(new NodeCreator() {

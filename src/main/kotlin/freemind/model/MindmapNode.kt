@@ -1,3 +1,14 @@
 package freemind.model
 
-data class MindmapNode(var text: String?, var xmlText: String?)
+class MindmapNode(
+    var text: String?,
+    private val toXmlConverter: (String?) -> String?,
+    private val fromXmlConverter: (String?) -> String?
+) {
+
+    var xmlText: String?
+        get() = toXmlConverter(text)
+        set(value) {
+            text = fromXmlConverter(value)
+        }
+}

@@ -19,18 +19,18 @@
 
 package freemind.modes;
 
-import java.awt.Font;
-import java.awt.font.TextAttribute;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
-
 import freemind.dependencies.view.swing.NodeRepresentation;
 import freemind.extensions.PermanentNodeHook;
 import freemind.extensions.PermanentNodeHookSubstituteUnknown;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
 import freemind.modes.attributes.Attribute;
+
+import java.awt.Font;
+import java.awt.font.TextAttribute;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
 
 public class XMLElementAdapter extends XMLElement {
 
@@ -226,7 +226,7 @@ public class XMLElementAdapter extends XMLElement {
 						|| XML_NODE_XHTML_TYPE_NODE.equals(typeAttribute)) {
 					// output:
 					logger.finest("Setting node html content to:" + xmlText);
-					node.setXmlText(xmlText);
+					node.getNode().setXmlText(xmlText);
 				} else {
 					logger.finest("Setting note html content to:" + xmlText);
 					node.setXmlNoteText(xmlText);

@@ -84,7 +84,9 @@ public abstract class NodeAdapter implements NodeRepresentation {
 
 	private HashSet<PermanentNodeHook> activatedHooks;
 	private List<PermanentNodeHook> hooks;
-	private MindmapNode node = new MindmapNode("no text", null);
+	private MindmapNode node = new MindmapNode("no text",
+			(text) -> text == null ? null : HtmlTools.getInstance().toXhtml(text),
+			(xml) -> xml == null ? null : HtmlTools.getInstance().toHtml(xml));
 	private String link = null; // Change this to vector in future for full
 								// graph support
 	private static final String TOOLTIP_PREVIEW_KEY = "preview";
@@ -149,7 +151,7 @@ public abstract class NodeAdapter implements NodeRepresentation {
 
 	protected NodeAdapter(String nodeText, MindMap pMap) {
 		this.map = pMap;
-		setText(nodeText);
+		this.getNode().setText(nodeText);
 		hooks = null; // lazy, fc, 30.6.2005.
 		activatedHooks = null; // lazy, fc, 30.6.2005
 		if (logger == null)
@@ -184,32 +186,32 @@ public abstract class NodeAdapter implements NodeRepresentation {
 		return node;
 	}
 
-	public String getText() {
-		String string = "";
-		if (node != null) {
-			string = node.getText();
-		}
-		return string;
-	}
-
-	public final void setText(String text) {
-		if (text == null) {
-			node.setText(null);
-			node.setXmlText(null);
-			return;
-		}
-		node.setText(HtmlTools.makeValidXml(text));
-		node.setXmlText(HtmlTools.getInstance().toXhtml(node.getText()));
-	}
-
-	public final String getXmlText() {
-		return node.getXmlText();
-	}
-
-	public final void setXmlText(String pXmlText) {
-		node.setXmlText(HtmlTools.makeValidXml(pXmlText));
-		node.setText(HtmlTools.getInstance().toHtml(this.node.getText()));
-	}
+//	public String getText() {
+//		String string = "";
+//		if (node != null) {
+//			string = node.getText();
+//		}
+//		return string;
+//	}
+//
+//	public final void setText(String text) {
+//		if (text == null) {
+//			node.setText(null);
+//			node.setXmlText(null);
+//			return;
+//		}
+//		node.setText(HtmlTools.makeValidXml(text));
+//		node.setXmlText(HtmlTools.getInstance().toXhtml(node.getText()));
+//	}
+//
+//	public final String getXmlText() {
+//		return node.getXmlText();
+//	}
+//
+//	public final void setXmlText(String pXmlText) {
+//		node.setXmlText(HtmlTools.makeValidXml(pXmlText));
+//		node.setText(HtmlTools.getInstance().toHtml(this.node.getText()));
+//	}
 
 	/* ************************************************************
 	 * ******** Notes *******
@@ -614,7 +616,7 @@ public abstract class NodeAdapter implements NodeRepresentation {
 	}
 
 	public String toString() {
-		return getText();
+		return this.getNode().getText();
 	}
 
 	public boolean isDescendantOf(NodeRepresentation pParentNode) {
@@ -877,8 +879,9 @@ public abstract class NodeAdapter implements NodeRepresentation {
 		parent = newParent;
 	}
 
+	@Deprecated
 	public void setUserObject(Object object) {
-		setText((String) object);
+		getNode().setText((String) object);
 	}
 
 	// //////////////
@@ -1136,7 +1139,7 @@ public abstract class NodeAdapter implements NodeRepresentation {
 			htmlElement.setAttribute(XMLElementAdapter.XML_NODE_XHTML_TYPE_TAG,
 					XMLElementAdapter.XML_NODE_XHTML_TYPE_NODE);
 			htmlElement
-					.setEncodedContent(convertToEncodedContent(getXmlText()));
+					.setEncodedContent(convertToEncodedContent(this.getNode().getXmlText()));
 			node.addChild(htmlElement);
 		}
 		if (getXmlNoteText() != null) {

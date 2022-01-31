@@ -617,7 +617,7 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 			System.err.println(errorMessage);
 			freemind.main.Resources.getInstance().logException(ex);
 			NodeAdapter result = createNodeAdapter(this, null);
-			result.setText(errorMessage);
+			result.getNode().setText(errorMessage);
 			return (NodeRepresentation) result;
 		} finally {
 			if (reader != null) {

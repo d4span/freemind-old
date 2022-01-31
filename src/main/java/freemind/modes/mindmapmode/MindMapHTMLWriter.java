@@ -4,17 +4,17 @@
  */
 package freemind.modes.mindmapmode;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-
 import freemind.extensions.PermanentNodeHook;
 import freemind.main.HtmlTools;
 import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.MindIcon;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 class MindMapHTMLWriter {
 	private Writer fileout;
@@ -655,7 +655,7 @@ class MindMapHTMLWriter {
 	}
 
 	boolean hasHtml(MindMapNodeModel model) {
-		return model.getText().startsWith("<html>");
+		return model.getNode().getText().startsWith("<html>");
 	}
 
 	private String getProperty(String key) {

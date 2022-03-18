@@ -1,13 +1,16 @@
 package freemind.model
 
 import io.kotest.core.spec.style.StringSpec
-import io.kotest.property.forAll
+import io.kotest.property.checkAll
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertSame
 
 class MindmapNodeTest : StringSpec({
-    "NodeAdapters use the converter upon initialization" {
-        forAll { text: String?, xmlText: String? ->
+    "NodeAdapters use the supplied converter upon initialization" {
+        checkAll { text: String?, xmlText: String? ->
             val toXmlConverter = mockk<(String?) -> String?>()
             every { toXmlConverter(text) } returns xmlText
             every { toXmlConverter(null) } returns null
@@ -16,14 +19,19 @@ class MindmapNodeTest : StringSpec({
             every { fromXmlConverter(xmlText) } returns text
             every { fromXmlConverter(null) } returns null
 
-            MindmapNode(text, toXmlConverter, fromXmlConverter).let {
-                it.text == text && if (text != null) it.xmlText == xmlText else it.xmlText == null
+            with(MindmapNode(text, toXmlConverter, fromXmlConverter)) {
+                assertSame(text, this.text)
+
+                if (text == null)
+                    assertNull(this.xmlText)
+                else
+                    assertSame(xmlText, this.xmlText)
             }
         }
     }
 
     "NodeAdapters use the converter upon updates" {
-        forAll { text: String?, updatedText: String?, xmlText: String?, updatedXmlText: String? ->
+        checkAll { text: String?, updatedText: String?, xmlText: String?, updatedXmlText: String? ->
             val toXmlConverter = mockk<(String?) -> String?>()
             every { toXmlConverter(text) } returns xmlText
             every { toXmlConverter(updatedText) } returns updatedXmlText
@@ -35,10 +43,14 @@ class MindmapNodeTest : StringSpec({
             every { fromXmlConverter(null) } returns null
 
             val mindmapNode = MindmapNode(text, toXmlConverter, fromXmlConverter)
-            mindmapNode.text = updatedText
 
-            mindmapNode.let {
-                it.text == updatedText && if (updatedText != null) it.xmlText == updatedXmlText else it.xmlText == null
+            with(mindmapNode.copy(text = updatedText)) {
+                assertEquals(updatedText, this.text)
+
+                if (updatedText != null)
+                    assertEquals(updatedXmlText, this.xmlText)
+                else
+                    assertNull(this.xmlText)
             }
         }
     }

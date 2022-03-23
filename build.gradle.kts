@@ -1,6 +1,6 @@
 plugins {
     java
-    kotlin("jvm") version "1.6.0"
+    // kotlin("jvm") version "1.6.0"
 }
 
 sourceSets {
@@ -33,9 +33,18 @@ dependencies {
     implementation("org.jsoup:jsoup:1.10.3")
     implementation("com.jgoodies:jgoodies-forms:1.8.0")
     implementation("junit:junit:4.13.2")
-    implementation("org.apache.xmlgraphics:batik-svggen:1.14")
-    implementation("org.apache.xmlgraphics:batik-transcoder:1.14")
-    implementation("org.apache.xmlgraphics:fop-transcoder:2.6")
+    implementation("org.apache.xmlgraphics:batik-svggen:1.14") {
+        exclude(group = "xml-apis", module = "xml-apis-ext")
+        exclude(group = "xml-apis", module = "xml-apis")
+    }
+    implementation("org.apache.xmlgraphics:batik-transcoder:1.14") {
+        exclude(group = "xml-apis", module = "xml-apis-ext")
+        exclude(group = "xml-apis", module = "xml-apis")
+    }
+    implementation("org.apache.xmlgraphics:fop-transcoder:2.6") {
+        exclude(group = "xml-apis", module = "xml-apis-ext")
+        exclude(group = "xml-apis", module = "xml-apis")
+    }
     implementation("org.apache.lucene:lucene-queryparser:4.6.0")
     implementation("org.apache.lucene:lucene-core:4.6.0")
     implementation("org.apache.lucene:lucene-analyzers-common:4.6.0")
@@ -48,6 +57,6 @@ dependencies {
         "freemind/plugins/map/JMapViewer.jar",
         "freemind/plugins/script/groovy-all.jar"))
 
-    testImplementation(kotlin("test"))
+    // testImplementation(kotlin("test"))
     testImplementation("com.tngtech.archunit:archunit:0.22.0")
 }

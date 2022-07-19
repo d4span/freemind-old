@@ -17,9 +17,15 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
 package freemind.modes;
 
+import freemind.controller.filter.FilterInfo;
+import freemind.extensions.NodeHook;
+import freemind.extensions.PermanentNodeHook;
+import freemind.main.XMLElement;
+import freemind.modes.MindMapNode.NodeStyle;
+import freemind.modes.attributes.Attribute;
+import freemind.modes.mindmapmode.actions.MindMapActions;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.IOException;
@@ -29,428 +35,390 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.SortedMap;
-
 import javax.swing.ImageIcon;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import freemind.controller.filter.FilterInfo;
-import freemind.extensions.NodeHook;
-import freemind.extensions.PermanentNodeHook;
-import freemind.main.XMLElement;
-import freemind.modes.attributes.Attribute;
-import freemind.modes.mindmapmode.actions.MindMapActions;
-
 public interface MindMapNode extends MutableTreeNode {
 
-	public static final String STYLE_BUBBLE = "bubble";
-	public static final String STYLE_FORK = "fork";
-	public static final String STYLE_COMBINED = "combined";
-	public static final String STYLE_AS_PARENT = "as_parent";
-	public static final String[] NODE_STYLES = new String[] { STYLE_FORK,
-			STYLE_BUBBLE, STYLE_AS_PARENT, STYLE_COMBINED };
-
-	/**
-	 * @return the text representation of the nodes content. HTML is represented
-	 *         as <html>....</html> see getXmlText
-	 */
-	String getText();
-
-	/**
-	 * Sets both text and xmlText.
-	 */
-	void setText(String text);
-
-	/**
-	 * @return the text representation of the nodes content as valid XML. HTML
-	 *         is represented as <html>....</html> with proper tags (like \<br/\>
-	 *         instead of \<br\>
-	 *         and so on).
-	 */
-	String getXmlText();
-
-	/**
-	 * Sets both text and xmlText.
-	 */
-	void setXmlText(String structuredText);
-
-	/**
-	 * @return the text representation of the notes content as valid XML. HTML
-	 *         is represented as <html>....</html> with proper tags (like <br/>
-	 *         instead of <br>
-	 *         and so on).
-	 */
-	String getXmlNoteText();
-
-	/**
-	 * Sets both noteText and xmlNoteText.
-	 */
-	void setXmlNoteText(String structuredNoteText);
-
-	/**
-	 * @return the text representation of the notes content as valid HTML 3.2.
-	 */
-	String getNoteText();
-
-	/**
-	 * Sets both noteText and xmlNoteText.
-	 */
-	void setNoteText(String noteText);
-
-	/**
-	 * @return returns the unique id of the node. It is generated using the
-	 *         LinkRegistry.
-	 */
-	String getObjectId(ModeController controller);
-
-	/**
-	 * @return returns a ListIterator of all children of the node if the node is
-	 *         unfolded. EMPTY_LIST_ITERATOR otherwise.
-	 * */
-	ListIterator<MindMapNode> childrenFolded();
-
-	/**
-	 * @return returns a ListIterator of all (and not only the unfolded ones!!)
-	 *         children of the node.
-	 * */
-	ListIterator<MindMapNode> childrenUnfolded();
+  public enum NodeStyle {
+    BUBBLE,
+    FORK,
+    COMBINED,
+    AS_PARENT
+  }
+
+  /**
+   * @return the text representation of the nodes content. HTML is represented as <html>....</html>
+   *     see getXmlText
+   */
+  String getText();
+
+  /** Sets both text and xmlText. */
+  void setText(String text);
 
-	/**
-	 * @return returns a ListIterator of all (and not only the unfolded ones!!)
-	 *         children of the node sorted in the way they occur (if called from root, this
-	 *         has the effect to sort the children first left then right).
-	 * */
-	ListIterator<MindMapNode> sortedChildrenUnfolded();
-	
-	/**
-	 * @return a list of (unmodifiable) children (all ones, folded and unfolded)
-	 *         of type MindMapNode.
-	 */
-	List<MindMapNode> getChildren();
+  /**
+   * @return the text representation of the nodes content as valid XML. HTML is represented as
+   *     <html>....</html> with proper tags (like \<br/\>
+   *     instead of \<br\>
+   *     and so on).
+   */
+  String getXmlText();
 
-	boolean hasChildren();
+  /** Sets both text and xmlText. */
+  void setXmlText(String structuredText);
 
-	public FilterInfo getFilterInfo();
+  /**
+   * @return the text representation of the notes content as valid XML. HTML is represented as
+   *     <html>....</html> with proper tags (like <br>
+   *     instead of <br>
+   *     and so on).
+   */
+  String getXmlNoteText();
 
-	/** @return -1 if the argument childNode is not a child. */
-	int getChildPosition(MindMapNode childNode);
+  /** Sets both noteText and xmlNoteText. */
+  void setXmlNoteText(String structuredNoteText);
 
-	int getNodeLevel();
+  /**
+   * @return the text representation of the notes content as valid HTML 3.2.
+   */
+  String getNoteText();
 
-	String getLink();
+  /** Sets both noteText and xmlNoteText. */
+  void setNoteText(String noteText);
 
-	/**
-	 * returns a short textual description of the text contained in the node.
-	 * Html is filtered out.
-	 */
-	String getShortText(ModeController controller);
+  /**
+   * @return returns the unique id of the node. It is generated using the LinkRegistry.
+   */
+  String getObjectId(ModeController controller);
 
-	MindMapEdge getEdge();
+  /**
+   * @return returns a ListIterator of all children of the node if the node is unfolded.
+   *     EMPTY_LIST_ITERATOR otherwise.
+   */
+  ListIterator<MindMapNode> childrenFolded();
 
-	Color getColor();
+  /**
+   * @return returns a ListIterator of all (and not only the unfolded ones!!) children of the node.
+   */
+  ListIterator<MindMapNode> childrenUnfolded();
 
-	/**
-	 * @return the pure style string (even if the style is "AS_PARENT" or null)
-	 */
-	String getBareStyle();
-	
-	String getStyle();
+  /**
+   * @return returns a ListIterator of all (and not only the unfolded ones!!) children of the node
+   *     sorted in the way they occur (if called from root, this has the effect to sort the children
+   *     first left then right).
+   */
+  ListIterator<MindMapNode> sortedChildrenUnfolded();
 
-	/**
-	 * currently the style may be one of MindMapNode.STYLE_BUBBLE or
-	 * MindMapNode.STYLE_FORK.
-	 */
-	void setStyle(String style);
+  /**
+   * @return a list of (unmodifiable) children (all ones, folded and unfolded) of type MindMapNode.
+   */
+  List<MindMapNode> getChildren();
 
-	// returns false if and only if the style is inherited from parent
-	boolean hasStyle();
+  boolean hasChildren();
 
-	MindMapNode getParentNode();
+  public FilterInfo getFilterInfo();
 
-	boolean isBold();
+  /**
+   * @return -1 if the argument childNode is not a child.
+   */
+  int getChildPosition(MindMapNode childNode);
 
-	boolean isItalic();
+  int getNodeLevel();
 
-	boolean isUnderlined();
+  String getLink();
 
-	boolean isStrikethrough();
+  /**
+   * returns a short textual description of the text contained in the node. Html is filtered out.
+   */
+  String getShortText(ModeController controller);
 
-	Font getFont();
+  MindMapEdge getEdge();
 
-	String getFontSize();
+  Color getColor();
 
-	String getFontFamilyName();
+  /**
+   * @return the pure style string (even if the style is "AS_PARENT" or null)
+   */
+  NodeStyle getBareStyle();
 
-	String toString();
+  NodeStyle getStyle();
 
-	String getPlainTextContent();
+  /** currently the style may be one of MindMapNode.STYLE_BUBBLE or MindMapNode.STYLE_FORK. */
+  void setStyle(NodeStyle style);
 
-	TreePath getPath();
+  // returns false if and only if the style is inherited from parent
+  boolean hasStyle();
 
-	/**
-	 * Returns whether the argument is parent or parent of one of the grandpa's
-	 * of this node. (transitive)
-	 */
-	boolean isDescendantOf(MindMapNode node);
+  MindMapNode getParentNode();
 
-	/**
-	 * If the test node is identical or in the same family and elder as the
-	 * object. node.isChild..(parent) == true means: parent -> .. -> node exists
-	 * in the tree.
-	 * 
-	 * @see isDecendantOf
-	 */
-	boolean isDescendantOfOrEqual(MindMapNode pParentNode);
+  boolean isBold();
 
-	boolean isRoot();
+  boolean isItalic();
 
-	boolean isFolded();
+  boolean isUnderlined();
 
-	boolean isLeft();
+  boolean isStrikethrough();
 
-	void setLeft(boolean isLeft);
+  Font getFont();
 
-	void setFolded(boolean folded);
+  String getFontSize();
 
-	void setFont(Font font);
+  String getFontFamilyName();
 
-	void setShiftY(int y);
+  String toString();
 
-	int getShiftY();
+  String getPlainTextContent();
 
-	int calcShiftY();
+  TreePath getPath();
 
-	void setVGap(int i);
+  /**
+   * Returns whether the argument is parent or parent of one of the grandpa's of this node.
+   * (transitive)
+   */
+  boolean isDescendantOf(MindMapNode node);
 
-	int getVGap();
+  /**
+   * If the test node is identical or in the same family and elder as the object.
+   * node.isChild..(parent) == true means: parent -> .. -> node exists in the tree.
+   *
+   * @see isDecendantOf
+   */
+  boolean isDescendantOfOrEqual(MindMapNode pParentNode);
 
-	void setHGap(int i);
+  boolean isRoot();
 
-	int getHGap();
+  boolean isFolded();
 
-	void setLink(String link);
+  boolean isLeft();
 
-	void setFontSize(int fontSize);
+  void setLeft(boolean isLeft);
 
-	void setColor(Color color);
+  void setFolded(boolean folded);
 
-	// fc, 06.10.2003:
-	/** Is a vector of MindIcon s */
-	List<MindIcon> getIcons();
+  void setFont(Font font);
 
-	void addIcon(MindIcon icon, int position);
+  void setShiftY(int y);
 
-	/* @return returns the new amount of icons. */
-	int removeIcon(int position);
+  int getShiftY();
 
-	// end, fc, 24.9.2003
+  int calcShiftY();
 
-	// clouds, fc, 08.11.2003:
-	MindMapCloud getCloud();
+  void setVGap(int i);
 
-	void setCloud(MindMapCloud cloud);
+  int getVGap();
 
-	// end clouds.
+  void setHGap(int i);
 
-	// fc, 24.2.2004: background color:
-	Color getBackgroundColor();
+  int getHGap();
 
-	void setBackgroundColor(Color color);
+  void setLink(String link);
 
-	// hooks, fc 28.2.2004:
-	/**
-	 * After a map creation, all hooks are present via this method, but still
-	 * not activated.
-	 * 
-	 * @return a list of PermanentNodeHook elements.
-	 * */
-	List<PermanentNodeHook> getHooks();
+  void setFontSize(int fontSize);
 
-	/**
-	 * After activation, this method returns the hooks of this node.
-	 * 
-	 * @return a list of PermanentNodeHook elements
-	 */
-	Collection<PermanentNodeHook> getActivatedHooks();
+  void setColor(Color color);
 
-	/**
-	 * Adds the hook to the list of hooks to my node. Does not invoke the hook!
-	 * 
-	 * @return returns the input parameter hook
-	 */
-	PermanentNodeHook addHook(PermanentNodeHook hook);
+  // fc, 06.10.2003:
+  /** Is a vector of MindIcon s */
+  List<MindIcon> getIcons();
 
-	void invokeHook(NodeHook hook);
+  void addIcon(MindIcon icon, int position);
 
-	/**
-	 * Removes the hook from the activated hooks, calls shutdown method of the
-	 * hook and removes the hook from allHook belonging to the node afterwards.
-	 */
-	void removeHook(PermanentNodeHook hook);
+  /* @return returns the new amount of icons. */
+  int removeIcon(int position);
 
-	/**
-	 * Removes all hooks from this node.
-	 * 
-	 * @param node
-	 */
-	public void removeAllHooks();
+  // end, fc, 24.9.2003
 
-	// end hooks
+  // clouds, fc, 08.11.2003:
+  MindMapCloud getCloud();
 
-	// tooltips,fc 29.2.2004
-	void setToolTip(String key, String tip);
+  void setCloud(MindMapCloud cloud);
 
-	SortedMap<String, String> getToolTip();
+  // end clouds.
 
-	// additional info, fc, 15.12.2004
+  // fc, 24.2.2004: background color:
+  Color getBackgroundColor();
 
-	/**
-	 * This method can be used to store non-visual additions to a node.
-	 * Currently, it is used for encrypted nodes to store the encrypted content.
-	 */
-	void setAdditionalInfo(String info);
+  void setBackgroundColor(Color color);
 
-	/**
-	 * Is only used to store encrypted content of an encrypted mind map node.
-	 * 
-	 * @see MindMapNode.setAdditionalInfo(String)
-	 */
-	public String getAdditionalInfo();
+  // hooks, fc 28.2.2004:
+  /**
+   * After a map creation, all hooks are present via this method, but still not activated.
+   *
+   * @return a list of PermanentNodeHook elements.
+   */
+  List<PermanentNodeHook> getHooks();
 
-	/**
-	 * @return a flat copy of this node including all extras like notes, etc.
-	 *         But the children are not copied!
-	 */
-	MindMapNode shallowCopy();
+  /**
+   * After activation, this method returns the hooks of this node.
+   *
+   * @return a list of PermanentNodeHook elements
+   */
+  Collection<PermanentNodeHook> getActivatedHooks();
 
-	/**
-	 * @param saveHidden
-	 *            TODO: Seems not to be used. Remove or fill with live.
-	 * @param saveChildren
-	 *            if true, the save recurses to all of the nodes children.
-	 */
-	public XMLElement save(Writer writer, MindMapLinkRegistry registry,
-			boolean saveHidden, boolean saveChildren) throws IOException;
-
-	// fc, 10.2.2005:
-	/**
-	 * State icons are icons that are not saved. They indicate that this node is
-	 * special.
-	 */
-	Map<String, ImageIcon> getStateIcons();
+  /**
+   * Adds the hook to the list of hooks to my node. Does not invoke the hook!
+   *
+   * @return returns the input parameter hook
+   */
+  PermanentNodeHook addHook(PermanentNodeHook hook);
 
-	/**
-	 * @param icon
-	 *            use null to remove the state icon. Then it is not required,
-	 *            that the key already exists.
-	 */
-	void setStateIcon(String key, ImageIcon icon);
+  void invokeHook(NodeHook hook);
 
-	// fc, 11.4.2005:
-	HistoryInformation getHistoryInformation();
+  /**
+   * Removes the hook from the activated hooks, calls shutdown method of the hook and removes the
+   * hook from allHook belonging to the node afterwards.
+   */
+  void removeHook(PermanentNodeHook hook);
 
-	void setHistoryInformation(HistoryInformation historyInformation);
+  /**
+   * Removes all hooks from this node.
+   *
+   * @param node
+   */
+  public void removeAllHooks();
 
-	boolean isVisible();
+  // end hooks
 
-	/**
-	 * @return true, if there is exactly one visible child.
-	 */
-	boolean hasExactlyOneVisibleChild();
+  // tooltips,fc 29.2.2004
+  void setToolTip(String key, String tip);
 
-	/**
-	 * @return true, if there is at least one visible child.
-	 */
-	boolean hasVisibleChilds();
-	
-	MapFeedback getMapFeedback();
+  SortedMap<String, String> getToolTip();
 
-	MindMap getMap();
+  // additional info, fc, 15.12.2004
 
-	/**
-	 * @return an unmodifiable list of all attribute keys as String. There can
-	 *         be double entries.
-	 */
-	List<String> getAttributeKeyList();
+  /**
+   * This method can be used to store non-visual additions to a node. Currently, it is used for
+   * encrypted nodes to store the encrypted content.
+   */
+  void setAdditionalInfo(String info);
 
-	/**
-	 * @return an unmodifiable list of all attributes. 
-	 */
-	List<Attribute> getAttributes();
-	
-	/**
-	 * @return the amount of attributes.
-	 */
-	int getAttributeTableLength();
+  /**
+   * Is only used to store encrypted content of an encrypted mind map node.
+   *
+   * @see MindMapNode.setAdditionalInfo(String)
+   */
+  public String getAdditionalInfo();
 
-	/**
-	 * @param pPosition
-	 *            the null based position.
-	 * @return a copy of the node's attribute.
-	 * @throws IllegalArgumentException if position is out of range
-	 */
-	Attribute getAttribute(int pPosition);
+  /**
+   * @return a flat copy of this node including all extras like notes, etc. But the children are not
+   *     copied!
+   */
+  MindMapNode shallowCopy();
 
-	/**
-	 * Searches for the first attribute with the given key. This is a
-	 * convenience function. see MindMapActions.editAttribute to set the value
-	 * to a different one.
-	 * 
-	 * @param pKey
-	 *            is the name of the attribute
-	 * @return the value of the attribute or null, if not found.
-	 */
-	String getAttribute(String pKey);
+  /**
+   * @param saveHidden TODO: Seems not to be used. Remove or fill with live.
+   * @param saveChildren if true, the save recurses to all of the nodes children.
+   */
+  public XMLElement save(
+      Writer writer, MindMapLinkRegistry registry, boolean saveHidden, boolean saveChildren)
+      throws IOException;
 
-	/**
-	 * @param key
-	 *            the name of the attribute
-	 * @return the index of the first occurence of an attribute with this key,
-	 *         or -1 if not found.
-	 */
-	int getAttributePosition(String key);
+  // fc, 10.2.2005:
+  /** State icons are icons that are not saved. They indicate that this node is special. */
+  Map<String, ImageIcon> getStateIcons();
 
-	/**
-	 * Sets the attribute to the given value.
-	 * Don't set the attributes directly here. Use the {@link MindMapActions} methods instead.
-	 */
-	void setAttribute(int pPosition, Attribute pAttribute);
-	
-	/**
-	 * Insert the attribute to the given value.
-	 * Don't set the attributes directly here. Use the {@link MindMapActions} methods instead.
-	 */
-	void insertAttribute(int pPosition, Attribute pAttribute);
-	
-	/**
-	 * @param pAttribute
-	 * @return the index of the new attribute
-	 */
-	int addAttribute(Attribute pAttribute);
-	/**
-	 * @param pPosition
-	 */
-	void removeAttribute(int pPosition);
+  /**
+   * @param icon use null to remove the state icon. Then it is not required, that the key already
+   *     exists.
+   */
+  void setStateIcon(String key, ImageIcon icon);
 
-	public void addTreeModelListener(TreeModelListener l);
+  // fc, 11.4.2005:
+  HistoryInformation getHistoryInformation();
 
-	public void removeTreeModelListener(TreeModelListener l);
+  void setHistoryInformation(HistoryInformation historyInformation);
 
-	EventListenerList getListeners();
+  boolean isVisible();
 
-	boolean isNewChildLeft();
+  /**
+   * @return true, if there is exactly one visible child.
+   */
+  boolean hasExactlyOneVisibleChild();
 
-	/**
-	 * Some nodes can't get new children or have other changes (encrypted nodes
-	 * for example).
-	 */
-	boolean isWriteable();
+  /**
+   * @return true, if there is at least one visible child.
+   */
+  boolean hasVisibleChilds();
 
-	/**
-	 * @return true, if one of its parents is folded. If itself is folded, doesn't matter.
-	 */
-	boolean hasFoldedParents();
+  MapFeedback getMapFeedback();
 
+  MindMap getMap();
+
+  /**
+   * @return an unmodifiable list of all attribute keys as String. There can be double entries.
+   */
+  List<String> getAttributeKeyList();
+
+  /**
+   * @return an unmodifiable list of all attributes.
+   */
+  List<Attribute> getAttributes();
+
+  /**
+   * @return the amount of attributes.
+   */
+  int getAttributeTableLength();
+
+  /**
+   * @param pPosition the null based position.
+   * @return a copy of the node's attribute.
+   * @throws IllegalArgumentException if position is out of range
+   */
+  Attribute getAttribute(int pPosition);
+
+  /**
+   * Searches for the first attribute with the given key. This is a convenience function. see
+   * MindMapActions.editAttribute to set the value to a different one.
+   *
+   * @param pKey is the name of the attribute
+   * @return the value of the attribute or null, if not found.
+   */
+  String getAttribute(String pKey);
+
+  /**
+   * @param key the name of the attribute
+   * @return the index of the first occurence of an attribute with this key, or -1 if not found.
+   */
+  int getAttributePosition(String key);
+
+  /**
+   * Sets the attribute to the given value. Don't set the attributes directly here. Use the {@link
+   * MindMapActions} methods instead.
+   */
+  void setAttribute(int pPosition, Attribute pAttribute);
+
+  /**
+   * Insert the attribute to the given value. Don't set the attributes directly here. Use the {@link
+   * MindMapActions} methods instead.
+   */
+  void insertAttribute(int pPosition, Attribute pAttribute);
+
+  /**
+   * @param pAttribute
+   * @return the index of the new attribute
+   */
+  int addAttribute(Attribute pAttribute);
+  /**
+   * @param pPosition
+   */
+  void removeAttribute(int pPosition);
+
+  public void addTreeModelListener(TreeModelListener l);
+
+  public void removeTreeModelListener(TreeModelListener l);
+
+  EventListenerList getListeners();
+
+  boolean isNewChildLeft();
+
+  /** Some nodes can't get new children or have other changes (encrypted nodes for example). */
+  boolean isWriteable();
+
+  /**
+   * @return true, if one of its parents is folded. If itself is folded, doesn't matter.
+   */
+  boolean hasFoldedParents();
 }

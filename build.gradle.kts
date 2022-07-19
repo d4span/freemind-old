@@ -57,6 +57,8 @@ dependencies {
         "freemind/plugins/map/JMapViewer.jar",
         "freemind/plugins/script/groovy-all.jar"))
 
-    // testImplementation(kotlin("test"))
+    testImplementation(platform("org.junit:junit-bom:5.8.2"))
+	testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("com.tngtech.archunit:archunit:0.22.0")
+    // testImplementation(kotlin("test"))
 }
